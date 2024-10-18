@@ -1,0 +1,45 @@
+# ClienteDetalhesBasicosApiViewModel
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**id_member** | **int** |  | [optional] 
+**photo** | **str** |  | [optional] 
+**first_name** | **str** |  | [optional] 
+**last_name** | **str** |  | [optional] 
+**register_date** | **datetime** |  | [optional] 
+**id_branch** | **int** |  | [optional] 
+**branch_name** | **str** |  | [optional] 
+**access_blocked** | **bool** |  | [optional] 
+**blocked_reason** | **str** |  | [optional] 
+**document** | **str** |  | [optional] 
+**document_id** | **str** |  | [optional] 
+**marital_status** | **str** |  | [optional] 
+**gender** | **str** |  | [optional] 
+**birth_date** | **datetime** |  | [optional] 
+**country** | **str** |  | [optional] 
+**address** | **str** |  | [optional] 
+**state** | **str** |  | [optional] 
+**city** | **str** |  | [optional] 
+**passport** | **str** |  | [optional] 
+**zip_code** | **str** |  | [optional] 
+**complement** | **str** |  | [optional] 
+**neighborhood** | **str** |  | [optional] 
+**access_card_number** | **str** |  | [optional] 
+**number** | **str** |  | [optional] 
+**id_member_migration** | **str** |  | [optional] 
+**tax_data** | [**TaxDataViewModel**](TaxDataViewModel.md) |  | [optional] 
+**email** | **str** |  | [optional] 
+**slug** | **str** |  | [optional] 
+**penalized** | **bool** |  | [optional] 
+**id_branch_token** | **str** |  | [optional] 
+**membership_status** | **str** |  | [optional] 
+**contacts** | [**list[TelefoneApiViewModel]**](TelefoneApiViewModel.md) |  | [optional] 
+**last_access_date** | **datetime** |  | [optional] 
+**responsibles** | [**list[MemberResponsibleViewModel]**](MemberResponsibleViewModel.md) |  | [optional] 
+**memberships** | [**list[MemberMembershipApiViewModel]**](MemberMembershipApiViewModel.md) |  | [optional] 
+**registration_kind** | **str** |  | [optional] 
+**membership** | [**BasicMemberMembershipApiViewModel**](BasicMemberMembershipApiViewModel.md) |  | [optional] 
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
