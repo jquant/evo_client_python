@@ -14,9 +14,9 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.api.member_membership_api import MemberMembershipApi  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.api.member_membership_api import MemberMembershipApi  # noqa: E501
+from evo_client.rest import ApiException
 
 
 class TestMemberMembershipApi(unittest.TestCase):
@@ -50,5 +50,5 @@ class TestMemberMembershipApi(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

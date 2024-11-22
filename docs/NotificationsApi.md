@@ -1,4 +1,4 @@
-# swagger_client.NotificationsApi
+# evo_client.NotificationsApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
@@ -15,17 +15,17 @@ Insert a member notification
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.NotificationsApi(swagger_client.ApiClient(configuration))
-body = swagger_client.NotificationApiViewModel() # NotificationApiViewModel |  (optional)
+api_instance = evo_client.NotificationsApi(evo_client.ApiClient(configuration))
+body = evo_client.NotificationApiViewModel() # NotificationApiViewModel |  (optional)
 
 try:
     # Insert a member notification

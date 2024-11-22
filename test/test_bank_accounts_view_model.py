@@ -14,9 +14,11 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.models.bank_accounts_view_model import BankAccountsViewModel  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.models.bank_accounts_view_model import (
+    BankAccountsViewModel,
+)  # noqa: E501
+from evo_client.core.api_exception import ApiException
 
 
 class TestBankAccountsViewModel(unittest.TestCase):
@@ -31,9 +33,9 @@ class TestBankAccountsViewModel(unittest.TestCase):
     def testBankAccountsViewModel(self):
         """Test BankAccountsViewModel"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = swagger_client.models.bank_accounts_view_model.BankAccountsViewModel()  # noqa: E501
+        # model = evo_client.models.bank_accounts_view_model.BankAccountsViewModel()  # noqa: E501
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

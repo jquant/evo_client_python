@@ -14,9 +14,9 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.models.e_status_atividade import EStatusAtividade  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.models.e_status_atividade import EStatusAtividade  # noqa: E501
+from evo_client.rest import ApiException
 
 
 class TestEStatusAtividade(unittest.TestCase):
@@ -31,9 +31,9 @@ class TestEStatusAtividade(unittest.TestCase):
     def testEStatusAtividade(self):
         """Test EStatusAtividade"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = swagger_client.models.e_status_atividade.EStatusAtividade()  # noqa: E501
+        # model = evo_client.models.e_status_atividade.EStatusAtividade()  # noqa: E501
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

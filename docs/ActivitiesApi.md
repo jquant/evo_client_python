@@ -1,4 +1,4 @@
-# swagger_client.ActivitiesApi
+# evo_client.ActivitiesApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
@@ -21,16 +21,16 @@ Get activities
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ActivitiesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ActivitiesApi(evo_client.ApiClient(configuration))
 search = '' # str | Filter by activity name, group name or tags (optional)
 id_branch = 56 # int | Filber by membership IdBranch (Only available when using a multilocation key, ignored otherwise) (optional)
 take = 10 # int | Total number of records to return. (optional) (default to 10)
@@ -77,16 +77,16 @@ Get activities schedule details
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ActivitiesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ActivitiesApi(evo_client.ApiClient(configuration))
 id_configuration = 56 # int | Activity IdConfiguration (Must be use combined with activityDate) (optional)
 activity_date = '2013-10-20T19:20:30+01:00' # datetime | Activity schedule date (yyyy-MM-dd) (Must be use combined with idConfiguration) (optional)
 id_activity_session = 56 # int | Activity idActivitySession (This is mandatory if IdConfiguration and activityDate are null) (optional)
@@ -131,22 +131,22 @@ Enroll member in activity schedule
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ActivitiesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ActivitiesApi(evo_client.ApiClient(configuration))
 id_configuration = 56 # int | Activity IdConfiguration (optional)
 activity_date = '2013-10-20T19:20:30+01:00' # datetime | Activity schedule date (yyyy-MM-dd) (optional)
 slot_number = 0 # int | Slot number (only available in activites that allow spot booking) (optional) (default to 0)
 id_member = 0 # int | Id Member (this is required if IdProspect is null) (optional) (default to 0)
 id_prospect = 0 # int | Id Member (this is required if IdMember is null) (optional) (default to 0)
-origin = swagger_client.EOrigemAgendamento() # EOrigemAgendamento |  (optional)
+origin = evo_client.EOrigemAgendamento() # EOrigemAgendamento |  (optional)
 
 try:
     # Enroll member in activity schedule
@@ -192,16 +192,16 @@ Status:        Livre = 0,      Disponivel = 1,      Lotada = 2,      ReservaEnce
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ActivitiesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ActivitiesApi(evo_client.ApiClient(configuration))
 id_member = 0 # int | Filter by a member (optional) (default to 0)
 take = 56 # int | Limit the ammount of itens returned (optional)
 only_availables = false # bool | Filter by activities that are available (optional) (default to false)
@@ -258,16 +258,16 @@ Create a new experimental class and enroll the member on it
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ActivitiesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ActivitiesApi(evo_client.ApiClient(configuration))
 id_prospect = 56 # int | IdProspect of who will participate from class (optional)
 activity_date = '2013-10-20T19:20:30+01:00' # datetime | Activity schedule date and time (yyyy-MM-dd HH:mm) (optional)
 activity = 'activity_example' # str | Activity name (optional)
@@ -317,17 +317,17 @@ Change status of a member in activity schedule
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ActivitiesApi(swagger_client.ApiClient(configuration))
-status = swagger_client.EStatusAtividadeSessao() # EStatusAtividadeSessao | New status to be setted (Types: Attending = 0, Absent = 1, Justified absence = 2) (optional)
+api_instance = evo_client.ActivitiesApi(evo_client.ApiClient(configuration))
+status = evo_client.EStatusAtividadeSessao() # EStatusAtividadeSessao | New status to be setted (Types: Attending = 0, Absent = 1, Justified absence = 2) (optional)
 id_member = 56 # int | Id Member (optional)
 id_prospect = 56 # int | Id Prospect (optional)
 id_configuration = 56 # int | Activity IdConfiguration - only used when idActivitySession is null) (optional)
@@ -376,16 +376,16 @@ List of spots that are already filled in the activity session
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ActivitiesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ActivitiesApi(evo_client.ApiClient(configuration))
 id_configuration = 56 # int | Activity IdConfiguration (optional)
 _date = '2013-10-20T19:20:30+01:00' # datetime | Activity schedule date (yyyy-MM-dd) (optional)
 

@@ -1,4 +1,4 @@
-# swagger_client.ProspectsApi
+# evo_client.ProspectsApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
@@ -19,16 +19,16 @@ Get prospects
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ProspectsApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ProspectsApi(evo_client.ApiClient(configuration))
 id_prospect = 56 # int |  (optional)
 name = 'name_example' # str |  (optional)
 document = 'document_example' # str |  (optional)
@@ -93,17 +93,17 @@ Example body                     Body           {             name(string, requi
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ProspectsApi(swagger_client.ApiClient(configuration))
-body = swagger_client.ProspectApiIntegracaoViewModel() # ProspectApiIntegracaoViewModel |  (optional)
+api_instance = evo_client.ProspectsApi(evo_client.ApiClient(configuration))
+body = evo_client.ProspectApiIntegracaoViewModel() # ProspectApiIntegracaoViewModel |  (optional)
 
 try:
     # Add prospects
@@ -145,17 +145,17 @@ Example body                     Body           {             idProspect(int, re
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ProspectsApi(swagger_client.ApiClient(configuration))
-body = swagger_client.ProspectApiIntegracaoAtualizacaoViewModel() # ProspectApiIntegracaoAtualizacaoViewModel |  (optional)
+api_instance = evo_client.ProspectsApi(evo_client.ApiClient(configuration))
+body = evo_client.ProspectApiIntegracaoAtualizacaoViewModel() # ProspectApiIntegracaoAtualizacaoViewModel |  (optional)
 
 try:
     # Update prospect
@@ -195,16 +195,16 @@ Get prospect services
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ProspectsApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ProspectsApi(evo_client.ApiClient(configuration))
 id_prospect = 56 # int | Filter by prospect id (optional)
 
 try:
@@ -245,17 +245,17 @@ Name | Type | Description  | Notes
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ProspectsApi(swagger_client.ApiClient(configuration))
-body = swagger_client.ProspectTransferenciaViewModel() # ProspectTransferenciaViewModel |  (optional)
+api_instance = evo_client.ProspectsApi(evo_client.ApiClient(configuration))
+body = evo_client.ProspectTransferenciaViewModel() # ProspectTransferenciaViewModel |  (optional)
 
 try:
     api_instance.api_v1_prospects_transfer_post(body=body)

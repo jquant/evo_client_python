@@ -14,9 +14,11 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.models.differentials_view_model import DifferentialsViewModel  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.models.differentials_view_model import (
+    DifferentialsViewModel,
+)  # noqa: E501
+from evo_client.rest import ApiException
 
 
 class TestDifferentialsViewModel(unittest.TestCase):
@@ -31,9 +33,9 @@ class TestDifferentialsViewModel(unittest.TestCase):
     def testDifferentialsViewModel(self):
         """Test DifferentialsViewModel"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = swagger_client.models.differentials_view_model.DifferentialsViewModel()  # noqa: E501
+        # model = evo_client.models.differentials_view_model.DifferentialsViewModel()  # noqa: E501
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -14,9 +14,11 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.models.w12_utils_category_membership_view_model import W12UtilsCategoryMembershipViewModel  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.models.w12_utils_category_membership_view_model import (
+    W12UtilsCategoryMembershipViewModel,
+)  # noqa: E501
+from evo_client.rest import ApiException
 
 
 class TestW12UtilsCategoryMembershipViewModel(unittest.TestCase):
@@ -31,9 +33,9 @@ class TestW12UtilsCategoryMembershipViewModel(unittest.TestCase):
     def testW12UtilsCategoryMembershipViewModel(self):
         """Test W12UtilsCategoryMembershipViewModel"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = swagger_client.models.w12_utils_category_membership_view_model.W12UtilsCategoryMembershipViewModel()  # noqa: E501
+        # model = evo_client.models.w12_utils_category_membership_view_model.W12UtilsCategoryMembershipViewModel()  # noqa: E501
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

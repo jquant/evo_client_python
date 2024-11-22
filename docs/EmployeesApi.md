@@ -1,4 +1,4 @@
-# swagger_client.EmployeesApi
+# evo_client.EmployeesApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
@@ -18,16 +18,16 @@ Delete Employees
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.EmployeesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.EmployeesApi(evo_client.ApiClient(configuration))
 id_employee = 56 # int |  (optional)
 
 try:
@@ -67,16 +67,16 @@ Get Employees
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.EmployeesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.EmployeesApi(evo_client.ApiClient(configuration))
 id_employee = 56 # int |  (optional)
 name = 'name_example' # str |  (optional)
 email = 'email_example' # str |  (optional)
@@ -125,17 +125,17 @@ Update Employees
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.EmployeesApi(swagger_client.ApiClient(configuration))
-body = swagger_client.EmployeeApiIntegracaoAtualizacaoViewModel() # EmployeeApiIntegracaoAtualizacaoViewModel |  (optional)
+api_instance = evo_client.EmployeesApi(evo_client.ApiClient(configuration))
+body = evo_client.EmployeeApiIntegracaoAtualizacaoViewModel() # EmployeeApiIntegracaoAtualizacaoViewModel |  (optional)
 
 try:
     # Update Employees
@@ -174,17 +174,17 @@ Add Employees
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.EmployeesApi(swagger_client.ApiClient(configuration))
-body = swagger_client.EmployeeApiIntegracaoViewModel() # EmployeeApiIntegracaoViewModel |  (optional)
+api_instance = evo_client.EmployeesApi(evo_client.ApiClient(configuration))
+body = evo_client.EmployeeApiIntegracaoViewModel() # EmployeeApiIntegracaoViewModel |  (optional)
 
 try:
     # Add Employees

@@ -1,4 +1,4 @@
-# swagger_client.MembersApi
+# evo_client.MembersApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
@@ -25,16 +25,16 @@ Authenticate member
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.MembersApi(evo_client.ApiClient(configuration))
 email = 'email_example' # str | Member e-mail (optional)
 password = 'password_example' # str | Member password (optional)
 change_password = true # bool | Check true if the password has not been set, create a new one (optional)
@@ -79,16 +79,16 @@ Get basic member information. This endpoint does not return sensitive informatio
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.MembersApi(evo_client.ApiClient(configuration))
 email = 'email_example' # str | Filter by a member e-mail (optional)
 document = 'document_example' # str | Filter by a member document (optional)
 phone = 'phone_example' # str | Filter by a member telephone or cellphone Ex.:1112341234 (optional)
@@ -139,16 +139,16 @@ Get member fitcoins
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.MembersApi(evo_client.ApiClient(configuration))
 id_member = 56 # int | Id Member (optional)
 
 try:
@@ -188,16 +188,16 @@ Update a member fitcoins
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.MembersApi(evo_client.ApiClient(configuration))
 id_member = 56 # int | Id Member (optional)
 type = 56 # int | 1 - Add Fitcoins, 2 - Remove Fitcoins (optional)
 fitcoin = 56 # int | Quantity add/remove fitcoin (optional)
@@ -243,16 +243,16 @@ Get members
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.MembersApi(evo_client.ApiClient(configuration))
 name = 'name_example' # str | Filter by members name (optional)
 email = 'email_example' # str | Filter by a member e-mail (optional)
 document = 'document_example' # str | Filter by a member document (optional)
@@ -331,16 +331,16 @@ Update a member card number
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.MembersApi(evo_client.ApiClient(configuration))
 id_member = 56 # int | Filter by a member
 card_number = 'card_number_example' # str | Card number (optional)
 
@@ -382,16 +382,16 @@ Get member profile
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.MembersApi(evo_client.ApiClient(configuration))
 id_member = 56 # int | Filter by a member
 
 try:
@@ -432,16 +432,16 @@ Get link for reset password
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.MembersApi(evo_client.ApiClient(configuration))
 sign_in = true # bool | Check true if after change password you want sign in (optional)
 user = 'user_example' # str | Filter by CPF, idMember or e-mail (optional)
 
@@ -484,16 +484,16 @@ Get member services
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.MembersApi(evo_client.ApiClient(configuration))
 id_member = 56 # int | Filter by member id (optional)
 
 try:
@@ -534,17 +534,17 @@ Name | Type | Description  | Notes
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-body = swagger_client.ClienteTransferenciaViewModel() # ClienteTransferenciaViewModel |  (optional)
+api_instance = evo_client.MembersApi(evo_client.ApiClient(configuration))
+body = evo_client.ClienteTransferenciaViewModel() # ClienteTransferenciaViewModel |  (optional)
 
 try:
     api_instance.api_v1_members_transfer_post(body=body)
@@ -584,18 +584,18 @@ Example body                     Body           {              {                
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.MembersApi(evo_client.ApiClient(configuration))
 id_member = 56 # int | 
-body = swagger_client.MemberDataViewModel() # MemberDataViewModel |  (optional)
+body = evo_client.MemberDataViewModel() # MemberDataViewModel |  (optional)
 
 try:
     # Update basic member data

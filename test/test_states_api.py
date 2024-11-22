@@ -14,9 +14,9 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.api.states_api import StatesApi  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.api.states_api import StatesApi  # noqa: E501
+from evo_client.rest import ApiException
 
 
 class TestStatesApi(unittest.TestCase):
@@ -29,11 +29,9 @@ class TestStatesApi(unittest.TestCase):
         pass
 
     def test_api_v1_states_get(self):
-        """Test case for api_v1_states_get
-
-        """
+        """Test case for api_v1_states_get"""
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -14,9 +14,9 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.models.members_api_view_model import MembersApiViewModel  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.models.members_api_view_model import MembersApiViewModel  # noqa: E501
+from evo_client.rest import ApiException
 
 
 class TestMembersApiViewModel(unittest.TestCase):
@@ -31,9 +31,9 @@ class TestMembersApiViewModel(unittest.TestCase):
     def testMembersApiViewModel(self):
         """Test MembersApiViewModel"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = swagger_client.models.members_api_view_model.MembersApiViewModel()  # noqa: E501
+        # model = evo_client.models.members_api_view_model.MembersApiViewModel()  # noqa: E501
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -14,9 +14,11 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.models.prospect_api_integracao_view_model import ProspectApiIntegracaoViewModel  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.models.prospect_api_integracao_view_model import (
+    ProspectApiIntegracaoViewModel,
+)  # noqa: E501
+from evo_client.rest import ApiException
 
 
 class TestProspectApiIntegracaoViewModel(unittest.TestCase):
@@ -31,9 +33,9 @@ class TestProspectApiIntegracaoViewModel(unittest.TestCase):
     def testProspectApiIntegracaoViewModel(self):
         """Test ProspectApiIntegracaoViewModel"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = swagger_client.models.prospect_api_integracao_view_model.ProspectApiIntegracaoViewModel()  # noqa: E501
+        # model = evo_client.models.prospect_api_integracao_view_model.ProspectApiIntegracaoViewModel()  # noqa: E501
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

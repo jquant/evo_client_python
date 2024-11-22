@@ -1,4 +1,4 @@
-# swagger_client.EntriesApi
+# evo_client.EntriesApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
@@ -15,16 +15,16 @@ Get Entries
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.EntriesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.EntriesApi(evo_client.ApiClient(configuration))
 register_date_start = '2013-10-20T19:20:30+01:00' # datetime | DateTime date start (optional)
 register_date_end = '2013-10-20T19:20:30+01:00' # datetime | DateTime date end (optional)
 take = 50 # int | Total number of records to return. (Maximum of 1000) (optional) (default to 50)

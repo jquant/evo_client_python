@@ -14,9 +14,9 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.models.http_response_error import HttpResponseError  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.models.http_response_error import HttpResponseError  # noqa: E501
+from evo_client.rest import ApiException
 
 
 class TestHttpResponseError(unittest.TestCase):
@@ -31,9 +31,9 @@ class TestHttpResponseError(unittest.TestCase):
     def testHttpResponseError(self):
         """Test HttpResponseError"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = swagger_client.models.http_response_error.HttpResponseError()  # noqa: E501
+        # model = evo_client.models.http_response_error.HttpResponseError()  # noqa: E501
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,4 +1,4 @@
-# swagger_client.SalesApi
+# evo_client.SalesApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
@@ -19,16 +19,16 @@ Get sale by Id
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.SalesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.SalesApi(evo_client.ApiClient(configuration))
 id_sale = 56 # int | 
 
 try:
@@ -71,17 +71,17 @@ payment:        Credit Card = 1,      Boleto = 2,      Sale Credits = 3,      Tr
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.SalesApi(swagger_client.ApiClient(configuration))
-body = swagger_client.NewSaleViewModel() # NewSaleViewModel |  (optional)
+api_instance = evo_client.SalesApi(evo_client.ApiClient(configuration))
+body = evo_client.NewSaleViewModel() # NewSaleViewModel |  (optional)
 
 try:
     # Create a new sale
@@ -121,16 +121,16 @@ Get sales
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.SalesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.SalesApi(evo_client.ApiClient(configuration))
 id_member = 56 # int | Filter by a member Id. (optional)
 date_sale_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by registration of the sales starting in a date (yyyy-mm-dd) (optional)
 date_sale_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by registration of the sales ending  in a date (yyyy-mm-dd) (optional)
@@ -201,16 +201,16 @@ Return itens for sale -> site/totem
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.SalesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.SalesApi(evo_client.ApiClient(configuration))
 id_branch = 56 # int |  (optional)
 
 try:
@@ -251,16 +251,16 @@ Get sales
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.SalesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.SalesApi(evo_client.ApiClient(configuration))
 session_id = 'session_id_example' # str | Filter by a session Id. (optional)
 _date = '2013-10-20T19:20:30+01:00' # datetime | Filter by registration of the sale in a date (yyyy-mm-dd) (optional)
 

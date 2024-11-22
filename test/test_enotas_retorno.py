@@ -14,9 +14,8 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.models.enotas_retorno import EnotasRetorno  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.models.enotas_retorno import EnotasRetorno  # noqa: E501
 
 
 class TestEnotasRetorno(unittest.TestCase):
@@ -31,9 +30,9 @@ class TestEnotasRetorno(unittest.TestCase):
     def testEnotasRetorno(self):
         """Test EnotasRetorno"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = swagger_client.models.enotas_retorno.EnotasRetorno()  # noqa: E501
+        # model = evo_client.models.enotas_retorno.EnotasRetorno()  # noqa: E501
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

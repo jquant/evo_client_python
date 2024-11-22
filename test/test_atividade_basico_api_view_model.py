@@ -12,28 +12,22 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import swagger_client
-from swagger_client.models.atividade_basico_api_view_model import AtividadeBasicoApiViewModel  # noqa: E501
-from swagger_client.rest import ApiException
-
-
-class TestAtividadeBasicoApiViewModel(unittest.TestCase):
-    """AtividadeBasicoApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testAtividadeBasicoApiViewModel(self):
-        """Test AtividadeBasicoApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = swagger_client.models.atividade_basico_api_view_model.AtividadeBasicoApiViewModel()  # noqa: E501
-        pass
+import evo_client
+from evo_client.models.atividade_basico_api_view_model import (
+    AtividadeBasicoApiViewModel,
+)  # noqa: E501
+from evo_client.rest import ApiException
 
 
-if __name__ == '__main__':
-    unittest.main()
+@pytest.fixture
+def atividade_basico_api_view_model():
+    return AtividadeBasicoApiViewModel()
+
+
+def test_atividade_basico_api_view_model(atividade_basico_api_view_model):
+    """Test AtividadeBasicoApiViewModel"""
+    # FIXME: construct object with mandatory attributes with example values
+    # model = evo_client.models.atividade_basico_api_view_model.AtividadeBasicoApiViewModel()  # noqa: E501
+    pass

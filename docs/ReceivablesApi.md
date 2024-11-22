@@ -1,4 +1,4 @@
-# swagger_client.ReceivablesApi
+# evo_client.ReceivablesApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
@@ -17,16 +17,16 @@ Get receivables
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ReceivablesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ReceivablesApi(evo_client.ApiClient(configuration))
 registration_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by registration of the account starting in a date (yyyy-mm-dd) (optional)
 registration_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by registration of the account ending in a date (yyyy-mm-dd) (optional)
 due_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by due of the account starting in a date (yyyy-mm-dd) (optional)
@@ -124,16 +124,16 @@ Get Cost Center
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ReceivablesApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ReceivablesApi(evo_client.ApiClient(configuration))
 take = 50 # int | Total number of records to return. (optional) (default to 50)
 skip = 0 # int | Total number of records to skip. (optional) (default to 0)
 
@@ -176,17 +176,17 @@ Name | Type | Description  | Notes
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ReceivablesApi(swagger_client.ApiClient(configuration))
-body = swagger_client.ReceivablesMaskReceivedViewModel() # ReceivablesMaskReceivedViewModel |  (optional)
+api_instance = evo_client.ReceivablesApi(evo_client.ApiClient(configuration))
+body = evo_client.ReceivablesMaskReceivedViewModel() # ReceivablesMaskReceivedViewModel |  (optional)
 
 try:
     api_instance.received_put(body=body)

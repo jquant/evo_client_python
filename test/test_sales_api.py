@@ -14,9 +14,9 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.api.sales_api import SalesApi  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.api.sales_api import SalesApi  # noqa: E501
+from evo_client.rest import ApiException
 
 
 class TestSalesApi(unittest.TestCase):
@@ -64,5 +64,5 @@ class TestSalesApi(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

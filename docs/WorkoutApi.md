@@ -1,4 +1,4 @@
-# swagger_client.WorkoutApi
+# evo_client.WorkoutApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
@@ -19,16 +19,16 @@ Change data from a client's prescribed workout
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.WorkoutApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.WorkoutApi(evo_client.ApiClient(configuration))
 id_workout = 56 # int | The workout's id to be changed. (optional)
 workout_name = 'workout_name_example' # str | Add a name if you want to change the current name. To keep the current name, the field must be empty. (optional)
 start_date = '2013-10-20T19:20:30+01:00' # datetime | The workout's start date. (optional)
@@ -86,16 +86,16 @@ Get All Client's or Prospect's or Employee's workouts
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.WorkoutApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.WorkoutApi(evo_client.ApiClient(configuration))
 id_client = 56 # int | The ID of the client to get the workouts. (optional)
 id_prospect = 56 # int | The ID of the prospect to get the workouts. (optional)
 id_employee = 56 # int | The ID of the employee to get the workouts. (optional)
@@ -145,16 +145,16 @@ Get All Client's or Prospect's or Employee's workouts by Month, Year or idProfes
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.WorkoutApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.WorkoutApi(evo_client.ApiClient(configuration))
 id_professor = 56 # int | The ID of the professor who create the workouts. (optional)
 month = 56 # int | Month to get the workouts. (optional)
 year = 56 # int | Year to get the workouts. (optional)
@@ -204,16 +204,16 @@ Get All default Workouts
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.WorkoutApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.WorkoutApi(evo_client.ApiClient(configuration))
 id_employee = 56 # int | The ID of the employee associated with the workouts. (optional)
 id_tag = 56 # int | The optional ID of the tag associated with the workouts. (optional)
 
@@ -255,16 +255,16 @@ Link Workout for Client
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.WorkoutApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.WorkoutApi(evo_client.ApiClient(configuration))
 source_workout_id = 56 # int | The ID of the source workout. (optional)
 id_prescription_employee = 56 # int | The ID of the employee responsible for the prescription. (optional)
 id_client = 56 # int | The ID of the client to link the workout to. (optional)

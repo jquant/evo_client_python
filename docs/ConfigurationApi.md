@@ -1,4 +1,4 @@
-# swagger_client.ConfigurationApi
+# evo_client.ConfigurationApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
@@ -19,16 +19,16 @@ Get gateway configurations
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ConfigurationApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ConfigurationApi(evo_client.ApiClient(configuration))
 
 try:
     # Get gateway configurations
@@ -65,16 +65,16 @@ Get branch configurations
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ConfigurationApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ConfigurationApi(evo_client.ApiClient(configuration))
 
 try:
     # Get branch configurations
@@ -111,16 +111,16 @@ Get Occupation
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ConfigurationApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ConfigurationApi(evo_client.ApiClient(configuration))
 
 try:
     # Get Occupation
@@ -157,16 +157,16 @@ Get card flag
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ConfigurationApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ConfigurationApi(evo_client.ApiClient(configuration))
 
 try:
     # Get card flag
@@ -203,16 +203,16 @@ Get card translation
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.rest import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
-api_instance = swagger_client.ConfigurationApi(swagger_client.ApiClient(configuration))
+api_instance = evo_client.ConfigurationApi(evo_client.ApiClient(configuration))
 
 try:
     # Get card translation

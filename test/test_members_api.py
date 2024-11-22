@@ -14,9 +14,9 @@ from __future__ import absolute_import
 
 import unittest
 
-import swagger_client
-from swagger_client.api.members_api import MembersApi  # noqa: E501
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.api.members_api import MembersApi  # noqa: E501
+from evo_client.rest import ApiException
 
 
 class TestMembersApi(unittest.TestCase):
@@ -92,9 +92,7 @@ class TestMembersApi(unittest.TestCase):
         pass
 
     def test_api_v1_members_transfer_post(self):
-        """Test case for api_v1_members_transfer_post
-
-        """
+        """Test case for api_v1_members_transfer_post"""
         pass
 
     def test_member_data_id_member_patch(self):
@@ -105,5 +103,5 @@ class TestMembersApi(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
