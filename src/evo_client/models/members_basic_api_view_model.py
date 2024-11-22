@@ -25,43 +25,47 @@ class MembersBasicApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_member: Optional[int] = Field(None, alias="idMember")
-    first_name: Optional[str] = Field(None, alias="firstName")
-    last_name: Optional[str] = Field(None, alias="lastName")
-    register_date: Optional[datetime] = Field(None, alias="registerDate")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    branch_name: Optional[str] = Field(None, alias="branchName")
-    access_blocked: Optional[bool] = Field(None, alias="accessBlocked")
-    blocked_reason: Optional[str] = Field(None, alias="blockedReason")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
+    first_name: Optional[str] = Field(default=None, alias="firstName")
+    last_name: Optional[str] = Field(default=None, alias="lastName")
+    register_date: Optional[datetime] = Field(default=None, alias="registerDate")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    branch_name: Optional[str] = Field(default=None, alias="branchName")
+    access_blocked: Optional[bool] = Field(default=None, alias="accessBlocked")
+    blocked_reason: Optional[str] = Field(default=None, alias="blockedReason")
     gender: Optional[str] = None
-    birth_date: Optional[datetime] = Field(None, alias="birthDate")
-    access_card_number: Optional[str] = Field(None, alias="accessCardNumber")
-    membership_status: Optional[str] = Field(None, alias="membershipStatus")
+    birth_date: Optional[datetime] = Field(default=None, alias="birthDate")
+    access_card_number: Optional[str] = Field(default=None, alias="accessCardNumber")
+    membership_status: Optional[str] = Field(default=None, alias="membershipStatus")
     penalized: Optional[bool] = None
     status: Optional[str] = None
     contacts: Optional[List[TelefoneApiViewModel]] = None
     memberships: Optional[List[MemberMembershipApiViewModel]] = None
-    last_access_date: Optional[datetime] = Field(None, alias="lastAccessDate")
-    id_employee_consultant: Optional[int] = Field(None, alias="idEmployeeConsultant")
-    name_employee_consultant: Optional[str] = Field(
-        None, alias="nameEmployeeConsultant"
+    last_access_date: Optional[datetime] = Field(default=None, alias="lastAccessDate")
+    id_employee_consultant: Optional[int] = Field(
+        default=None, alias="idEmployeeConsultant"
     )
-    id_employee_instructor: Optional[int] = Field(None, alias="idEmployeeInstructor")
+    name_employee_consultant: Optional[str] = Field(
+        default=None, alias="nameEmployeeConsultant"
+    )
+    id_employee_instructor: Optional[int] = Field(
+        default=None, alias="idEmployeeInstructor"
+    )
     name_employee_instructor: Optional[str] = Field(
-        None, alias="nameEmployeeInstructor"
+        default=None, alias="nameEmployeeInstructor"
     )
     id_employee_personal_trainer: Optional[int] = Field(
-        None, alias="idEmployeePersonalTrainer"
+        default=None, alias="idEmployeePersonalTrainer"
     )
     name_employee_personal_trainer: Optional[str] = Field(
-        None, alias="nameEmployeePersonalTrainer"
+        default=None, alias="nameEmployeePersonalTrainer"
     )
-    photo_url: Optional[str] = Field(None, alias="photoUrl")
-    id_member_migration: Optional[str] = Field(None, alias="idMemberMigration")
+    photo_url: Optional[str] = Field(default=None, alias="photoUrl")
+    id_member_migration: Optional[str] = Field(default=None, alias="idMemberMigration")
     responsibles: Optional[List[MemberBasicResponsibleViewModel]] = None
-    token_gympass: Optional[str] = Field(None, alias="tokenGympass")
-    personal_trainer: Optional[bool] = Field(None, alias="personalTrainer")
-    personal_type: Optional[str] = Field(None, alias="personalType")
+    token_gympass: Optional[str] = Field(default=None, alias="tokenGympass")
+    personal_trainer: Optional[bool] = Field(default=None, alias="personalTrainer")
+    personal_type: Optional[str] = Field(default=None, alias="personalType")
 
     class Config:
         """Pydantic model configuration"""

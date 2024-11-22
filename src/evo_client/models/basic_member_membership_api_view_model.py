@@ -23,31 +23,35 @@ class BasicMemberMembershipApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_venda: Optional[int] = Field(None, alias="_IdVenda")
-    id_membership: Optional[int] = Field(None, alias="idMembership")
-    id_member_membership: Optional[int] = Field(None, alias="idMemberMembership")
+    id_venda: Optional[int] = Field(default=None, alias="_IdVenda")
+    id_membership: Optional[int] = Field(default=None, alias="idMembership")
+    id_member_membership: Optional[int] = Field(
+        default=None, alias="idMemberMembership"
+    )
     id_member_membership_renewed: Optional[int] = Field(
-        None, alias="idMemberMembershipRenewed"
+        default=None, alias="idMemberMembershipRenewed"
     )
-    num_members: Optional[int] = Field(None, alias="numMembers")
-    fl_renewed: Optional[bool] = Field(None, alias="flRenewed")
-    start_date: Optional[datetime] = Field(None, alias="startDate")
-    end_date: Optional[datetime] = Field(None, alias="endDate")
-    name: Optional[str] = Field(None)
-    cancel_date: Optional[datetime] = Field(None, alias="cancelDate")
-    sale_date: Optional[datetime] = Field(None, alias="saleDate")
-    time_zone: Optional[str] = Field(None, alias="timeZone")
-    freezes: Optional[List[BasicFreezeViewModel]] = Field(None)
-    fl_suspenso: Optional[bool] = Field(None, alias="flSuspenso")
-    freeze: Optional[bool] = Field(None)
-    membership_status: Optional[str] = Field(None, alias="membershipStatus")
-    membership_type_id: Optional[int] = Field(None, alias="membershipTypeId")
-    membership_type: Optional[str] = Field(None, alias="membershipType")
+    num_members: Optional[int] = Field(default=None, alias="numMembers")
+    fl_renewed: Optional[bool] = Field(default=None, alias="flRenewed")
+    start_date: Optional[datetime] = Field(default=None, alias="startDate")
+    end_date: Optional[datetime] = Field(default=None, alias="endDate")
+    name: Optional[str] = Field(default=None)
+    cancel_date: Optional[datetime] = Field(default=None, alias="cancelDate")
+    sale_date: Optional[datetime] = Field(default=None, alias="saleDate")
+    time_zone: Optional[str] = Field(default=None, alias="timeZone")
+    freezes: Optional[List[BasicFreezeViewModel]] = Field(default=None)
+    fl_suspenso: Optional[bool] = Field(default=None, alias="flSuspenso")
+    freeze: Optional[bool] = Field(default=None)
+    membership_status: Optional[str] = Field(default=None, alias="membershipStatus")
+    membership_type_id: Optional[int] = Field(default=None, alias="membershipTypeId")
+    membership_type: Optional[str] = Field(default=None, alias="membershipType")
     fl_additional_membership: Optional[bool] = Field(
-        None, alias="flAdditionalMembership"
+        default=None, alias="flAdditionalMembership"
     )
-    fl_allow_locker: Optional[bool] = Field(None, alias="flAllowLocker")
-    id_category_membership: Optional[int] = Field(None, alias="idCategoryMembership")
+    fl_allow_locker: Optional[bool] = Field(default=None, alias="flAllowLocker")
+    id_category_membership: Optional[int] = Field(
+        default=None, alias="idCategoryMembership"
+    )
 
     class Config:
         allow_population_by_field_name = True

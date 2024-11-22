@@ -22,7 +22,9 @@ class ProspectResponsavelResumoApiViewModel(BaseModel):
 
     name: Optional[str] = None
     document: Optional[str] = None
-    financial_responsible: Optional[bool] = Field(None, alias="financialResponsible")
+    financial_responsible: Optional[bool] = Field(
+        default=None, alias="financialResponsible"
+    )
 
     class Config:
         populate_by_name = True

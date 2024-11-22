@@ -21,20 +21,20 @@ class ProspectApiIntegracaoViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    name: Optional[str] = Field(None, alias="name")
-    email: Optional[str] = Field(None, alias="email")
-    last_name: Optional[str] = Field(None, alias="lastName")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    ddi: Optional[str] = Field(None, alias="ddi")
-    cellphone: Optional[str] = Field(None, alias="cellphone")
-    birthday: Optional[datetime] = Field(None, alias="birthday")
-    gender: Optional[str] = Field(None, alias="gender")
-    visit: Optional[int] = Field(None, alias="visit")
-    marketing_type: Optional[str] = Field(None, alias="marketingType")
-    notes: Optional[str] = Field(None, alias="notes")
-    current_step: Optional[str] = Field(None, alias="currentStep")
-    cpf: Optional[str] = Field(None, alias="cpf")
-    token_gympass: Optional[str] = Field(None, alias="tokenGympass")
+    name: Optional[str] = Field(default=None, alias="name")
+    email: Optional[str] = Field(default=None, alias="email")
+    last_name: Optional[str] = Field(default=None, alias="lastName")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    ddi: Optional[str] = Field(default=None, alias="ddi")
+    cellphone: Optional[str] = Field(default=None, alias="cellphone")
+    birthday: Optional[datetime] = Field(default=None, alias="birthday")
+    gender: Optional[str] = Field(default=None, alias="gender")
+    visit: Optional[int] = Field(default=None, alias="visit")
+    marketing_type: Optional[str] = Field(default=None, alias="marketingType")
+    notes: Optional[str] = Field(default=None, alias="notes")
+    current_step: Optional[str] = Field(default=None, alias="currentStep")
+    cpf: Optional[str] = Field(default=None, alias="cpf")
+    token_gympass: Optional[str] = Field(default=None, alias="tokenGympass")
 
     def to_dict(self):
         """Returns the model properties as a dict"""

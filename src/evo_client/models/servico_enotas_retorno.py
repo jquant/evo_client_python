@@ -21,15 +21,17 @@ class ServicoEnotasRetorno(BaseModel):
     """
 
     descricao: Optional[str] = None
-    aliquota_iss: Optional[float] = Field(None, alias="aliquotaIss")
-    iss_retido_fonte: Optional[bool] = Field(None, alias="issRetidoFonte")
+    aliquota_iss: Optional[float] = Field(default=None, alias="aliquotaIss")
+    iss_retido_fonte: Optional[bool] = Field(default=None, alias="issRetidoFonte")
     codigo_servico_municipio: Optional[str] = Field(
-        None, alias="codigoServicoMunicipio"
+        default=None, alias="codigoServicoMunicipio"
     )
-    item_lista_servico_lc116: Optional[str] = Field(None, alias="itemListaServicoLC116")
+    item_lista_servico_lc116: Optional[str] = Field(
+        default=None, alias="itemListaServicoLC116"
+    )
     cnae: Optional[str] = None
     municipio_prestacao_servico: Optional[int] = Field(
-        None, alias="municipioPrestacaoServico"
+        default=None, alias="municipioPrestacaoServico"
     )
 
     class Config:

@@ -24,54 +24,64 @@ class MemberMembershipApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_member: Optional[int] = Field(None, alias="idMember")
-    id_membership: Optional[int] = Field(None, alias="idMembership")
-    id_member_membership: Optional[int] = Field(None, alias="idMemberMembership")
-    id_member_membership_renewed: Optional[int] = Field(
-        None, alias="idMemberMembershipRenewed"
+    id_member: Optional[int] = Field(default=None, alias="idMember")
+    id_membership: Optional[int] = Field(default=None, alias="idMembership")
+    id_member_membership: Optional[int] = Field(
+        default=None, alias="idMemberMembership"
     )
-    num_members: Optional[int] = Field(None, alias="numMembers")
-    fl_renewed: Optional[bool] = Field(None, alias="flRenewed")
-    start_date: Optional[datetime] = Field(None, alias="startDate")
-    end_date: Optional[datetime] = Field(None, alias="endDate")
+    id_member_membership_renewed: Optional[int] = Field(
+        default=None, alias="idMemberMembershipRenewed"
+    )
+    num_members: Optional[int] = Field(default=None, alias="numMembers")
+    fl_renewed: Optional[bool] = Field(default=None, alias="flRenewed")
+    start_date: Optional[datetime] = Field(default=None, alias="startDate")
+    end_date: Optional[datetime] = Field(default=None, alias="endDate")
     name: Optional[str] = None
-    cancel_date: Optional[datetime] = Field(None, alias="cancelDate")
-    membership_status: Optional[str] = Field(None, alias="membershipStatus")
-    value_next_month: Optional[float] = Field(None, alias="valueNextMonth")
-    next_charge: Optional[datetime] = Field(None, alias="nextCharge")
-    id_sale: Optional[int] = Field(None, alias="idSale")
-    sale_date: Optional[datetime] = Field(None, alias="saleDate")
-    contract_printing: Optional[str] = Field(None, alias="contractPrinting")
+    cancel_date: Optional[datetime] = Field(default=None, alias="cancelDate")
+    membership_status: Optional[str] = Field(default=None, alias="membershipStatus")
+    value_next_month: Optional[float] = Field(default=None, alias="valueNextMonth")
+    next_charge: Optional[datetime] = Field(default=None, alias="nextCharge")
+    id_sale: Optional[int] = Field(default=None, alias="idSale")
+    sale_date: Optional[datetime] = Field(default=None, alias="saleDate")
+    contract_printing: Optional[str] = Field(default=None, alias="contractPrinting")
     freezes: Optional[List[FreezeViewModel]] = None
-    id_category_membership: Optional[int] = Field(None, alias="idCategoryMembership")
-    number_suspension_times: Optional[int] = Field(None, alias="numberSuspensionTimes")
-    max_suspension_days: Optional[int] = Field(None, alias="maxSuspensionDays")
-    minimum_suspension_days: Optional[int] = Field(None, alias="minimumSuspensionDays")
+    id_category_membership: Optional[int] = Field(
+        default=None, alias="idCategoryMembership"
+    )
+    number_suspension_times: Optional[int] = Field(
+        default=None, alias="numberSuspensionTimes"
+    )
+    max_suspension_days: Optional[int] = Field(default=None, alias="maxSuspensionDays")
+    minimum_suspension_days: Optional[int] = Field(
+        default=None, alias="minimumSuspensionDays"
+    )
     disponible_suspension_days: Optional[int] = Field(
-        None, alias="disponibleSuspensionDays"
+        default=None, alias="disponibleSuspensionDays"
     )
     disponible_suspension_times: Optional[int] = Field(
-        None, alias="disponibleSuspensionTimes"
+        default=None, alias="disponibleSuspensionTimes"
     )
-    days_left_to_freeze: Optional[int] = Field(None, alias="daysLeftToFreeze")
-    loyalty_end_date: Optional[datetime] = Field(None, alias="loyaltyEndDate")
-    assessment_end_date: Optional[datetime] = Field(None, alias="assessmentEndDate")
-    acceptance_date: Optional[datetime] = Field(None, alias="acceptanceDate")
-    fl_allow_locker: Optional[bool] = Field(None, alias="flAllowLocker")
+    days_left_to_freeze: Optional[int] = Field(default=None, alias="daysLeftToFreeze")
+    loyalty_end_date: Optional[datetime] = Field(default=None, alias="loyaltyEndDate")
+    assessment_end_date: Optional[datetime] = Field(
+        default=None, alias="assessmentEndDate"
+    )
+    acceptance_date: Optional[datetime] = Field(default=None, alias="acceptanceDate")
+    fl_allow_locker: Optional[bool] = Field(default=None, alias="flAllowLocker")
     fl_additional_membership: Optional[bool] = Field(
-        None, alias="flAdditionalMembership"
+        default=None, alias="flAdditionalMembership"
     )
-    bioimpedance_amount: Optional[int] = Field(None, alias="bioimpedanceAmount")
-    signed_terms: Optional[bool] = Field(None, alias="signedTerms")
-    original_value: Optional[float] = Field(None, alias="originalValue")
+    bioimpedance_amount: Optional[int] = Field(default=None, alias="bioimpedanceAmount")
+    signed_terms: Optional[bool] = Field(default=None, alias="signedTerms")
+    original_value: Optional[float] = Field(default=None, alias="originalValue")
     limitless: Optional[bool] = None
-    weekly_limit: Optional[int] = Field(None, alias="weeklyLimit")
-    concluded_sessions: Optional[int] = Field(None, alias="concludedSessions")
-    pending_sessions: Optional[int] = Field(None, alias="pendingSessions")
-    scheduled_sessions: Optional[int] = Field(None, alias="scheduledSessions")
-    pending_repositions: Optional[int] = Field(None, alias="pendingRepositions")
-    repositions_total: Optional[int] = Field(None, alias="repositionsTotal")
-    bonus_sessions: Optional[int] = Field(None, alias="bonusSessions")
+    weekly_limit: Optional[int] = Field(default=None, alias="weeklyLimit")
+    concluded_sessions: Optional[int] = Field(default=None, alias="concludedSessions")
+    pending_sessions: Optional[int] = Field(default=None, alias="pendingSessions")
+    scheduled_sessions: Optional[int] = Field(default=None, alias="scheduledSessions")
+    pending_repositions: Optional[int] = Field(default=None, alias="pendingRepositions")
+    repositions_total: Optional[int] = Field(default=None, alias="repositionsTotal")
+    bonus_sessions: Optional[int] = Field(default=None, alias="bonusSessions")
     sessions: Optional[List[BonusSessionViewModel]] = None
 
     class Config:

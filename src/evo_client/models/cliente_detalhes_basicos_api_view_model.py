@@ -29,42 +29,42 @@ class ClienteDetalhesBasicosApiViewModel(BaseModel):
     Auto-generated from OpenAPI/Swagger specification.
     """
 
-    id_member: Optional[int] = Field(None, alias="idMember")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
     photo: Optional[str] = None
-    first_name: Optional[str] = Field(None, alias="firstName")
-    last_name: Optional[str] = Field(None, alias="lastName")
-    register_date: Optional[datetime] = Field(None, alias="registerDate")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    branch_name: Optional[str] = Field(None, alias="branchName")
-    access_blocked: Optional[bool] = Field(None, alias="accessBlocked")
-    blocked_reason: Optional[str] = Field(None, alias="blockedReason")
+    first_name: Optional[str] = Field(default=None, alias="firstName")
+    last_name: Optional[str] = Field(default=None, alias="lastName")
+    register_date: Optional[datetime] = Field(default=None, alias="registerDate")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    branch_name: Optional[str] = Field(default=None, alias="branchName")
+    access_blocked: Optional[bool] = Field(default=None, alias="accessBlocked")
+    blocked_reason: Optional[str] = Field(default=None, alias="blockedReason")
     document: Optional[str] = None
-    document_id: Optional[str] = Field(None, alias="documentId")
-    marital_status: Optional[str] = Field(None, alias="maritalStatus")
+    document_id: Optional[str] = Field(default=None, alias="documentId")
+    marital_status: Optional[str] = Field(default=None, alias="maritalStatus")
     gender: Optional[str] = None
-    birth_date: Optional[datetime] = Field(None, alias="birthDate")
+    birth_date: Optional[datetime] = Field(default=None, alias="birthDate")
     country: Optional[str] = None
     address: Optional[str] = None
     state: Optional[str] = None
     city: Optional[str] = None
     passport: Optional[str] = None
-    zip_code: Optional[str] = Field(None, alias="zipCode")
+    zip_code: Optional[str] = Field(default=None, alias="zipCode")
     complement: Optional[str] = None
     neighborhood: Optional[str] = None
-    access_card_number: Optional[str] = Field(None, alias="accessCardNumber")
+    access_card_number: Optional[str] = Field(default=None, alias="accessCardNumber")
     number: Optional[str] = None
-    id_member_migration: Optional[str] = Field(None, alias="idMemberMigration")
-    tax_data: Optional[TaxDataViewModel] = Field(None, alias="taxData")
+    id_member_migration: Optional[str] = Field(default=None, alias="idMemberMigration")
+    tax_data: Optional[TaxDataViewModel] = Field(default=None, alias="taxData")
     email: Optional[str] = None
     slug: Optional[str] = None
     penalized: Optional[bool] = None
-    id_branch_token: Optional[str] = Field(None, alias="idBranchToken")
-    membership_status: Optional[str] = Field(None, alias="membershipStatus")
+    id_branch_token: Optional[str] = Field(default=None, alias="idBranchToken")
+    membership_status: Optional[str] = Field(default=None, alias="membershipStatus")
     contacts: Optional[List[TelefoneApiViewModel]] = None
-    last_access_date: Optional[datetime] = Field(None, alias="lastAccessDate")
+    last_access_date: Optional[datetime] = Field(default=None, alias="lastAccessDate")
     responsibles: Optional[List[MemberResponsibleViewModel]] = None
     memberships: Optional[List[MemberMembershipApiViewModel]] = None
-    registration_kind: Optional[str] = Field(None, alias="registrationKind")
+    registration_kind: Optional[str] = Field(default=None, alias="registrationKind")
     membership: Optional[BasicMemberMembershipApiViewModel] = None
 
     class Config:

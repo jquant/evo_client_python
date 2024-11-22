@@ -20,11 +20,11 @@ class TaxDataViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    first_name: Optional[str] = Field(None, alias="firstName")
-    last_name: Optional[str] = Field(None, alias="lastName")
+    first_name: Optional[str] = Field(default=None, alias="firstName")
+    last_name: Optional[str] = Field(default=None, alias="lastName")
     dni: Optional[str] = None
     cuit: Optional[str] = None
-    tax_type: Optional[int] = Field(None, alias="taxType")
+    tax_type: Optional[int] = Field(default=None, alias="taxType")
 
     class Config:
         populate_by_name = True

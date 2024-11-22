@@ -29,48 +29,54 @@ class ContratosResumoApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_membership: Optional[int] = Field(None, alias="idMembership")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    name_membership: Optional[str] = Field(None, alias="nameMembership")
-    membership_type: Optional[str] = Field(None, alias="membershipType")
-    duration_type: Optional[str] = Field(None, alias="durationType")
+    id_membership: Optional[int] = Field(default=None, alias="idMembership")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    name_membership: Optional[str] = Field(default=None, alias="nameMembership")
+    membership_type: Optional[str] = Field(default=None, alias="membershipType")
+    duration_type: Optional[str] = Field(default=None, alias="durationType")
     duration: Optional[int] = None
     value: Optional[float] = None
-    max_amount_installments: Optional[int] = Field(None, alias="maxAmountInstallments")
+    max_amount_installments: Optional[int] = Field(
+        default=None, alias="maxAmountInstallments"
+    )
     description: Optional[str] = None
-    url_sale: Optional[str] = Field(None, alias="urlSale")
+    url_sale: Optional[str] = Field(default=None, alias="urlSale")
     online_sales_observations: Optional[str] = Field(
-        None, alias="onlineSalesObservations"
+        default=None, alias="onlineSalesObservations"
     )
     differentials: Optional[List[DiferenciaisApiViewModel]] = None
     access_branches: Optional[List[ContratoFiliaisResumoApiViewModel]] = Field(
-        None, alias="accessBranches"
+        default=None, alias="accessBranches"
     )
     additional_service: Optional[ServicoAdicionalApiViewModel] = Field(
-        None, alias="additionalService"
+        default=None, alias="additionalService"
     )
     service_yearly: Optional[ServicoAnualApiViewModel] = Field(
-        None, alias="serviceYearly"
+        default=None, alias="serviceYearly"
     )
-    type_promotional_period: Optional[int] = Field(None, alias="typePromotionalPeriod")
+    type_promotional_period: Optional[int] = Field(
+        default=None, alias="typePromotionalPeriod"
+    )
     value_promotional_period: Optional[float] = Field(
-        None, alias="valuePromotionalPeriod"
+        default=None, alias="valuePromotionalPeriod"
     )
     months_promotional_period: Optional[int] = Field(
-        None, alias="monthsPromotionalPeriod"
+        default=None, alias="monthsPromotionalPeriod"
     )
-    days_promotional_period: Optional[int] = Field(None, alias="daysPromotionalPeriod")
+    days_promotional_period: Optional[int] = Field(
+        default=None, alias="daysPromotionalPeriod"
+    )
     min_period_stay_membership: Optional[int] = Field(
-        None, alias="minPeriodStayMembership"
+        default=None, alias="minPeriodStayMembership"
     )
     installments_promotional_period: Optional[int] = Field(
-        None, alias="installmentsPromotionalPeriod"
+        default=None, alias="installmentsPromotionalPeriod"
     )
     inactive: Optional[bool] = None
-    display_name: Optional[str] = Field(None, alias="displayName")
+    display_name: Optional[str] = Field(default=None, alias="displayName")
     entries: Optional[ContratoEntradasApiViewModel] = None
     sales_page: Optional[List[ContratosResumoPaginaVendaViewModel]] = Field(
-        None, alias="salesPage"
+        default=None, alias="salesPage"
     )
 
     def to_dict(self):

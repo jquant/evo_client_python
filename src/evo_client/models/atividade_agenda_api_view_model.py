@@ -30,34 +30,34 @@ class AtividadeAgendaApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_configuration: Optional[int] = Field(None, alias="idConfiguration")
-    id_activity: Optional[int] = Field(None, alias="idActivity")
-    id_group_activity: Optional[int] = Field(None, alias="idGroupActivity")
+    id_configuration: Optional[int] = Field(default=None, alias="idConfiguration")
+    id_activity: Optional[int] = Field(default=None, alias="idActivity")
+    id_group_activity: Optional[int] = Field(default=None, alias="idGroupActivity")
     name: Optional[str] = None
     description: Optional[str] = None
-    image_url: Optional[str] = Field(None, alias="imageUrl")
+    image_url: Optional[str] = Field(default=None, alias="imageUrl")
     area: Optional[str] = None
-    id_area: Optional[int] = Field(None, alias="idArea")
+    id_area: Optional[int] = Field(default=None, alias="idArea")
     capacity: Optional[int] = None
     ocupation: Optional[int] = None
-    allow_choosing_spot: Optional[bool] = Field(None, alias="allowChoosingSpot")
-    start_time: Optional[str] = Field(None, alias="startTime")
-    end_time: Optional[str] = Field(None, alias="endTime")
-    booking_start_time: Optional[str] = Field(None, alias="bookingStartTime")
-    booking_end_time: Optional[str] = Field(None, alias="bookingEndTime")
+    allow_choosing_spot: Optional[bool] = Field(default=None, alias="allowChoosingSpot")
+    start_time: Optional[str] = Field(default=None, alias="startTime")
+    end_time: Optional[str] = Field(default=None, alias="endTime")
+    booking_start_time: Optional[str] = Field(default=None, alias="bookingStartTime")
+    booking_end_time: Optional[str] = Field(default=None, alias="bookingEndTime")
     instructor: Optional[str] = None
-    instructor_photo: Optional[str] = Field(None, alias="instructorPhoto")
-    activity_date: Optional[datetime] = Field(None, alias="activityDate")
+    instructor_photo: Optional[str] = Field(default=None, alias="instructorPhoto")
+    activity_date: Optional[datetime] = Field(default=None, alias="activityDate")
     audience: Optional[str] = None
-    id_audience: Optional[int] = Field(None, alias="idAudience")
+    id_audience: Optional[int] = Field(default=None, alias="idAudience")
     code: Optional[str] = None
     confirmed: Optional[bool] = None
-    start_hour_tick: Optional[int] = Field(None, alias="startHourTick")
-    end_hour_tick: Optional[int] = Field(None, alias="endHourTick")
+    start_hour_tick: Optional[int] = Field(default=None, alias="startHourTick")
+    end_hour_tick: Optional[int] = Field(default=None, alias="endHourTick")
     spots: Optional[List[AtividadeLugarReservaApiViewModel]] = None
     periodization: Optional[List[PeriodizacaoApiViewModel]] = None
     status: Optional[EStatusAtividade] = None
-    status_name: Optional[str] = Field(None, alias="statusName")
+    status_name: Optional[str] = Field(default=None, alias="statusName")
 
     class Config:
         allow_population_by_field_name = True

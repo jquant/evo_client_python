@@ -16,10 +16,10 @@ class EmpresasFiliaisGatewayViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    tipo_gateway: Optional[ETipoGateway] = Field(None, alias="tipoGateway")
-    dados_gateway: Optional[object] = Field(None, alias="dadosGateway")
-    exibir_tipo_cartao: Optional[bool] = Field(None, alias="exibirTipoCartao")
-    fl_tokeniza_backend: Optional[bool] = Field(None, alias="flTokenizaBackend")
+    tipo_gateway: Optional[ETipoGateway] = Field(default=None, alias="tipoGateway")
+    dados_gateway: Optional[object] = Field(default=None, alias="dadosGateway")
+    exibir_tipo_cartao: Optional[bool] = Field(default=None, alias="exibirTipoCartao")
+    fl_tokeniza_backend: Optional[bool] = Field(default=None, alias="flTokenizaBackend")
 
     class Config:
         populate_by_name = True

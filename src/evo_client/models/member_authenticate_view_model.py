@@ -20,14 +20,16 @@ class MemberAuthenticateViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_member: Optional[int] = Field(None, alias="idMember")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    id_enterprise: Optional[int] = Field(None, alias="idEnterprise")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    id_enterprise: Optional[int] = Field(default=None, alias="idEnterprise")
     name: Optional[str] = None
     dns: Optional[str] = None
-    success_authenticate: Optional[bool] = Field(None, alias="successAuthenticate")
-    url_reset_password: Optional[str] = Field(None, alias="urlResetPassword")
-    url_member_area: Optional[str] = Field(None, alias="urlMemberArea")
+    success_authenticate: Optional[bool] = Field(
+        default=None, alias="successAuthenticate"
+    )
+    url_reset_password: Optional[str] = Field(default=None, alias="urlResetPassword")
+    url_member_area: Optional[str] = Field(default=None, alias="urlMemberArea")
 
     class Config:
         """Pydantic model configuration"""

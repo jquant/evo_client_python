@@ -23,7 +23,7 @@ class PeriodizacaoApiViewModel(BaseModel):
     name: Optional[str] = None
     characteristics: Optional[str] = None
     color: Optional[str] = None
-    intensity_number: Optional[int] = Field(None, alias="intensityNumber")
+    intensity_number: Optional[int] = Field(default=None, alias="intensityNumber")
     type: Optional[str] = None
 
     class Config:

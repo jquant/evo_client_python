@@ -20,8 +20,8 @@ class MemberServiceViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_service: Optional[int] = Field(None, alias="idService")
-    name_service: Optional[str] = Field(None, alias="nameService")
+    id_service: Optional[int] = Field(default=None, alias="idService")
+    name_service: Optional[str] = Field(default=None, alias="nameService")
 
     class Config:
         """Pydantic model configuration"""

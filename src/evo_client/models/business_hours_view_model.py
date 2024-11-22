@@ -8,15 +8,17 @@ from pydantic import BaseModel
 
 
 class BusinessHoursViewModel(BaseModel):
-    id_hour: Optional[int] = Field(None, alias="idHour")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    week_day: Optional[str] = Field(None, alias="weekDay")
-    hours_from: Optional[datetime] = Field(None, alias="hoursFrom")
-    hours_to: Optional[datetime] = Field(None, alias="hoursTo")
-    fl_deleted: Optional[bool] = Field(None, alias="flDeleted")
-    id_tmp: Optional[int] = Field(None, alias="idTmp")
-    creation_date: Optional[datetime] = Field(None, alias="creationDate")
-    id_employee_creation: Optional[int] = Field(None, alias="idEmployeeCreation")
+    id_hour: Optional[int] = Field(default=None, alias="idHour")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    week_day: Optional[str] = Field(default=None, alias="weekDay")
+    hours_from: Optional[datetime] = Field(default=None, alias="hoursFrom")
+    hours_to: Optional[datetime] = Field(default=None, alias="hoursTo")
+    fl_deleted: Optional[bool] = Field(default=None, alias="flDeleted")
+    id_tmp: Optional[int] = Field(default=None, alias="idTmp")
+    creation_date: Optional[datetime] = Field(default=None, alias="creationDate")
+    id_employee_creation: Optional[int] = Field(
+        default=None, alias="idEmployeeCreation"
+    )
 
     class Config:
         allow_population_by_field_name = True

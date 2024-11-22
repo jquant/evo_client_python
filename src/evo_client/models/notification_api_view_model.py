@@ -8,8 +8,10 @@ class NotificationApiViewModel(BaseModel):
     NotificationApiViewModel - a model defined in Swagger
     """
 
-    id_member: Optional[int] = Field(None, alias="idMember")
-    notification_message: Optional[str] = Field(None, alias="notificationMessage")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
+    notification_message: Optional[str] = Field(
+        default=None, alias="notificationMessage"
+    )
 
     class Config:
         allow_population_by_field_name = True

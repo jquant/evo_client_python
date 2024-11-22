@@ -21,36 +21,40 @@ class EmpresasConveniosApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    agreement_company_id: Optional[int] = Field(None, alias="agreementCompanyId")
-    branch_id: Optional[int] = Field(None, alias="branchId")
-    corporate_name: Optional[str] = Field(None, alias="corporateName")
-    trade_name: Optional[str] = Field(None, alias="tradeName")
+    agreement_company_id: Optional[int] = Field(
+        default=None, alias="agreementCompanyId"
+    )
+    branch_id: Optional[int] = Field(default=None, alias="branchId")
+    corporate_name: Optional[str] = Field(default=None, alias="corporateName")
+    trade_name: Optional[str] = Field(default=None, alias="tradeName")
     cnpj: Optional[str] = None
-    postal_code: Optional[str] = Field(None, alias="postalCode")
-    street_address: Optional[str] = Field(None, alias="streetAddress")
+    postal_code: Optional[str] = Field(default=None, alias="postalCode")
+    street_address: Optional[str] = Field(default=None, alias="streetAddress")
     number: Optional[str] = None
     complement: Optional[str] = None
     neighborhood: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
-    business_email: Optional[str] = Field(None, alias="businessEmail")
-    financial_email: Optional[str] = Field(None, alias="financialEmail")
-    responsible_name: Optional[str] = Field(None, alias="responsibleName")
-    is_deleted_flag: Optional[bool] = Field(None, alias="isDeletedFlag")
-    deletion_date: Optional[datetime] = Field(None, alias="deletionDate")
-    employee_deletion_id: Optional[int] = Field(None, alias="employeeDeletionId")
-    opening_date: Optional[datetime] = Field(None, alias="openingDate")
+    business_email: Optional[str] = Field(default=None, alias="businessEmail")
+    financial_email: Optional[str] = Field(default=None, alias="financialEmail")
+    responsible_name: Optional[str] = Field(default=None, alias="responsibleName")
+    is_deleted_flag: Optional[bool] = Field(default=None, alias="isDeletedFlag")
+    deletion_date: Optional[datetime] = Field(default=None, alias="deletionDate")
+    employee_deletion_id: Optional[int] = Field(
+        default=None, alias="employeeDeletionId"
+    )
+    opening_date: Optional[datetime] = Field(default=None, alias="openingDate")
     size: Optional[str] = None
     economic_activity_description: Optional[str] = Field(
-        None, alias="economicActivityDescription"
+        default=None, alias="economicActivityDescription"
     )
     legal_nature_description: Optional[str] = Field(
-        None, alias="legalNatureDescription"
+        default=None, alias="legalNatureDescription"
     )
     phone: Optional[str] = None
-    registration_status: Optional[int] = Field(None, alias="registrationStatus")
+    registration_status: Optional[int] = Field(default=None, alias="registrationStatus")
     category: Optional[int] = None
-    fpas_contributor: Optional[bool] = Field(None, alias="fpasContributor")
+    fpas_contributor: Optional[bool] = Field(default=None, alias="fpasContributor")
     remarks: Optional[str] = None
 
     class Config:

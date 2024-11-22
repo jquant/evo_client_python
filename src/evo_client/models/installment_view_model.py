@@ -21,19 +21,23 @@ class InstallmentViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    total_value: Optional[float] = Field(None, alias="totalValue")
+    total_value: Optional[float] = Field(default=None, alias="totalValue")
     value: Optional[float] = None
-    date: Optional[datetime] = Field(None, alias="date")
-    service_name: Optional[str] = Field(None, alias="serviceName")
-    service_value: Optional[float] = Field(None, alias="serviceValue")
+    date: Optional[datetime] = Field(default=None, alias="date")
+    service_name: Optional[str] = Field(default=None, alias="serviceName")
+    service_value: Optional[float] = Field(default=None, alias="serviceValue")
     loyalty_monthly_payment_description: Optional[str] = Field(
-        None, alias="loyaltyMonthlyPaymentDescription"
+        default=None, alias="loyaltyMonthlyPaymentDescription"
     )
     loyalty_monthly_payment_value_description: Optional[str] = Field(
-        None, alias="loyaltyMonthlyPaymentValueDescription"
+        default=None, alias="loyaltyMonthlyPaymentValueDescription"
     )
-    annuity_service_name: Optional[str] = Field(None, alias="annuityServiceName")
-    annuity_service_value: Optional[float] = Field(None, alias="annuityServiceValue")
+    annuity_service_name: Optional[str] = Field(
+        default=None, alias="annuityServiceName"
+    )
+    annuity_service_value: Optional[float] = Field(
+        default=None, alias="annuityServiceValue"
+    )
 
     class Config:
         populate_by_name = True

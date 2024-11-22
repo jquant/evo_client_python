@@ -20,7 +20,7 @@ class ContratoFiliaisResumoApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_branch: Optional[int] = Field(None, alias="idBranch")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
     name: Optional[str] = None
 
     class Config:

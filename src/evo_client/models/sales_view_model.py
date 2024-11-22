@@ -25,27 +25,31 @@ class SalesViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_sale: Optional[int] = Field(None, alias="idSale")
-    id_member: Optional[int] = Field(None, alias="idMember")
-    id_employee: Optional[int] = Field(None, alias="idEmployee")
-    id_prospect: Optional[int] = Field(None, alias="idProspect")
-    id_employee_sale: Optional[int] = Field(None, alias="idEmployeeSale")
-    sale_date: Optional[datetime] = Field(None, alias="saleDate")
-    sale_date_server: Optional[datetime] = Field(None, alias="saleDateServer")
-    id_personal: Optional[int] = Field(None, alias="idPersonal")
+    id_sale: Optional[int] = Field(default=None, alias="idSale")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
+    id_employee: Optional[int] = Field(default=None, alias="idEmployee")
+    id_prospect: Optional[int] = Field(default=None, alias="idProspect")
+    id_employee_sale: Optional[int] = Field(default=None, alias="idEmployeeSale")
+    sale_date: Optional[datetime] = Field(default=None, alias="saleDate")
+    sale_date_server: Optional[datetime] = Field(default=None, alias="saleDateServer")
+    id_personal: Optional[int] = Field(default=None, alias="idPersonal")
     corporate_partnership_name: Optional[str] = Field(
-        None, alias="corporatePartnershipName"
+        default=None, alias="corporatePartnershipName"
     )
-    coporate_partnership_id: Optional[int] = Field(None, alias="coporatePartnershipId")
+    coporate_partnership_id: Optional[int] = Field(
+        default=None, alias="coporatePartnershipId"
+    )
     removed: Optional[bool] = None
-    id_employee_removal: Optional[int] = Field(None, alias="idEmployeeRemoval")
-    removal_date: Optional[datetime] = Field(None, alias="removalDate")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
+    id_employee_removal: Optional[int] = Field(default=None, alias="idEmployeeRemoval")
+    removal_date: Optional[datetime] = Field(default=None, alias="removalDate")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
     observations: Optional[str] = None
-    id_sale_recurrency: Optional[int] = Field(None, alias="idSaleRecurrency")
-    sale_source: Optional[int] = Field(None, alias="saleSource")
-    id_sale_migration: Optional[str] = Field(None, alias="idSaleMigration")
-    sale_itens: Optional[List[SalesItemsViewModel]] = Field(None, alias="saleItens")
+    id_sale_recurrency: Optional[int] = Field(default=None, alias="idSaleRecurrency")
+    sale_source: Optional[int] = Field(default=None, alias="saleSource")
+    id_sale_migration: Optional[str] = Field(default=None, alias="idSaleMigration")
+    sale_itens: Optional[List[SalesItemsViewModel]] = Field(
+        default=None, alias="saleItens"
+    )
     receivables: Optional[List[ReceivablesApiViewModel]] = None
 
     def to_dict(self):

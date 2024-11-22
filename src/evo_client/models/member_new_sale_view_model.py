@@ -9,15 +9,15 @@ class MemberNewSaleViewModel(BaseModel):
     MemberNewSaleViewModel - a model defined in Swagger
     """
 
-    id_member: Optional[int] = Field(None, alias="idMember")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
     document: Optional[str] = None
-    zip_code: Optional[str] = Field(None, alias="zipCode")
+    zip_code: Optional[str] = Field(default=None, alias="zipCode")
     address: Optional[str] = None
     number: Optional[str] = None
     complement: Optional[str] = None
     neighborhood: Optional[str] = None
     city: Optional[str] = None
-    id_state: Optional[int] = Field(None, alias="idState")
+    id_state: Optional[int] = Field(default=None, alias="idState")
 
     def to_dict(self):
         """Returns the model properties as a dict"""

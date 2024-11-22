@@ -20,13 +20,13 @@ class TelefoneApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_phone: Optional[int] = Field(None, alias="idPhone")
-    id_member: Optional[int] = Field(None, alias="idMember")
-    id_employee: Optional[int] = Field(None, alias="idEmployee")
-    id_prospect: Optional[int] = Field(None, alias="idProspect")
-    id_provider: Optional[int] = Field(None, alias="idProvider")
-    id_contact_type: Optional[str] = Field(None, alias="idContactType")
-    contact_type: Optional[str] = Field(None, alias="contactType")
+    id_phone: Optional[int] = Field(default=None, alias="idPhone")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
+    id_employee: Optional[int] = Field(default=None, alias="idEmployee")
+    id_prospect: Optional[int] = Field(default=None, alias="idProspect")
+    id_provider: Optional[int] = Field(default=None, alias="idProvider")
+    id_contact_type: Optional[str] = Field(default=None, alias="idContactType")
+    contact_type: Optional[str] = Field(default=None, alias="contactType")
     description: Optional[str] = None
 
     class Config:

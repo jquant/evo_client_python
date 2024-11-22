@@ -13,11 +13,11 @@ class EmpresasFiliaisOcupacaoViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_branch: Optional[int] = Field(None, alias="idBranch")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
     name: Optional[str] = None
     occupation: Optional[int] = None
-    max_occupation: Optional[int] = Field(None, alias="maxOccupation")
-    qty_minutes_out: Optional[int] = Field(None, alias="qtyMinutesOut")
+    max_occupation: Optional[int] = Field(default=None, alias="maxOccupation")
+    qty_minutes_out: Optional[int] = Field(default=None, alias="qtyMinutesOut")
 
     class Config:
         """Pydantic model configuration"""

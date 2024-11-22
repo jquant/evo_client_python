@@ -20,9 +20,11 @@ class ContratosResumoPaginaVendaViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_sales_page: Optional[int] = Field(None, alias="idSalesPage")
-    order: Optional[int] = Field(None)
-    sales_page_description: Optional[str] = Field(None, alias="salesPageDescription")
+    id_sales_page: Optional[int] = Field(default=None, alias="idSalesPage")
+    order: Optional[int] = Field(default=None)
+    sales_page_description: Optional[str] = Field(
+        default=None, alias="salesPageDescription"
+    )
 
     class Config:
         populate_by_name = True

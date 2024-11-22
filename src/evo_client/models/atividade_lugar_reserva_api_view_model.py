@@ -25,7 +25,7 @@ class AtividadeLugarReservaApiViewModel(BaseModel):
 
     number: Optional[int] = None
     available: Optional[bool] = None
-    name_spot: Optional[str] = Field(None, alias="nameSpot")
+    name_spot: Optional[str] = Field(default=None, alias="nameSpot")
 
     class Config:
         """Pydantic model configuration"""

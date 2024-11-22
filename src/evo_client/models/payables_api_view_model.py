@@ -24,23 +24,25 @@ class PayablesApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_payable: Optional[int] = Field(None, alias="idPayable")
+    id_payable: Optional[int] = Field(default=None, alias="idPayable")
     description: Optional[str] = None
     recipient: Optional[str] = None
     cost_center: Optional[PayablesApiSubTypesViewModel] = Field(
-        None, alias="costCenter"
+        default=None, alias="costCenter"
     )
-    input_date: Optional[datetime] = Field(None, alias="inputDate")
-    due_date: Optional[datetime] = Field(None, alias="dueDate")
-    payment_date: Optional[datetime] = Field(None, alias="paymentDate")
-    competence_date: Optional[datetime] = Field(None, alias="competenceDate")
-    cancellation_date: Optional[datetime] = Field(None, alias="cancellationDate")
+    input_date: Optional[datetime] = Field(default=None, alias="inputDate")
+    due_date: Optional[datetime] = Field(default=None, alias="dueDate")
+    payment_date: Optional[datetime] = Field(default=None, alias="paymentDate")
+    competence_date: Optional[datetime] = Field(default=None, alias="competenceDate")
+    cancellation_date: Optional[datetime] = Field(
+        default=None, alias="cancellationDate"
+    )
     ammount: Optional[float] = None
-    ammount_paid: Optional[float] = Field(None, alias="ammountPaid")
+    ammount_paid: Optional[float] = Field(default=None, alias="ammountPaid")
     status: Optional["PayablesApiSubTypesViewModel"] = None
     destination: Optional[PayablesApiSubTypesViewModel] = None
     bank_account: Optional[PayablesApiSubTypesViewModel] = Field(
-        None, alias="bankAccount"
+        default=None, alias="bankAccount"
     )
     beneficiary: Optional[str] = None
     categories: Optional[str] = None

@@ -23,8 +23,8 @@ class BasicFreezeViewModel(BaseModel):
     Auto-generated from OpenAPI/Swagger specification.
     """
 
-    start_date: Optional[datetime] = Field(None, alias="startDate")
-    end_date: Optional[datetime] = Field(None, alias="endDate")
+    start_date: Optional[datetime] = Field(default=None, alias="startDate")
+    end_date: Optional[datetime] = Field(default=None, alias="endDate")
 
     class Config:
         """Pydantic model configuration"""

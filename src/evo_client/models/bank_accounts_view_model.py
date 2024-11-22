@@ -34,15 +34,15 @@ class BankAccountsViewModel(BaseModel):
     Auto-generated from OpenAPI/Swagger specification.
     """
 
-    id_bank_account: Optional[int] = Field(None, alias="idBankAccount")
+    id_bank_account: Optional[int] = Field(default=None, alias="idBankAccount")
     description: Optional[str] = None
-    account_type: Optional[bool] = Field(None, alias="accountType")
-    bank_code: Optional[int] = Field(None, alias="bankCode")
+    account_type: Optional[bool] = Field(default=None, alias="accountType")
+    bank_code: Optional[int] = Field(default=None, alias="bankCode")
     agency: Optional[str] = None
     account: Optional[str] = None
     observations: Optional[str] = None
     inactive: Optional[bool] = None
-    bank_integration: Optional[bool] = Field(None, alias="bankIntegration")
+    bank_integration: Optional[bool] = Field(default=None, alias="bankIntegration")
 
     class Config:
         """Pydantic model configuration"""

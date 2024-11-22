@@ -23,20 +23,20 @@ class AtividadeListApiViewModel(BaseModel):
     Auto-generated from OpenAPI/Swagger specification.
     """
 
-    id_activity: Optional[int] = Field(None, alias="idActivity")
+    id_activity: Optional[int] = Field(default=None, alias="idActivity")
     photo: Optional[str] = None
     name: Optional[str] = None
     color: Optional[str] = None
-    activity_group: Optional[str] = Field(None, alias="activityGroup")
-    total_records: Optional[int] = Field(None, alias="totalRecords")
+    activity_group: Optional[str] = Field(default=None, alias="activityGroup")
+    total_records: Optional[int] = Field(default=None, alias="totalRecords")
     inactive: Optional[bool] = None
     description: Optional[str] = None
-    id_activity_group: Optional[int] = Field(None, alias="idActivityGroup")
-    show_on_mobile: Optional[bool] = Field(None, alias="showOnMobile")
-    show_on_website: Optional[bool] = Field(None, alias="showOnWebsite")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
+    id_activity_group: Optional[int] = Field(default=None, alias="idActivityGroup")
+    show_on_mobile: Optional[bool] = Field(default=None, alias="showOnMobile")
+    show_on_website: Optional[bool] = Field(default=None, alias="showOnWebsite")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
     audience: Optional[List[PublicoAtividadeViewModel]] = None
-    id_audience: Optional[int] = Field(None, alias="idAudience")
+    id_audience: Optional[int] = Field(default=None, alias="idAudience")
     discriminator: Optional[str] = None
 
     class Config:

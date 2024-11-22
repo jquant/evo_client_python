@@ -15,28 +15,28 @@ class ConfiguracaoApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_branch: Optional[int] = Field(None, alias="idBranch")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
     name: Optional[str] = None
-    internal_name: Optional[str] = Field(None, alias="internalName")
+    internal_name: Optional[str] = Field(default=None, alias="internalName")
     cnpj: Optional[str] = None
     address: Optional[str] = None
     neighborhood: Optional[str] = None
     telephone: Optional[str] = None
     number: Optional[str] = None
-    id_state: Optional[int] = Field(None, alias="idState")
+    id_state: Optional[int] = Field(default=None, alias="idState")
     state: Optional[str] = None
-    state_short: Optional[str] = Field(None, alias="stateShort")
+    state_short: Optional[str] = Field(default=None, alias="stateShort")
     city: Optional[str] = None
     complement: Optional[str] = None
-    zip_code: Optional[str] = Field(None, alias="zipCode")
+    zip_code: Optional[str] = Field(default=None, alias="zipCode")
     website: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
-    opening_date: Optional[datetime] = Field(None, alias="openingDate")
+    opening_date: Optional[datetime] = Field(default=None, alias="openingDate")
     business_hours: Optional[List[BusinessHoursViewModel]] = Field(
-        None, alias="businessHours"
+        default=None, alias="businessHours"
     )
-    search_terms: Optional[List[str]] = Field(None, alias="searchTerms")
+    search_terms: Optional[List[str]] = Field(default=None, alias="searchTerms")
 
     class Config:
         populate_by_name = True

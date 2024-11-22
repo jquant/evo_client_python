@@ -20,7 +20,7 @@ class ServicoAdicionalApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_service: Optional[int] = Field(None, alias="idService")
+    id_service: Optional[int] = Field(default=None, alias="idService")
     name: Optional[str] = None
     value: Optional[float] = None
 

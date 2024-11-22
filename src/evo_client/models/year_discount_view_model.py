@@ -20,7 +20,9 @@ class YearDiscountViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    type_disocunt_yearly: Optional[str] = Field(None, alias="typeDisocuntYearly")
+    type_disocunt_yearly: Optional[str] = Field(
+        default=None, alias="typeDisocuntYearly"
+    )
     value: Optional[float] = None
 
     class Config:

@@ -22,13 +22,15 @@ class SalesItemsViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    name_sale_page: Optional[str] = Field(None, alias="nameSalePage")
+    name_sale_page: Optional[str] = Field(default=None, alias="nameSalePage")
     order: Optional[int] = None
-    id_employee_commission: Optional[int] = Field(None, alias="idEmployeeCommission")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    id_sale_item: Optional[int] = Field(None, alias="idSaleItem")
-    checkout_url: Optional[str] = Field(None, alias="checkoutUrl")
-    not_inaugurated: Optional[bool] = Field(None, alias="notInaugurated")
+    id_employee_commission: Optional[int] = Field(
+        default=None, alias="idEmployeeCommission"
+    )
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    id_sale_item: Optional[int] = Field(default=None, alias="idSaleItem")
+    checkout_url: Optional[str] = Field(default=None, alias="checkoutUrl")
+    not_inaugurated: Optional[bool] = Field(default=None, alias="notInaugurated")
     itens: Optional[List[SalesItemViewModel]] = None
 
     class Config:

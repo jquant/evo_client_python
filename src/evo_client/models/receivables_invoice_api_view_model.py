@@ -21,14 +21,14 @@ class ReceivablesInvoiceApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    invoice_number: Optional[str] = Field(None, alias="invoiceNumber")
-    issued_amount: Optional[float] = Field(None, alias="issuedAmount")
+    invoice_number: Optional[str] = Field(default=None, alias="invoiceNumber")
+    issued_amount: Optional[float] = Field(default=None, alias="issuedAmount")
     status: Optional[str] = None
-    send_date: Optional[datetime] = Field(None, alias="sendDate")
-    canceled_date: Optional[datetime] = Field(None, alias="canceledDate")
-    url_pdf: Optional[str] = Field(None, alias="urlPdf")
-    id_invoice_type: Optional[int] = Field(None, alias="idInvoiceType")
-    invoice_type: Optional[str] = Field(None, alias="invoiceType")
+    send_date: Optional[datetime] = Field(default=None, alias="sendDate")
+    canceled_date: Optional[datetime] = Field(default=None, alias="canceledDate")
+    url_pdf: Optional[str] = Field(default=None, alias="urlPdf")
+    id_invoice_type: Optional[int] = Field(default=None, alias="idInvoiceType")
+    invoice_type: Optional[str] = Field(default=None, alias="invoiceType")
 
     class Config:
         populate_by_name = True

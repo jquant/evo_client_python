@@ -23,9 +23,9 @@ class W12UtilsWebhookViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    event_type: Optional[str] = Field(None, alias="eventType")
-    url_callback: Optional[str] = Field(None, alias="urlCallback")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    event_type: Optional[str] = Field(default=None, alias="eventType")
+    url_callback: Optional[str] = Field(default=None, alias="urlCallback")
     headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None
     filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None
 

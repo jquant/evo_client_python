@@ -22,12 +22,12 @@ class ClienteEnotasRetorno(BaseModel):
     Do not edit the class manually.
     """
 
-    id_cliente: Optional[int] = Field(None, alias="idCliente")
-    tipo_pessoa: Optional[str] = Field(None, alias="tipoPessoa")
+    id_cliente: Optional[int] = Field(default=None, alias="idCliente")
+    tipo_pessoa: Optional[str] = Field(default=None, alias="tipoPessoa")
     nome: Optional[str] = None
     email: Optional[str] = None
-    cpf_cnpj: Optional[str] = Field(None, alias="cpfCnpj")
-    inscricao_municipal: Optional[str] = Field(None, alias="inscricaoMunicipal")
+    cpf_cnpj: Optional[str] = Field(default=None, alias="cpfCnpj")
+    inscricao_municipal: Optional[str] = Field(default=None, alias="inscricaoMunicipal")
     telefone: Optional[str] = None
     endereco: Optional[EnderecoEnotasRetorno] = None
 

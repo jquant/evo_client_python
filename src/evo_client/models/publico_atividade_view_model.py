@@ -22,8 +22,10 @@ class PublicoAtividadeViewModel(BaseModel):
     Auto-generated from OpenAPI/Swagger specification.
     """
 
-    id_publico_atividade: Optional[int] = Field(None, alias="idPublicoAtividade")
-    id_filial: Optional[int] = Field(None, alias="idFilial")
+    id_publico_atividade: Optional[int] = Field(
+        default=None, alias="idPublicoAtividade"
+    )
+    id_filial: Optional[int] = Field(default=None, alias="idFilial")
     nome: Optional[str] = None
 
     class Config:

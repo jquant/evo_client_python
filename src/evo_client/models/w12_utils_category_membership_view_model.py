@@ -20,7 +20,9 @@ class W12UtilsCategoryMembershipViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_category_membership: Optional[int] = Field(None, alias="idCategoryMembership")
+    id_category_membership: Optional[int] = Field(
+        default=None, alias="idCategoryMembership"
+    )
     name: Optional[str] = None
 
     class Config:

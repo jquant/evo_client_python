@@ -24,22 +24,22 @@ class VouchersResumoApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_voucher: Optional[int] = Field(None, alias="idVoucher")
-    name_voucher: Optional[str] = Field(None, alias="nameVoucher")
-    type_voucher: Optional[str] = Field(None, alias="typeVoucher")
+    id_voucher: Optional[int] = Field(default=None, alias="idVoucher")
+    name_voucher: Optional[str] = Field(default=None, alias="nameVoucher")
+    type_voucher: Optional[str] = Field(default=None, alias="typeVoucher")
     limited: Optional[bool] = None
     available: Optional[int] = None
     used: Optional[int] = None
-    site_available: Optional[bool] = Field(None, alias="siteAvailable")
-    id_memberships: Optional[List[int]] = Field(None, alias="idMemberships")
+    site_available: Optional[bool] = Field(default=None, alias="siteAvailable")
+    id_memberships: Optional[List[int]] = Field(default=None, alias="idMemberships")
     monthy_discount: Optional[MonthDiscountViewModel] = Field(
-        None, alias="monthyDiscount"
+        default=None, alias="monthyDiscount"
     )
     yearly_discount: Optional[YearDiscountViewModel] = Field(
-        None, alias="yearlyDiscount"
+        default=None, alias="yearlyDiscount"
     )
     service_discount: Optional[ServiceDiscountViewModel] = Field(
-        None, alias="serviceDiscount"
+        default=None, alias="serviceDiscount"
     )
 
     class Config:

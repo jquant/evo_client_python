@@ -23,9 +23,9 @@ class BonusSessionViewModel(BaseModel):
     Auto-generated from OpenAPI/Swagger specification.
     """
 
-    id_session: Optional[int] = Field(None, alias="idSession")
-    expiration_date: Optional[datetime] = Field(None, alias="expirationDate")
-    fl_bonus_session: Optional[bool] = Field(None, alias="flBonusSession")
+    id_session: Optional[int] = Field(default=None, alias="idSession")
+    expiration_date: Optional[datetime] = Field(default=None, alias="expirationDate")
+    fl_bonus_session: Optional[bool] = Field(default=None, alias="flBonusSession")
 
     class Config:
         """Pydantic model configuration"""

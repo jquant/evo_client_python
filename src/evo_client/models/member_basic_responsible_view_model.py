@@ -20,15 +20,19 @@ class MemberBasicResponsibleViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_responsible: Optional[int] = Field(None, alias="idResponsible")
-    id_member: Optional[int] = Field(None, alias="idMember")
+    id_responsible: Optional[int] = Field(default=None, alias="idResponsible")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
     name: Optional[str] = None
     email: Optional[str] = None
     phone: Optional[str] = None
     observation: Optional[str] = None
-    id_member_responsible: Optional[int] = Field(None, alias="idMemberResponsible")
-    acess_fiti: Optional[bool] = Field(None, alias="acessFiti")
-    financial_responsible: Optional[bool] = Field(None, alias="financialResponsible")
+    id_member_responsible: Optional[int] = Field(
+        default=None, alias="idMemberResponsible"
+    )
+    acess_fiti: Optional[bool] = Field(default=None, alias="acessFiti")
+    financial_responsible: Optional[bool] = Field(
+        default=None, alias="financialResponsible"
+    )
 
     class Config:
         """Pydantic model configuration"""

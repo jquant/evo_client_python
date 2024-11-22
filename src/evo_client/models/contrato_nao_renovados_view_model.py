@@ -9,23 +9,23 @@ class ContratoNaoRenovadosViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_filial: Optional[int] = Field(None, alias="idFilial")
-    nome_filial: Optional[str] = Field(None, alias="nomeFilial")
-    id_cliente: Optional[int] = Field(None, alias="idCliente")
+    id_filial: Optional[int] = Field(default=None, alias="idFilial")
+    nome_filial: Optional[str] = Field(default=None, alias="nomeFilial")
+    id_cliente: Optional[int] = Field(default=None, alias="idCliente")
     status: Optional[str] = None
-    contrato_ativo: Optional[str] = Field(None, alias="contratoAtivo")
+    contrato_ativo: Optional[str] = Field(default=None, alias="contratoAtivo")
     nome: Optional[str] = None
     sobrenome: Optional[str] = None
-    contrato_vencido: Optional[str] = Field(None, alias="contratoVencido")
-    data_inicio: Optional[datetime] = Field(None, alias="dataInicio")
-    data_fim: Optional[datetime] = Field(None, alias="dataFim")
-    meses_permanencia: Optional[int] = Field(None, alias="mesesPermanencia")
+    contrato_vencido: Optional[str] = Field(default=None, alias="contratoVencido")
+    data_inicio: Optional[datetime] = Field(default=None, alias="dataInicio")
+    data_fim: Optional[datetime] = Field(default=None, alias="dataFim")
+    meses_permanencia: Optional[int] = Field(default=None, alias="mesesPermanencia")
     valor: Optional[float] = None
-    fl_cancelado: Optional[bool] = Field(None, alias="flCancelado")
-    dt_cancelamento: Optional[datetime] = Field(None, alias="dtCancelamento")
-    contrato_cancelado: Optional[str] = Field(None, alias="contratoCancelado")
-    motivo_cancelamento: Optional[str] = Field(None, alias="motivoCancelamento")
-    nome_consultor: Optional[str] = Field(None, alias="nomeConsultor")
+    fl_cancelado: Optional[bool] = Field(default=None, alias="flCancelado")
+    dt_cancelamento: Optional[datetime] = Field(default=None, alias="dtCancelamento")
+    contrato_cancelado: Optional[str] = Field(default=None, alias="contratoCancelado")
+    motivo_cancelamento: Optional[str] = Field(default=None, alias="motivoCancelamento")
+    nome_consultor: Optional[str] = Field(default=None, alias="nomeConsultor")
     celular: Optional[str] = None
     email: Optional[str] = None
 

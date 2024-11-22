@@ -20,8 +20,8 @@ class ReceivablesMaskReceivedViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    ids_receivables: Optional[List[int]] = Field(None, alias="idsReceivables")
-    id_bank_account: Optional[int] = Field(None, alias="idBankAccount")
+    ids_receivables: Optional[List[int]] = Field(default=None, alias="idsReceivables")
+    id_bank_account: Optional[int] = Field(default=None, alias="idBankAccount")
 
     class Config:
         populate_by_name = True

@@ -21,8 +21,8 @@ class PixPaymentDetailsViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    qr_code: Optional[str] = Field(None, alias="qrCode")
-    expiration_date: Optional[datetime] = Field(None, alias="expirationDate")
+    qr_code: Optional[str] = Field(default=None, alias="qrCode")
+    expiration_date: Optional[datetime] = Field(default=None, alias="expirationDate")
     value: Optional[float] = None
 
     class Config:

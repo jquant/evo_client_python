@@ -20,10 +20,10 @@ class ContratoEntradasApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    entries_quantity: Optional[int] = Field(None, alias="entriesQuantity")
-    id_entries_type: Optional[int] = Field(None, alias="idEntriesType")
+    entries_quantity: Optional[int] = Field(default=None, alias="entriesQuantity")
+    id_entries_type: Optional[int] = Field(default=None, alias="idEntriesType")
     entries_type_description: Optional[str] = Field(
-        None, alias="entriesTypeDescription"
+        default=None, alias="entriesTypeDescription"
     )
 
     class Config:

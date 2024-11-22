@@ -26,51 +26,55 @@ class ReceivablesApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_receivable: Optional[int] = Field(None, alias="idReceivable")
+    id_receivable: Optional[int] = Field(default=None, alias="idReceivable")
     description: Optional[str] = None
-    registration_date: Optional[datetime] = Field(None, alias="registrationDate")
-    due_date: Optional[datetime] = Field(None, alias="dueDate")
-    receiving_date: Optional[datetime] = Field(None, alias="receivingDate")
-    competence_date: Optional[datetime] = Field(None, alias="competenceDate")
-    cancellation_date: Optional[datetime] = Field(None, alias="cancellationDate")
+    registration_date: Optional[datetime] = Field(
+        default=None, alias="registrationDate"
+    )
+    due_date: Optional[datetime] = Field(default=None, alias="dueDate")
+    receiving_date: Optional[datetime] = Field(default=None, alias="receivingDate")
+    competence_date: Optional[datetime] = Field(default=None, alias="competenceDate")
+    cancellation_date: Optional[datetime] = Field(
+        default=None, alias="cancellationDate"
+    )
     ammount: Optional[float] = None
-    ammount_paid: Optional[float] = Field(None, alias="ammountPaid")
+    ammount_paid: Optional[float] = Field(default=None, alias="ammountPaid")
     status: Optional[ReceivablesApiSubTypesViewModel] = None
-    current_installment: Optional[int] = Field(None, alias="currentInstallment")
-    total_installments: Optional[int] = Field(None, alias="totalInstallments")
+    current_installment: Optional[int] = Field(default=None, alias="currentInstallment")
+    total_installments: Optional[int] = Field(default=None, alias="totalInstallments")
     authorization: Optional[str] = None
-    payer_name: Optional[str] = Field(None, alias="payerName")
-    id_member_payer: Optional[int] = Field(None, alias="idMemberPayer")
-    id_prospect_payer: Optional[int] = Field(None, alias="idProspectPayer")
-    id_branch_member: Optional[int] = Field(None, alias="idBranchMember")
-    id_sale: Optional[int] = Field(None, alias="idSale")
+    payer_name: Optional[str] = Field(default=None, alias="payerName")
+    id_member_payer: Optional[int] = Field(default=None, alias="idMemberPayer")
+    id_prospect_payer: Optional[int] = Field(default=None, alias="idProspectPayer")
+    id_branch_member: Optional[int] = Field(default=None, alias="idBranchMember")
+    id_sale: Optional[int] = Field(default=None, alias="idSale")
     bank_account: Optional[ReceivablesApiSubTypesViewModel] = Field(
-        None, alias="bankAccount"
+        default=None, alias="bankAccount"
     )
     payment_type: Optional[ReceivablesApiSubTypesViewModel] = Field(
-        None, alias="paymentType"
+        default=None, alias="paymentType"
     )
     invoice_details: Optional[List[ReceivablesInvoiceApiViewModel]] = Field(
-        None, alias="invoiceDetails"
+        default=None, alias="invoiceDetails"
     )
     fees: Optional[float] = None
     conciliated: Optional[bool] = None
-    log_tef: Optional[LogTefApiViewModel] = Field(None, alias="logTef")
+    log_tef: Optional[LogTefApiViewModel] = Field(default=None, alias="logTef")
     tid: Optional[str] = None
     nsu: Optional[str] = None
-    update_date: Optional[datetime] = Field(None, alias="updateDate")
-    charge_date: Optional[datetime] = Field(None, alias="chargeDate")
-    id_receivable_from: Optional[int] = Field(None, alias="idReceivableFrom")
-    card_acquirer: Optional[str] = Field(None, alias="cardAcquirer")
-    card_flag: Optional[str] = Field(None, alias="cardFlag")
+    update_date: Optional[datetime] = Field(default=None, alias="updateDate")
+    charge_date: Optional[datetime] = Field(default=None, alias="chargeDate")
+    id_receivable_from: Optional[int] = Field(default=None, alias="idReceivableFrom")
+    card_acquirer: Optional[str] = Field(default=None, alias="cardAcquirer")
+    card_flag: Optional[str] = Field(default=None, alias="cardFlag")
     credit_details: Optional[List[ReceivablesCreditDetails]] = Field(
-        None, alias="creditDetails"
+        default=None, alias="creditDetails"
     )
     cancellation_description: Optional[str] = Field(
-        None, alias="cancellationDescription"
+        default=None, alias="cancellationDescription"
     )
     source: Optional[str] = None
-    sale_date: Optional[datetime] = Field(None, alias="saleDate")
+    sale_date: Optional[datetime] = Field(default=None, alias="saleDate")
 
     class Config:
         populate_by_name = True

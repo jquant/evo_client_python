@@ -9,18 +9,18 @@ class SpsRelProspectsCadastradosConvertidos(BaseModel):
     Do not edit the class manually.
     """
 
-    id_filial: Optional[int] = Field(None, alias="idFilial")
-    nome_filial: Optional[str] = Field(None, alias="nomeFilial")
+    id_filial: Optional[int] = Field(default=None, alias="idFilial")
+    nome_filial: Optional[str] = Field(default=None, alias="nomeFilial")
     status: Optional[str] = None
-    id_prospect: Optional[int] = Field(None, alias="idProspect")
+    id_prospect: Optional[int] = Field(default=None, alias="idProspect")
     nome: Optional[str] = None
-    dt_cadastro: Optional[datetime] = Field(None, alias="dtCadastro")
-    primeira_visita: Optional[str] = Field(None, alias="primeiraVisita")
-    convertido_por: Optional[str] = Field(None, alias="convertidoPor")
-    dt_conversao: Optional[datetime] = Field(None, alias="dtConversao")
-    id_cliente: Optional[int] = Field(None, alias="idCliente")
+    dt_cadastro: Optional[datetime] = Field(default=None, alias="dtCadastro")
+    primeira_visita: Optional[str] = Field(default=None, alias="primeiraVisita")
+    convertido_por: Optional[str] = Field(default=None, alias="convertidoPor")
+    dt_conversao: Optional[datetime] = Field(default=None, alias="dtConversao")
+    id_cliente: Optional[int] = Field(default=None, alias="idCliente")
     descricao: Optional[str] = None
-    primeiro_contrato: Optional[str] = Field(None, alias="primeiroContrato")
+    primeiro_contrato: Optional[str] = Field(default=None, alias="primeiroContrato")
     apelido: Optional[str] = None
     marketing: Optional[str] = None
 

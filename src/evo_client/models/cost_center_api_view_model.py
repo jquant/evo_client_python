@@ -7,12 +7,14 @@ class CostCenterApiViewModel(BaseModel):
     CostCenterApiViewModel - a model defined in Swagger
     """
 
-    id_cost_center: Optional[int] = Field(None, alias="idCostCenter")
-    description: Optional[str] = Field(None)
-    id_cost_center_father: Optional[int] = Field(None, alias="idCostCenterFather")
-    active: Optional[bool] = Field(None)
-    id_dre_group: Optional[int] = Field(None, alias="idDreGroup")
-    level: Optional[int] = Field(None)
+    id_cost_center: Optional[int] = Field(default=None, alias="idCostCenter")
+    description: Optional[str] = Field(default=None)
+    id_cost_center_father: Optional[int] = Field(
+        default=None, alias="idCostCenterFather"
+    )
+    active: Optional[bool] = Field(default=None)
+    id_dre_group: Optional[int] = Field(default=None, alias="idDreGroup")
+    level: Optional[int] = Field(default=None)
 
     class Config:
         allow_population_by_field_name = True

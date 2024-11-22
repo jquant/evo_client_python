@@ -21,17 +21,17 @@ class ConveniosApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_partnership: Optional[int] = Field(None, alias="idPartnership")
-    description: Optional[str] = Field(None)
-    is_blocked_flag: Optional[bool] = Field(None, alias="isBlockedFlag")
-    is_inactive_flag: Optional[bool] = Field(None, alias="isInactiveFlag")
-    company: Optional[EmpresasConveniosApiViewModel] = Field(None)
+    id_partnership: Optional[int] = Field(default=None, alias="idPartnership")
+    description: Optional[str] = Field(default=None)
+    is_blocked_flag: Optional[bool] = Field(default=None, alias="isBlockedFlag")
+    is_inactive_flag: Optional[bool] = Field(default=None, alias="isInactiveFlag")
+    company: Optional[EmpresasConveniosApiViewModel] = Field(default=None)
     is_recurring_discount_flag: Optional[bool] = Field(
-        None, alias="isRecurringDiscountFlag"
+        default=None, alias="isRecurringDiscountFlag"
     )
-    discount: Optional[float] = Field(None)
-    discount_type: Optional[float] = Field(None, alias="discountType")
-    advanced_discount: Optional[int] = Field(None, alias="advancedDiscount")
+    discount: Optional[float] = Field(default=None)
+    discount_type: Optional[float] = Field(default=None, alias="discountType")
+    advanced_discount: Optional[int] = Field(default=None, alias="advancedDiscount")
 
     class Config:
         populate_by_name = True

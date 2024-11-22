@@ -10,9 +10,9 @@ class EmployeeApiIntegracaoViewModel(BaseModel):
     """
 
     name: Optional[str] = None
-    last_name: Optional[str] = Field(None, alias="lastName")
+    last_name: Optional[str] = Field(default=None, alias="lastName")
     document: Optional[str] = None
-    document_id: Optional[str] = Field(None, alias="documentId")
+    document_id: Optional[str] = Field(default=None, alias="documentId")
     cellphone: Optional[str] = None
     email: Optional[str] = None
     gender: Optional[str] = None
@@ -22,7 +22,7 @@ class EmployeeApiIntegracaoViewModel(BaseModel):
     state: Optional[str] = None
     city: Optional[str] = None
     passport: Optional[str] = None
-    zip_code: Optional[str] = Field(None, alias="zipCode")
+    zip_code: Optional[str] = Field(default=None, alias="zipCode")
     complement: Optional[str] = None
     neighborhood: Optional[str] = None
     number: Optional[str] = None

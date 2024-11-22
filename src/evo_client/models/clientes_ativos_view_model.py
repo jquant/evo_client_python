@@ -9,29 +9,31 @@ class ClientesAtivosViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_filial: Optional[int] = Field(None, alias="idFilial")
+    id_filial: Optional[int] = Field(default=None, alias="idFilial")
     filial: Optional[str] = None
-    id_cliente: Optional[int] = Field(None, alias="idCliente")
-    nome_completo: Optional[str] = Field(None, alias="nomeCompleto")
+    id_cliente: Optional[int] = Field(default=None, alias="idCliente")
+    nome_completo: Optional[str] = Field(default=None, alias="nomeCompleto")
     telefone: Optional[str] = None
     email: Optional[str] = None
     id_cliente_contrato_ativo: Optional[int] = Field(
-        None, alias="idClienteContratoAtivo"
+        default=None, alias="idClienteContratoAtivo"
     )
-    contrato_ativo: Optional[str] = Field(None, alias="contratoAtivo")
+    contrato_ativo: Optional[str] = Field(default=None, alias="contratoAtivo")
     dt_inicio_contrato_ativo: Optional[datetime] = Field(
-        None, alias="dtInicioContratoAtivo"
+        default=None, alias="dtInicioContratoAtivo"
     )
-    dt_fim_contrato_ativo: Optional[datetime] = Field(None, alias="dtFimContratoAtivo")
+    dt_fim_contrato_ativo: Optional[datetime] = Field(
+        default=None, alias="dtFimContratoAtivo"
+    )
     id_cliente_contrato_futuro: Optional[int] = Field(
-        None, alias="idClienteContratoFuturo"
+        default=None, alias="idClienteContratoFuturo"
     )
-    contrato_futuro: Optional[str] = Field(None, alias="contratoFuturo")
+    contrato_futuro: Optional[str] = Field(default=None, alias="contratoFuturo")
     dt_inicio_contrato_futuro: Optional[datetime] = Field(
-        None, alias="dtInicioContratoFuturo"
+        default=None, alias="dtInicioContratoFuturo"
     )
     dt_fim_contrato_futuro: Optional[datetime] = Field(
-        None, alias="dtFimContratoFuturo"
+        default=None, alias="dtFimContratoFuturo"
     )
 
     class Config:

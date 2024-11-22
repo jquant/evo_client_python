@@ -20,17 +20,19 @@ class ServicosResumoApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_service: Optional[int] = Field(None, alias="idService")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    name_service: Optional[str] = Field(None, alias="nameService")
+    id_service: Optional[int] = Field(default=None, alias="idService")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    name_service: Optional[str] = Field(default=None, alias="nameService")
     value: Optional[float] = None
-    allow_entries: Optional[bool] = Field(None, alias="allowEntries")
-    experimental_class: Optional[bool] = Field(None, alias="experimentalClass")
-    max_amount_installments: Optional[int] = Field(None, alias="maxAmountInstallments")
-    url_sale: Optional[str] = Field(None, alias="urlSale")
+    allow_entries: Optional[bool] = Field(default=None, alias="allowEntries")
+    experimental_class: Optional[bool] = Field(default=None, alias="experimentalClass")
+    max_amount_installments: Optional[int] = Field(
+        default=None, alias="maxAmountInstallments"
+    )
+    url_sale: Optional[str] = Field(default=None, alias="urlSale")
     inactive: Optional[bool] = None
     online_sales_observations: Optional[str] = Field(
-        None, alias="onlineSalesObservations"
+        default=None, alias="onlineSalesObservations"
     )
 
     class Config:

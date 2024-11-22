@@ -21,8 +21,10 @@ class LogTefApiViewModel(BaseModel):
     """
 
     authorization: Optional[str] = None
-    tef_id: Optional[str] = Field(None, alias="tefId")
-    merchant_checkout_guid: Optional[str] = Field(None, alias="merchantCheckoutGuid")
+    tef_id: Optional[str] = Field(default=None, alias="tefId")
+    merchant_checkout_guid: Optional[str] = Field(
+        default=None, alias="merchantCheckoutGuid"
+    )
 
     class Config:
         """Pydantic model configuration"""

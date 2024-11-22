@@ -20,13 +20,17 @@ class ReceivablesCreditDetails(BaseModel):
     Do not edit the class manually.
     """
 
-    id_credit: Optional[int] = Field(None, alias="idCredit")
-    id_cancelation_credit: Optional[int] = Field(None, alias="idCancelationCredit")
-    id_branch_origin: Optional[int] = Field(None, alias="idBranchOrigin")
+    id_credit: Optional[int] = Field(default=None, alias="idCredit")
+    id_cancelation_credit: Optional[int] = Field(
+        default=None, alias="idCancelationCredit"
+    )
+    id_branch_origin: Optional[int] = Field(default=None, alias="idBranchOrigin")
     ammount: Optional[float] = None
-    branch_document: Optional[str] = Field(None, alias="branchDocument")
-    id_sale_origin: Optional[int] = Field(None, alias="idSaleOrigin")
-    id_receivable_origin: Optional[int] = Field(None, alias="idReceivableOrigin")
+    branch_document: Optional[str] = Field(default=None, alias="branchDocument")
+    id_sale_origin: Optional[int] = Field(default=None, alias="idSaleOrigin")
+    id_receivable_origin: Optional[int] = Field(
+        default=None, alias="idReceivableOrigin"
+    )
 
     class Config:
         populate_by_name = True

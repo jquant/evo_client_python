@@ -29,37 +29,43 @@ class ContratosCanceladosResumoApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_member: Optional[int] = Field(None, alias="idMember")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
     name: Optional[str] = None
-    id_membership: Optional[int] = Field(None, alias="idMembership")
-    id_member_member_ship: Optional[int] = Field(None, alias="idMemberMemberShip")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    num_members: Optional[int] = Field(None, alias="numMembers")
-    id_sale: Optional[int] = Field(None, alias="idSale")
-    sale_value: Optional[float] = Field(None, alias="saleValue")
-    name_membership: Optional[str] = Field(None, alias="nameMembership")
-    membership_start: Optional[datetime] = Field(None, alias="membershipStart")
-    membership_end: Optional[datetime] = Field(None, alias="membershipEnd")
-    register_cancel_date: Optional[datetime] = Field(None, alias="registerCancelDate")
-    cancel_date: Optional[datetime] = Field(None, alias="cancelDate")
-    reason_cancellation: Optional[str] = Field(None, alias="reasonCancellation")
-    sale_date: Optional[datetime] = Field(None, alias="saleDate")
-    cancellation_fine: Optional[float] = Field(None, alias="cancellationFine")
-    remaining_value: Optional[float] = Field(None, alias="remainingValue")
+    id_membership: Optional[int] = Field(default=None, alias="idMembership")
+    id_member_member_ship: Optional[int] = Field(
+        default=None, alias="idMemberMemberShip"
+    )
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    num_members: Optional[int] = Field(default=None, alias="numMembers")
+    id_sale: Optional[int] = Field(default=None, alias="idSale")
+    sale_value: Optional[float] = Field(default=None, alias="saleValue")
+    name_membership: Optional[str] = Field(default=None, alias="nameMembership")
+    membership_start: Optional[datetime] = Field(default=None, alias="membershipStart")
+    membership_end: Optional[datetime] = Field(default=None, alias="membershipEnd")
+    register_cancel_date: Optional[datetime] = Field(
+        default=None, alias="registerCancelDate"
+    )
+    cancel_date: Optional[datetime] = Field(default=None, alias="cancelDate")
+    reason_cancellation: Optional[str] = Field(default=None, alias="reasonCancellation")
+    sale_date: Optional[datetime] = Field(default=None, alias="saleDate")
+    cancellation_fine: Optional[float] = Field(default=None, alias="cancellationFine")
+    remaining_value: Optional[float] = Field(default=None, alias="remainingValue")
     receivables: Optional[List[ContratosCanceladosParcelasApiViewModel]] = None
     min_period_stay_membership: Optional[int] = Field(
-        None, alias="minPeriodStayMembership"
+        default=None, alias="minPeriodStayMembership"
     )
     membership_trasnfer_data: Optional[DadosContratoTrasnferenciaApiViewModel] = Field(
-        None, alias="membershipTrasnferData"
+        default=None, alias="membershipTrasnferData"
     )
     membership_swap_data: Optional[DadosTrocaContratoApiViewModel] = Field(
-        None, alias="membershipSwapData"
+        default=None, alias="membershipSwapData"
     )
-    id_member_migration: Optional[str] = Field(None, alias="idMemberMigration")
-    id_sale_migration: Optional[str] = Field(None, alias="idSaleMigration")
-    id_membership_category: Optional[int] = Field(None, alias="idMembershipCategory")
-    member_document: Optional[str] = Field(None, alias="memberDocument")
+    id_member_migration: Optional[str] = Field(default=None, alias="idMemberMigration")
+    id_sale_migration: Optional[str] = Field(default=None, alias="idSaleMigration")
+    id_membership_category: Optional[int] = Field(
+        default=None, alias="idMembershipCategory"
+    )
+    member_document: Optional[str] = Field(default=None, alias="memberDocument")
 
     def to_dict(self):
         """Returns the model properties as a dict"""

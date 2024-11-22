@@ -20,11 +20,15 @@ class ClienteTransferenciaViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_cliente: Optional[int] = Field(None, alias="idCliente")
-    id_filial_destino: Optional[int] = Field(None, alias="idFilialDestino")
-    id_branch_token: Optional[str] = Field(None, alias="idBranchToken")
-    id_consultor_destino: Optional[int] = Field(None, alias="idConsultorDestino")
-    id_professor_destino: Optional[int] = Field(None, alias="idProfessorDestino")
+    id_cliente: Optional[int] = Field(default=None, alias="idCliente")
+    id_filial_destino: Optional[int] = Field(default=None, alias="idFilialDestino")
+    id_branch_token: Optional[str] = Field(default=None, alias="idBranchToken")
+    id_consultor_destino: Optional[int] = Field(
+        default=None, alias="idConsultorDestino"
+    )
+    id_professor_destino: Optional[int] = Field(
+        default=None, alias="idProfessorDestino"
+    )
 
     class Config:
         allow_population_by_field_name = True

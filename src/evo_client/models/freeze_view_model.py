@@ -21,16 +21,16 @@ class FreezeViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    start_suspend: Optional[datetime] = Field(None, alias="startSuspend")
-    end_suspend: Optional[datetime] = Field(None, alias="endSuspend")
-    unlock_date: Optional[datetime] = Field(None, alias="unlockDate")
-    id_employee: Optional[int] = Field(None, alias="idEmployee")
+    start_suspend: Optional[datetime] = Field(default=None, alias="startSuspend")
+    end_suspend: Optional[datetime] = Field(default=None, alias="endSuspend")
+    unlock_date: Optional[datetime] = Field(default=None, alias="unlockDate")
+    id_employee: Optional[int] = Field(default=None, alias="idEmployee")
     reason: Optional[str] = None
     fl_use_membership_freeze_days: Optional[bool] = Field(
-        None, alias="flUseMembershipFreezeDays"
+        default=None, alias="flUseMembershipFreezeDays"
     )
-    days_freeze: Optional[int] = Field(None, alias="daysFreeze")
-    id_freeze: Optional[int] = Field(None, alias="idFreeze")
+    days_freeze: Optional[int] = Field(default=None, alias="daysFreeze")
+    id_freeze: Optional[int] = Field(default=None, alias="idFreeze")
 
     class Config:
         """Pydantic model configuration"""

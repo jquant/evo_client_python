@@ -8,13 +8,13 @@ class FuncionariosResumoApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_employee: Optional[int] = Field(None, alias="idEmployee")
+    id_employee: Optional[int] = Field(default=None, alias="idEmployee")
     name: Optional[str] = None
     email: Optional[str] = None
     telephone: Optional[str] = None
-    job_position: Optional[str] = Field(None, alias="jobPosition")
+    job_position: Optional[str] = Field(default=None, alias="jobPosition")
     status: Optional[bool] = None
-    photo_url: Optional[str] = Field(None, alias="photoUrl")
+    photo_url: Optional[str] = Field(default=None, alias="photoUrl")
 
     class Config:
         """Pydantic model configuration"""

@@ -21,10 +21,10 @@ class MonthDiscountViewModel(BaseModel):
     """
 
     type_discount_membership: Optional[str] = Field(
-        None, alias="typeDiscountMembership"
+        default=None, alias="typeDiscountMembership"
     )
     value: Optional[float] = None
-    number_mounths: Optional[int] = Field(None, alias="numberMounths")
+    number_mounths: Optional[int] = Field(default=None, alias="numberMounths")
 
     class Config:
         """Pydantic model configuration"""

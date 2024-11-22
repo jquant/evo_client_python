@@ -23,19 +23,19 @@ class AtividadeSessaoParticipanteApiViewModel(BaseModel):
     Auto-generated from OpenAPI/Swagger specification.
     """
 
-    id_member: Optional[int] = Field(None, alias="idMember")
-    id_employee: Optional[int] = Field(None, alias="idEmployee")
-    id_prospect: Optional[int] = Field(None, alias="idProspect")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
+    id_employee: Optional[int] = Field(default=None, alias="idEmployee")
+    id_prospect: Optional[int] = Field(default=None, alias="idProspect")
     id: Optional[int] = None
-    slot_number: Optional[int] = Field(None, alias="slotNumber")
+    slot_number: Optional[int] = Field(default=None, alias="slotNumber")
     name: Optional[str] = None
     photo: Optional[str] = None
-    justified_absence: Optional[bool] = Field(None, alias="justifiedAbsence")
-    id_sale_item: Optional[int] = Field(None, alias="idSaleItem")
+    justified_absence: Optional[bool] = Field(default=None, alias="justifiedAbsence")
+    id_sale_item: Optional[int] = Field(default=None, alias="idSaleItem")
     status: Optional[EStatusAtividadeSessao] = None
     exclusive: Optional[bool] = None
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    branch_name: Optional[str] = Field(None, alias="branchName")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    branch_name: Optional[str] = Field(default=None, alias="branchName")
     replacement: Optional[bool] = None
     suspended: Optional[bool] = None
     removed: Optional[bool] = None

@@ -20,7 +20,9 @@ class ServiceDiscountViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    type_discount_service: Optional[str] = Field(None, alias="typeDiscountService")
+    type_discount_service: Optional[str] = Field(
+        default=None, alias="typeDiscountService"
+    )
     value: Optional[float] = None
 
     class Config:

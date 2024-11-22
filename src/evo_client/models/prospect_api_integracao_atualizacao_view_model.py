@@ -21,18 +21,18 @@ class ProspectApiIntegracaoAtualizacaoViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_prospect: Optional[int] = Field(None, alias="idProspect")
+    id_prospect: Optional[int] = Field(default=None, alias="idProspect")
     name: Optional[str] = None
     email: Optional[str] = None
-    last_name: Optional[str] = Field(None, alias="lastName")
+    last_name: Optional[str] = Field(default=None, alias="lastName")
     ddi: Optional[str] = None
     cellphone: Optional[str] = None
     birthday: Optional[datetime] = None
     gender: Optional[str] = None
     notes: Optional[str] = None
-    current_step: Optional[str] = Field(None, alias="currentStep")
+    current_step: Optional[str] = Field(default=None, alias="currentStep")
     cpf: Optional[str] = None
-    token_gympass: Optional[str] = Field(None, alias="tokenGympass")
+    token_gympass: Optional[str] = Field(default=None, alias="tokenGympass")
 
     class Config:
         populate_by_name = True

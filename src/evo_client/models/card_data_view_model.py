@@ -23,14 +23,20 @@ class CardDataViewModel(BaseModel):
     """
 
     token: Optional[str] = None
-    temporary_token: Optional[str] = Field(None, alias="temporaryToken")
-    branch_token: Optional[str] = Field(None, alias="branchToken")
-    total_installments: Optional[int] = Field(None, alias="totalInstallments")
-    truncated_card_number: Optional[str] = Field(None, alias="truncatedCardNumber")
+    temporary_token: Optional[str] = Field(default=None, alias="temporaryToken")
+    branch_token: Optional[str] = Field(default=None, alias="branchToken")
+    total_installments: Optional[int] = Field(default=None, alias="totalInstallments")
+    truncated_card_number: Optional[str] = Field(
+        default=None, alias="truncatedCardNumber"
+    )
     brand: Optional[str] = None
-    card_holder_name: Optional[str] = Field(None, alias="cardHolderName")
-    card_expiration_year: Optional[int] = Field(None, alias="cardExpirationYear")
-    card_expiration_month: Optional[int] = Field(None, alias="cardExpirationMonth")
+    card_holder_name: Optional[str] = Field(default=None, alias="cardHolderName")
+    card_expiration_year: Optional[int] = Field(
+        default=None, alias="cardExpirationYear"
+    )
+    card_expiration_month: Optional[int] = Field(
+        default=None, alias="cardExpirationMonth"
+    )
 
     class Config:
         """Pydantic model configuration"""

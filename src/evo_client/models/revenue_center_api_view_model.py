@@ -20,12 +20,14 @@ class RevenueCenterApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_revenue_center: Optional[int] = Field(None, alias="idRevenueCenter")
+    id_revenue_center: Optional[int] = Field(default=None, alias="idRevenueCenter")
     description: Optional[str] = None
     active: Optional[bool] = None
-    id_revenue_center_parent: Optional[int] = Field(None, alias="idRevenueCenterParent")
+    id_revenue_center_parent: Optional[int] = Field(
+        default=None, alias="idRevenueCenterParent"
+    )
     abreviation: Optional[str] = None
-    id_dre_group: Optional[int] = Field(None, alias="idDreGroup")
+    id_dre_group: Optional[int] = Field(default=None, alias="idDreGroup")
     level: Optional[int] = None
 
     class Config:

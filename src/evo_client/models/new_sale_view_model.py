@@ -23,24 +23,26 @@ class NewSaleViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    id_branch_token: Optional[str] = Field(None, alias="idBranchToken")
-    id_membership: Optional[int] = Field(None, alias="idMembership")
-    id_service: Optional[int] = Field(None, alias="idService")
-    service_value: Optional[float] = Field(None, alias="serviceValue")
-    member_data: Optional[MemberNewSaleViewModel] = Field(None, alias="memberData")
-    card_data: Optional[CardDataViewModel] = Field(None, alias="cardData")
-    id_prospect: Optional[int] = Field(None, alias="idProspect")
-    id_prospect_token: Optional[str] = Field(None, alias="idProspectToken")
-    id_member: Optional[int] = Field(None, alias="idMember")
-    id_member_token: Optional[str] = Field(None, alias="idMemberToken")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    id_branch_token: Optional[str] = Field(default=None, alias="idBranchToken")
+    id_membership: Optional[int] = Field(default=None, alias="idMembership")
+    id_service: Optional[int] = Field(default=None, alias="idService")
+    service_value: Optional[float] = Field(default=None, alias="serviceValue")
+    member_data: Optional[MemberNewSaleViewModel] = Field(
+        default=None, alias="memberData"
+    )
+    card_data: Optional[CardDataViewModel] = Field(default=None, alias="cardData")
+    id_prospect: Optional[int] = Field(default=None, alias="idProspect")
+    id_prospect_token: Optional[str] = Field(default=None, alias="idProspectToken")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
+    id_member_token: Optional[str] = Field(default=None, alias="idMemberToken")
     voucher: Optional[str] = None
-    id_card_member: Optional[int] = Field(None, alias="idCardMember")
-    id_member_card_token: Optional[str] = Field(None, alias="idMemberCardToken")
-    type_payment: Optional[str] = Field(None, alias="typePayment")
-    total_installments: Optional[int] = Field(None, alias="totalInstallments")
+    id_card_member: Optional[int] = Field(default=None, alias="idCardMember")
+    id_member_card_token: Optional[str] = Field(default=None, alias="idMemberCardToken")
+    type_payment: Optional[str] = Field(default=None, alias="typePayment")
+    total_installments: Optional[int] = Field(default=None, alias="totalInstallments")
     payment: Optional[EFormaPagamentoTotem] = None
-    session_id: Optional[str] = Field(None, alias="sessionId")
+    session_id: Optional[str] = Field(default=None, alias="sessionId")
 
     def to_dict(self):
         """Returns the model properties as a dict"""

@@ -21,22 +21,22 @@ class EntradasResumoApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    date: Optional[datetime] = Field(None, alias="date")
-    date_turn: Optional[datetime] = Field(None, alias="dateTurn")
-    time_zone: Optional[str] = Field(None, alias="timeZone")
-    id_member: Optional[int] = Field(None, alias="idMember")
-    name_member: Optional[str] = Field(None, alias="nameMember")
-    id_prospect: Optional[int] = Field(None, alias="idProspect")
-    name_prospect: Optional[str] = Field(None, alias="nameProspect")
-    id_employee: Optional[int] = Field(None, alias="idEmployee")
-    name_employee: Optional[str] = Field(None, alias="nameEmployee")
-    entry_type: Optional[str] = Field(None, alias="entryType")
+    date: Optional[datetime] = Field(default=None, alias="date")
+    date_turn: Optional[datetime] = Field(default=None, alias="dateTurn")
+    time_zone: Optional[str] = Field(default=None, alias="timeZone")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
+    name_member: Optional[str] = Field(default=None, alias="nameMember")
+    id_prospect: Optional[int] = Field(default=None, alias="idProspect")
+    name_prospect: Optional[str] = Field(default=None, alias="nameProspect")
+    id_employee: Optional[int] = Field(default=None, alias="idEmployee")
+    name_employee: Optional[str] = Field(default=None, alias="nameEmployee")
+    entry_type: Optional[str] = Field(default=None, alias="entryType")
     device: Optional[str] = None
-    releases_by_id: Optional[int] = Field(None, alias="releasesByID")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    block_reason: Optional[str] = Field(None, alias="blockReason")
-    entry_action: Optional[str] = Field(None, alias="entryAction")
-    id_migration: Optional[str] = Field(None, alias="idMigration")
+    releases_by_id: Optional[int] = Field(default=None, alias="releasesByID")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    block_reason: Optional[str] = Field(default=None, alias="blockReason")
+    entry_action: Optional[str] = Field(default=None, alias="entryAction")
+    id_migration: Optional[str] = Field(default=None, alias="idMigration")
 
     class Config:
         """Pydantic model configuration"""

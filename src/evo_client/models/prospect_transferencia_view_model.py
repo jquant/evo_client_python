@@ -20,9 +20,9 @@ class ProspectTransferenciaViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_prospect: Optional[int] = Field(None, alias="idProspect")
-    id_filial_destino: Optional[int] = Field(None, alias="idFilialDestino")
-    id_branch_token: Optional[str] = Field(None, alias="idBranchToken")
+    id_prospect: Optional[int] = Field(default=None, alias="idProspect")
+    id_filial_destino: Optional[int] = Field(default=None, alias="idFilialDestino")
+    id_branch_token: Optional[str] = Field(default=None, alias="idBranchToken")
 
     class Config:
         populate_by_name = True

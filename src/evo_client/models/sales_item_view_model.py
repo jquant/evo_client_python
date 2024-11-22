@@ -23,69 +23,81 @@ class SalesItemViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_membership: Optional[int] = Field(None, alias="idMembership")
+    id_membership: Optional[int] = Field(default=None, alias="idMembership")
     membership: Optional[str] = None
-    loyalty_installment: Optional[bool] = Field(None, alias="loyaltyInstallment")
+    loyalty_installment: Optional[bool] = Field(
+        default=None, alias="loyaltyInstallment"
+    )
     membership_type: Optional[str] = Field(
-        None, alias="membershipType"
+        default=None, alias="membershipType"
     )  # Changed from ETipoContrato to str
-    loyalty_time: Optional[int] = Field(None, alias="loyaltyTime")
-    validity_description: Optional[str] = Field(None, alias="validityDescription")
+    loyalty_time: Optional[int] = Field(default=None, alias="loyaltyTime")
+    validity_description: Optional[str] = Field(
+        default=None, alias="validityDescription"
+    )
     reverse_installments_description: Optional[str] = Field(
-        None, alias="reverseInstallmentsDescription"
+        default=None, alias="reverseInstallmentsDescription"
     )
     value_days_months_defined_validity: Optional[int] = Field(
-        None, alias="valueDaysMonthsDefinedValidity"
+        default=None, alias="valueDaysMonthsDefinedValidity"
     )
-    service_value: Optional[float] = Field(None, alias="serviceValue")
-    service_name: Optional[str] = Field(None, alias="serviceName")
+    service_value: Optional[float] = Field(default=None, alias="serviceValue")
+    service_name: Optional[str] = Field(default=None, alias="serviceName")
     remark: Optional[str] = None
-    membership_text: Optional[str] = Field(None, alias="membershipText")
-    annuity_service_name: Optional[str] = Field(None, alias="annuityServiceName")
-    annuity_service_value: Optional[float] = Field(None, alias="annuityServiceValue")
-    annuity_day: Optional[int] = Field(None, alias="annuityDay")
-    annuity_month: Optional[int] = Field(None, alias="annuityMonth")
-    annuity_charge_type: Optional[int] = Field(None, alias="annuityChargeType")
-    annuity_installments_count: Optional[int] = Field(
-        None, alias="annuityInstallmentsCount"
+    membership_text: Optional[str] = Field(default=None, alias="membershipText")
+    annuity_service_name: Optional[str] = Field(
+        default=None, alias="annuityServiceName"
     )
-    promotional_days_count: Optional[int] = Field(None, alias="promotionalDaysCount")
-    promo_day_month_type: Optional[int] = Field(None, alias="promoDayMonthType")
-    installments_count: Optional[int] = Field(None, alias="installmentsCount")
+    annuity_service_value: Optional[float] = Field(
+        default=None, alias="annuityServiceValue"
+    )
+    annuity_day: Optional[int] = Field(default=None, alias="annuityDay")
+    annuity_month: Optional[int] = Field(default=None, alias="annuityMonth")
+    annuity_charge_type: Optional[int] = Field(default=None, alias="annuityChargeType")
+    annuity_installments_count: Optional[int] = Field(
+        default=None, alias="annuityInstallmentsCount"
+    )
+    promotional_days_count: Optional[int] = Field(
+        default=None, alias="promotionalDaysCount"
+    )
+    promo_day_month_type: Optional[int] = Field(default=None, alias="promoDayMonthType")
+    installments_count: Optional[int] = Field(default=None, alias="installmentsCount")
     promotional_value_description: Optional[str] = Field(
-        None, alias="promotionalValueDescription"
+        default=None, alias="promotionalValueDescription"
     )
     annuity_installments: Optional[List[InstallmentViewModel]] = Field(
-        None, alias="annuityInstallments"
+        default=None, alias="annuityInstallments"
     )
-    id_service: Optional[int] = Field(None, alias="idService")
+    id_service: Optional[int] = Field(default=None, alias="idService")
     name: Optional[str] = None
-    fl_spotlight: Optional[bool] = Field(None, alias="flSpotlight")
+    fl_spotlight: Optional[bool] = Field(default=None, alias="flSpotlight")
     order: Optional[int] = None
     type: Optional[int] = None
-    charge_value: Optional[float] = Field(None, alias="chargeValue")
+    charge_value: Optional[float] = Field(default=None, alias="chargeValue")
     charge_value_description: Optional[str] = Field(
-        None, alias="chargeValueDescription"
+        default=None, alias="chargeValueDescription"
     )
-    total_value: Optional[float] = Field(None, alias="totalValue")
-    tax_value: Optional[float] = Field(None, alias="taxValue")
-    percentage_type: Optional[bool] = Field(None, alias="percentageType")
+    total_value: Optional[float] = Field(default=None, alias="totalValue")
+    tax_value: Optional[float] = Field(default=None, alias="taxValue")
+    percentage_type: Optional[bool] = Field(default=None, alias="percentageType")
     fl_charge_service_automatic_renew: Optional[bool] = Field(
-        None, alias="flChargeServiceAutomaticRenew"
+        default=None, alias="flChargeServiceAutomaticRenew"
     )
-    fl_bank_slip: Optional[bool] = Field(None, alias="flBankSlip")
-    fl_card: Optional[bool] = Field(None, alias="flCard")
-    fl_credit_balance: Optional[bool] = Field(None, alias="flCreditBalance")
+    fl_bank_slip: Optional[bool] = Field(default=None, alias="flBankSlip")
+    fl_card: Optional[bool] = Field(default=None, alias="flCard")
+    fl_credit_balance: Optional[bool] = Field(default=None, alias="flCreditBalance")
     fl_register_required_address: Optional[bool] = Field(
-        None, alias="flRegisterRequiredAddress"
+        default=None, alias="flRegisterRequiredAddress"
     )
     fl_prioritize_registration_sale: Optional[bool] = Field(
-        None, alias="flPrioritizeRegistrationSale"
+        default=None, alias="flPrioritizeRegistrationSale"
     )
-    age_from: Optional[int] = Field(None, alias="ageFrom")
-    age_to: Optional[int] = Field(None, alias="ageTo")
+    age_from: Optional[int] = Field(default=None, alias="ageFrom")
+    age_to: Optional[int] = Field(default=None, alias="ageTo")
     differentials: Optional[List[DifferentialsViewModel]] = None
-    membership_branches: Optional[List[int]] = Field(None, alias="membershipBranches")
+    membership_branches: Optional[List[int]] = Field(
+        default=None, alias="membershipBranches"
+    )
 
     class Config:
         populate_by_name = True

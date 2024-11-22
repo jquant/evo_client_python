@@ -23,25 +23,29 @@ class ContratosCanceladosParcelasApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_receivable: Optional[int] = Field(None, alias="idReceivable")
+    id_receivable: Optional[int] = Field(default=None, alias="idReceivable")
     description: Optional[str] = None
     ammount: Optional[float] = None
-    ammount_paid: Optional[float] = Field(None, alias="ammountPaid")
-    current_installment: Optional[int] = Field(None, alias="currentInstallment")
-    total_installments: Optional[int] = Field(None, alias="totalInstallments")
+    ammount_paid: Optional[float] = Field(default=None, alias="ammountPaid")
+    current_installment: Optional[int] = Field(default=None, alias="currentInstallment")
+    total_installments: Optional[int] = Field(default=None, alias="totalInstallments")
     tid: Optional[str] = None
     nsu: Optional[str] = None
     authorization: Optional[str] = None
     canceled: Optional[bool] = None
-    cancellation_date: Optional[datetime] = Field(None, alias="cancellationDate")
-    cancellation_description: Optional[str] = Field(
-        None, alias="cancellationDescription"
+    cancellation_date: Optional[datetime] = Field(
+        default=None, alias="cancellationDate"
     )
-    registration_date: Optional[datetime] = Field(None, alias="registrationDate")
-    due_date: Optional[datetime] = Field(None, alias="dueDate")
-    receiving_date: Optional[datetime] = Field(None, alias="receivingDate")
+    cancellation_description: Optional[str] = Field(
+        default=None, alias="cancellationDescription"
+    )
+    registration_date: Optional[datetime] = Field(
+        default=None, alias="registrationDate"
+    )
+    due_date: Optional[datetime] = Field(default=None, alias="dueDate")
+    receiving_date: Optional[datetime] = Field(default=None, alias="receivingDate")
     payment_type: Optional[ReceivablesApiSubTypesViewModel] = Field(
-        None, alias="paymentType"
+        default=None, alias="paymentType"
     )
 
     class Config:

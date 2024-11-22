@@ -20,10 +20,10 @@ class DadosContratoTrasnferenciaApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    fl_transfer: Optional[bool] = Field(None, alias="flTransfer")
-    id_member_transfer: Optional[int] = Field(None, alias="idMemberTransfer")
+    fl_transfer: Optional[bool] = Field(default=None, alias="flTransfer")
+    id_member_transfer: Optional[int] = Field(default=None, alias="idMemberTransfer")
     id_member_membership_transfer: Optional[int] = Field(
-        None, alias="idMemberMembershipTransfer"
+        default=None, alias="idMemberMembershipTransfer"
     )
 
     class Config:

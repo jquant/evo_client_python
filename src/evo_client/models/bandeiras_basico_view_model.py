@@ -17,7 +17,7 @@ class BandeirasBasicoViewModel(BaseModel):
 
     value: Optional[str] = None
     text: Optional[str] = None
-    logo_url: Optional[str] = Field(None, alias="logoUrl")
+    logo_url: Optional[str] = Field(default=None, alias="logoUrl")
 
     class Config:
         """Pydantic model configuration"""

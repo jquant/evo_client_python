@@ -25,30 +25,30 @@ class ProspectsResumoApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_prospect: Optional[int] = Field(None, alias="idProspect")
-    id_branch: Optional[int] = Field(None, alias="idBranch")
-    branch_name: Optional[str] = Field(None, alias="branchName")
-    first_name: Optional[str] = Field(None, alias="firstName")
-    last_name: Optional[str] = Field(None, alias="lastName")
+    id_prospect: Optional[int] = Field(default=None, alias="idProspect")
+    id_branch: Optional[int] = Field(default=None, alias="idBranch")
+    branch_name: Optional[str] = Field(default=None, alias="branchName")
+    first_name: Optional[str] = Field(default=None, alias="firstName")
+    last_name: Optional[str] = Field(default=None, alias="lastName")
     document: Optional[str] = None
     cellphone: Optional[str] = None
     email: Optional[str] = None
-    gympass_id: Optional[str] = Field(None, alias="gympassId")
-    register_date: Optional[datetime] = Field(None, alias="registerDate")
+    gympass_id: Optional[str] = Field(default=None, alias="gympassId")
+    register_date: Optional[datetime] = Field(default=None, alias="registerDate")
     gender: Optional[str] = None
-    birth_date: Optional[datetime] = Field(None, alias="birthDate")
-    signup_type: Optional[str] = Field(None, alias="signupType")
-    mkt_channel: Optional[str] = Field(None, alias="mktChannel")
-    conversion_date: Optional[datetime] = Field(None, alias="conversionDate")
-    id_member: Optional[int] = Field(None, alias="idMember")
-    current_step: Optional[str] = Field(None, alias="currentStep")
+    birth_date: Optional[datetime] = Field(default=None, alias="birthDate")
+    signup_type: Optional[str] = Field(default=None, alias="signupType")
+    mkt_channel: Optional[str] = Field(default=None, alias="mktChannel")
+    conversion_date: Optional[datetime] = Field(default=None, alias="conversionDate")
+    id_member: Optional[int] = Field(default=None, alias="idMember")
+    current_step: Optional[str] = Field(default=None, alias="currentStep")
     address: Optional[str] = None
     city: Optional[str] = None
     complement: Optional[str] = None
     neighborhood: Optional[str] = None
     state: Optional[str] = None
     country: Optional[str] = None
-    zip_code: Optional[str] = Field(None, alias="zipCode")
+    zip_code: Optional[str] = Field(default=None, alias="zipCode")
     number: Optional[str] = None
     responsible: Optional[ProspectResponsavelResumoApiViewModel] = None
 

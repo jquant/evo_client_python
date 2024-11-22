@@ -21,37 +21,49 @@ class SaleItensViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_sale_item: Optional[int] = Field(None, alias="idSaleItem")
+    id_sale_item: Optional[int] = Field(default=None, alias="idSaleItem")
     description: Optional[str] = None
     item: Optional[str] = None
-    item_value: Optional[float] = Field(None, alias="itemValue")
-    sale_value: Optional[float] = Field(None, alias="saleValue")
+    item_value: Optional[float] = Field(default=None, alias="itemValue")
+    sale_value: Optional[float] = Field(default=None, alias="saleValue")
     sale_value_without_credit_value: Optional[float] = Field(
-        None, alias="saleValueWithoutCreditValue"
+        default=None, alias="saleValueWithoutCreditValue"
     )
     quantity: Optional[int] = None
-    id_membership: Optional[int] = Field(None, alias="idMembership")
-    id_membership_renewed: Optional[int] = Field(None, alias="idMembershipRenewed")
-    num_members: Optional[int] = Field(None, alias="numMembers")
-    id_product: Optional[int] = Field(None, alias="idProduct")
-    id_service: Optional[int] = Field(None, alias="idService")
-    corporate_partnership_name: Optional[str] = Field(
-        None, alias="corporatePartnershipName"
+    id_membership: Optional[int] = Field(default=None, alias="idMembership")
+    id_membership_renewed: Optional[int] = Field(
+        default=None, alias="idMembershipRenewed"
     )
-    coporate_partnership_id: Optional[int] = Field(None, alias="coporatePartnershipId")
-    membership_start_date: Optional[datetime] = Field(None, alias="membershipStartDate")
+    num_members: Optional[int] = Field(default=None, alias="numMembers")
+    id_product: Optional[int] = Field(default=None, alias="idProduct")
+    id_service: Optional[int] = Field(default=None, alias="idService")
+    corporate_partnership_name: Optional[str] = Field(
+        default=None, alias="corporatePartnershipName"
+    )
+    coporate_partnership_id: Optional[int] = Field(
+        default=None, alias="coporatePartnershipId"
+    )
+    membership_start_date: Optional[datetime] = Field(
+        default=None, alias="membershipStartDate"
+    )
     discount: Optional[float] = None
-    corporate_discount: Optional[float] = Field(None, alias="corporateDiscount")
+    corporate_discount: Optional[float] = Field(default=None, alias="corporateDiscount")
     tax: Optional[float] = None
     voucher: Optional[str] = None
-    accounting_code: Optional[str] = Field(None, alias="accountingCode")
-    municipal_service_code: Optional[str] = Field(None, alias="municipalServiceCode")
-    fl_receipt_only: Optional[bool] = Field(None, alias="flReceiptOnly")
-    id_sale_item_migration: Optional[str] = Field(None, alias="idSaleItemMigration")
-    fl_swimming: Optional[bool] = Field(None, alias="flSwimming")
-    fl_allow_locker: Optional[bool] = Field(None, alias="flAllowLocker")
-    id_member_membership: Optional[int] = Field(None, alias="idMemberMembership")
-    value_next_month: Optional[float] = Field(None, alias="valueNextMonth")
+    accounting_code: Optional[str] = Field(default=None, alias="accountingCode")
+    municipal_service_code: Optional[str] = Field(
+        default=None, alias="municipalServiceCode"
+    )
+    fl_receipt_only: Optional[bool] = Field(default=None, alias="flReceiptOnly")
+    id_sale_item_migration: Optional[str] = Field(
+        default=None, alias="idSaleItemMigration"
+    )
+    fl_swimming: Optional[bool] = Field(default=None, alias="flSwimming")
+    fl_allow_locker: Optional[bool] = Field(default=None, alias="flAllowLocker")
+    id_member_membership: Optional[int] = Field(
+        default=None, alias="idMemberMembership"
+    )
+    value_next_month: Optional[float] = Field(default=None, alias="valueNextMonth")
 
     def to_dict(self):
         """Returns the model properties as a dict"""

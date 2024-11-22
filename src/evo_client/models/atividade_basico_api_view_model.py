@@ -25,36 +25,38 @@ class AtividadeBasicoApiViewModel(BaseModel):
     Do not edit the class manually.
     """
 
-    id_group_activity: Optional[int] = Field(None, alias="idGroupActivity")
-    id_activity_session: Optional[int] = Field(None, alias="idActivitySession")
-    id_configuration: Optional[int] = Field(None, alias="idConfiguration")
+    id_group_activity: Optional[int] = Field(default=None, alias="idGroupActivity")
+    id_activity_session: Optional[int] = Field(default=None, alias="idActivitySession")
+    id_configuration: Optional[int] = Field(default=None, alias="idConfiguration")
     name: Optional[str] = None
-    date: Optional[datetime] = Field(None, alias="date")
+    date: Optional[datetime] = Field(default=None, alias="date")
     capacity: Optional[int] = None
     ocupation: Optional[int] = None
     instructor: Optional[str] = None
-    instructor_photo: Optional[str] = Field(None, alias="instructorPhoto")
+    instructor_photo: Optional[str] = Field(default=None, alias="instructorPhoto")
     area: Optional[str] = None
     status: Optional["EStatusAtividade"] = None
-    selected_spot: Optional[str] = Field(None, alias="selectedSpot")
-    exibir_participantes: Optional[bool] = Field(None, alias="exibirParticipantes")
+    selected_spot: Optional[str] = Field(default=None, alias="selectedSpot")
+    exibir_participantes: Optional[bool] = Field(
+        default=None, alias="exibirParticipantes"
+    )
     code: Optional[str] = None
-    status_name: Optional[str] = Field(None, alias="statusName")
-    week_day: Optional[int] = Field(None, alias="weekDay")
-    allow_choosing_spot: Optional[bool] = Field(None, alias="allowChoosingSpot")
-    time_tick: Optional[int] = Field(None, alias="timeTick")
-    duration_tick: Optional[int] = Field(None, alias="durationTick")
-    start_time: Optional[str] = Field(None, alias="startTime")
-    end_time: Optional[str] = Field(None, alias="endTime")
-    branch_name: Optional[str] = Field(None, alias="branchName")
+    status_name: Optional[str] = Field(default=None, alias="statusName")
+    week_day: Optional[int] = Field(default=None, alias="weekDay")
+    allow_choosing_spot: Optional[bool] = Field(default=None, alias="allowChoosingSpot")
+    time_tick: Optional[int] = Field(default=None, alias="timeTick")
+    duration_tick: Optional[int] = Field(default=None, alias="durationTick")
+    start_time: Optional[str] = Field(default=None, alias="startTime")
+    end_time: Optional[str] = Field(default=None, alias="endTime")
+    branch_name: Optional[str] = Field(default=None, alias="branchName")
     color: Optional[str] = None
     description: Optional[str] = None
-    image_url: Optional[str] = Field(None, alias="imageUrl")
+    image_url: Optional[str] = Field(default=None, alias="imageUrl")
     enrollments: Optional[List["AtividadeSessaoParticipanteApiViewModel"]] = None
     spots: Optional[List["AtividadeLugarReservaViewModel"]] = None
     title: Optional[str] = None
     json_config_vaga_personalizada: Optional[str] = Field(
-        None, alias="jsonConfigVagaPersonalizada"
+        default=None, alias="jsonConfigVagaPersonalizada"
     )
 
     class Config:
