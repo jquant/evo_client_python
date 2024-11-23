@@ -5,7 +5,6 @@ from multiprocessing.pool import AsyncResult
 from typing import Any
 from functools import lru_cache
 from typing import TypeVar
-from .serializer import Serializer
 from .request_handler import RequestHandler
 from .configuration import Configuration
 from ..exceptions.api_exceptions import ApiClientError
@@ -30,7 +29,6 @@ class ApiClient:
         self.configuration = configuration or Configuration()
         self.validate_configuration()
 
-        self.serializer = Serializer()
         self.request_handler = RequestHandler(self.configuration)
 
         # Initialize headers
