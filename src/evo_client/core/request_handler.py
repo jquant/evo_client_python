@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional
 from multiprocessing.pool import ThreadPool, AsyncResult
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 import logging
 
 from .rest import RESTClient

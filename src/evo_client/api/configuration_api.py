@@ -15,7 +15,8 @@ from __future__ import absolute_import
 
 from evo_client.core.api_client import ApiClient
 from typing import List, Optional, Union, Dict, Any, overload
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..models.empresas_filiais_gateway_view_model import (
     EmpresasFiliaisGatewayViewModel,
@@ -37,7 +38,7 @@ class ConfigurationApi:
     @overload
     def get_gateway_config(
         self, async_req: bool = True
-    ) -> Union[EmpresasFiliaisGatewayViewModel, Thread]: ...
+    ) -> Union[EmpresasFiliaisGatewayViewModel, AsyncResult[Any]]: ...
 
     @overload
     def get_gateway_config(
@@ -46,7 +47,7 @@ class ConfigurationApi:
 
     def get_gateway_config(
         self, async_req: bool = False
-    ) -> Union[EmpresasFiliaisGatewayViewModel, Thread]:
+    ) -> Union[EmpresasFiliaisGatewayViewModel, AsyncResult[Any]]:
         """
         Get gateway configurations.
 
@@ -54,7 +55,7 @@ class ConfigurationApi:
             async_req: Execute request asynchronously
 
         Returns:
-            Gateway configuration or Thread if async
+            Gateway configuration or AsyncResult[Any] if async
         """
         return self.api_client.call_api(
             resource_path=f"{self.base_path}/gateway",
@@ -68,7 +69,7 @@ class ConfigurationApi:
     @overload
     def get_branch_config(
         self, async_req: bool = True
-    ) -> Union[ConfiguracaoApiViewModel, Thread]: ...
+    ) -> Union[ConfiguracaoApiViewModel, AsyncResult[Any]]: ...
 
     @overload
     def get_branch_config(
@@ -77,7 +78,7 @@ class ConfigurationApi:
 
     def get_branch_config(
         self, async_req: bool = False
-    ) -> Union[ConfiguracaoApiViewModel, Thread]:
+    ) -> Union[ConfiguracaoApiViewModel, AsyncResult[Any]]:
         """
         Get branch configurations.
 
@@ -85,7 +86,7 @@ class ConfigurationApi:
             async_req: Execute request asynchronously
 
         Returns:
-            Branch configuration or Thread if async
+            Branch configuration or AsyncResult[Any] if async
         """
         return self.api_client.call_api(
             resource_path=self.base_path,
@@ -99,7 +100,7 @@ class ConfigurationApi:
     @overload
     def get_occupations(
         self, async_req: bool = True
-    ) -> Union[List[EmpresasFiliaisOcupacaoViewModel], Thread]: ...
+    ) -> Union[List[EmpresasFiliaisOcupacaoViewModel], AsyncResult[Any]]: ...
 
     @overload
     def get_occupations(
@@ -108,7 +109,7 @@ class ConfigurationApi:
 
     def get_occupations(
         self, async_req: bool = True
-    ) -> Union[List[EmpresasFiliaisOcupacaoViewModel], Thread]:
+    ) -> Union[List[EmpresasFiliaisOcupacaoViewModel], AsyncResult[Any]]:
         """
         Get occupation configurations.
 
@@ -116,7 +117,7 @@ class ConfigurationApi:
             async_req: Execute request asynchronously
 
         Returns:
-            List of occupation configurations or Thread if async
+            List of occupation configurations or AsyncResult[Any] if async
         """
         return self.api_client.call_api(
             resource_path=f"{self.base_path}/occupation",
@@ -130,7 +131,7 @@ class ConfigurationApi:
     @overload
     def get_card_flags(
         self, async_req: bool = True
-    ) -> Union[List[BandeirasBasicoViewModel], Thread]: ...
+    ) -> Union[List[BandeirasBasicoViewModel], AsyncResult[Any]]: ...
 
     @overload
     def get_card_flags(
@@ -139,7 +140,7 @@ class ConfigurationApi:
 
     def get_card_flags(
         self, async_req: bool = False
-    ) -> Union[List[BandeirasBasicoViewModel], Thread]:
+    ) -> Union[List[BandeirasBasicoViewModel], AsyncResult[Any]]:
         """
         Get card flags.
 
@@ -147,7 +148,7 @@ class ConfigurationApi:
             async_req: Execute request asynchronously
 
         Returns:
-            List of card flags or Thread if async
+            List of card flags or AsyncResult[Any] if async
         """
         return self.api_client.call_api(
             resource_path=f"{self.base_path}/card-flags",
@@ -161,14 +162,14 @@ class ConfigurationApi:
     @overload
     def get_translations(
         self, async_req: bool = True
-    ) -> Union[Dict[str, Any], Thread]: ...
+    ) -> Union[Dict[str, Any], AsyncResult[Any]]: ...
 
     @overload
     def get_translations(self, async_req: bool = False) -> Dict[str, Any]: ...
 
     def get_translations(
         self, async_req: bool = False
-    ) -> Union[Dict[str, Any], Thread]:
+    ) -> Union[Dict[str, Any], AsyncResult[Any]]:
         """
         Get card translations.
 
@@ -176,7 +177,7 @@ class ConfigurationApi:
             async_req: Execute request asynchronously
 
         Returns:
-            Translation dictionary or Thread if async
+            Translation dictionary or AsyncResult[Any] if async
         """
         return self.api_client.call_api(
             resource_path=f"{self.base_path}/card-translation",

@@ -18,9 +18,9 @@ from evo_client.models.e_tipo_gateway import ETipoGateway
 def test_e_tipo_gateway_creation():
     """Test creating an ETipoGateway instance"""
     assert isinstance(ETipoGateway._0, ETipoGateway)
-    assert ETipoGateway._0 == "0"
-    assert ETipoGateway._1 == "1"
-    assert ETipoGateway._2 == "2"
+    assert ETipoGateway._0 == ETipoGateway("0")
+    assert ETipoGateway._1 == ETipoGateway("1")
+    assert ETipoGateway._2 == ETipoGateway("2")
 
 
 def test_e_tipo_gateway_to_dict():

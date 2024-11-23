@@ -21,7 +21,8 @@ from evo_client.core.api_client import ApiClient
 
 from typing import List, Optional, Union, overload
 from datetime import datetime
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..models.enotas_retorno import EnotasRetorno, InvoiceStatus, InvoiceType
 
@@ -48,7 +49,7 @@ class InvoicesApi:
         status_invoice: Optional[List[InvoiceStatus]] = None,
         types_invoice: Optional[List[InvoiceType]] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_invoices(
@@ -81,7 +82,7 @@ class InvoicesApi:
         status_invoice: Optional[List[InvoiceStatus]] = None,
         types_invoice: Optional[List[InvoiceType]] = None,
         async_req: bool = False,
-    ) -> Union[EnotasRetorno, Thread]:
+    ) -> Union[EnotasRetorno, AsyncResult[Any]]:
         """
         Get invoices by date and other filters.
 
@@ -100,7 +101,7 @@ class InvoicesApi:
             async_req: Execute request asynchronously
 
         Returns:
-            Invoice response or Thread if async
+            Invoice response or AsyncResult[Any] if async
 
         Raises:
             ValueError: If take > 250

@@ -78,7 +78,21 @@ def test_configuracao_api_view_model_equality(configuracao_api_view_model):
         internalName="MainBranchInternal",
         cnpj="12345678901234",
         address="123 Main St",
+        neighborhood="Downtown",
         telephone="1234567890",
+        number="100",
+        idState=1,
+        state="StateName",
+        stateShort="SN",
+        city="CityName",
+        complement="Suite 100",
+        zipCode="12345-678",
+        website="https://example.com",
+        latitude=12.345678,
+        longitude=98.765432,
+        openingDate=datetime(2023, 1, 1),
+        businessHours=[],
+        searchTerms=["gym", "fitness", "workout"],
     )
 
     different_model = ConfiguracaoApiViewModel(

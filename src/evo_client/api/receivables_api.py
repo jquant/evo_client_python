@@ -1,6 +1,7 @@
 from typing import Optional, List, Union, overload
 from datetime import datetime
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 from ..models.receivables_api_view_model import ReceivablesApiViewModel
@@ -51,7 +52,7 @@ class ReceivablesApi:
         sale_date_start: Optional[datetime] = None,
         sale_date_end: Optional[datetime] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_receivables(
@@ -122,7 +123,7 @@ class ReceivablesApi:
         sale_date_start: Optional[datetime] = None,
         sale_date_end: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> Union[List[ReceivablesApiViewModel], Thread]:
+    ) -> Union[List[ReceivablesApiViewModel], AsyncResult[Any]]:
         """
         Get receivables with optional filtering.
 
@@ -211,7 +212,7 @@ class ReceivablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_revenue_centers(
@@ -226,7 +227,7 @@ class ReceivablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[RevenueCenterApiViewModel, Thread]:
+    ) -> Union[RevenueCenterApiViewModel, AsyncResult[Any]]:
         """
         Get revenue centers with pagination.
 
@@ -252,7 +253,7 @@ class ReceivablesApi:
     @overload
     def mark_received(
         self, receivables: ReceivablesMaskReceivedViewModel, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def mark_received(
@@ -261,7 +262,7 @@ class ReceivablesApi:
 
     def mark_received(
         self, receivables: ReceivablesMaskReceivedViewModel, async_req: bool = False
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Mark receivables as received.
 

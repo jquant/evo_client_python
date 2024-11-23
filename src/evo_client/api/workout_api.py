@@ -1,6 +1,7 @@
 from typing import Optional, List, Dict, Any, Union, overload
 from datetime import datetime
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 
@@ -26,7 +27,7 @@ class WorkoutApi:
         total_weeks: Optional[int] = None,
         weekly_frequency: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def update_workout(
@@ -57,7 +58,7 @@ class WorkoutApi:
         total_weeks: Optional[int] = None,
         weekly_frequency: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Update a client's prescribed workout.
 
@@ -105,7 +106,7 @@ class WorkoutApi:
         inactive: Optional[bool] = None,
         deleted: Optional[bool] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_client_workouts(
@@ -128,7 +129,7 @@ class WorkoutApi:
         inactive: Optional[bool] = None,
         deleted: Optional[bool] = None,
         async_req: bool = False,
-    ) -> Union[List[Dict[str, Any]], Thread]:
+    ) -> Union[List[Dict[str, Any]], AsyncResult[Any]]:
         """
         Get workouts for a client, prospect or employee.
 
@@ -168,7 +169,7 @@ class WorkoutApi:
         skip: Optional[int] = None,
         take: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_workouts_by_month_year_professor(
@@ -189,7 +190,7 @@ class WorkoutApi:
         skip: Optional[int] = None,
         take: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[List[Dict[str, Any]], Thread]:
+    ) -> Union[List[Dict[str, Any]], AsyncResult[Any]]:
         """
         Get workouts filtered by month, year and/or professor.
 
@@ -224,7 +225,7 @@ class WorkoutApi:
         employee_id: Optional[int] = None,
         tag_id: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_default_workouts(
@@ -239,7 +240,7 @@ class WorkoutApi:
         employee_id: Optional[int] = None,
         tag_id: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[List[Dict[str, Any]], Thread]:
+    ) -> Union[List[Dict[str, Any]], AsyncResult[Any]]:
         """
         Get all default workouts with optional filtering.
 
@@ -281,7 +282,7 @@ class WorkoutApi:
         employee_id: Optional[int] = None,
         prescription_date: Optional[datetime] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def link_workout_to_client(
@@ -304,7 +305,7 @@ class WorkoutApi:
         employee_id: Optional[int] = None,
         prescription_date: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> Union[bool, Thread]:
+    ) -> Union[bool, AsyncResult[Any]]:
         """
         Link an existing workout to a client, prospect, or employee.
 

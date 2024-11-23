@@ -1,5 +1,6 @@
 from typing import Optional, Union, overload
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 from ..models.bank_accounts_view_model import BankAccountsViewModel
@@ -26,21 +27,21 @@ class BankAccountsApi:
     def get_accounts(self, async_req: bool = True) -> BankAccountsViewModel: ...
 
     @overload
-    def get_accounts(self, async_req: bool = False) -> Thread: ...
+    def get_accounts(self, async_req: bool = False) -> AsyncResult[Any]: ...
 
     def get_accounts(
         self, async_req: bool = False
-    ) -> Union[BankAccountsViewModel, Thread]:
+    ) -> Union[BankAccountsViewModel, AsyncResult[Any]]:
         """
         Get all bank accounts.
 
         Args:
-            async_req: If True, returns a Thread object for asynchronous execution.
+            async_req: If True, returns a AsyncResult[Any] object for asynchronous execution.
                       If False, returns the response directly.
 
         Returns:
             BankAccountsViewModel containing the list of bank accounts,
-            or Thread if async_req is True.
+            or AsyncResult[Any] if async_req is True.
 
         Example:
             >>> api = BankAccountsApi()

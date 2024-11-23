@@ -16,7 +16,8 @@ from ..models.e_origem_agendamento import EOrigemAgendamento
 
 
 from typing import Optional, List, Dict, Any, Union, overload
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 
 class ActivitiesApi:
@@ -34,7 +35,7 @@ class ActivitiesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_activities(
@@ -53,7 +54,7 @@ class ActivitiesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[List[AtividadeListApiViewModel], Thread]:
+    ) -> Union[List[AtividadeListApiViewModel], AsyncResult[Any]]:
         """
         Get activities list with optional filtering.
 
@@ -82,7 +83,7 @@ class ActivitiesApi:
         activity_date: Optional[datetime] = None,
         session_id: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_schedule_detail(
@@ -99,7 +100,7 @@ class ActivitiesApi:
         activity_date: Optional[datetime] = None,
         session_id: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[AtividadeBasicoApiViewModel, Thread]:
+    ) -> Union[AtividadeBasicoApiViewModel, AsyncResult[Any]]:
         """
         Get activity schedule details.
 
@@ -139,7 +140,7 @@ class ActivitiesApi:
         slot_number: Optional[int] = None,
         origin: Optional[EOrigemAgendamento] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def enroll(
@@ -162,7 +163,7 @@ class ActivitiesApi:
         slot_number: Optional[int] = None,
         origin: Optional[EOrigemAgendamento] = None,
         async_req: bool = False,
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Enroll member or prospect in activity schedule.
 
@@ -208,7 +209,7 @@ class ActivitiesApi:
         show_full_week: bool = False,
         branch_token: Optional[str] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_schedule(
@@ -237,7 +238,7 @@ class ActivitiesApi:
         show_full_week: bool = False,
         branch_token: Optional[str] = None,
         async_req: bool = False,
-    ) -> Union[List[AtividadeSessaoParticipanteApiViewModel], Thread]:
+    ) -> Union[List[AtividadeSessaoParticipanteApiViewModel], AsyncResult[Any]]:
         """
         Get activities schedule with various filtering options.
 
@@ -287,7 +288,7 @@ class ActivitiesApi:
         activity_exists: bool = False,
         branch_id: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def create_experimental_class(
@@ -310,7 +311,7 @@ class ActivitiesApi:
         activity_exists: bool = False,
         branch_id: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """Create a new experimental class and enroll the prospect."""
         params = {
             "idProspect": prospect_id,
@@ -339,7 +340,7 @@ class ActivitiesApi:
         activity_date: Optional[datetime] = None,
         session_id: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def change_status(
@@ -362,7 +363,7 @@ class ActivitiesApi:
         activity_date: Optional[datetime] = None,
         session_id: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Change status of a member/prospect in activity schedule.
 
@@ -394,7 +395,7 @@ class ActivitiesApi:
     @overload
     def get_unavailable_spots(
         self, config_id: int, date: datetime, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_unavailable_spots(
@@ -403,7 +404,7 @@ class ActivitiesApi:
 
     def get_unavailable_spots(
         self, config_id: int, date: datetime, async_req: bool = False
-    ) -> Union[List[int], Thread]:
+    ) -> Union[List[int], AsyncResult[Any]]:
         """Get list of spots that are already filled in the activity session."""
         params = {"idConfiguration": config_id, "date": date}
 

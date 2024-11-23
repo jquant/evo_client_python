@@ -19,9 +19,9 @@ from evo_client.models.e_origem_agendamento import EOrigemAgendamento
 def test_e_origem_agendamento_creation():
     """Test creating an EOrigemAgendamento instance"""
     assert isinstance(EOrigemAgendamento._0, EOrigemAgendamento)
-    assert EOrigemAgendamento._0 == "0"
-    assert EOrigemAgendamento._1 == "1"
-    assert EOrigemAgendamento._2 == "2"
+    assert EOrigemAgendamento._0 == EOrigemAgendamento("0")
+    assert EOrigemAgendamento._1 == EOrigemAgendamento("1")
+    assert EOrigemAgendamento._2 == EOrigemAgendamento("2")
 
 
 def test_e_origem_agendamento_to_dict():

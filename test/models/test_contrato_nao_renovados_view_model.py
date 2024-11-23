@@ -85,8 +85,18 @@ def test_contrato_nao_renovados_view_model_equality(contrato_nao_renovados_view_
         contratoAtivo="Yes",
         nome="John",
         sobrenome="Doe",
+        contratoVencido="No",
+        dataInicio=datetime(2023, 1, 1),
+        dataFim=datetime(2023, 12, 31),
+        mesesPermanencia=12,
         valor=999.99,
         flCancelado=False,
+        dtCancelamento=None,
+        contratoCancelado="No",
+        motivoCancelamento=None,
+        nomeConsultor="Jane Smith",
+        celular="1234567890",
+        email="john.doe@example.com",
     )
 
     different_model = ContratoNaoRenovadosViewModel(

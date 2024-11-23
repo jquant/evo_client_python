@@ -75,7 +75,14 @@ def test_clientes_ativos_view_model_equality(clientes_ativos_view_model):
         nomeCompleto="John Doe",
         telefone="1234567890",
         email="john.doe@example.com",
+        idClienteContratoAtivo=456,
         contratoAtivo="Active",
+        dtInicioContratoAtivo=datetime(2023, 1, 1),
+        dtFimContratoAtivo=datetime(2023, 12, 31),
+        idClienteContratoFuturo=789,
+        contratoFuturo="Future",
+        dtInicioContratoFuturo=datetime(2024, 1, 1),
+        dtFimContratoFuturo=datetime(2024, 12, 31),
     )
 
     different_model = ClientesAtivosViewModel(

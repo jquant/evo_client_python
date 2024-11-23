@@ -1,5 +1,6 @@
 from typing import List, Optional, Union, overload
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 
 from ..core.api_client import ApiClient
@@ -31,7 +32,7 @@ class EmployeesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_employees(
@@ -52,7 +53,7 @@ class EmployeesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[List[FuncionariosResumoApiViewModel], Thread]:
+    ) -> Union[List[FuncionariosResumoApiViewModel], AsyncResult[Any]]:
         """
         Get employees with optional filtering.
 
@@ -65,7 +66,7 @@ class EmployeesApi:
             async_req: Execute request asynchronously
 
         Returns:
-            List of employees or Thread if async
+            List of employees or AsyncResult[Any] if async
         """
         params = {
             "idEmployee": employee_id,
@@ -86,14 +87,16 @@ class EmployeesApi:
         )
 
     @overload
-    def delete_employee(self, employee_id: int, async_req: bool = True) -> Thread: ...
+    def delete_employee(
+        self, employee_id: int, async_req: bool = True
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def delete_employee(self, employee_id: int, async_req: bool = False) -> None: ...
 
     def delete_employee(
         self, employee_id: int, async_req: bool = False
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Delete an employee.
 
@@ -113,7 +116,7 @@ class EmployeesApi:
     @overload
     def update_employee(
         self, employee: EmployeeApiIntegracaoViewModel, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def update_employee(
@@ -122,7 +125,7 @@ class EmployeesApi:
 
     def update_employee(
         self, employee: EmployeeApiIntegracaoViewModel, async_req: bool = False
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Update an existing employee.
 
@@ -144,20 +147,20 @@ class EmployeesApi:
         self,
         employee: EmployeeApiIntegracaoAtualizacaoViewModel,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def create_employee(
         self,
         employee: EmployeeApiIntegracaoAtualizacaoViewModel,
         async_req: bool = False,
-    ) -> Union[None, Thread]: ...
+    ) -> Union[None, AsyncResult[Any]]: ...
 
     def create_employee(
         self,
         employee: EmployeeApiIntegracaoAtualizacaoViewModel,
         async_req: bool = False,
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Create a new employee.
 

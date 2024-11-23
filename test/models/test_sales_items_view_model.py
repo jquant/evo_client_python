@@ -74,6 +74,13 @@ def test_sales_items_view_model_equality(sales_items_view_model):
         idSaleItem=4,
         checkoutUrl="https://example.com/checkout",
         notInaugurated=True,
+        itens=[
+            SalesItemViewModel(
+                idMembership=5,
+                name="Item 1",
+                serviceValue=100.0,
+            )
+        ],
     )
 
     different_model = SalesItemsViewModel(

@@ -19,9 +19,9 @@ from evo_client.models.e_status_atividade import EStatusAtividade
 def test_e_status_atividade_creation():
     """Test creating an EStatusAtividade instance"""
     assert isinstance(EStatusAtividade._0, EStatusAtividade)
-    assert EStatusAtividade._0 == "0"
-    assert EStatusAtividade._1 == "1"
-    assert EStatusAtividade._2 == "2"
+    assert EStatusAtividade._0 == EStatusAtividade("0")
+    assert EStatusAtividade._1 == EStatusAtividade("1")
+    assert EStatusAtividade._2 == EStatusAtividade("2")
 
 
 def test_e_status_atividade_to_dict():

@@ -70,6 +70,8 @@ def test_receivables_invoice_api_view_model_equality(
         invoiceNumber="INV123",
         issuedAmount=150.0,
         status="Issued",
+        sendDate=datetime(2023, 1, 1),
+        canceledDate=None,
         urlPdf="https://example.com/invoice.pdf",
         idInvoiceType=1,
         invoiceType="Standard",

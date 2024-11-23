@@ -1,6 +1,7 @@
 from typing import Optional, List, Union, overload
 from datetime import datetime
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 from ..models.convenios_api_view_model import ConveniosApiViewModel
@@ -20,7 +21,7 @@ class PartnershipApi:
         description: Optional[str] = None,
         dt_created: Optional[datetime] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_partnerships(
@@ -37,7 +38,7 @@ class PartnershipApi:
         description: Optional[str] = None,
         dt_created: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> Union[List[ConveniosApiViewModel], Thread]:
+    ) -> Union[List[ConveniosApiViewModel], AsyncResult[Any]]:
         """
         Get partnerships with optional filtering.
 

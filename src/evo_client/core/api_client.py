@@ -1,14 +1,15 @@
 from __future__ import annotations
 from typing import Optional, Dict, Any, Union, List, Type, overload
 import logging
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 from functools import lru_cache
 from typing import TypeVar
 from .serializer import Serializer
 from .request_handler import RequestHandler
 from .configuration import Configuration
 from ..exceptions.api_exceptions import ApiClientError
-from ..models.base import SwaggerModel
+from multiprocessing.pool import AsyncResult
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def call_api(
@@ -111,7 +112,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[T, Thread]:
+    ) -> Union[T, AsyncResult[Any]]:
         """
         Makes the HTTP request (synchronous or asynchronous) and returns deserialized data.
         """
@@ -137,14 +138,16 @@ class ApiClient:
             raise
 
     @overload
-    def _execute_request(self, *, async_req: bool = True, **kwargs) -> Thread: ...
+    def _execute_request(
+        self, *, async_req: bool = True, **kwargs
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def _execute_request(self, *, async_req: bool = False, **kwargs) -> Any: ...
 
     def _execute_request(
         self, *, async_req: bool = True, **kwargs
-    ) -> Union[Any, Thread]:
+    ) -> Union[Any, AsyncResult[Any]]:
         """Execute the request with caching for GET requests."""
         if kwargs["method"].upper() == "GET":
             # Only cache GET requests using a tuple of relevant parameters

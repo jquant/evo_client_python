@@ -83,10 +83,33 @@ def test_prospects_resumo_api_view_model_equality(prospects_resumo_api_view_mode
     """Test equality comparison of ProspectsResumoApiViewModel instances"""
     same_model = ProspectsResumoApiViewModel(
         idProspect=1,
+        idBranch=2,
+        branchName="Main Branch",
         firstName="John",
         lastName="Doe",
+        document="123456789",
+        cellphone="+1234567890",
         email="john.doe@example.com",
+        gympassId="G123",
+        registerDate=datetime(2023, 1, 1),
         gender="Male",
+        birthDate=datetime(1990, 1, 1),
+        signupType="Online",
+        mktChannel="Social Media",
+        conversionDate=datetime(2023, 2, 1),
+        idMember=10,
+        currentStep="Contacted",
+        address="123 Main St",
+        city="Anytown",
+        complement="Apt 4",
+        neighborhood="Downtown",
+        state="State",
+        country="Country",
+        zipCode="12345",
+        number="123",
+        responsible=ProspectResponsavelResumoApiViewModel(
+            document="123456789", name="Jane Doe", financialResponsible=True
+        ),
     )
 
     different_model = ProspectsResumoApiViewModel(

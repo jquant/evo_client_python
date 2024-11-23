@@ -63,11 +63,14 @@ def test_atividade_sessao_participante_api_view_model_to_dict(
     model_dict = atividade_sessao_participante_api_view_model.to_dict()
 
     assert isinstance(model_dict, dict)
-    assert model_dict["idParticipant"] == 1
-    assert model_dict["idSession"] == 2
+    assert model_dict["idMember"] == 1
+    assert model_dict["idEmployee"] == 2
+    assert model_dict["idProspect"] == 3
+    assert model_dict["slotNumber"] == 4
     assert model_dict["name"] == "John Doe"
-    assert model_dict["email"] == "john.doe@example.com"
-    assert model_dict["status"] == "Confirmed"
+    assert model_dict["photo"] == "photo.jpg"
+    assert model_dict["justifiedAbsence"] is True
+    assert model_dict["status"] == EStatusAtividadeSessao._0.to_dict()
 
 
 def test_atividade_sessao_participante_api_view_model_equality(

@@ -92,11 +92,42 @@ def test_sales_view_model_equality(sales_view_model):
         idSale=1,
         idMember=2,
         idEmployee=3,
+        idProspect=4,
+        idEmployeeSale=5,
+        saleDate=datetime(2023, 10, 1, 10, 0),
+        saleDateServer=datetime(2023, 10, 1, 10, 5),
+        idPersonal=6,
         corporatePartnershipName="Corporate Partner",
+        coporatePartnershipId=7,
         removed=False,
+        idEmployeeRemoval=8,
+        removalDate=None,
+        idBranch=9,
         observations="Test sale",
+        idSaleRecurrency=10,
+        saleSource=11,
+        idSaleMigration="12",
+        saleItens=[
+            SalesItemsViewModel(
+                idSaleItem=1,
+                nameSalePage="Item 1",
+                order=2,
+                idEmployeeCommission=3,
+                itens=[
+                    SalesItemViewModel(
+                        idMembership=4,
+                        name="Item 1",
+                        serviceValue=100.0,
+                    )
+                ],
+            )
+        ],
+        receivables=[
+            ReceivablesApiViewModel(
+                idReceivable=1, ammount=200.0, dueDate=datetime(2023, 11, 1)
+            )
+        ],
     )
-
     different_model = SalesViewModel(
         idSale=2,
         idMember=3,

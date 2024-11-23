@@ -114,8 +114,8 @@ def test_members_basic_api_view_model_to_dict(members_basic_api_view_model):
     assert model_dict["membershipStatus"] == "Active"
     assert model_dict["penalized"] is False
     assert model_dict["status"] == "Active"
-    assert model_dict["contacts"][0]["phoneNumber"] == "123456789"
-    assert model_dict["memberships"][0]["membershipId"] == 1
+    assert model_dict["contacts"][0]["idPhone"] == 123456789
+    assert model_dict["memberships"][0]["idMembership"] == 1
     assert model_dict["lastAccessDate"] == "2023-10-01T00:00:00"
     assert model_dict["idEmployeeConsultant"] == 201
     assert model_dict["nameEmployeeConsultant"] == "Jane Smith"
@@ -125,7 +125,7 @@ def test_members_basic_api_view_model_to_dict(members_basic_api_view_model):
     assert model_dict["nameEmployeePersonalTrainer"] == "Emily Davis"
     assert model_dict["photoUrl"] == "https://example.com/photo.jpg"
     assert model_dict["idMemberMigration"] == "MIG123"
-    assert model_dict["responsibles"][0]["responsibleId"] == 1
+    assert model_dict["responsibles"][0]["idResponsible"] == 1
     assert model_dict["tokenGympass"] == "GYMPASS123"
     assert model_dict["personalTrainer"] is True
     assert model_dict["personalType"] == "TypeA"
@@ -141,6 +141,7 @@ def test_members_basic_api_view_model_equality(members_basic_api_view_model):
         idBranch=101,
         branchName="Main Branch",
         accessBlocked=False,
+        blockedReason=None,
         gender="Male",
         birthDate=datetime(1990, 5, 20),
         accessCardNumber="1234567890",

@@ -1,5 +1,6 @@
 from typing import Optional, List, Union, overload
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 from ..models.contratos_resumo_api_view_model import (
@@ -19,7 +20,7 @@ class MembershipApi:
         self.base_path = "/api/v1/membership"
 
     @overload
-    def get_categories(self, async_req: bool = True) -> Thread: ...
+    def get_categories(self, async_req: bool = True) -> AsyncResult[Any]: ...
 
     @overload
     def get_categories(
@@ -28,7 +29,7 @@ class MembershipApi:
 
     def get_categories(
         self, async_req: bool = False
-    ) -> Union[List[W12UtilsCategoryMembershipViewModel], Thread]:
+    ) -> Union[List[W12UtilsCategoryMembershipViewModel], AsyncResult[Any]]:
         """Get membership categories."""
         return self.api_client.call_api(
             resource_path=f"{self.base_path}/category",
@@ -48,7 +49,7 @@ class MembershipApi:
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_memberships(
@@ -71,7 +72,7 @@ class MembershipApi:
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: bool = False,
-    ) -> Union[List[ContratosResumoApiViewModel], Thread]:
+    ) -> Union[List[ContratosResumoApiViewModel], AsyncResult[Any]]:
         """
         Get memberships list with optional filtering.
 

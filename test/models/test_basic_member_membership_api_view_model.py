@@ -82,9 +82,25 @@ def test_basic_member_membership_api_view_model_equality(
     same_model = BasicMemberMembershipApiViewModel(
         _IdVenda=1,
         idMembership=2,
-        name="Basic Membership",
-        membershipStatus="Active",
+        idMemberMembership=3,
+        idMemberMembershipRenewed=4,
+        numMembers=5,
         flRenewed=True,
+        startDate=datetime(2023, 1, 1),
+        endDate=datetime(2023, 12, 31),
+        name="Basic Membership",
+        cancelDate=None,
+        saleDate=datetime(2023, 1, 1),
+        timeZone="UTC",
+        freezes=[],
+        flSuspenso=False,
+        freeze=False,
+        membershipStatus="Active",
+        membershipTypeId=1,
+        membershipType="Standard",
+        flAdditionalMembership=False,
+        flAllowLocker=True,
+        idCategoryMembership=1,
     )
 
     different_model = BasicMemberMembershipApiViewModel(

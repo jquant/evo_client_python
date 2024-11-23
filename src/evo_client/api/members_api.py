@@ -1,5 +1,6 @@
 from typing import Optional, Union, Dict, Any, overload, List
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 
 from datetime import datetime
@@ -28,7 +29,7 @@ class MembersApi:
         password: str,
         change_password: bool = False,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def authenticate_member(
@@ -45,7 +46,7 @@ class MembersApi:
         password: str,
         change_password: bool = False,
         async_req: bool = False,
-    ) -> Union[MemberAuthenticateViewModel, Thread]:
+    ) -> Union[MemberAuthenticateViewModel, AsyncResult[Any]]:
         """
         Authenticate member.
 
@@ -81,7 +82,7 @@ class MembersApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_basic_info(
@@ -104,7 +105,7 @@ class MembersApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[MembersBasicApiViewModel, Thread]:
+    ) -> Union[MembersBasicApiViewModel, AsyncResult[Any]]:
         """
         Get basic member information.
 
@@ -148,11 +149,11 @@ class MembersApi:
     @overload
     def get_fitcoins(
         self, id_member: int, async_req: bool = False
-    ) -> Union[None, Thread]: ...
+    ) -> Union[None, AsyncResult[Any]]: ...
 
     def get_fitcoins(
         self, id_member: int, async_req: bool = False
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         pass
 
     @overload
@@ -163,7 +164,7 @@ class MembersApi:
         fitcoin: int,
         reason: Optional[str] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def update_fitcoins(
@@ -182,7 +183,7 @@ class MembersApi:
         fitcoin: int,
         reason: Optional[str] = None,
         async_req: bool = False,
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Update member fitcoins.
 
@@ -233,7 +234,7 @@ class MembersApi:
         personal_type: Optional[int] = None,
         show_activity_data: bool = False,
         async_req: bool = False,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_members(
@@ -284,7 +285,7 @@ class MembersApi:
         personal_type: Optional[int] = None,
         show_activity_data: bool = False,
         async_req: bool = False,
-    ) -> Union[MemberDataViewModel, Thread]:
+    ) -> Union[MemberDataViewModel, AsyncResult[Any]]:
         """
         Get members.
 
@@ -292,7 +293,7 @@ class MembersApi:
             async_req: Execute request asynchronously
 
         Returns:
-            Member data if synchronous, Thread if asynchronous
+            Member data if synchronous, AsyncResult[Any] if asynchronous
         """
         query_params = {
             "name": name,
@@ -330,7 +331,7 @@ class MembersApi:
     @overload
     def update_member_card(
         self, id_member: int, card_number: str, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def update_member_card(
@@ -342,7 +343,7 @@ class MembersApi:
         id_member: int,
         card_number: str,
         async_req: bool = False,
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Update a member card number.
 
@@ -352,7 +353,7 @@ class MembersApi:
             async_req: Execute request asynchronously
 
         Returns:
-            None if synchronous, Thread if asynchronous
+            None if synchronous, AsyncResult[Any] if asynchronous
         """
         query_params = {"cardNumber": card_number}
 
@@ -367,7 +368,9 @@ class MembersApi:
         )
 
     @overload
-    def get_member_profile(self, id_member: int, async_req: bool = True) -> Thread: ...
+    def get_member_profile(
+        self, id_member: int, async_req: bool = True
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_member_profile(
@@ -376,7 +379,7 @@ class MembersApi:
 
     def get_member_profile(
         self, id_member: int, async_req: bool = False
-    ) -> Union[MemberDataViewModel, Thread]:
+    ) -> Union[MemberDataViewModel, AsyncResult[Any]]:
         """
         Get member profile.
 
@@ -399,7 +402,7 @@ class MembersApi:
         user: str,
         sign_in: bool = False,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def reset_password(
@@ -414,7 +417,7 @@ class MembersApi:
         user: str,
         sign_in: bool = False,
         async_req: bool = False,
-    ) -> Union[MemberAuthenticateViewModel, Thread]:
+    ) -> Union[MemberAuthenticateViewModel, AsyncResult[Any]]:
         """
         Get link for reset password.
 
@@ -443,7 +446,7 @@ class MembersApi:
         self,
         id_member: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_member_services(
@@ -456,7 +459,7 @@ class MembersApi:
         self,
         id_member: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[list, Thread]:
+    ) -> Union[list, AsyncResult[Any]]:
         """
         Get member services.
 
@@ -481,7 +484,7 @@ class MembersApi:
     @overload
     def transfer_member(
         self, transfer_data: MemberTransferViewModel, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def transfer_member(
@@ -490,7 +493,7 @@ class MembersApi:
 
     def transfer_member(
         self, transfer_data: MemberTransferViewModel, async_req: bool = False
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Transfer member to another branch/unit.
 
@@ -513,7 +516,7 @@ class MembersApi:
         id_member: int,
         body: MemberDataViewModel,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def update_member_data(
@@ -528,7 +531,7 @@ class MembersApi:
         id_member: int,
         body: MemberDataViewModel,
         async_req: bool = False,
-    ) -> Union[bool, Thread]:
+    ) -> Union[bool, AsyncResult[Any]]:
         """
         Update basic member data.
 

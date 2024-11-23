@@ -91,7 +91,16 @@ def test_contratos_cancelados_parcelas_api_view_model_equality(
         ammountPaid=50.0,
         currentInstallment=1,
         totalInstallments=12,
+        tid="123456789",
+        nsu="987654321",
+        authorization="auth123",
         canceled=False,
+        cancellationDate=None,
+        cancellationDescription=None,
+        registrationDate=datetime(2023, 1, 1),
+        dueDate=datetime(2023, 2, 1),
+        receivingDate=datetime(2023, 1, 15),
+        paymentType=ReceivablesApiSubTypesViewModel(id=1, name="Credit Card"),
     )
 
     different_model = ContratosCanceladosParcelasApiViewModel(

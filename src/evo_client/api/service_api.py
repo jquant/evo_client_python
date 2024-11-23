@@ -1,5 +1,6 @@
 from typing import Optional, List, Union, overload
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 from ..models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
@@ -22,7 +23,7 @@ class ServiceApi:
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_services(
@@ -45,7 +46,7 @@ class ServiceApi:
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: bool = False,
-    ) -> Union[List[ServicosResumoApiViewModel], Thread]:
+    ) -> Union[List[ServicosResumoApiViewModel], AsyncResult[Any]]:
         """
         Get services list with optional filtering.
 

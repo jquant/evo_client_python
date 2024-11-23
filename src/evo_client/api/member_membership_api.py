@@ -1,6 +1,7 @@
 from typing import List, Optional, Union, overload
 from datetime import datetime
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 
 from ..core.api_client import ApiClient
@@ -33,7 +34,7 @@ class MemberMembershipApi:
         add_fine: bool = False,
         value_fine: Optional[float] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def cancel_membership(
@@ -68,7 +69,7 @@ class MemberMembershipApi:
         add_fine: bool = False,
         value_fine: Optional[float] = None,
         async_req: bool = False,
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Cancel member membership.
 
@@ -123,7 +124,7 @@ class MemberMembershipApi:
 
     def get_membership(
         self, id_member_membership: int, async_req: bool = False
-    ) -> Union[MemberMembershipApiViewModel, Thread]:
+    ) -> Union[MemberMembershipApiViewModel, AsyncResult[Any]]:
         """
         Get membership details by ID.
 
@@ -194,7 +195,7 @@ class MemberMembershipApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[List[ContratosCanceladosResumoApiViewModel], Thread]:
+    ) -> Union[List[ContratosCanceladosResumoApiViewModel], AsyncResult[Any]]:
         """
         Get summary of canceled memberships.
 

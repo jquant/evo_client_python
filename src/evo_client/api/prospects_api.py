@@ -1,6 +1,7 @@
 from typing import Optional, List, Union, overload
 from datetime import datetime
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 from ..models.prospects_resumo_api_view_model import (
@@ -40,7 +41,7 @@ class ProspectsApi:
         skip: Optional[int] = None,
         gympass_id: Optional[str] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_prospects(
@@ -75,7 +76,7 @@ class ProspectsApi:
         skip: Optional[int] = None,
         gympass_id: Optional[str] = None,
         async_req: bool = False,
-    ) -> Union[List[ProspectsResumoApiViewModel], Thread]:
+    ) -> Union[List[ProspectsResumoApiViewModel], AsyncResult[Any]]:
         """
         Get prospects with optional filtering.
 
@@ -121,7 +122,7 @@ class ProspectsApi:
     @overload
     def create_prospect(
         self, prospect: ProspectApiIntegracaoViewModel, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def create_prospect(
@@ -130,7 +131,7 @@ class ProspectsApi:
 
     def create_prospect(
         self, prospect: ProspectApiIntegracaoViewModel, async_req: bool = False
-    ) -> Union[ProspectIdViewModel, Thread]:
+    ) -> Union[ProspectIdViewModel, AsyncResult[Any]]:
         """
         Create a new prospect.
 
@@ -164,7 +165,7 @@ class ProspectsApi:
         self,
         prospect: ProspectApiIntegracaoAtualizacaoViewModel,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def update_prospect(
@@ -177,7 +178,7 @@ class ProspectsApi:
         self,
         prospect: ProspectApiIntegracaoAtualizacaoViewModel,
         async_req: bool = False,
-    ) -> Union[ProspectIdViewModel, Thread]:
+    ) -> Union[ProspectIdViewModel, AsyncResult[Any]]:
         """
         Update an existing prospect.
 
@@ -207,7 +208,7 @@ class ProspectsApi:
     @overload
     def get_services(
         self, prospect_id: Optional[int] = None, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_services(
@@ -216,7 +217,7 @@ class ProspectsApi:
 
     def get_services(
         self, prospect_id: Optional[int] = None, async_req: bool = False
-    ) -> Union[List[MemberServiceViewModel], Thread]:
+    ) -> Union[List[MemberServiceViewModel], AsyncResult[Any]]:
         """
         Get prospect services.
 
@@ -238,7 +239,7 @@ class ProspectsApi:
     @overload
     def transfer_prospect(
         self, transfer: ProspectTransferenciaViewModel, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def transfer_prospect(
@@ -247,7 +248,7 @@ class ProspectsApi:
 
     def transfer_prospect(
         self, transfer: ProspectTransferenciaViewModel, async_req: bool = False
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Transfer a prospect.
 

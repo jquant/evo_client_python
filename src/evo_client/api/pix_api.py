@@ -1,5 +1,6 @@
 from typing import Optional, Union, overload
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 from ..models.pix_payment_details_view_model import PixPaymentDetailsViewModel
@@ -15,7 +16,7 @@ class PixApi:
     @overload
     def get_qr_code(
         self, pix_receipt_id: Optional[int] = None, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_qr_code(
@@ -24,7 +25,7 @@ class PixApi:
 
     def get_qr_code(
         self, pix_receipt_id: Optional[int] = None, async_req: bool = False
-    ) -> Union[PixPaymentDetailsViewModel, Thread]:
+    ) -> Union[PixPaymentDetailsViewModel, AsyncResult[Any]]:
         """
         Get PIX QR code details.
 

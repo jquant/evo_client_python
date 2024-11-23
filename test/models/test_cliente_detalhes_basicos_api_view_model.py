@@ -85,9 +85,16 @@ def test_cliente_detalhes_basicos_api_view_model_equality(
         idMember=123,
         firstName="John",
         lastName="Doe",
+        registerDate=datetime(2023, 1, 1),
+        idBranch=1,
         branchName="Main Branch",
         accessBlocked=False,
+        document="12345678901",
         email="john.doe@example.com",
+        contacts=[TelefoneApiViewModel(idPhone=1234567890)],
+        responsibles=[MemberResponsibleViewModel(name="Jane Doe")],
+        memberships=[MemberMembershipApiViewModel(idMembership=1)],
+        membership=BasicMemberMembershipApiViewModel(idMembership=1),
     )
 
     different_model = ClienteDetalhesBasicosApiViewModel(

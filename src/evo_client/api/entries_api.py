@@ -19,9 +19,9 @@ import six
 
 from evo_client.core.api_client import ApiClient
 
-from typing import List, Optional, Union, overload
+from typing import Any, List, Optional, Union, overload
 from datetime import datetime
-from threading import Thread
+from multiprocessing.pool import AsyncResult
 
 
 from ..models.entradas_resumo_api_view_model import EntradasResumoApiViewModel
@@ -44,7 +44,7 @@ class EntriesApi:
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_entries(
@@ -67,7 +67,7 @@ class EntriesApi:
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[List[EntradasResumoApiViewModel], Thread]:
+    ) -> Union[List[EntradasResumoApiViewModel], AsyncResult[Any]]:
         """
         Get entries with optional filtering.
 
@@ -81,7 +81,7 @@ class EntriesApi:
             async_req: Execute request asynchronously
 
         Returns:
-            List of entries or Thread if async
+            List of entries or AsyncResult[Any] if async
 
         Raises:
             ValueError: If take > 1000
@@ -115,7 +115,7 @@ class EntriesApi:
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_member_entries(
@@ -132,7 +132,7 @@ class EntriesApi:
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> Union[List[EntradasResumoApiViewModel], Thread]:
+    ) -> Union[List[EntradasResumoApiViewModel], AsyncResult[Any]]:
         """
         Convenience method to get entries for a specific member.
 
@@ -150,7 +150,9 @@ class EntriesApi:
         )
 
     @overload
-    def get_entry_by_id(self, entry_id: int, async_req: bool = True) -> Thread: ...
+    def get_entry_by_id(
+        self, entry_id: int, async_req: bool = True
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_entry_by_id(
@@ -159,7 +161,7 @@ class EntriesApi:
 
     def get_entry_by_id(
         self, entry_id: int, async_req: bool = False
-    ) -> Union[Optional[EntradasResumoApiViewModel], Thread]:
+    ) -> Union[Optional[EntradasResumoApiViewModel], AsyncResult[Any]]:
         """
         Get a specific entry by ID.
 
@@ -168,6 +170,6 @@ class EntriesApi:
             async_req: Execute request asynchronously
         """
         entries = self.get_entries(entry_id=entry_id, async_req=async_req)
-        if isinstance(entries, Thread):
+        if isinstance(entries, AsyncResult):
             return entries
         return entries[0] if entries else None

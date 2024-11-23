@@ -24,7 +24,7 @@ def e_forma_contato():
 def test_e_forma_contato_creation(e_forma_contato):
     """Test creating an EFormaContato instance"""
     assert isinstance(e_forma_contato, EFormaContato)
-    assert e_forma_contato == "1"
+    assert e_forma_contato == EFormaContato("1")
 
 
 def test_e_forma_contato_to_dict(e_forma_contato):

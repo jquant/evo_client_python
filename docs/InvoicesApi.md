@@ -8,7 +8,7 @@ Method | HTTP request | Description
 [**get_invoices**](InvoicesApi.md#get_invoices) | **GET** /api/v1/invoices/get-invoices | Get invoices by date and filters
 
 # **get_invoices**
-> Union[EnotasRetorno, Thread] get_invoices(issue_date_start=issue_date_start, issue_date_end=issue_date_end, competency_date_start=competency_date_start, competency_date_end=competency_date_end, send_date_start=send_date_start, send_date_end=send_date_end, take=take, skip=skip, member_id=member_id, status_invoice=status_invoice, types_invoice=types_invoice, async_req=async_req)
+> Union[EnotasRetorno, AsyncResult[Any]] get_invoices(issue_date_start=issue_date_start, issue_date_end=issue_date_end, competency_date_start=competency_date_start, competency_date_end=competency_date_end, send_date_start=send_date_start, send_date_end=send_date_end, take=take, skip=skip, member_id=member_id, status_invoice=status_invoice, types_invoice=types_invoice, async_req=async_req)
 
 Get invoices by date and various filters.
 
@@ -79,7 +79,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Union[EnotasRetorno, Thread]**](EnotasRetorno.md)
+[**Union[EnotasRetorno, AsyncResult[Any]]**](EnotasRetorno.md)
 
 ### Authorization
 

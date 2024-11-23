@@ -72,12 +72,20 @@ def test_atividade_list_api_view_model_equality(atividade_list_api_view_model):
     """Test equality comparison of AtividadeListApiViewModel instances"""
     same_model = AtividadeListApiViewModel(
         idActivity=1,
+        photo="https://example.com/photo.jpg",
         name="Yoga Class",
         color="#FF5733",
+        activityGroup="Group A",
         totalRecords=100,
         inactive=False,
+        description="A relaxing yoga class",
+        idActivityGroup=10,
         showOnMobile=True,
         showOnWebsite=True,
+        idBranch=5,
+        audience=[PublicoAtividadeViewModel()],
+        idAudience=2,
+        discriminator="Yoga",
     )
 
     different_model = AtividadeListApiViewModel(

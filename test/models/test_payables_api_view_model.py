@@ -51,7 +51,7 @@ def test_payables_api_view_model_to_dict(payables_api_view_model):
     assert model_dict["idPayable"] == 1
     assert model_dict["ammount"] == 100.50
     assert model_dict["dueDate"] == "2024-03-15T00:00:00"
-    assert model_dict["status"] == PayablesApiSubTypesViewModel(id=1)
+    assert model_dict["status"] == {"id": 1}
     assert model_dict["description"] == "Monthly subscription fee"
 
 

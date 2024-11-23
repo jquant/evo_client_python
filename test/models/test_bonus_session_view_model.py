@@ -41,7 +41,7 @@ def test_bonus_session_view_model_to_dict(bonus_session_view_model):
 
     assert isinstance(model_dict, dict)
     assert model_dict["idSession"] == 1
-    assert model_dict["expirationDate"] == datetime(2024, 3, 15, 9, 0)
+    assert model_dict["expirationDate"] == "2024-03-15T09:00:00"
     assert model_dict["flBonusSession"] is True
 
 

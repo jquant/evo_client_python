@@ -105,8 +105,36 @@ def test_contratos_cancelados_resumo_api_view_model_equality(
         idMember=1,
         name="John Doe",
         idMembership=101,
+        idMemberMemberShip=202,
+        idBranch=303,
+        numMembers=2,
+        idSale=404,
         saleValue=999.99,
+        nameMembership="Gold Membership",
+        membershipStart=datetime(2023, 1, 1),
+        membershipEnd=datetime(2023, 12, 31),
+        registerCancelDate=datetime(2023, 6, 15),
+        cancelDate=datetime(2023, 6, 20),
+        reasonCancellation="Personal reasons",
+        saleDate=datetime(2023, 1, 1),
         cancellationFine=50.0,
+        remainingValue=200.0,
+        receivables=[
+            ContratosCanceladosParcelasApiViewModel(
+                idReceivable=1, ammount=100.0, dueDate=datetime(2023, 7, 1)
+            )
+        ],
+        minPeriodStayMembership=12,
+        membershipTrasnferData=DadosContratoTrasnferenciaApiViewModel(
+            flTransfer=True, idMemberTransfer=123, idMemberMembershipTransfer=456
+        ),
+        membershipSwapData=DadosTrocaContratoApiViewModel(
+            flMembershipSwapped=True, idMemberMembershipSource=202
+        ),
+        idMemberMigration="MIG123",
+        idSaleMigration="SALE456",
+        idMembershipCategory=1,
+        memberDocument="123456789",
     )
 
     different_model = ContratosCanceladosResumoApiViewModel(

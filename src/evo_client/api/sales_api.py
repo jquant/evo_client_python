@@ -1,6 +1,7 @@
 from typing import Optional, List, Dict, Any, Union, overload
 from datetime import datetime
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 from ..models.sales_view_model import SalesViewModel
@@ -16,7 +17,9 @@ class SalesApi:
         self.base_path = "/api/v1/sales"
 
     @overload
-    def get_sale_by_id(self, sale_id: int, async_req: bool = True) -> Thread: ...
+    def get_sale_by_id(
+        self, sale_id: int, async_req: bool = True
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_sale_by_id(
@@ -25,7 +28,7 @@ class SalesApi:
 
     def get_sale_by_id(
         self, sale_id: int, async_req: bool = False
-    ) -> Union[SalesViewModel, Thread]:
+    ) -> Union[SalesViewModel, AsyncResult[Any]]:
         """Get sale by ID."""
         if not sale_id:
             raise ValueError("sale_id is required")
@@ -41,7 +44,7 @@ class SalesApi:
     @overload
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def create_sale(
@@ -50,7 +53,7 @@ class SalesApi:
 
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: bool = False
-    ) -> Union[NewSaleViewModel, Thread]:
+    ) -> Union[NewSaleViewModel, AsyncResult[Any]]:
         """
         Create a new sale.
 
@@ -92,7 +95,7 @@ class SalesApi:
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_sales(
@@ -135,7 +138,7 @@ class SalesApi:
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: bool = False,
-    ) -> Union[SalesViewModel, Thread]:
+    ) -> Union[SalesViewModel, AsyncResult[Any]]:
         """
         Get sales with various filtering options.
 
@@ -188,7 +191,7 @@ class SalesApi:
     @overload
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_sales_items(
@@ -197,7 +200,7 @@ class SalesApi:
 
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: bool = False
-    ) -> Union[List[SalesItemsViewModel], Thread]:
+    ) -> Union[List[SalesItemsViewModel], AsyncResult[Any]]:
         """Get items available for sale."""
         params = {"idBranch": branch_id} if branch_id else {}
 
@@ -213,7 +216,7 @@ class SalesApi:
     @overload
     def get_sale_by_session_id(
         self, session_id: str, date: Optional[datetime] = None, async_req: bool = True
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_sale_by_session_id(
@@ -222,7 +225,7 @@ class SalesApi:
 
     def get_sale_by_session_id(
         self, session_id: str, date: Optional[datetime] = None, async_req: bool = False
-    ) -> Union[int, Thread]:
+    ) -> Union[int, AsyncResult[Any]]:
         """Get sale ID by session ID."""
         params = {"sessionId": session_id, "date": date}
 

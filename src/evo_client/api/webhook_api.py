@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict, Any, Union, overload
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 from ..models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
@@ -19,14 +20,16 @@ class WebhookApi:
         self.base_path = "/api/v1/webhook"
 
     @overload
-    def delete_webhook(self, webhook_id: int, async_req: bool = True) -> Thread: ...
+    def delete_webhook(
+        self, webhook_id: int, async_req: bool = True
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def delete_webhook(self, webhook_id: int, async_req: bool = False) -> None: ...
 
     def delete_webhook(
         self, webhook_id: int, async_req: bool = False
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Remove a specific webhook by ID.
 
@@ -45,14 +48,14 @@ class WebhookApi:
         )
 
     @overload
-    def get_webhooks(self, async_req: bool = True) -> Thread: ...
+    def get_webhooks(self, async_req: bool = True) -> AsyncResult[Any]: ...
 
     @overload
     def get_webhooks(self, async_req: bool = False) -> List[Dict[str, Any]]: ...
 
     def get_webhooks(
         self, async_req: bool = False
-    ) -> Union[List[Dict[str, Any]], Thread]:
+    ) -> Union[List[Dict[str, Any]], AsyncResult[Any]]:
         """
         List all webhooks created.
 
@@ -79,7 +82,7 @@ class WebhookApi:
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def create_webhook(
@@ -100,7 +103,7 @@ class WebhookApi:
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
         async_req: bool = False,
-    ) -> Union[None, Thread]:
+    ) -> Union[None, AsyncResult[Any]]:
         """
         Add new webhook configuration.
 

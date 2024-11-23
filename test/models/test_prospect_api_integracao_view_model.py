@@ -53,11 +53,13 @@ def test_prospect_api_integracao_view_model_to_dict(prospect_api_integracao_view
     model_dict = prospect_api_integracao_view_model.to_dict()
 
     assert isinstance(model_dict, dict)
-    assert model_dict["idProspect"] == 1
-    assert model_dict["firstName"] == "John"
+    assert model_dict["idBranch"] == 2
+    assert model_dict["name"] == "John Doe"
     assert model_dict["lastName"] == "Doe"
     assert model_dict["email"] == "john.doe@example.com"
+    assert model_dict["cellphone"] == "+1234567890"
     assert model_dict["gender"] == "Male"
+    assert model_dict["currentStep"] == "Contacted"
 
 
 def test_prospect_api_integracao_view_model_equality(

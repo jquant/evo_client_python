@@ -42,7 +42,7 @@ class AtividadeSessaoParticipanteApiViewModel(BaseModel):
 
     def to_dict(self) -> dict:
         """Returns the model properties as a dictionary"""
-        return self.model_dump(by_alias=True)
+        return self.model_dump(by_alias=True, mode="json")
 
     def to_str(self) -> str:
         """Returns the string representation of the model using pprint"""

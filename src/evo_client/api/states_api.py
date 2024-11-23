@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict, Any, Union, overload
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 
@@ -12,12 +13,12 @@ class StatesApi:
         self.base_path = "/api/v1/states"
 
     @overload
-    def get_states(self, async_req: bool = True) -> Thread: ...
+    def get_states(self, async_req: bool = True) -> AsyncResult[Any]: ...
 
     @overload
     def get_states(self, async_req: bool = False) -> None: ...
 
-    def get_states(self, async_req: bool = False) -> Union[None, Thread]:
+    def get_states(self, async_req: bool = False) -> Union[None, AsyncResult[Any]]:
         """
         Get list of available states/provinces.
 

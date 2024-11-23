@@ -70,9 +70,15 @@ def test_contratos_resumo_api_view_model_equality(contratos_resumo_api_view_mode
         idBranch=2,
         nameMembership="Premium Membership",
         membershipType="Annual",
+        durationType="Months",
         duration=12,
         value=499.99,
+        maxAmountInstallments=12,
+        description="Access to all facilities",
+        urlSale="https://example.com/sale",
+        onlineSalesObservations="Limited time offer",
         inactive=False,
+        displayName="Premium",
     )
 
     different_model = ContratosResumoApiViewModel(

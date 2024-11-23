@@ -1,6 +1,7 @@
 from typing import Optional, Union, overload
 from datetime import datetime
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 from ..core.api_client import ApiClient
 from ..models.cost_center_api_view_model import CostCenterApiViewModel
@@ -20,7 +21,7 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_cost_centers(
@@ -35,7 +36,7 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[CostCenterApiViewModel, Thread]:
+    ) -> Union[CostCenterApiViewModel, AsyncResult[Any]]:
         """
         Get cost centers with pagination.
 
@@ -77,7 +78,7 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_payables(
@@ -118,7 +119,7 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[PayablesApiViewModel, Thread]:
+    ) -> Union[PayablesApiViewModel, AsyncResult[Any]]:
         """
         Get payables with optional filtering.
 

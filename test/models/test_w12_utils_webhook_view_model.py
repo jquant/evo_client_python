@@ -44,9 +44,9 @@ def test_w12_utils_webhook_view_model_to_dict(w12_utils_webhook_view_model):
     model_dict = w12_utils_webhook_view_model.to_dict()
 
     assert isinstance(model_dict, dict)
-    assert model_dict["url"] == "https://example.com/webhook"
-    assert model_dict["event"] == "event_name"
-    assert model_dict["active"] is True
+    assert model_dict["idBranch"] == 1
+    assert model_dict["urlCallback"] == "https://example.com/webhook"
+    assert model_dict["eventType"] == "event_name"
 
 
 def test_w12_utils_webhook_view_model_equality(w12_utils_webhook_view_model):

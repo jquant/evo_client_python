@@ -19,9 +19,9 @@ from evo_client.models.e_forma_pagamento_totem import EFormaPagamentoTotem
 def test_e_forma_pagamento_totem_creation():
     """Test creating an EFormaPagamentoTotem instance"""
     assert isinstance(EFormaPagamentoTotem._1, EFormaPagamentoTotem)
-    assert EFormaPagamentoTotem._1 == "1"
-    assert EFormaPagamentoTotem._2 == "2"
-    assert EFormaPagamentoTotem._3 == "3"
+    assert EFormaPagamentoTotem._1 == EFormaPagamentoTotem("1")
+    assert EFormaPagamentoTotem._2 == EFormaPagamentoTotem("2")
+    assert EFormaPagamentoTotem._3 == EFormaPagamentoTotem("3")
 
 
 def test_e_forma_pagamento_totem_to_dict():

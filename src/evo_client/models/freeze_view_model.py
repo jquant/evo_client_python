@@ -34,7 +34,7 @@ class FreezeViewModel(BaseModel):
 
     def to_dict(self):
         """Returns the model properties as a dict"""
-        return self.model_dump(by_alias=True, exclude_none=True)
+        return self.model_dump(by_alias=True, exclude_none=True, mode="json")
 
     def to_str(self):
         """Returns the string representation of the model"""

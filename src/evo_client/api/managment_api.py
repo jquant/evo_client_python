@@ -1,6 +1,7 @@
 from typing import List, Optional, Union, overload
 from datetime import datetime
-from threading import Thread
+from multiprocessing.pool import AsyncResult
+from typing import Any
 
 
 from ..core.api_client import ApiClient
@@ -20,7 +21,7 @@ class ManagementApi:
         self.base_path = "/api/v1/management"
 
     @overload
-    def get_active_clients(self, async_req: bool = True) -> Thread: ...
+    def get_active_clients(self, async_req: bool = True) -> AsyncResult[Any]: ...
 
     @overload
     def get_active_clients(
@@ -29,7 +30,7 @@ class ManagementApi:
 
     def get_active_clients(
         self, async_req: bool = False
-    ) -> Union[List[ClientesAtivosViewModel], Thread]:
+    ) -> Union[List[ClientesAtivosViewModel], AsyncResult[Any]]:
         """
         Get active clients.
 
@@ -37,7 +38,7 @@ class ManagementApi:
             async_req: Execute request asynchronously
 
         Returns:
-            List of active clients or Thread if async
+            List of active clients or AsyncResult[Any] if async
         """
         return self.api_client.call_api(
             resource_path=f"{self.base_path}/activeclients",
@@ -54,7 +55,7 @@ class ManagementApi:
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_prospects(
@@ -69,7 +70,7 @@ class ManagementApi:
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> Union[List[SpsRelProspectsCadastradosConvertidos], Thread]:
+    ) -> Union[List[SpsRelProspectsCadastradosConvertidos], AsyncResult[Any]]:
         """
         Get prospects within date range.
 
@@ -79,7 +80,7 @@ class ManagementApi:
             async_req: Execute request asynchronously
 
         Returns:
-            List of prospects or Thread if async
+            List of prospects or AsyncResult[Any] if async
         """
         params = {"dtStart": dt_start, "dtEnd": dt_end}
 
@@ -99,7 +100,7 @@ class ManagementApi:
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: bool = True,
-    ) -> Thread: ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_non_renewed_clients(
@@ -114,7 +115,7 @@ class ManagementApi:
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> Union[List[ContratoNaoRenovadosViewModel], Thread]:
+    ) -> Union[List[ContratoNaoRenovadosViewModel], AsyncResult[Any]]:
         """
         Get non-renewed clients within date range.
 
@@ -124,7 +125,7 @@ class ManagementApi:
             async_req: Execute request asynchronously
 
         Returns:
-            List of non-renewed clients or Thread if async
+            List of non-renewed clients or AsyncResult[Any] if async
         """
         params = {"dtStart": dt_start, "dtEnd": dt_end}
 

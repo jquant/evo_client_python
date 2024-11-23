@@ -7,7 +7,7 @@ Method | HTTP request | Description
 [**api_v1_entries_get**](EntriesApi.md#api_v1_entries_get) | **GET** /api/v1/entries | Get Entries
 
 # **api_v1_entries_get**
-> list[EntradasResumoApiViewModel] or Thread api_v1_entries_get(register_date_start=register_date_start, register_date_end=register_date_end, take=take, skip=skip, id_entry=id_entry, id_member=id_member, async_req=async_req)
+> list[EntradasResumoApiViewModel] or AsyncResult[Any] api_v1_entries_get(register_date_start=register_date_start, register_date_end=register_date_end, take=take, skip=skip, id_entry=id_entry, id_member=id_member, async_req=async_req)
 
 Get Entries
 
@@ -63,7 +63,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**list[EntradasResumoApiViewModel]**](EntradasResumoApiViewModel.md) or **Thread**
+[**list[EntradasResumoApiViewModel]**](EntradasResumoApiViewModel.md) or **AsyncResult[Any]**
 
 ### Authorization
 
