@@ -116,6 +116,18 @@ def test_link_workout_to_client(workout_api: WorkoutApi, mock_api_client: Mock):
     assert args["resource_path"] == "/api/v1/workout/link-workout-to-client"
 
 
+def test_link_workout_to_client_error(workout_api: WorkoutApi, mock_api_client: Mock):
+    """Test error handling for linking workout to client."""
+    mock_api_client.side_effect = ValueError("source_workout_id is required")
+
+    with pytest.raises(ValueError) as exc:
+        workout_api.link_workout_to_client(
+            source_workout_id=None,  # type: ignore
+            prescription_employee_id=456,
+            async_req=False,
+        )
+
+
 def test_error_handling(workout_api: WorkoutApi, mock_api_client: Mock):
     """Test API error handling."""
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")

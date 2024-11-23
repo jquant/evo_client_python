@@ -34,3 +34,4 @@ def test_e_status_atividade_equality():
     """Test equality comparison of EStatusAtividade instances"""
     assert EStatusAtividade._0 == EStatusAtividade("0")
     assert EStatusAtividade._1 != EStatusAtividade("0")
+    assert EStatusAtividade._0 != 1

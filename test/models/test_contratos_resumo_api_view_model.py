@@ -93,3 +93,4 @@ def test_contratos_resumo_api_view_model_equality(contratos_resumo_api_view_mode
 
     assert contratos_resumo_api_view_model == same_model
     assert contratos_resumo_api_view_model != different_model
+    assert contratos_resumo_api_view_model != 1

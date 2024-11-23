@@ -61,3 +61,4 @@ def test_bonus_session_view_model_equality(bonus_session_view_model):
 
     assert bonus_session_view_model == same_model
     assert bonus_session_view_model != different_model
+    assert bonus_session_view_model != 1

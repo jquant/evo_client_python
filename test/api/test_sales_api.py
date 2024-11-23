@@ -39,6 +39,13 @@ def test_get_sale_by_id_basic(sales_api: SalesApi, mock_api_client: Mock):
     assert args["auth_settings"] == ["Basic"]
 
 
+def test_get_sale_by_id_error(sales_api: SalesApi, mock_api_client: Mock):
+    """Test error handling for getting sale by ID."""
+
+    with pytest.raises(ValueError) as exc:
+        sales_api.get_sale_by_id(sale_id=None, async_req=False)  # type: ignore
+
+
 def test_create_sale(sales_api: SalesApi, mock_api_client: Mock):
     """Test creating a new sale."""
     expected = NewSaleViewModel()

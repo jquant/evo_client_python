@@ -30,11 +30,3 @@ class AtividadeLugarReservaViewModel(BaseModel):
     def to_dict(self) -> dict:
         """Returns the model properties as a dictionary"""
         return self.model_dump(by_alias=True)
-
-    def to_str(self) -> str:
-        """Returns the string representation of the model using pprint"""
-        return pprint.pformat(self.model_dump(by_alias=True))
-
-    def __repr__(self) -> str:
-        """For `print` and `pprint`"""
-        return self.to_str()

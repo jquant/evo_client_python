@@ -70,3 +70,4 @@ def test_tax_data_view_model_equality(tax_data_view_model):
 
     assert tax_data_view_model == same_model
     assert tax_data_view_model != different_model
+    assert tax_data_view_model != 1

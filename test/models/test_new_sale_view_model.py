@@ -140,3 +140,4 @@ def test_new_sale_view_model_equality(new_sale_view_model):
 
     assert new_sale_view_model == same_model
     assert new_sale_view_model != different_model
+    assert new_sale_view_model != 1

@@ -127,3 +127,4 @@ def test_atividade_basico_api_view_model_equality(atividade_basico_api_view_mode
 
     assert atividade_basico_api_view_model == same_model
     assert atividade_basico_api_view_model != different_model
+    assert atividade_basico_api_view_model != 1

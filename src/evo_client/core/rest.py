@@ -137,6 +137,8 @@ class RESTClient:
             return self.pool_manager.request(
                 method, url, body=body, headers=headers, **kwargs
             )
+        elif isinstance(body, dict):
+            return self._handle_json_request(method, url, headers, body, **kwargs)
 
         raise ApiException(
             status=0, reason="Cannot prepare request message for provided arguments."

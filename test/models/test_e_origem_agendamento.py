@@ -34,3 +34,4 @@ def test_e_origem_agendamento_equality():
     """Test equality comparison of EOrigemAgendamento instances"""
     assert EOrigemAgendamento._0 == EOrigemAgendamento("0")
     assert EOrigemAgendamento._1 != EOrigemAgendamento("0")
+    assert EOrigemAgendamento._0 != 1

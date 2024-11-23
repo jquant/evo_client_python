@@ -41,3 +41,4 @@ def test_http_response_error_equality(http_response_error):
 
     assert http_response_error == same_model
     assert http_response_error != different_model
+    assert http_response_error != 1

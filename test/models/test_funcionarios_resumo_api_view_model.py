@@ -85,3 +85,4 @@ def test_funcionarios_resumo_api_view_model_equality(
 
     assert funcionarios_resumo_api_view_model == same_model
     assert funcionarios_resumo_api_view_model != different_model
+    assert funcionarios_resumo_api_view_model != 1

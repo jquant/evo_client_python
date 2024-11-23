@@ -57,3 +57,4 @@ def test_contrato_filiais_resumo_api_view_model_equality(
 
     assert contrato_filiais_resumo_api_view_model == same_model
     assert contrato_filiais_resumo_api_view_model != different_model
+    assert contrato_filiais_resumo_api_view_model != 1

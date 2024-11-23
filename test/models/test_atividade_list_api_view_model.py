@@ -100,3 +100,4 @@ def test_atividade_list_api_view_model_equality(atividade_list_api_view_model):
 
     assert atividade_list_api_view_model == same_model
     assert atividade_list_api_view_model != different_model
+    assert atividade_list_api_view_model != 1

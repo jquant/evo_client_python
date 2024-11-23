@@ -89,3 +89,4 @@ def test_card_data_view_model_equality(card_data_view_model):
 
     assert card_data_view_model == same_model
     assert card_data_view_model != different_model
+    assert card_data_view_model != 1

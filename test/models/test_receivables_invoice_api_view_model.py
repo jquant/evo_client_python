@@ -87,3 +87,4 @@ def test_receivables_invoice_api_view_model_equality(
 
     assert receivables_invoice_api_view_model == same_model
     assert receivables_invoice_api_view_model != different_model
+    assert receivables_invoice_api_view_model != 1

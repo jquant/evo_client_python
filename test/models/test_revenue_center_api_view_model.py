@@ -77,3 +77,4 @@ def test_revenue_center_api_view_model_equality(revenue_center_api_view_model):
 
     assert revenue_center_api_view_model == same_model
     assert revenue_center_api_view_model != different_model
+    assert revenue_center_api_view_model != 1

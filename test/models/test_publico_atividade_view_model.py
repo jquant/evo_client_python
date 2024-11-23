@@ -54,3 +54,4 @@ def test_publico_atividade_view_model_equality(publico_atividade_view_model):
 
     assert publico_atividade_view_model == same_model
     assert publico_atividade_view_model != different_model
+    assert publico_atividade_view_model != 1

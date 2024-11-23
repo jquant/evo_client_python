@@ -70,3 +70,4 @@ def test_periodizacao_api_view_model_equality(periodizacao_api_view_model):
 
     assert periodizacao_api_view_model == same_model
     assert periodizacao_api_view_model != different_model
+    assert periodizacao_api_view_model != 1

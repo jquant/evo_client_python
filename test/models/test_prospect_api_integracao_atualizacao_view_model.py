@@ -115,3 +115,4 @@ def test_prospect_api_integracao_atualizacao_view_model_equality(
 
     assert prospect_api_integracao_atualizacao_view_model == same_model
     assert prospect_api_integracao_atualizacao_view_model != different_model
+    assert prospect_api_integracao_atualizacao_view_model != 1

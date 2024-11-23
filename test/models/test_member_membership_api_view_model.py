@@ -113,3 +113,4 @@ def test_member_membership_api_view_model_equality(member_membership_api_view_mo
 
     assert member_membership_api_view_model == same_model
     assert member_membership_api_view_model != different_model
+    assert member_membership_api_view_model != 1

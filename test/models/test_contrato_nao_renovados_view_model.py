@@ -113,3 +113,4 @@ def test_contrato_nao_renovados_view_model_equality(contrato_nao_renovados_view_
 
     assert contrato_nao_renovados_view_model == same_model
     assert contrato_nao_renovados_view_model != different_model
+    assert contrato_nao_renovados_view_model != 1

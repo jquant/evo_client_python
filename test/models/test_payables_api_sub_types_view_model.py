@@ -58,3 +58,4 @@ def test_payables_api_sub_types_view_model_equality(payables_api_sub_types_view_
 
     assert payables_api_sub_types_view_model == same_model
     assert payables_api_sub_types_view_model != different_model
+    assert payables_api_sub_types_view_model != 1

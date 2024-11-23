@@ -45,3 +45,4 @@ def test_differentials_view_model_equality(differentials_view_model):
 
     assert differentials_view_model == same_model
     assert differentials_view_model != different_model
+    assert differentials_view_model != 1

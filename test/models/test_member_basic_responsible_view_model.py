@@ -97,3 +97,4 @@ def test_member_basic_responsible_view_model_equality(
 
     assert member_basic_responsible_view_model == same_model
     assert member_basic_responsible_view_model != different_model
+    assert member_basic_responsible_view_model != 1

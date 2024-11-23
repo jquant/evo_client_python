@@ -44,3 +44,4 @@ def test_prospect_id_view_model_equality(prospect_id_view_model):
 
     assert prospect_id_view_model == same_model
     assert prospect_id_view_model != different_model
+    assert prospect_id_view_model != 1

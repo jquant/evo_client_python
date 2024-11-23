@@ -58,3 +58,7 @@ class AtividadeAgendaApiViewModel(BaseModel):
     periodization: Optional[List[PeriodizacaoApiViewModel]] = None
     status: Optional[EStatusAtividade] = None
     status_name: Optional[str] = Field(default=None, alias="statusName")
+
+    def to_dict(self):
+        """Returns the model properties as a dict"""
+        return self.model_dump(by_alias=True)

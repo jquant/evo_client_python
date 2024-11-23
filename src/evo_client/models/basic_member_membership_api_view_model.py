@@ -54,12 +54,8 @@ class BasicMemberMembershipApiViewModel(BaseModel):
     )
 
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
-        return self.model_dump(by_alias=True, exclude_none=True)
-
-    def to_str(self) -> str:
-        """Returns the string representation of the model"""
-        return str(self.model_dump(by_alias=True, exclude_none=True))
+        """Returns the model properties as a dictionary"""
+        return self.model_dump(by_alias=True)
 
     def __eq__(self, other: object) -> bool:
         """Returns true if both objects are equal"""

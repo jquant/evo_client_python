@@ -33,3 +33,4 @@ def test_e_tipo_gateway_equality():
     """Test equality comparison of ETipoGateway instances"""
     assert ETipoGateway._0 == ETipoGateway("0")
     assert ETipoGateway._1 != ETipoGateway("0")
+    assert ETipoGateway._0 != 1

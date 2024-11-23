@@ -150,3 +150,4 @@ def test_employee_api_integracao_atualizacao_view_model_equality(
 
     assert employee_api_integracao_atualizacao_view_model == same_model
     assert employee_api_integracao_atualizacao_view_model != different_model
+    assert employee_api_integracao_atualizacao_view_model != 1

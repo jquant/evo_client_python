@@ -72,3 +72,4 @@ def test_cost_center_api_view_model_equality(cost_center_api_view_model):
 
     assert cost_center_api_view_model == same_model
     assert cost_center_api_view_model != different_model
+    assert cost_center_api_view_model != 1

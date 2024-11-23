@@ -44,3 +44,4 @@ def test_diferenciais_api_view_model_equality(diferenciais_api_view_model):
 
     assert diferenciais_api_view_model == same_model
     assert diferenciais_api_view_model != different_model
+    assert diferenciais_api_view_model != 1

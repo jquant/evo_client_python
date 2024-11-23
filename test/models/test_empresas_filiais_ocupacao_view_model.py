@@ -77,3 +77,4 @@ def test_empresas_filiais_ocupacao_view_model_equality(
 
     assert empresas_filiais_ocupacao_view_model == same_model
     assert empresas_filiais_ocupacao_view_model != different_model
+    assert empresas_filiais_ocupacao_view_model != 1

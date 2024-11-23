@@ -65,3 +65,4 @@ def test_receivables_api_sub_types_view_model_equality(
 
     assert receivables_api_sub_types_view_model == same_model
     assert receivables_api_sub_types_view_model != different_model
+    assert receivables_api_sub_types_view_model != 1

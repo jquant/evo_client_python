@@ -93,3 +93,4 @@ def test_installment_view_model_equality(installment_view_model):
 
     assert installment_view_model == same_model
     assert installment_view_model != different_model
+    assert installment_view_model != 1

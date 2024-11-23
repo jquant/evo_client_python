@@ -61,3 +61,4 @@ def test_servico_adicional_api_view_model_equality(servico_adicional_api_view_mo
 
     assert servico_adicional_api_view_model == same_model
     assert servico_adicional_api_view_model != different_model
+    assert servico_adicional_api_view_model != 1

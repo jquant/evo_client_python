@@ -154,7 +154,7 @@ class MembersApi:
     def get_fitcoins(
         self, id_member: int, async_req: bool = False
     ) -> Union[None, AsyncResult[Any]]:
-        pass
+        raise NotImplementedError("Not implemented")
 
     @overload
     def update_fitcoins(

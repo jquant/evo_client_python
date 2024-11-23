@@ -55,3 +55,4 @@ def test_contrato_entradas_api_view_model_equality(contrato_entradas_api_view_mo
 
     assert contrato_entradas_api_view_model == same_model
     assert contrato_entradas_api_view_model != different_model
+    assert contrato_entradas_api_view_model != 1

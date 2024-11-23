@@ -59,4 +59,5 @@ def test_w12_utils_webhook_header_view_model_equality(
     )
 
     assert w12_utils_webhook_header_view_model == same_model
+    assert w12_utils_webhook_header_view_model != 1
     assert w12_utils_webhook_header_view_model != different_model

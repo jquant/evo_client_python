@@ -91,3 +91,4 @@ def test_business_hours_view_model_equality(business_hours_view_model):
 
     assert business_hours_view_model == same_model
     assert business_hours_view_model != different_model
+    assert business_hours_view_model != 1

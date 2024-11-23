@@ -71,3 +71,4 @@ def test_cliente_transferencia_view_model_equality(cliente_transferencia_view_mo
 
     assert cliente_transferencia_view_model == same_model
     assert cliente_transferencia_view_model != different_model
+    assert cliente_transferencia_view_model != 1

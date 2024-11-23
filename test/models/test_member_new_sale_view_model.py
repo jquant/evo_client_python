@@ -90,3 +90,4 @@ def test_member_new_sale_view_model_equality(member_new_sale_view_model):
 
     assert member_new_sale_view_model == same_model
     assert member_new_sale_view_model != different_model
+    assert member_new_sale_view_model != 1

@@ -11,131 +11,52 @@
 """
 
 from __future__ import absolute_import
-from datetime import datetime
 
 import pytest
-
-from evo_client.models.receivables_api_view_model import ReceivablesApiViewModel
-from evo_client.models.receivables_api_sub_types_view_model import (
-    ReceivablesApiSubTypesViewModel,
+from evo_client.models.receivables_mask_received_view_model import (
+    ReceivablesMaskReceivedViewModel,
 )
-from evo_client.models.receivables_invoice_api_view_model import (
-    ReceivablesInvoiceApiViewModel,
-)
-from evo_client.models.log_tef_api_view_model import LogTefApiViewModel
-from evo_client.models.receivables_credit_details import ReceivablesCreditDetails
 
 
 @pytest.fixture
-def receivables_api_view_model():
-    return ReceivablesApiViewModel(
-        idReceivable=1,
-        description="Sample Receivable",
-        registrationDate=datetime(2023, 1, 1),
-        dueDate=datetime(2023, 2, 1),
-        receivingDate=datetime(2023, 2, 2),
-        competenceDate=datetime(2023, 1, 15),
-        cancellationDate=None,
-        ammount=100.0,
-        ammountPaid=100.0,
-        status=ReceivablesApiSubTypesViewModel(name="Paid"),
-        currentInstallment=1,
-        totalInstallments=1,
-        authorization="AUTH123",
-        payerName="John Doe",
-        idMemberPayer=10,
-        idProspectPayer=None,
-        idBranchMember=5,
-        idSale=20,
-        bankAccount=ReceivablesApiSubTypesViewModel(name="Bank Account"),
-        paymentType=ReceivablesApiSubTypesViewModel(name="Credit Card"),
-        invoiceDetails=[ReceivablesInvoiceApiViewModel(idInvoiceType=1)],
-        fees=0.0,
-        conciliated=True,
-        logTef=LogTefApiViewModel(tefId="1"),
-        tid="TID123",
-        nsu="NSU123",
-        updateDate=datetime(2023, 2, 3),
-        chargeDate=datetime(2023, 2, 1),
-        idReceivableFrom=None,
-        cardAcquirer="Acquirer",
-        cardFlag="Visa",
-        creditDetails=[ReceivablesCreditDetails(idCredit=1)],
-        cancellationDescription=None,
-        source="Online",
-        saleDate=datetime(2023, 1, 1),
+def receivables_mask_received_view_model():
+    return ReceivablesMaskReceivedViewModel(idsReceivables=[1, 2, 3], idBankAccount=123)
+
+
+def test_receivables_mask_received_view_model_creation(
+    receivables_mask_received_view_model,
+):
+    """Test creating a ReceivablesMaskReceivedViewModel instance"""
+    assert isinstance(
+        receivables_mask_received_view_model, ReceivablesMaskReceivedViewModel
     )
+    assert receivables_mask_received_view_model.ids_receivables == [1, 2, 3]
+    assert receivables_mask_received_view_model.id_bank_account == 123
 
 
-def test_receivables_api_view_model_creation(receivables_api_view_model):
-    """Test creating a ReceivablesApiViewModel instance"""
-    assert isinstance(receivables_api_view_model, ReceivablesApiViewModel)
-    assert receivables_api_view_model.id_receivable == 1
-    assert receivables_api_view_model.description == "Sample Receivable"
-    assert receivables_api_view_model.ammount == 100.0
-    assert receivables_api_view_model.payer_name == "John Doe"
-    assert receivables_api_view_model.conciliated is True
-
-
-def test_receivables_api_view_model_to_dict(receivables_api_view_model):
-    """Test converting ReceivablesApiViewModel to dictionary"""
-    model_dict = receivables_api_view_model.to_dict()
+def test_receivables_mask_received_view_model_to_dict(
+    receivables_mask_received_view_model,
+):
+    """Test converting ReceivablesMaskReceivedViewModel to dictionary"""
+    model_dict = receivables_mask_received_view_model.to_dict()
 
     assert isinstance(model_dict, dict)
-    assert model_dict["idReceivable"] == 1
-    assert model_dict["description"] == "Sample Receivable"
-    assert model_dict["ammount"] == 100.0
-    assert model_dict["payerName"] == "John Doe"
-    assert model_dict["conciliated"] is True
+    assert model_dict["idsReceivables"] == [1, 2, 3]
+    assert model_dict["idBankAccount"] == 123
 
 
-def test_receivables_api_view_model_equality(receivables_api_view_model):
-    """Test equality comparison of ReceivablesApiViewModel instances"""
-    same_model = ReceivablesApiViewModel(
-        idReceivable=1,
-        description="Sample Receivable",
-        registrationDate=datetime(2023, 1, 1),
-        dueDate=datetime(2023, 2, 1),
-        receivingDate=datetime(2023, 2, 2),
-        competenceDate=datetime(2023, 1, 15),
-        cancellationDate=None,
-        ammount=100.0,
-        ammountPaid=100.0,
-        status=ReceivablesApiSubTypesViewModel(name="Paid"),
-        currentInstallment=1,
-        totalInstallments=1,
-        authorization="AUTH123",
-        payerName="John Doe",
-        idMemberPayer=10,
-        idProspectPayer=None,
-        idBranchMember=5,
-        idSale=20,
-        bankAccount=ReceivablesApiSubTypesViewModel(name="Bank Account"),
-        paymentType=ReceivablesApiSubTypesViewModel(name="Credit Card"),
-        invoiceDetails=[ReceivablesInvoiceApiViewModel(idInvoiceType=1)],
-        fees=0.0,
-        conciliated=True,
-        logTef=LogTefApiViewModel(tefId="1"),
-        tid="TID123",
-        nsu="NSU123",
-        updateDate=datetime(2023, 2, 3),
-        chargeDate=datetime(2023, 2, 1),
-        idReceivableFrom=None,
-        cardAcquirer="Acquirer",
-        cardFlag="Visa",
-        creditDetails=[ReceivablesCreditDetails(idCredit=1)],
-        cancellationDescription=None,
-        source="Online",
-        saleDate=datetime(2023, 1, 1),
+def test_receivables_mask_received_view_model_equality(
+    receivables_mask_received_view_model,
+):
+    """Test equality comparison of ReceivablesMaskReceivedViewModel instances"""
+    same_model = ReceivablesMaskReceivedViewModel(
+        idsReceivables=[1, 2, 3], idBankAccount=123
     )
 
-    different_model = ReceivablesApiViewModel(
-        idReceivable=2,
-        description="Different Receivable",
-        ammount=200.0,
-        payerName="Jane Doe",
-        conciliated=False,
+    different_model = ReceivablesMaskReceivedViewModel(
+        idsReceivables=[4, 5, 6], idBankAccount=456
     )
 
-    assert receivables_api_view_model == same_model
-    assert receivables_api_view_model != different_model
+    assert receivables_mask_received_view_model == same_model
+    assert receivables_mask_received_view_model != different_model
+    assert receivables_mask_received_view_model != 1

@@ -53,3 +53,4 @@ def test_log_tef_api_view_model_equality(log_tef_api_view_model):
 
     assert log_tef_api_view_model == same_model
     assert log_tef_api_view_model != different_model
+    assert log_tef_api_view_model != 1

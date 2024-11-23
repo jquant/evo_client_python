@@ -192,3 +192,4 @@ def test_members_api_view_model_equality(members_api_view_model):
 
     assert members_api_view_model == same_model
     assert members_api_view_model != different_model
+    assert members_api_view_model != 1

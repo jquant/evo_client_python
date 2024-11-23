@@ -71,11 +71,11 @@ def test_atividade_agenda_api_view_model_creation(atividade_agenda_api_view_mode
 
 def test_atividade_agenda_api_view_model_to_dict(atividade_agenda_api_view_model):
     """Test converting AtividadeAgendaApiViewModel to dictionary"""
-    model_dict = atividade_agenda_api_view_model.model_dump()
+    model_dict = atividade_agenda_api_view_model.to_dict()
 
     assert isinstance(model_dict, dict)
-    assert model_dict["id_configuration"] == 1
-    assert model_dict["id_activity"] == 2
+    assert model_dict["idConfiguration"] == 1
+    assert model_dict["idActivity"] == 2
     assert model_dict["name"] == "Yoga Class"
     assert model_dict["capacity"] == 20
     assert model_dict["ocupation"] == 15
@@ -87,12 +87,32 @@ def test_atividade_agenda_api_view_model_equality(atividade_agenda_api_view_mode
     same_model = AtividadeAgendaApiViewModel(
         idConfiguration=1,
         idActivity=2,
+        idGroupActivity=3,
         name="Yoga Class",
         description="Beginner friendly yoga class",
+        imageUrl="https://example.com/yoga.jpg",
+        area="Studio 1",
+        idArea=4,
         capacity=20,
         ocupation=15,
+        allowChoosingSpot=True,
+        startTime="09:00",
+        endTime="10:00",
+        bookingStartTime="08:00",
+        bookingEndTime="08:45",
+        instructor="John Doe",
+        instructorPhoto="https://example.com/instructor.jpg",
+        activityDate=datetime(2024, 3, 15, 9, 0),
+        audience="All Levels",
+        idAudience=1,
+        code="YOGA101",
         confirmed=True,
+        startHourTick=32400,  # 9:00 in seconds
+        endHourTick=36000,  # 10:00 in seconds
+        spots=[],
+        periodization=[],
         status=EStatusAtividade._0,
+        statusName="Active",
     )
 
     different_model = AtividadeAgendaApiViewModel(
@@ -106,5 +126,6 @@ def test_atividade_agenda_api_view_model_equality(atividade_agenda_api_view_mode
         status=EStatusAtividade._0,
     )
 
-    assert atividade_agenda_api_view_model == atividade_agenda_api_view_model
+    assert atividade_agenda_api_view_model == same_model
     assert atividade_agenda_api_view_model != different_model
+    assert atividade_agenda_api_view_model != 1

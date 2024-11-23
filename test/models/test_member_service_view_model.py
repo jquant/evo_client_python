@@ -46,3 +46,4 @@ def test_member_service_view_model_equality(member_service_view_model):
 
     assert member_service_view_model == same_model
     assert member_service_view_model != different_model
+    assert member_service_view_model != 1

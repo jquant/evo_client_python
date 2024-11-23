@@ -56,3 +56,4 @@ def test_bandeiras_basico_view_model_equality(bandeiras_basico_view_model):
 
     assert bandeiras_basico_view_model == same_model
     assert bandeiras_basico_view_model != different_model
+    assert bandeiras_basico_view_model != 1

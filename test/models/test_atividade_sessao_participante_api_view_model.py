@@ -101,3 +101,4 @@ def test_atividade_sessao_participante_api_view_model_equality(
 
     assert atividade_sessao_participante_api_view_model == same_model
     assert atividade_sessao_participante_api_view_model != different_model
+    assert atividade_sessao_participante_api_view_model != 1

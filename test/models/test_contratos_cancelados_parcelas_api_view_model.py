@@ -115,3 +115,4 @@ def test_contratos_cancelados_parcelas_api_view_model_equality(
 
     assert contratos_cancelados_parcelas_api_view_model == same_model
     assert contratos_cancelados_parcelas_api_view_model != different_model
+    assert contratos_cancelados_parcelas_api_view_model != 1

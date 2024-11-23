@@ -86,3 +86,4 @@ def test_freeze_view_model_equality(freeze_view_model):
 
     assert freeze_view_model == same_model
     assert freeze_view_model != different_model
+    assert freeze_view_model != 1

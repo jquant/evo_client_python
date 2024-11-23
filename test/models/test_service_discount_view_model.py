@@ -54,3 +54,4 @@ def test_service_discount_view_model_equality(service_discount_view_model):
 
     assert service_discount_view_model == same_model
     assert service_discount_view_model != different_model
+    assert service_discount_view_model != 1

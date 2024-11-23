@@ -32,14 +32,6 @@ class EFormaPagamentoTotem(str, Enum):
         """Returns the model properties as a dict"""
         return self.value
 
-    def to_str(self):
-        """Returns the string representation of the model"""
-        return str(self.value)
-
-    def __repr__(self):
-        """For `print` and `pprint`"""
-        return self.to_str()
-
     def __eq__(self, other):
         """Returns true if both objects are equal"""
         if not isinstance(other, EFormaPagamentoTotem):

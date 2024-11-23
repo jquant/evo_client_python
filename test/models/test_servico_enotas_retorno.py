@@ -79,3 +79,4 @@ def test_servico_enotas_retorno_equality(servico_enotas_retorno):
 
     assert servico_enotas_retorno == same_model
     assert servico_enotas_retorno != different_model
+    assert servico_enotas_retorno != 1

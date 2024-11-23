@@ -122,3 +122,4 @@ def test_prospects_resumo_api_view_model_equality(prospects_resumo_api_view_mode
 
     assert prospects_resumo_api_view_model == same_model
     assert prospects_resumo_api_view_model != different_model
+    assert prospects_resumo_api_view_model != 1

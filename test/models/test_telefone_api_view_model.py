@@ -85,3 +85,4 @@ def test_telefone_api_view_model_equality(telefone_api_view_model):
 
     assert telefone_api_view_model == same_model
     assert telefone_api_view_model != different_model
+    assert telefone_api_view_model != 1

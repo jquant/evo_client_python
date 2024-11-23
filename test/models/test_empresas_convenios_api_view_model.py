@@ -176,3 +176,4 @@ def test_empresas_convenios_api_view_model_equality(empresas_convenios_api_view_
 
     assert empresas_convenios_api_view_model == same_model
     assert empresas_convenios_api_view_model != different_model
+    assert empresas_convenios_api_view_model != 1

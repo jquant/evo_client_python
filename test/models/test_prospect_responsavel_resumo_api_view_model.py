@@ -71,3 +71,4 @@ def test_prospect_responsavel_resumo_api_view_model_equality(
 
     assert prospect_responsavel_resumo_api_view_model == same_model
     assert prospect_responsavel_resumo_api_view_model != different_model
+    assert prospect_responsavel_resumo_api_view_model != 1

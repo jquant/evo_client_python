@@ -97,3 +97,4 @@ def test_servicos_resumo_api_view_model_equality(servicos_resumo_api_view_model)
 
     assert servicos_resumo_api_view_model == same_model
     assert servicos_resumo_api_view_model != different_model
+    assert servicos_resumo_api_view_model != 1

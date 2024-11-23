@@ -34,3 +34,4 @@ def test_e_forma_pagamento_totem_equality():
     """Test equality comparison of EFormaPagamentoTotem instances"""
     assert EFormaPagamentoTotem._1 == EFormaPagamentoTotem("1")
     assert EFormaPagamentoTotem._2 != EFormaPagamentoTotem("1")
+    assert EFormaPagamentoTotem._1 != 1

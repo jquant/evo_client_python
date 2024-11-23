@@ -42,3 +42,4 @@ def test_e_tipo_contrato_equality(e_tipo_contrato):
 
     assert e_tipo_contrato == same_model
     assert e_tipo_contrato != different_model
+    assert e_tipo_contrato != 1

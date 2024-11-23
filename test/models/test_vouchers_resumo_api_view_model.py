@@ -49,7 +49,7 @@ def test_vouchers_resumo_api_view_model_creation(vouchers_resumo_api_view_model)
 
 def test_vouchers_resumo_api_view_model_to_dict(vouchers_resumo_api_view_model):
     """Test converting VouchersResumoApiViewModel to dictionary"""
-    model_dict = vouchers_resumo_api_view_model.model_dump(by_alias=True)
+    model_dict = vouchers_resumo_api_view_model.to_dict()
 
     assert isinstance(model_dict, dict)
     assert model_dict["idVoucher"] == 1
@@ -88,3 +88,4 @@ def test_vouchers_resumo_api_view_model_equality(vouchers_resumo_api_view_model)
 
     assert vouchers_resumo_api_view_model == same_model
     assert vouchers_resumo_api_view_model != different_model
+    assert vouchers_resumo_api_view_model != 1

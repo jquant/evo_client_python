@@ -28,14 +28,6 @@ class BusinessHoursViewModel(BaseModel):
             if v is not None
         }
 
-    def to_str(self) -> str:
-        """Get string representation."""
-        return pprint.pformat(self.to_dict())
-
-    def __repr__(self) -> str:
-        """Get string representation for print."""
-        return self.to_str()
-
     def __eq__(self, other: object) -> bool:
         """Check if two instances are equal."""
         if not isinstance(other, BusinessHoursViewModel):

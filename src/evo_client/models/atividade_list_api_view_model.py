@@ -39,22 +39,6 @@ class AtividadeListApiViewModel(BaseModel):
     id_audience: Optional[int] = Field(default=None, alias="idAudience")
     discriminator: Optional[str] = None
 
-    def to_str(self) -> str:
-        """Returns the string representation of the model using pprint"""
-        return pprint.pformat(self.model_dump(by_alias=True))
-
-    def __repr__(self) -> str:
-        """For `print` and `pprint`"""
-        return self.to_str()
-
     def to_dict(self) -> dict:
         """Returns the model properties as a dictionary"""
-        result = self.model_dump(by_alias=True)
-        # Handle nested models that might not be automatically converted
-        for key, value in result.items():
-            if isinstance(value, list):
-                result[key] = [
-                    (item.model_dump() if hasattr(item, "model_dump") else item)
-                    for item in value
-                ]
-        return result
+        return self.model_dump(by_alias=True, mode="json")

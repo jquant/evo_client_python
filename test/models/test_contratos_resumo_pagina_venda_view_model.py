@@ -66,3 +66,4 @@ def test_contratos_resumo_pagina_venda_view_model_equality(
 
     assert contratos_resumo_pagina_venda_view_model == same_model
     assert contratos_resumo_pagina_venda_view_model != different_model
+    assert contratos_resumo_pagina_venda_view_model != 1

@@ -130,3 +130,4 @@ def test_sps_rel_prospects_cadastrados_convertidos_equality(
 
     assert sps_rel_prospects_cadastrados_convertidos == same_model
     assert sps_rel_prospects_cadastrados_convertidos != different_model
+    assert sps_rel_prospects_cadastrados_convertidos != 1

@@ -84,3 +84,4 @@ def test_member_authenticate_view_model_equality(member_authenticate_view_model)
 
     assert member_authenticate_view_model == same_model
     assert member_authenticate_view_model != different_model
+    assert member_authenticate_view_model != 1

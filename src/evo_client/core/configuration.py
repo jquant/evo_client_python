@@ -12,28 +12,12 @@ import urllib3
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Callable, ClassVar
 from urllib.parse import urlparse
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
 
-class ConfigurationMeta(type):
-    """Metaclass for Configuration to handle default instance."""
-
-    _default_instance: Optional["Configuration"] = None
-
-    def __call__(cls) -> Configuration:
-        if cls._default_instance is None:
-            cls._default_instance = super().__call__()
-        assert cls._default_instance is not None
-        return copy.copy(cls._default_instance)
-
-    def set_default(cls, default: "Configuration") -> None:
-        """Set default configuration instance."""
-        cls._default_instance = copy.copy(default)
-
-
-@dataclass
-class Configuration(metaclass=ConfigurationMeta):
+class Configuration(BaseModel):
     """Configuration settings for the API client."""
 
     # Base settings with validation
@@ -66,6 +50,16 @@ class Configuration(metaclass=ConfigurationMeta):
     )
     proxy: Optional[str] = None
     safe_chars_for_path_param: str = ""
+
+    def __call__(self) -> Configuration:
+        if self._default_instance is None:
+            self._default_instance = self
+        assert self._default_instance is not None
+        return copy.copy(self._default_instance)
+
+    def set_default(self, default: Configuration) -> None:
+        """Set default configuration instance."""
+        self._default_instance = copy.copy(default)
 
     def __post_init__(self):
         """Initialize logging configuration and validate settings."""

@@ -45,4 +45,5 @@ def test_year_discount_view_model_equality(year_discount_view_model):
     different_model = YearDiscountViewModel(typeDisocuntYearly="Monthly", value=5.0)
 
     assert year_discount_view_model == same_model
+    assert year_discount_view_model != 1
     assert year_discount_view_model != different_model

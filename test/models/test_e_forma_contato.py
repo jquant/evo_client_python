@@ -39,3 +39,4 @@ def test_e_forma_contato_equality(e_forma_contato):
 
     assert e_forma_contato == same_model
     assert e_forma_contato != different_model
+    assert e_forma_contato != 1

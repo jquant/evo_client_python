@@ -97,3 +97,4 @@ def test_clientes_ativos_view_model_equality(clientes_ativos_view_model):
 
     assert clientes_ativos_view_model == same_model
     assert clientes_ativos_view_model != different_model
+    assert clientes_ativos_view_model != 1

@@ -60,3 +60,4 @@ def test_month_discount_view_model_equality(month_discount_view_model):
 
     assert month_discount_view_model == same_model
     assert month_discount_view_model != different_model
+    assert month_discount_view_model != 1

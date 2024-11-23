@@ -73,6 +73,11 @@ def test_get_basic_info(members_api: MembersApi, mock_api_client: Mock):
     assert args["resource_path"] == "/api/v1/members/basic"
 
 
+def test_get_basic_info_error(members_api: MembersApi, mock_api_client: Mock):
+    with pytest.raises(ValueError) as exc:
+        members_api.get_basic_info(take=51, async_req=False)
+
+
 def test_get_members(members_api: MembersApi, mock_api_client: Mock):
     """Test getting members list."""
     expected = MemberDataViewModel()

@@ -13,24 +13,25 @@
 from __future__ import absolute_import
 
 import pytest
-from evo_client.models.e_status_atividade import EStatusAtividade
+from evo_client.models.e_status_atividade_sessao import EStatusAtividadeSessao
 
 
-def test_e_status_atividade_creation():
-    """Test creating an EStatusAtividade instance"""
-    assert isinstance(EStatusAtividade._0, EStatusAtividade)
-    assert EStatusAtividade._0 == EStatusAtividade("0")
-    assert EStatusAtividade._1 == EStatusAtividade("1")
-    assert EStatusAtividade._2 == EStatusAtividade("2")
+def test_e_status_atividade_sessao_creation():
+    """Test creating an EStatusAtividadeSessao instance"""
+    assert isinstance(EStatusAtividadeSessao._0, EStatusAtividadeSessao)
+    assert EStatusAtividadeSessao._0 == EStatusAtividadeSessao("0")
+    assert EStatusAtividadeSessao._1 == EStatusAtividadeSessao("1")
+    assert EStatusAtividadeSessao._2 == EStatusAtividadeSessao("2")
 
 
-def test_e_status_atividade_to_dict():
-    """Test converting EStatusAtividade to dictionary"""
-    assert EStatusAtividade._0.to_dict() == "0"
-    assert EStatusAtividade._1.to_dict() == "1"
+def test_e_status_atividade_sessao_to_dict():
+    """Test converting EStatusAtividadeSessao to dictionary"""
+    assert EStatusAtividadeSessao._0.to_dict() == "0"
+    assert EStatusAtividadeSessao._1.to_dict() == "1"
 
 
-def test_e_status_atividade_equality():
-    """Test equality comparison of EStatusAtividade instances"""
-    assert EStatusAtividade._0 == EStatusAtividade("0")
-    assert EStatusAtividade._1 != EStatusAtividade("0")
+def test_e_status_atividade_sessao_equality():
+    """Test equality comparison of EStatusAtividadeSessao instances"""
+    assert EStatusAtividadeSessao._0 == EStatusAtividadeSessao("0")
+    assert EStatusAtividadeSessao._1 != EStatusAtividadeSessao("0")
+    assert EStatusAtividadeSessao._0 != 1

@@ -110,3 +110,4 @@ def test_cliente_enotas_retorno_equality(cliente_enotas_retorno):
 
     assert cliente_enotas_retorno == same_model
     assert cliente_enotas_retorno != different_model
+    assert cliente_enotas_retorno != 1

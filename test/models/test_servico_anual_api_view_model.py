@@ -84,3 +84,4 @@ def test_servico_anual_api_view_model_equality(servico_anual_api_view_model):
 
     assert servico_anual_api_view_model == same_model
     assert servico_anual_api_view_model != different_model
+    assert servico_anual_api_view_model != 1

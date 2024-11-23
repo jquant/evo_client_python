@@ -11,80 +11,71 @@
 """
 
 from __future__ import absolute_import
-from datetime import datetime
 
 import pytest
 
-from evo_client.models.receivables_invoice_api_view_model import (
-    ReceivablesInvoiceApiViewModel,
+from evo_client.models.receivables_credit_details import (
+    ReceivablesCreditDetails,
 )
 
 
 @pytest.fixture
-def receivables_invoice_api_view_model():
-    return ReceivablesInvoiceApiViewModel(
-        invoiceNumber="INV123",
-        issuedAmount=150.0,
-        status="Issued",
-        sendDate=datetime(2023, 1, 1),
-        canceledDate=None,
-        urlPdf="https://example.com/invoice.pdf",
-        idInvoiceType=1,
-        invoiceType="Standard",
+def receivables_credit_details():
+    return ReceivablesCreditDetails(
+        idCredit=1,
+        idCancelationCredit=None,
+        idBranchOrigin=10,
+        ammount=100.0,
+        branchDocument="DOC123",
+        idSaleOrigin=5,
+        idReceivableOrigin=3,
     )
 
 
-def test_receivables_invoice_api_view_model_creation(
-    receivables_invoice_api_view_model,
-):
-    """Test creating a ReceivablesInvoiceApiViewModel instance"""
-    assert isinstance(
-        receivables_invoice_api_view_model, ReceivablesInvoiceApiViewModel
-    )
-    assert receivables_invoice_api_view_model.invoice_number == "INV123"
-    assert receivables_invoice_api_view_model.issued_amount == 150.0
-    assert receivables_invoice_api_view_model.status == "Issued"
-    assert (
-        receivables_invoice_api_view_model.url_pdf == "https://example.com/invoice.pdf"
-    )
-    assert receivables_invoice_api_view_model.id_invoice_type == 1
+def test_receivables_credit_details_creation(receivables_credit_details):
+    """Test creating a ReceivablesCreditDetails instance"""
+    assert isinstance(receivables_credit_details, ReceivablesCreditDetails)
+    assert receivables_credit_details.id_credit == 1
+    assert receivables_credit_details.id_branch_origin == 10
+    assert receivables_credit_details.ammount == 100.0
+    assert receivables_credit_details.branch_document == "DOC123"
+    assert receivables_credit_details.id_sale_origin == 5
 
 
-def test_receivables_invoice_api_view_model_to_dict(receivables_invoice_api_view_model):
-    """Test converting ReceivablesInvoiceApiViewModel to dictionary"""
-    model_dict = receivables_invoice_api_view_model.to_dict()
+def test_receivables_credit_details_to_dict(receivables_credit_details):
+    """Test converting ReceivablesCreditDetails to dictionary"""
+    model_dict = receivables_credit_details.to_dict()
 
     assert isinstance(model_dict, dict)
-    assert model_dict["invoiceNumber"] == "INV123"
-    assert model_dict["issuedAmount"] == 150.0
-    assert model_dict["status"] == "Issued"
-    assert model_dict["urlPdf"] == "https://example.com/invoice.pdf"
-    assert model_dict["idInvoiceType"] == 1
+    assert model_dict["idCredit"] == 1
+    assert model_dict["idBranchOrigin"] == 10
+    assert model_dict["ammount"] == 100.0
+    assert model_dict["branchDocument"] == "DOC123"
+    assert model_dict["idSaleOrigin"] == 5
 
 
-def test_receivables_invoice_api_view_model_equality(
-    receivables_invoice_api_view_model,
-):
-    """Test equality comparison of ReceivablesInvoiceApiViewModel instances"""
-    same_model = ReceivablesInvoiceApiViewModel(
-        invoiceNumber="INV123",
-        issuedAmount=150.0,
-        status="Issued",
-        sendDate=datetime(2023, 1, 1),
-        canceledDate=None,
-        urlPdf="https://example.com/invoice.pdf",
-        idInvoiceType=1,
-        invoiceType="Standard",
+def test_receivables_credit_details_equality(receivables_credit_details):
+    """Test equality comparison of ReceivablesCreditDetails instances"""
+    same_model = ReceivablesCreditDetails(
+        idCredit=1,
+        idCancelationCredit=None,
+        idBranchOrigin=10,
+        ammount=100.0,
+        branchDocument="DOC123",
+        idSaleOrigin=5,
+        idReceivableOrigin=3,
     )
 
-    different_model = ReceivablesInvoiceApiViewModel(
-        invoiceNumber="INV124",
-        issuedAmount=200.0,
-        status="Paid",
-        urlPdf="https://example.com/invoice2.pdf",
-        idInvoiceType=2,
-        invoiceType="Pro",
+    different_model = ReceivablesCreditDetails(
+        idCredit=2,
+        idCancelationCredit=1,
+        idBranchOrigin=20,
+        ammount=200.0,
+        branchDocument="DOC124",
+        idSaleOrigin=6,
+        idReceivableOrigin=4,
     )
 
-    assert receivables_invoice_api_view_model == same_model
-    assert receivables_invoice_api_view_model != different_model
+    assert receivables_credit_details == same_model
+    assert receivables_credit_details != different_model
+    assert receivables_credit_details != 1

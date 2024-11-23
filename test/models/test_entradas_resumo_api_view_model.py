@@ -126,3 +126,4 @@ def test_entradas_resumo_api_view_model_equality(entradas_resumo_api_view_model)
 
     assert entradas_resumo_api_view_model == same_model
     assert entradas_resumo_api_view_model != different_model
+    assert entradas_resumo_api_view_model != 1

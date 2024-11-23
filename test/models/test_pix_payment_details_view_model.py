@@ -62,3 +62,4 @@ def test_pix_payment_details_view_model_equality(pix_payment_details_view_model)
 
     assert pix_payment_details_view_model == same_model
     assert pix_payment_details_view_model != different_model
+    assert pix_payment_details_view_model != 1

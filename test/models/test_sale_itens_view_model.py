@@ -124,3 +124,4 @@ def test_sale_itens_view_model_equality(sale_itens_view_model):
 
     assert sale_itens_view_model == same_model
     assert sale_itens_view_model != different_model
+    assert sale_itens_view_model != 1

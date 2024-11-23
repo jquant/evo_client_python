@@ -84,3 +84,4 @@ def test_endereco_enotas_retorno_equality(endereco_enotas_retorno):
 
     assert endereco_enotas_retorno == same_model
     assert endereco_enotas_retorno != different_model
+    assert endereco_enotas_retorno != 1

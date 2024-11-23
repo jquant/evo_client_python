@@ -56,3 +56,4 @@ def test_prospect_transferencia_view_model_equality(prospect_transferencia_view_
 
     assert prospect_transferencia_view_model == same_model
     assert prospect_transferencia_view_model != different_model
+    assert prospect_transferencia_view_model != 1

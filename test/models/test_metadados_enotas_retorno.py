@@ -38,3 +38,4 @@ def test_metadados_enotas_retorno_equality(metadados_enotas_retorno):
     same_model = MetadadosEnotasRetorno()
 
     assert metadados_enotas_retorno == same_model
+    assert metadados_enotas_retorno != 1

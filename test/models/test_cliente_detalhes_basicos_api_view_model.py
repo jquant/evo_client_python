@@ -108,3 +108,4 @@ def test_cliente_detalhes_basicos_api_view_model_equality(
 
     assert cliente_detalhes_basicos_api_view_model == same_model
     assert cliente_detalhes_basicos_api_view_model != different_model
+    assert cliente_detalhes_basicos_api_view_model != 1

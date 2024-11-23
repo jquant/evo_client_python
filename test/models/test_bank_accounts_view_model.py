@@ -90,3 +90,4 @@ def test_bank_accounts_view_model_equality(bank_accounts_view_model):
 
     assert bank_accounts_view_model == same_model
     assert bank_accounts_view_model != different_model
+    assert bank_accounts_view_model != 1

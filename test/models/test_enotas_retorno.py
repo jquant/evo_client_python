@@ -133,3 +133,4 @@ def test_enotas_retorno_equality(enotas_retorno):
 
     assert enotas_retorno == same_model
     assert enotas_retorno != different_model
+    assert enotas_retorno != 1
