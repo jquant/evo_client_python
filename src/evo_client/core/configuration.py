@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from typing import Dict, Optional, Callable, ClassVar
 from urllib.parse import urlparse
 from pydantic import BaseModel
+from base64 import b64encode
 
 logger = logging.getLogger(__name__)
 
@@ -121,9 +122,9 @@ class Configuration(BaseModel):
     def get_basic_auth_token(self) -> str:
         """Get HTTP basic authentication header."""
         if self.username or self.password:
-            return urllib3.request.make_headers(
-                basic_auth=f"{self.username}:{self.password}"
-            ).get("authorization", "")
+            credentials = f"{self.username}:{self.password}"
+            encoded_credentials = b64encode(credentials.encode("utf-8")).decode("utf-8")
+            return encoded_credentials
         return ""
 
     def auth_settings(self) -> Dict[str, Dict]:

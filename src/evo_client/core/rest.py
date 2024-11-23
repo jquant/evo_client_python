@@ -60,7 +60,6 @@ class RESTClient:
         query_params: Optional[Dict] = None,
         headers: Optional[Dict] = None,
         body: Optional[Any] = None,
-        post_params: Optional[Dict] = None,
         preload_content: bool = True,
         request_timeout: Optional[Union[float, tuple]] = None,
     ) -> RESTResponse:
@@ -75,7 +74,6 @@ class RESTClient:
                 query_params=query_params,
                 headers=headers,
                 body=body,
-                post_params=post_params,
                 preload_content=preload_content,
                 timeout=self._get_timeout(request_timeout),
             )

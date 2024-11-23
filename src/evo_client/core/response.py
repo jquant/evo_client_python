@@ -1,5 +1,6 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 import io
+import json
 
 
 class RESTResponse(io.IOBase):
@@ -18,3 +19,10 @@ class RESTResponse(io.IOBase):
     def getheader(self, name: str, default: Optional[str] = None) -> Optional[str]:
         """Returns specific response header."""
         return self.urllib3_response.headers.get(name, default)
+
+    def json(self) -> Any:
+        """Returns response data as JSON."""
+        content_type = self.getheader("Content-Type", "")
+        if content_type and "application/json" in content_type:
+            return json.loads(self.data)
+        raise ValueError("Response content is not in JSON format")

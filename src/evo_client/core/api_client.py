@@ -146,23 +146,6 @@ class ApiClient:
     def _execute_request(
         self, *, async_req: bool = True, **kwargs
     ) -> Union[Any, AsyncResult[Any]]:
-        """Execute the request with caching for GET requests."""
-        if kwargs["method"].upper() == "GET":
-            # Only cache GET requests using a tuple of relevant parameters
-            cache_key = (
-                kwargs["resource_path"],
-                tuple(sorted(kwargs.get("query_params", {}).items())),
-                tuple(sorted(kwargs.get("headers", {}).items())),
-            )
-            return self._cached_get_request(cache_key, **kwargs)
-
         if async_req:
-            return self.request_handler.execute_async(**kwargs)
-        return self.request_handler.execute(**kwargs)
-
-    @lru_cache(maxsize=128)
-    def _cached_get_request(self, cache_key: tuple, **kwargs) -> Any:
-        """Cached wrapper for GET requests."""
-        if kwargs["async_req"]:
             return self.request_handler.execute_async(**kwargs)
         return self.request_handler.execute(**kwargs)

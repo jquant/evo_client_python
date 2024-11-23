@@ -177,9 +177,9 @@ _date = '2013-10-20T19:20:30+01:00' # datetime | Activity schedule date (yyyy-MM
 
 try:
     # List of spots that are already filled in the activity session
-    api_instance.unavailable_spots_get(config_id=config_id, _date=_date)
+    api_instance.get_unavailable_spots(config_id=config_id, _date=_date)
 except ApiException as e:
-    print("Exception when calling ActivitiesApi->unavailable_spots_get: %s\n" % e)
+    print("Exception when calling ActivitiesApi->get_unavailable_spots: %s\n" % e)
 ```
 
 ## Documentation for API Endpoints

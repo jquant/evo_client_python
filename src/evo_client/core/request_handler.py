@@ -6,7 +6,7 @@ import logging
 
 from .rest import RESTClient
 from ..exceptions.api_exceptions import RequestError
-
+from .configuration import Configuration
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class RequestHandler:
     """Handles HTTP request preparation and execution."""
 
-    def __init__(self, configuration):
+    def __init__(self, configuration: Configuration):
         self.configuration = configuration
         self.pool = ThreadPool()
         self.rest_client = RESTClient(configuration)
@@ -37,8 +37,11 @@ class RequestHandler:
         return self.pool.apply_async(self._make_request, kwds=kwargs)
 
     def _prepare_headers(self, header_params: Optional[Dict] = None) -> Dict:
-        """Prepare request headers."""
-        return header_params or {}
+        """Prepare request headers with authentication."""
+        headers = header_params or {}
+        encoded_auth = self.configuration.get_basic_auth_token()
+        headers["Authorization"] = f"Basic {encoded_auth}"
+        return headers
 
     def _prepare_params(self, query_params: Optional[Dict] = None) -> Dict:
         """Prepare query parameters."""
@@ -47,8 +50,8 @@ class RequestHandler:
     def _get_request_options(self, kwargs: Dict) -> Dict:
         """Extract request options from kwargs."""
         return {
-            "timeout": kwargs.get("timeout", self.configuration.timeout),
-            "verify": kwargs.get("verify", self.configuration.verify_ssl),
+            "request_timeout": kwargs.get("timeout", self.configuration.timeout),
+            "verify_ssl": kwargs.get("verify", self.configuration.verify_ssl),
         }
 
     def _make_request(self, **kwargs) -> Any:
@@ -63,13 +66,15 @@ class RequestHandler:
 
         logger.debug(f"Making {method} request to {url}")
 
+        request_options = self._get_request_options(kwargs)
         response = self.rest_client.request(
             method=method,
             url=url,
             headers=headers,
             query_params=query_params,
             body=body,
-            **self._get_request_options(kwargs)
+            preload_content=True,
+            request_timeout=request_options["request_timeout"],
         )
 
         logger.debug(f"Received response: {response.status}")
