@@ -11,31 +11,53 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
+import pytest
 
-import evo_client
 from evo_client.models.atividade_lugar_reserva_view_model import (
     AtividadeLugarReservaViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestAtividadeLugarReservaViewModel(unittest.TestCase):
-    """AtividadeLugarReservaViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testAtividadeLugarReservaViewModel(self):
-        """Test AtividadeLugarReservaViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.atividade_lugar_reserva_view_model.AtividadeLugarReservaViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def atividade_lugar_reserva_view_model():
+    return AtividadeLugarReservaViewModel(number=1, available=True, nameSpot="Spot A")
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_atividade_lugar_reserva_view_model_creation(
+    atividade_lugar_reserva_view_model,
+):
+    """Test creating an AtividadeLugarReservaViewModel instance"""
+    assert isinstance(
+        atividade_lugar_reserva_view_model, AtividadeLugarReservaViewModel
+    )
+    assert atividade_lugar_reserva_view_model.number == 1
+    assert atividade_lugar_reserva_view_model.available is True
+    assert atividade_lugar_reserva_view_model.name_spot == "Spot A"
+
+
+def test_atividade_lugar_reserva_view_model_to_dict(atividade_lugar_reserva_view_model):
+    """Test converting AtividadeLugarReservaViewModel to dictionary"""
+    model_dict = atividade_lugar_reserva_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["number"] == 1
+    assert model_dict["available"] is True
+    assert model_dict["nameSpot"] == "Spot A"
+
+
+def test_atividade_lugar_reserva_view_model_equality(
+    atividade_lugar_reserva_view_model,
+):
+    """Test equality comparison of AtividadeLugarReservaViewModel instances"""
+    same_model = AtividadeLugarReservaViewModel(
+        number=1, available=True, nameSpot="Spot A"
+    )
+
+    different_model = AtividadeLugarReservaViewModel(
+        number=2, available=False, nameSpot="Spot B"
+    )
+
+    assert atividade_lugar_reserva_view_model == same_model
+    assert atividade_lugar_reserva_view_model != different_model

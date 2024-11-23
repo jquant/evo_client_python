@@ -12,28 +12,61 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import evo_client
-from evo_client.models.tax_data_view_model import TaxDataViewModel  # noqa: E501
-from evo_client.rest import ApiException
+from evo_client.models.tax_data_view_model import TaxDataViewModel
 
 
-class TestTaxDataViewModel(unittest.TestCase):
-    """TaxDataViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testTaxDataViewModel(self):
-        """Test TaxDataViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.tax_data_view_model.TaxDataViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def tax_data_view_model():
+    return TaxDataViewModel(
+        firstName="John",
+        lastName="Doe",
+        dni="12345678",
+        cuit="20-12345678-9",
+        taxType=1,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_tax_data_view_model_creation(tax_data_view_model):
+    """Test creating a TaxDataViewModel instance"""
+    assert isinstance(tax_data_view_model, TaxDataViewModel)
+    assert tax_data_view_model.first_name == "John"
+    assert tax_data_view_model.last_name == "Doe"
+    assert tax_data_view_model.dni == "12345678"
+    assert tax_data_view_model.cuit == "20-12345678-9"
+    assert tax_data_view_model.tax_type == 1
+
+
+def test_tax_data_view_model_to_dict(tax_data_view_model):
+    """Test converting TaxDataViewModel to dictionary"""
+    model_dict = tax_data_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["firstName"] == "John"
+    assert model_dict["lastName"] == "Doe"
+    assert model_dict["dni"] == "12345678"
+    assert model_dict["cuit"] == "20-12345678-9"
+    assert model_dict["taxType"] == 1
+
+
+def test_tax_data_view_model_equality(tax_data_view_model):
+    """Test equality comparison of TaxDataViewModel instances"""
+    same_model = TaxDataViewModel(
+        firstName="John",
+        lastName="Doe",
+        dni="12345678",
+        cuit="20-12345678-9",
+        taxType=1,
+    )
+
+    different_model = TaxDataViewModel(
+        firstName="Jane",
+        lastName="Smith",
+        dni="87654321",
+        cuit="30-87654321-0",
+        taxType=2,
+    )
+
+    assert tax_data_view_model == same_model
+    assert tax_data_view_model != different_model

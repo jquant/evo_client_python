@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -11,31 +11,107 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
+import pytest
 
-import evo_client
 from evo_client.models.prospect_api_integracao_atualizacao_view_model import (
     ProspectApiIntegracaoAtualizacaoViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestProspectApiIntegracaoAtualizacaoViewModel(unittest.TestCase):
-    """ProspectApiIntegracaoAtualizacaoViewModel unit test stubs"""
+@pytest.fixture
+def prospect_api_integracao_atualizacao_view_model():
+    return ProspectApiIntegracaoAtualizacaoViewModel(
+        idProspect=1,
+        name="John Doe",
+        lastName="Doe",
+        email="john.doe@example.com",
+        ddi="+1",
+        cellphone="+1234567890",
+        birthday=datetime(1990, 1, 1),
+        gender="Male",
+        notes="Test note",
+        currentStep="Contacted",
+        cpf="12345678900",
+        tokenGympass="G123",
+    )
 
-    def setUp(self):
-        pass
 
-    def tearDown(self):
-        pass
+def test_prospect_api_integracao_atualizacao_view_model_creation(
+    prospect_api_integracao_atualizacao_view_model,
+):
+    """Test creating a ProspectApiIntegracaoAtualizacaoViewModel instance"""
+    model = prospect_api_integracao_atualizacao_view_model
+    assert isinstance(model, ProspectApiIntegracaoAtualizacaoViewModel)
+    assert model.id_prospect == 1
+    assert model.name == "John Doe"
+    assert model.last_name == "Doe"
+    assert model.email == "john.doe@example.com"
+    assert model.ddi == "+1"
+    assert model.cellphone == "+1234567890"
+    assert model.birthday == datetime(1990, 1, 1)
+    assert model.gender == "Male"
+    assert model.notes == "Test note"
+    assert model.current_step == "Contacted"
+    assert model.cpf == "12345678900"
+    assert model.token_gympass == "G123"
 
-    def testProspectApiIntegracaoAtualizacaoViewModel(self):
-        """Test ProspectApiIntegracaoAtualizacaoViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.prospect_api_integracao_atualizacao_view_model.ProspectApiIntegracaoAtualizacaoViewModel()  # noqa: E501
-        pass
+
+def test_prospect_api_integracao_atualizacao_view_model_to_dict(
+    prospect_api_integracao_atualizacao_view_model,
+):
+    """Test converting ProspectApiIntegracaoAtualizacaoViewModel to dictionary"""
+    model_dict = prospect_api_integracao_atualizacao_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idProspect"] == 1
+    assert model_dict["name"] == "John Doe"
+    assert model_dict["lastName"] == "Doe"
+    assert model_dict["email"] == "john.doe@example.com"
+    assert model_dict["ddi"] == "+1"
+    assert model_dict["cellphone"] == "+1234567890"
+    assert model_dict["birthday"] == datetime(1990, 1, 1).isoformat()
+    assert model_dict["gender"] == "Male"
+    assert model_dict["notes"] == "Test note"
+    assert model_dict["currentStep"] == "Contacted"
+    assert model_dict["cpf"] == "12345678900"
+    assert model_dict["tokenGympass"] == "G123"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_prospect_api_integracao_atualizacao_view_model_equality(
+    prospect_api_integracao_atualizacao_view_model,
+):
+    """Test equality comparison of ProspectApiIntegracaoAtualizacaoViewModel instances"""
+    same_model = ProspectApiIntegracaoAtualizacaoViewModel(
+        idProspect=1,
+        name="John Doe",
+        lastName="Doe",
+        email="john.doe@example.com",
+        ddi="+1",
+        cellphone="+1234567890",
+        birthday=datetime(1990, 1, 1),
+        gender="Male",
+        notes="Test note",
+        currentStep="Contacted",
+        cpf="12345678900",
+        tokenGympass="G123",
+    )
+
+    different_model = ProspectApiIntegracaoAtualizacaoViewModel(
+        idProspect=2,
+        name="Jane Smith",
+        lastName="Smith",
+        email="jane.smith@example.com",
+        ddi="+44",
+        cellphone="+0987654321",
+        birthday=datetime(1992, 2, 2),
+        gender="Female",
+        notes="Different note",
+        currentStep="Interested",
+        cpf="09876543211",
+        tokenGympass="G456",
+    )
+
+    assert prospect_api_integracao_atualizacao_view_model == same_model
+    assert prospect_api_integracao_atualizacao_view_model != different_model

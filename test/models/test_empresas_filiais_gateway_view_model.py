@@ -11,31 +11,65 @@
 """
 
 from __future__ import absolute_import
-
-import unittest
-
-import evo_client
+import pytest
 from evo_client.models.empresas_filiais_gateway_view_model import (
     EmpresasFiliaisGatewayViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
+from evo_client.models.e_tipo_gateway import ETipoGateway
 
 
-class TestEmpresasFiliaisGatewayViewModel(unittest.TestCase):
-    """EmpresasFiliaisGatewayViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testEmpresasFiliaisGatewayViewModel(self):
-        """Test EmpresasFiliaisGatewayViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.empresas_filiais_gateway_view_model.EmpresasFiliaisGatewayViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def empresas_filiais_gateway_view_model():
+    return EmpresasFiliaisGatewayViewModel(
+        tipoGateway=ETipoGateway._0,
+        dadosGateway={"key": "value"},
+        exibirTipoCartao=True,
+        flTokenizaBackend=False,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_empresas_filiais_gateway_view_model_creation(
+    empresas_filiais_gateway_view_model,
+):
+    """Test creating an EmpresasFiliaisGatewayViewModel instance"""
+    model = empresas_filiais_gateway_view_model
+    assert isinstance(model, EmpresasFiliaisGatewayViewModel)
+    assert model.tipo_gateway == ETipoGateway._0
+    assert model.dados_gateway == {"key": "value"}
+    assert model.exibir_tipo_cartao is True
+    assert model.fl_tokeniza_backend is False
+
+
+def test_empresas_filiais_gateway_view_model_to_dict(
+    empresas_filiais_gateway_view_model,
+):
+    """Test converting EmpresasFiliaisGatewayViewModel to dictionary"""
+    model_dict = empresas_filiais_gateway_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["tipoGateway"] == ETipoGateway._0
+    assert model_dict["dadosGateway"] == {"key": "value"}
+    assert model_dict["exibirTipoCartao"] is True
+    assert model_dict["flTokenizaBackend"] is False
+
+
+def test_empresas_filiais_gateway_view_model_equality(
+    empresas_filiais_gateway_view_model,
+):
+    """Test equality comparison of EmpresasFiliaisGatewayViewModel instances"""
+    same_model = EmpresasFiliaisGatewayViewModel(
+        tipoGateway=ETipoGateway._0,
+        dadosGateway={"key": "value"},
+        exibirTipoCartao=True,
+        flTokenizaBackend=False,
+    )
+
+    different_model = EmpresasFiliaisGatewayViewModel(
+        tipoGateway=ETipoGateway._1,
+        dadosGateway={"key": "different"},
+        exibirTipoCartao=False,
+        flTokenizaBackend=True,
+    )
+
+    assert empresas_filiais_gateway_view_model == same_model
+    assert empresas_filiais_gateway_view_model != different_model

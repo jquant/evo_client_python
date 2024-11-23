@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,28 +12,25 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.e_forma_pagamento_totem import EFormaPagamentoTotem  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.e_forma_pagamento_totem import EFormaPagamentoTotem
 
 
-class TestEFormaPagamentoTotem(unittest.TestCase):
-    """EFormaPagamentoTotem unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testEFormaPagamentoTotem(self):
-        """Test EFormaPagamentoTotem"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.e_forma_pagamento_totem.EFormaPagamentoTotem()  # noqa: E501
-        pass
+def test_e_forma_pagamento_totem_creation():
+    """Test creating an EFormaPagamentoTotem instance"""
+    assert isinstance(EFormaPagamentoTotem._1, EFormaPagamentoTotem)
+    assert EFormaPagamentoTotem._1 == "1"
+    assert EFormaPagamentoTotem._2 == "2"
+    assert EFormaPagamentoTotem._3 == "3"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_e_forma_pagamento_totem_to_dict():
+    """Test converting EFormaPagamentoTotem to dictionary"""
+    assert EFormaPagamentoTotem._1.to_dict() == "1"
+    assert EFormaPagamentoTotem._2.to_dict() == "2"
+
+
+def test_e_forma_pagamento_totem_equality():
+    """Test equality comparison of EFormaPagamentoTotem instances"""
+    assert EFormaPagamentoTotem._1 == EFormaPagamentoTotem("1")
+    assert EFormaPagamentoTotem._2 != EFormaPagamentoTotem("1")

@@ -12,30 +12,47 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import evo_client
 from evo_client.models.w12_utils_webhook_filter_view_model import (
     W12UtilsWebhookFilterViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestW12UtilsWebhookFilterViewModel(unittest.TestCase):
-    """W12UtilsWebhookFilterViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testW12UtilzWebHookFilterViewModel(self):
-        """Test W12UtilzWebHookFilterViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.w12_utils_webhook_filter_view_model.W12UtilsWebhookFilterViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def w12_utils_webhook_filter_view_model():
+    return W12UtilsWebhookFilterViewModel(filterType="TypeA", value="ValueA")
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_w12_utils_webhook_filter_view_model_creation(
+    w12_utils_webhook_filter_view_model,
+):
+    """Test creating a W12UtilsWebhookFilterViewModel instance"""
+    assert isinstance(
+        w12_utils_webhook_filter_view_model, W12UtilsWebhookFilterViewModel
+    )
+    assert w12_utils_webhook_filter_view_model.filter_type == "TypeA"
+    assert w12_utils_webhook_filter_view_model.value == "ValueA"
+
+
+def test_w12_utils_webhook_filter_view_model_to_dict(
+    w12_utils_webhook_filter_view_model,
+):
+    """Test converting W12UtilsWebhookFilterViewModel to dictionary"""
+    model_dict = w12_utils_webhook_filter_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["filterType"] == "TypeA"
+    assert model_dict["value"] == "ValueA"
+
+
+def test_w12_utils_webhook_filter_view_model_equality(
+    w12_utils_webhook_filter_view_model,
+):
+    """Test equality comparison of W12UtilsWebhookFilterViewModel instances"""
+    same_model = W12UtilsWebhookFilterViewModel(filterType="TypeA", value="ValueA")
+
+    different_model = W12UtilsWebhookFilterViewModel(filterType="TypeB", value="ValueB")
+
+    assert w12_utils_webhook_filter_view_model == same_model
+    assert w12_utils_webhook_filter_view_model != different_model

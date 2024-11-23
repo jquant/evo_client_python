@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -11,31 +11,84 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
+import pytest
 
-import evo_client
 from evo_client.models.configuracao_api_view_model import (
     ConfiguracaoApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestConfiguracaoApiViewModel(unittest.TestCase):
-    """ConfiguracaoApiViewModel unit test stubs"""
+@pytest.fixture
+def configuracao_api_view_model():
+    return ConfiguracaoApiViewModel(
+        idBranch=1,
+        name="Main Branch",
+        internalName="MainBranchInternal",
+        cnpj="12345678901234",
+        address="123 Main St",
+        neighborhood="Downtown",
+        telephone="1234567890",
+        number="100",
+        idState=1,
+        state="StateName",
+        stateShort="SN",
+        city="CityName",
+        complement="Suite 100",
+        zipCode="12345-678",
+        website="https://example.com",
+        latitude=12.345678,
+        longitude=98.765432,
+        openingDate=datetime(2023, 1, 1),
+        businessHours=[],
+        searchTerms=["gym", "fitness", "workout"],
+    )
 
-    def setUp(self):
-        pass
 
-    def tearDown(self):
-        pass
+def test_configuracao_api_view_model_creation(configuracao_api_view_model):
+    """Test creating a ConfiguracaoApiViewModel instance"""
+    assert isinstance(configuracao_api_view_model, ConfiguracaoApiViewModel)
+    assert configuracao_api_view_model.id_branch == 1
+    assert configuracao_api_view_model.name == "Main Branch"
+    assert configuracao_api_view_model.internal_name == "MainBranchInternal"
+    assert configuracao_api_view_model.cnpj == "12345678901234"
+    assert configuracao_api_view_model.address == "123 Main St"
+    assert configuracao_api_view_model.telephone == "1234567890"
 
-    def testConfiguracaoApiViewModel(self):
-        """Test ConfiguracaoApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.configuracao_api_view_model.ConfiguracaoApiViewModel()  # noqa: E501
-        pass
+
+def test_configuracao_api_view_model_to_dict(configuracao_api_view_model):
+    """Test converting ConfiguracaoApiViewModel to dictionary"""
+    model_dict = configuracao_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idBranch"] == 1
+    assert model_dict["name"] == "Main Branch"
+    assert model_dict["internalName"] == "MainBranchInternal"
+    assert model_dict["cnpj"] == "12345678901234"
+    assert model_dict["address"] == "123 Main St"
+    assert model_dict["telephone"] == "1234567890"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_configuracao_api_view_model_equality(configuracao_api_view_model):
+    """Test equality comparison of ConfiguracaoApiViewModel instances"""
+    same_model = ConfiguracaoApiViewModel(
+        idBranch=1,
+        name="Main Branch",
+        internalName="MainBranchInternal",
+        cnpj="12345678901234",
+        address="123 Main St",
+        telephone="1234567890",
+    )
+
+    different_model = ConfiguracaoApiViewModel(
+        idBranch=2,
+        name="Secondary Branch",
+        internalName="SecondaryBranchInternal",
+        cnpj="98765432109876",
+        address="456 Secondary St",
+        telephone="0987654321",
+    )
+
+    assert configuracao_api_view_model == same_model
+    assert configuracao_api_view_model != different_model

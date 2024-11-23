@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -11,31 +11,77 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
-
-import evo_client
+import pytest
 from evo_client.models.prospect_api_integracao_view_model import (
     ProspectApiIntegracaoViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
+from evo_client.exceptions.api_exceptions import ApiException
 
 
-class TestProspectApiIntegracaoViewModel(unittest.TestCase):
-    """ProspectApiIntegracaoViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testProspectApiIntegracaoViewModel(self):
-        """Test ProspectApiIntegracaoViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.prospect_api_integracao_view_model.ProspectApiIntegracaoViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def prospect_api_integracao_view_model():
+    return ProspectApiIntegracaoViewModel(
+        name="John Doe",
+        lastName="Doe",
+        email="john.doe@example.com",
+        idBranch=2,
+        cellphone="+1234567890",
+        gender="Male",
+        currentStep="Contacted",
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_prospect_api_integracao_view_model_creation(
+    prospect_api_integracao_view_model,
+):
+    """Test creating a ProspectApiIntegracaoViewModel instance"""
+    model = prospect_api_integracao_view_model
+    assert isinstance(model, ProspectApiIntegracaoViewModel)
+    assert model.name == "John Doe"
+    assert model.last_name == "Doe"
+    assert model.email == "john.doe@example.com"
+    assert model.id_branch == 2
+    assert model.cellphone == "+1234567890"
+    assert model.gender == "Male"
+    assert model.current_step == "Contacted"
+
+
+def test_prospect_api_integracao_view_model_to_dict(prospect_api_integracao_view_model):
+    """Test converting ProspectApiIntegracaoViewModel to dictionary"""
+    model_dict = prospect_api_integracao_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idProspect"] == 1
+    assert model_dict["firstName"] == "John"
+    assert model_dict["lastName"] == "Doe"
+    assert model_dict["email"] == "john.doe@example.com"
+    assert model_dict["gender"] == "Male"
+
+
+def test_prospect_api_integracao_view_model_equality(
+    prospect_api_integracao_view_model,
+):
+    """Test equality comparison of ProspectApiIntegracaoViewModel instances"""
+    same_model = ProspectApiIntegracaoViewModel(
+        name="John Doe",
+        lastName="Doe",
+        email="john.doe@example.com",
+        idBranch=2,
+        cellphone="+1234567890",
+        gender="Male",
+        currentStep="Contacted",
+    )
+
+    different_model = ProspectApiIntegracaoViewModel(
+        name="Jane Smith",
+        lastName="Smith",
+        email="jane.smith@example.com",
+        idBranch=3,
+        cellphone="+0987654321",
+        gender="Female",
+    )
+
+    assert prospect_api_integracao_view_model == same_model
+    assert prospect_api_integracao_view_model != different_model

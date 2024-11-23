@@ -11,31 +11,111 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
+import pytest
 
-import evo_client
 from evo_client.models.contratos_cancelados_resumo_api_view_model import (
     ContratosCanceladosResumoApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
+from evo_client.models.contratos_cancelados_parcelas_api_view_model import (
+    ContratosCanceladosParcelasApiViewModel,
+)
+from evo_client.models.dados_contrato_trasnferencia_api_view_model import (
+    DadosContratoTrasnferenciaApiViewModel,
+)
+from evo_client.models.dados_troca_contrato_api_view_model import (
+    DadosTrocaContratoApiViewModel,
+)
 
 
-class TestContratosCanceladosResumoApiViewModel(unittest.TestCase):
-    """ContratosCanceladosResumoApiViewModel unit test stubs"""
+@pytest.fixture
+def contratos_cancelados_resumo_api_view_model():
+    return ContratosCanceladosResumoApiViewModel(
+        idMember=1,
+        name="John Doe",
+        idMembership=101,
+        idMemberMemberShip=202,
+        idBranch=303,
+        numMembers=2,
+        idSale=404,
+        saleValue=999.99,
+        nameMembership="Gold Membership",
+        membershipStart=datetime(2023, 1, 1),
+        membershipEnd=datetime(2023, 12, 31),
+        registerCancelDate=datetime(2023, 6, 15),
+        cancelDate=datetime(2023, 6, 20),
+        reasonCancellation="Personal reasons",
+        saleDate=datetime(2023, 1, 1),
+        cancellationFine=50.0,
+        remainingValue=200.0,
+        receivables=[
+            ContratosCanceladosParcelasApiViewModel(
+                idReceivable=1, ammount=100.0, dueDate=datetime(2023, 7, 1)
+            )
+        ],
+        minPeriodStayMembership=12,
+        membershipTrasnferData=DadosContratoTrasnferenciaApiViewModel(
+            flTransfer=True, idMemberTransfer=123, idMemberMembershipTransfer=456
+        ),
+        membershipSwapData=DadosTrocaContratoApiViewModel(
+            flMembershipSwapped=True, idMemberMembershipSource=202
+        ),
+        idMemberMigration="MIG123",
+        idSaleMigration="SALE456",
+        idMembershipCategory=1,
+        memberDocument="123456789",
+    )
 
-    def setUp(self):
-        pass
 
-    def tearDown(self):
-        pass
+def test_contratos_cancelados_resumo_api_view_model_creation(
+    contratos_cancelados_resumo_api_view_model,
+):
+    """Test creating a ContratosCanceladosResumoApiViewModel instance"""
+    assert isinstance(
+        contratos_cancelados_resumo_api_view_model,
+        ContratosCanceladosResumoApiViewModel,
+    )
+    assert contratos_cancelados_resumo_api_view_model.id_member == 1
+    assert contratos_cancelados_resumo_api_view_model.name == "John Doe"
+    assert contratos_cancelados_resumo_api_view_model.id_membership == 101
+    assert contratos_cancelados_resumo_api_view_model.sale_value == 999.99
+    assert contratos_cancelados_resumo_api_view_model.cancellation_fine == 50.0
 
-    def testContratosCanceladosResumoApiViewModel(self):
-        """Test ContratosCanceladosResumoApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.contratos_cancelados_resumo_api_view_model.ContratosCanceladosResumoApiViewModel()  # noqa: E501
-        pass
+
+def test_contratos_cancelados_resumo_api_view_model_to_dict(
+    contratos_cancelados_resumo_api_view_model,
+):
+    """Test converting ContratosCanceladosResumoApiViewModel to dictionary"""
+    model_dict = contratos_cancelados_resumo_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idMember"] == 1
+    assert model_dict["name"] == "John Doe"
+    assert model_dict["idMembership"] == 101
+    assert model_dict["saleValue"] == 999.99
+    assert model_dict["cancellationFine"] == 50.0
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_contratos_cancelados_resumo_api_view_model_equality(
+    contratos_cancelados_resumo_api_view_model,
+):
+    """Test equality comparison of ContratosCanceladosResumoApiViewModel instances"""
+    same_model = ContratosCanceladosResumoApiViewModel(
+        idMember=1,
+        name="John Doe",
+        idMembership=101,
+        saleValue=999.99,
+        cancellationFine=50.0,
+    )
+
+    different_model = ContratosCanceladosResumoApiViewModel(
+        idMember=2,
+        name="Jane Doe",
+        idMembership=102,
+        saleValue=499.99,
+        cancellationFine=25.0,
+    )
+
+    assert contratos_cancelados_resumo_api_view_model == same_model
+    assert contratos_cancelados_resumo_api_view_model != different_model

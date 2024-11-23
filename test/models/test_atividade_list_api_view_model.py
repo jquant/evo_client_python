@@ -13,21 +13,82 @@
 from __future__ import absolute_import
 
 import pytest
+from datetime import datetime
 
-import evo_client
 from evo_client.models.atividade_list_api_view_model import (
     AtividadeListApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
+from evo_client.models.publico_atividade_view_model import PublicoAtividadeViewModel
 
 
 @pytest.fixture
 def atividade_list_api_view_model():
-    return AtividadeListApiViewModel()
+    return AtividadeListApiViewModel(
+        idActivity=1,
+        photo="https://example.com/photo.jpg",
+        name="Yoga Class",
+        color="#FF5733",
+        activityGroup="Group A",
+        totalRecords=100,
+        inactive=False,
+        description="A relaxing yoga class",
+        idActivityGroup=10,
+        showOnMobile=True,
+        showOnWebsite=True,
+        idBranch=5,
+        audience=[PublicoAtividadeViewModel()],
+        idAudience=2,
+        discriminator="Yoga",
+    )
 
 
-def test_atividade_list_api_view_model(atividade_list_api_view_model):
-    """Test AtividadeListApiViewModel"""
-    # FIXME: construct object with mandatory attributes with example values
-    # model = evo_client.models.atividade_list_api_view_model.AtividadeListApiViewModel()  # noqa: E501
-    pass
+def test_atividade_list_api_view_model_creation(atividade_list_api_view_model):
+    """Test creating an AtividadeListApiViewModel instance"""
+    assert isinstance(atividade_list_api_view_model, AtividadeListApiViewModel)
+    assert atividade_list_api_view_model.id_activity == 1
+    assert atividade_list_api_view_model.name == "Yoga Class"
+    assert atividade_list_api_view_model.color == "#FF5733"
+    assert atividade_list_api_view_model.total_records == 100
+    assert atividade_list_api_view_model.inactive is False
+    assert atividade_list_api_view_model.show_on_mobile is True
+    assert atividade_list_api_view_model.show_on_website is True
+
+
+def test_atividade_list_api_view_model_to_dict(atividade_list_api_view_model):
+    """Test converting AtividadeListApiViewModel to dictionary"""
+    model_dict = atividade_list_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idActivity"] == 1
+    assert model_dict["name"] == "Yoga Class"
+    assert model_dict["color"] == "#FF5733"
+    assert model_dict["totalRecords"] == 100
+    assert model_dict["inactive"] is False
+    assert model_dict["showOnMobile"] is True
+    assert model_dict["showOnWebsite"] is True
+
+
+def test_atividade_list_api_view_model_equality(atividade_list_api_view_model):
+    """Test equality comparison of AtividadeListApiViewModel instances"""
+    same_model = AtividadeListApiViewModel(
+        idActivity=1,
+        name="Yoga Class",
+        color="#FF5733",
+        totalRecords=100,
+        inactive=False,
+        showOnMobile=True,
+        showOnWebsite=True,
+    )
+
+    different_model = AtividadeListApiViewModel(
+        idActivity=2,
+        name="Different Class",
+        color="#00FF00",
+        totalRecords=50,
+        inactive=True,
+        showOnMobile=False,
+        showOnWebsite=False,
+    )
+
+    assert atividade_list_api_view_model == same_model
+    assert atividade_list_api_view_model != different_model

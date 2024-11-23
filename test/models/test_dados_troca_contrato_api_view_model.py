@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,30 +12,52 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
+import pytest
 from evo_client.models.dados_troca_contrato_api_view_model import (
     DadosTrocaContratoApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestDadosTrocaContratoApiViewModel(unittest.TestCase):
-    """DadosTrocaContratoApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testDadosTrocaContratoApiViewModel(self):
-        """Test DadosTrocaContratoApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.dados_troca_contrato_api_view_model.DadosTrocaContratoApiViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def dados_troca_contrato_api_view_model():
+    return DadosTrocaContratoApiViewModel(
+        flMembershipSwapped=True, idMemberMembershipSource=123
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_dados_troca_contrato_api_view_model_creation(
+    dados_troca_contrato_api_view_model,
+):
+    """Test creating a DadosTrocaContratoApiViewModel instance"""
+    assert isinstance(
+        dados_troca_contrato_api_view_model, DadosTrocaContratoApiViewModel
+    )
+    assert dados_troca_contrato_api_view_model.fl_membership_swapped is True
+    assert dados_troca_contrato_api_view_model.id_member_membership_source == 123
+
+
+def test_dados_troca_contrato_api_view_model_to_dict(
+    dados_troca_contrato_api_view_model,
+):
+    """Test converting DadosTrocaContratoApiViewModel to dictionary"""
+    model_dict = dados_troca_contrato_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["flMembershipSwapped"] is True
+    assert model_dict["idMemberMembershipSource"] == 123
+
+
+def test_dados_troca_contrato_api_view_model_equality(
+    dados_troca_contrato_api_view_model,
+):
+    """Test equality comparison of DadosTrocaContratoApiViewModel instances"""
+    same_model = DadosTrocaContratoApiViewModel(
+        flMembershipSwapped=True, idMemberMembershipSource=123
+    )
+
+    different_model = DadosTrocaContratoApiViewModel(
+        flMembershipSwapped=False, idMemberMembershipSource=456
+    )
+
+    assert dados_troca_contrato_api_view_model == same_model
+    assert dados_troca_contrato_api_view_model != different_model

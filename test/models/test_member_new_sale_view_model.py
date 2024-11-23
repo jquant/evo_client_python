@@ -11,31 +11,82 @@
 """
 
 from __future__ import absolute_import
-
-import unittest
-
-import evo_client
-from evo_client.models.member_new_sale_view_model import (
-    MemberNewSaleViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+from typing import Optional
+import pytest
+from evo_client.models.member_new_sale_view_model import MemberNewSaleViewModel
 
 
-class TestMemberNewSaleViewModel(unittest.TestCase):
-    """MemberNewSaleViewModel unit test stubs"""
+@pytest.fixture
+def member_new_sale_view_model():
+    return MemberNewSaleViewModel(
+        idMember=1,
+        document="123456789",
+        zipCode="12345",
+        address="123 Main St",
+        number="10A",
+        complement="Apt 1",
+        neighborhood="Downtown",
+        city="Metropolis",
+        idState=5,
+    )
 
-    def setUp(self):
-        pass
 
-    def tearDown(self):
-        pass
+def test_member_new_sale_view_model_creation(member_new_sale_view_model):
+    """Test creating a MemberNewSaleViewModel instance"""
+    model = member_new_sale_view_model
+    assert isinstance(model, MemberNewSaleViewModel)
+    assert model.id_member == 1
+    assert model.document == "123456789"
+    assert model.zip_code == "12345"
+    assert model.address == "123 Main St"
+    assert model.number == "10A"
+    assert model.complement == "Apt 1"
+    assert model.neighborhood == "Downtown"
+    assert model.city == "Metropolis"
+    assert model.id_state == 5
 
-    def testMemberNewSaleViewModel(self):
-        """Test MemberNewSaleViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.member_new_sale_view_model.MemberNewSaleViewModel()  # noqa: E501
-        pass
+
+def test_member_new_sale_view_model_to_dict(member_new_sale_view_model):
+    """Test converting MemberNewSaleViewModel to dictionary"""
+    model_dict = member_new_sale_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idMember"] == 1
+    assert model_dict["document"] == "123456789"
+    assert model_dict["zipCode"] == "12345"
+    assert model_dict["address"] == "123 Main St"
+    assert model_dict["number"] == "10A"
+    assert model_dict["complement"] == "Apt 1"
+    assert model_dict["neighborhood"] == "Downtown"
+    assert model_dict["city"] == "Metropolis"
+    assert model_dict["idState"] == 5
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_member_new_sale_view_model_equality(member_new_sale_view_model):
+    """Test equality comparison of MemberNewSaleViewModel instances"""
+    same_model = MemberNewSaleViewModel(
+        idMember=1,
+        document="123456789",
+        zipCode="12345",
+        address="123 Main St",
+        number="10A",
+        complement="Apt 1",
+        neighborhood="Downtown",
+        city="Metropolis",
+        idState=5,
+    )
+
+    different_model = MemberNewSaleViewModel(
+        idMember=2,
+        document="987654321",
+        zipCode="54321",
+        address="456 Elm St",
+        number="20B",
+        complement="Suite 2",
+        neighborhood="Uptown",
+        city="Gotham",
+        idState=10,
+    )
+
+    assert member_new_sale_view_model == same_model
+    assert member_new_sale_view_model != different_model

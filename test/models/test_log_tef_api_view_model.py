@@ -11,29 +11,45 @@
 """
 
 from __future__ import absolute_import
-
-import unittest
-
-import evo_client
-from evo_client.models.log_tef_api_view_model import LogTefApiViewModel  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.log_tef_api_view_model import LogTefApiViewModel
 
 
-class TestLogTefApiViewModel(unittest.TestCase):
-    """LogTefApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testLogTefApiViewModel(self):
-        """Test LogTefApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.log_tef_api_view_model.LogTefApiViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def log_tef_api_view_model():
+    return LogTefApiViewModel(
+        authorization="auth123", tefId="tef123", merchantCheckoutGuid="guid123"
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_log_tef_api_view_model_creation(log_tef_api_view_model):
+    """Test creating a LogTefApiViewModel instance"""
+    model = log_tef_api_view_model
+    assert isinstance(model, LogTefApiViewModel)
+    assert model.authorization == "auth123"
+    assert model.tef_id == "tef123"
+    assert model.merchant_checkout_guid == "guid123"
+
+
+def test_log_tef_api_view_model_to_dict(log_tef_api_view_model):
+    """Test converting LogTefApiViewModel to dictionary"""
+    model_dict = log_tef_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["authorization"] == "auth123"
+    assert model_dict["tefId"] == "tef123"
+    assert model_dict["merchantCheckoutGuid"] == "guid123"
+
+
+def test_log_tef_api_view_model_equality(log_tef_api_view_model):
+    """Test equality comparison of LogTefApiViewModel instances"""
+    same_model = LogTefApiViewModel(
+        authorization="auth123", tefId="tef123", merchantCheckoutGuid="guid123"
+    )
+
+    different_model = LogTefApiViewModel(
+        authorization="auth456", tefId="tef456", merchantCheckoutGuid="guid456"
+    )
+
+    assert log_tef_api_view_model == same_model
+    assert log_tef_api_view_model != different_model

@@ -12,30 +12,25 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.e_status_atividade_sessao import (
-    EStatusAtividadeSessao,
-)  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.e_status_atividade import EStatusAtividade
 
 
-class TestEStatusAtividadeSessao(unittest.TestCase):
-    """EStatusAtividadeSessao unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testEStatusAtividadeSessao(self):
-        """Test EStatusAtividadeSessao"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.e_status_atividade_sessao.EStatusAtividadeSessao()  # noqa: E501
-        pass
+def test_e_status_atividade_creation():
+    """Test creating an EStatusAtividade instance"""
+    assert isinstance(EStatusAtividade._0, EStatusAtividade)
+    assert EStatusAtividade._0 == "0"
+    assert EStatusAtividade._1 == "1"
+    assert EStatusAtividade._2 == "2"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_e_status_atividade_to_dict():
+    """Test converting EStatusAtividade to dictionary"""
+    assert EStatusAtividade._0.to_dict() == "0"
+    assert EStatusAtividade._1.to_dict() == "1"
+
+
+def test_e_status_atividade_equality():
+    """Test equality comparison of EStatusAtividade instances"""
+    assert EStatusAtividade._0 == EStatusAtividade("0")
+    assert EStatusAtividade._1 != EStatusAtividade("0")

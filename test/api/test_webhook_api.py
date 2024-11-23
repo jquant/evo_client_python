@@ -74,9 +74,9 @@ def test_create_webhook(webhook_api: WebhookApi, mock_api_client: Mock):
     assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/webhook"
     assert isinstance(args["body"], W12UtilsWebhookViewModel)
-    assert args["body"].eventType == "NewSale"
-    assert args["body"].urlCallback == "https://example.com/webhook"
-    assert args["body"].idBranch == 123
+    assert args["body"].event_type == "NewSale"
+    assert args["body"].url_callback == "https://example.com/webhook"
+    assert args["body"].id_branch == 123
 
 
 def test_error_handling(webhook_api: WebhookApi, mock_api_client: Mock):

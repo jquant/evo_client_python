@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,30 +12,47 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import evo_client
 from evo_client.models.prospect_transferencia_view_model import (
     ProspectTransferenciaViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestProspectTransferenciaViewModel(unittest.TestCase):
-    """ProspectTransferenciaViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testProspectTransferenciaViewModel(self):
-        """Test ProspectTransferenciaViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.prospect_transferencia_view_model.ProspectTransferenciaViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def prospect_transferencia_view_model():
+    return ProspectTransferenciaViewModel(
+        idProspect=1, idFilialDestino=2, idBranchToken="token123"
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_prospect_transferencia_view_model_creation(prospect_transferencia_view_model):
+    """Test creating a ProspectTransferenciaViewModel instance"""
+    assert isinstance(prospect_transferencia_view_model, ProspectTransferenciaViewModel)
+    assert prospect_transferencia_view_model.id_prospect == 1
+    assert prospect_transferencia_view_model.id_filial_destino == 2
+    assert prospect_transferencia_view_model.id_branch_token == "token123"
+
+
+def test_prospect_transferencia_view_model_to_dict(prospect_transferencia_view_model):
+    """Test converting ProspectTransferenciaViewModel to dictionary"""
+    model_dict = prospect_transferencia_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idProspect"] == 1
+    assert model_dict["idFilialDestino"] == 2
+    assert model_dict["idBranchToken"] == "token123"
+
+
+def test_prospect_transferencia_view_model_equality(prospect_transferencia_view_model):
+    """Test equality comparison of ProspectTransferenciaViewModel instances"""
+    same_model = ProspectTransferenciaViewModel(
+        idProspect=1, idFilialDestino=2, idBranchToken="token123"
+    )
+
+    different_model = ProspectTransferenciaViewModel(
+        idProspect=3, idFilialDestino=4, idBranchToken="token456"
+    )
+
+    assert prospect_transferencia_view_model == same_model
+    assert prospect_transferencia_view_model != different_model

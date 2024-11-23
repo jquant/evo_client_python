@@ -11,29 +11,47 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
-
-import evo_client
-from evo_client.models.basic_freeze_view_model import BasicFreezeViewModel  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.basic_freeze_view_model import BasicFreezeViewModel
 
 
-class TestBasicFreezeViewModel(unittest.TestCase):
-    """BasicFreezeViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testBasicFreezeViewModel(self):
-        """Test BasicFreezeViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.basic_freeze_view_model.BasicFreezeViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def basic_freeze_view_model():
+    return BasicFreezeViewModel(
+        startDate=datetime(2024, 1, 1, 9, 0),
+        endDate=datetime(2024, 1, 31, 17, 0),
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_basic_freeze_view_model_creation(basic_freeze_view_model):
+    """Test creating a BasicFreezeViewModel instance"""
+    assert isinstance(basic_freeze_view_model, BasicFreezeViewModel)
+    assert basic_freeze_view_model.start_date == datetime(2024, 1, 1, 9, 0)
+    assert basic_freeze_view_model.end_date == datetime(2024, 1, 31, 17, 0)
+
+
+def test_basic_freeze_view_model_to_dict(basic_freeze_view_model):
+    """Test converting BasicFreezeViewModel to dictionary"""
+    model_dict = basic_freeze_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["startDate"] == datetime(2024, 1, 1, 9, 0)
+    assert model_dict["endDate"] == datetime(2024, 1, 31, 17, 0)
+
+
+def test_basic_freeze_view_model_equality(basic_freeze_view_model):
+    """Test equality comparison of BasicFreezeViewModel instances"""
+    same_model = BasicFreezeViewModel(
+        startDate=datetime(2024, 1, 1, 9, 0),
+        endDate=datetime(2024, 1, 31, 17, 0),
+    )
+
+    different_model = BasicFreezeViewModel(
+        startDate=datetime(2024, 2, 1, 9, 0),
+        endDate=datetime(2024, 2, 28, 17, 0),
+    )
+
+    assert basic_freeze_view_model == same_model
+    assert basic_freeze_view_model != different_model

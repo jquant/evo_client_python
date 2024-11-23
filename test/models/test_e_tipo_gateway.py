@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -11,29 +11,25 @@
 """
 
 from __future__ import absolute_import
-
-import unittest
-
-import evo_client
-from evo_client.models.e_tipo_gateway import ETipoGateway  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.e_tipo_gateway import ETipoGateway
 
 
-class TestETipoGateway(unittest.TestCase):
-    """ETipoGateway unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testETipoGateway(self):
-        """Test ETipoGateway"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.e_tipo_gateway.ETipoGateway()  # noqa: E501
-        pass
+def test_e_tipo_gateway_creation():
+    """Test creating an ETipoGateway instance"""
+    assert isinstance(ETipoGateway._0, ETipoGateway)
+    assert ETipoGateway._0 == "0"
+    assert ETipoGateway._1 == "1"
+    assert ETipoGateway._2 == "2"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_e_tipo_gateway_to_dict():
+    """Test converting ETipoGateway to dictionary"""
+    assert ETipoGateway._0.to_dict() == "0"
+    assert ETipoGateway._1.to_dict() == "1"
+
+
+def test_e_tipo_gateway_equality():
+    """Test equality comparison of ETipoGateway instances"""
+    assert ETipoGateway._0 == ETipoGateway("0")
+    assert ETipoGateway._1 != ETipoGateway("0")

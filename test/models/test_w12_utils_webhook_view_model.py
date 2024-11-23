@@ -12,30 +12,60 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import evo_client
-from evo_client.models.w12_utils_webhook_view_model import (
-    W12UtilsWebhookViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+from evo_client.models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
 
 
-class TestW12UtilsWebhookViewModel(unittest.TestCase):
-    """W12UtilsWebhookViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testW12UtilsWebhookViewModel(self):
-        """Test W12UtilsWebhookViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.w12_utils_webhook_view_model.W12UtilsWebhookViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def w12_utils_webhook_view_model():
+    return W12UtilsWebhookViewModel(
+        # Add example values for the mandatory attributes
+        idBranch=1,
+        eventType="event_name",
+        urlCallback="https://example.com/webhook",
+        headers=[],
+        filters=[],
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_w12_utils_webhook_view_model_creation(w12_utils_webhook_view_model):
+    """Test creating a W12UtilsWebhookViewModel instance"""
+    assert isinstance(w12_utils_webhook_view_model, W12UtilsWebhookViewModel)
+    assert w12_utils_webhook_view_model.id_branch == 1
+    assert w12_utils_webhook_view_model.event_type == "event_name"
+    assert w12_utils_webhook_view_model.url_callback == "https://example.com/webhook"
+    assert w12_utils_webhook_view_model.headers == []
+    assert w12_utils_webhook_view_model.filters == []
+
+
+def test_w12_utils_webhook_view_model_to_dict(w12_utils_webhook_view_model):
+    """Test converting W12UtilsWebhookViewModel to dictionary"""
+    model_dict = w12_utils_webhook_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["url"] == "https://example.com/webhook"
+    assert model_dict["event"] == "event_name"
+    assert model_dict["active"] is True
+
+
+def test_w12_utils_webhook_view_model_equality(w12_utils_webhook_view_model):
+    """Test equality comparison of W12UtilsWebhookViewModel instances"""
+    same_model = W12UtilsWebhookViewModel(
+        idBranch=1,
+        eventType="event_name",
+        urlCallback="https://example.com/webhook",
+        headers=[],
+        filters=[],
+    )
+
+    different_model = W12UtilsWebhookViewModel(
+        idBranch=2,
+        eventType="event_name",
+        urlCallback="https://different.com/webhook",
+        headers=[],
+        filters=[],
+    )
+
+    assert w12_utils_webhook_view_model == same_model
+    assert w12_utils_webhook_view_model != different_model

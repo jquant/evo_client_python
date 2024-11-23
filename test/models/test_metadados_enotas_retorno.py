@@ -12,30 +12,30 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.metadados_enotas_retorno import (
-    MetadadosEnotasRetorno,
-)  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.metadados_enotas_retorno import MetadadosEnotasRetorno
 
 
-class TestMetadadosEnotasRetorno(unittest.TestCase):
-    """MetadadosEnotasRetorno unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testMetadadosEnotasRetorno(self):
-        """Test MetadadosEnotasRetorno"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.metadados_enotas_retorno.MetadadosEnotasRetorno()  # noqa: E501
-        pass
+@pytest.fixture
+def metadados_enotas_retorno():
+    return MetadadosEnotasRetorno()
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_metadados_enotas_retorno_creation(metadados_enotas_retorno):
+    """Test creating a MetadadosEnotasRetorno instance"""
+    assert isinstance(metadados_enotas_retorno, MetadadosEnotasRetorno)
+
+
+def test_metadados_enotas_retorno_to_dict(metadados_enotas_retorno):
+    """Test converting MetadadosEnotasRetorno to dictionary"""
+    model_dict = metadados_enotas_retorno.to_dict()
+
+    assert isinstance(model_dict, dict)
+
+
+def test_metadados_enotas_retorno_equality(metadados_enotas_retorno):
+    """Test equality comparison of MetadadosEnotasRetorno instances"""
+    same_model = MetadadosEnotasRetorno()
+
+    assert metadados_enotas_retorno == same_model
+    assert metadados_enotas_retorno != MetadadosEnotasRetorno()

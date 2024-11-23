@@ -11,31 +11,76 @@
 """
 
 from __future__ import absolute_import
-
-import unittest
-
-import evo_client
-from evo_client.models.member_authenticate_view_model import (
-    MemberAuthenticateViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.member_authenticate_view_model import MemberAuthenticateViewModel
 
 
-class TestMemberAuthenticateViewModel(unittest.TestCase):
-    """MemberAuthenticateViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testMemberAuthenticateViewModel(self):
-        """Test MemberAuthenticateViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.member_authenticate_view_model.MemberAuthenticateViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def member_authenticate_view_model():
+    return MemberAuthenticateViewModel(
+        idMember=1,
+        idBranch=10,
+        idEnterprise=100,
+        name="John Doe",
+        dns="gym.example.com",
+        successAuthenticate=True,
+        urlResetPassword="https://example.com/reset",
+        urlMemberArea="https://example.com/member-area",
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_member_authenticate_view_model_creation(member_authenticate_view_model):
+    """Test creating a MemberAuthenticateViewModel instance"""
+    model = member_authenticate_view_model
+    assert isinstance(model, MemberAuthenticateViewModel)
+    assert model.id_member == 1
+    assert model.id_branch == 10
+    assert model.id_enterprise == 100
+    assert model.name == "John Doe"
+    assert model.dns == "gym.example.com"
+    assert model.success_authenticate is True
+    assert model.url_reset_password == "https://example.com/reset"
+    assert model.url_member_area == "https://example.com/member-area"
+
+
+def test_member_authenticate_view_model_to_dict(member_authenticate_view_model):
+    """Test converting MemberAuthenticateViewModel to dictionary"""
+    model_dict = member_authenticate_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idMember"] == 1
+    assert model_dict["idBranch"] == 10
+    assert model_dict["idEnterprise"] == 100
+    assert model_dict["name"] == "John Doe"
+    assert model_dict["dns"] == "gym.example.com"
+    assert model_dict["successAuthenticate"] is True
+    assert model_dict["urlResetPassword"] == "https://example.com/reset"
+    assert model_dict["urlMemberArea"] == "https://example.com/member-area"
+
+
+def test_member_authenticate_view_model_equality(member_authenticate_view_model):
+    """Test equality comparison of MemberAuthenticateViewModel instances"""
+    same_model = MemberAuthenticateViewModel(
+        idMember=1,
+        idBranch=10,
+        idEnterprise=100,
+        name="John Doe",
+        dns="gym.example.com",
+        successAuthenticate=True,
+        urlResetPassword="https://example.com/reset",
+        urlMemberArea="https://example.com/member-area",
+    )
+
+    different_model = MemberAuthenticateViewModel(
+        idMember=2,
+        idBranch=20,
+        idEnterprise=200,
+        name="Jane Doe",
+        dns="gym2.example.com",
+        successAuthenticate=False,
+        urlResetPassword="https://example.com/reset2",
+        urlMemberArea="https://example.com/member-area2",
+    )
+
+    assert member_authenticate_view_model == same_model
+    assert member_authenticate_view_model != different_model

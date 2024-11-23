@@ -12,28 +12,76 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import evo_client
-from evo_client.models.telefone_api_view_model import TelefoneApiViewModel  # noqa: E501
-from evo_client.rest import ApiException
+from evo_client.models.telefone_api_view_model import TelefoneApiViewModel
 
 
-class TestTelefoneApiViewModel(unittest.TestCase):
-    """TelefoneApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testTelefoneApiViewModel(self):
-        """Test TelefoneApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.telefone_api_view_model.TelefoneApiViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def telefone_api_view_model():
+    return TelefoneApiViewModel(
+        idPhone=1,
+        idMember=2,
+        idEmployee=3,
+        idProspect=4,
+        idProvider=5,
+        idContactType="Mobile",
+        contactType="Personal",
+        description="Primary contact number",
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_telefone_api_view_model_creation(telefone_api_view_model):
+    """Test creating a TelefoneApiViewModel instance"""
+    assert isinstance(telefone_api_view_model, TelefoneApiViewModel)
+    assert telefone_api_view_model.id_phone == 1
+    assert telefone_api_view_model.id_member == 2
+    assert telefone_api_view_model.id_employee == 3
+    assert telefone_api_view_model.id_prospect == 4
+    assert telefone_api_view_model.id_provider == 5
+    assert telefone_api_view_model.id_contact_type == "Mobile"
+    assert telefone_api_view_model.contact_type == "Personal"
+    assert telefone_api_view_model.description == "Primary contact number"
+
+
+def test_telefone_api_view_model_to_dict(telefone_api_view_model):
+    """Test converting TelefoneApiViewModel to dictionary"""
+    model_dict = telefone_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idPhone"] == 1
+    assert model_dict["idMember"] == 2
+    assert model_dict["idEmployee"] == 3
+    assert model_dict["idProspect"] == 4
+    assert model_dict["idProvider"] == 5
+    assert model_dict["idContactType"] == "Mobile"
+    assert model_dict["contactType"] == "Personal"
+    assert model_dict["description"] == "Primary contact number"
+
+
+def test_telefone_api_view_model_equality(telefone_api_view_model):
+    """Test equality comparison of TelefoneApiViewModel instances"""
+    same_model = TelefoneApiViewModel(
+        idPhone=1,
+        idMember=2,
+        idEmployee=3,
+        idProspect=4,
+        idProvider=5,
+        idContactType="Mobile",
+        contactType="Personal",
+        description="Primary contact number",
+    )
+
+    different_model = TelefoneApiViewModel(
+        idPhone=6,
+        idMember=7,
+        idEmployee=8,
+        idProspect=9,
+        idProvider=10,
+        idContactType="Work",
+        contactType="Office",
+        description="Secondary contact number",
+    )
+
+    assert telefone_api_view_model == same_model
+    assert telefone_api_view_model != different_model

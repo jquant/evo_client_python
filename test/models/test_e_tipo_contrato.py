@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,28 +12,33 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.e_tipo_contrato import ETipoContrato  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.e_tipo_contrato import ETipoContrato, TipoContratoEnum
 
 
-class TestETipoContrato(unittest.TestCase):
-    """ETipoContrato unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testETipoContrato(self):
-        """Test ETipoContrato"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.e_tipo_contrato.ETipoContrato()  # noqa: E501
-        pass
+@pytest.fixture
+def e_tipo_contrato():
+    return ETipoContrato(tipo=TipoContratoEnum._1)
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_e_tipo_contrato_creation(e_tipo_contrato):
+    """Test creating an ETipoContrato instance"""
+    assert isinstance(e_tipo_contrato, ETipoContrato)
+    assert e_tipo_contrato.tipo == TipoContratoEnum._1
+
+
+def test_e_tipo_contrato_to_dict(e_tipo_contrato):
+    """Test converting ETipoContrato to dictionary"""
+    model_dict = e_tipo_contrato.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["tipo"] == "1"
+
+
+def test_e_tipo_contrato_equality(e_tipo_contrato):
+    """Test equality comparison of ETipoContrato instances"""
+    same_model = ETipoContrato(tipo=TipoContratoEnum._1)
+    different_model = ETipoContrato(tipo=TipoContratoEnum._3)
+
+    assert e_tipo_contrato == same_model
+    assert e_tipo_contrato != different_model

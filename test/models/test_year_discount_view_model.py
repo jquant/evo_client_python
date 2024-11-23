@@ -12,30 +12,37 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import evo_client
-from evo_client.models.year_discount_view_model import (
-    YearDiscountViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+from evo_client.models.year_discount_view_model import YearDiscountViewModel
 
 
-class TestYearDiscountViewModel(unittest.TestCase):
-    """YearDiscountViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testYearDiscountViewModel(self):
-        """Test YearDiscountViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.year_discount_view_model.YearDiscountViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def year_discount_view_model():
+    return YearDiscountViewModel(typeDisocuntYearly="Annual", value=10.0)
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_year_discount_view_model_creation(year_discount_view_model):
+    """Test creating a YearDiscountViewModel instance"""
+    assert isinstance(year_discount_view_model, YearDiscountViewModel)
+    assert year_discount_view_model.type_disocunt_yearly == "Annual"
+    assert year_discount_view_model.value == 10.0
+
+
+def test_year_discount_view_model_to_dict(year_discount_view_model):
+    """Test converting YearDiscountViewModel to dictionary"""
+    model_dict = year_discount_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["typeDisocuntYearly"] == "Annual"
+    assert model_dict["value"] == 10.0
+
+
+def test_year_discount_view_model_equality(year_discount_view_model):
+    """Test equality comparison of YearDiscountViewModel instances"""
+    same_model = YearDiscountViewModel(typeDisocuntYearly="Annual", value=10.0)
+
+    different_model = YearDiscountViewModel(typeDisocuntYearly="Monthly", value=5.0)
+
+    assert year_discount_view_model == same_model
+    assert year_discount_view_model != different_model

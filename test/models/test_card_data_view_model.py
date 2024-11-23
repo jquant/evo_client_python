@@ -12,28 +12,80 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.card_data_view_model import CardDataViewModel  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.card_data_view_model import CardDataViewModel
 
 
-class TestCardDataViewModel(unittest.TestCase):
-    """CardDataViewModel unit test stubs"""
+@pytest.fixture
+def card_data_view_model():
+    return CardDataViewModel(
+        token="sampleToken",
+        temporaryToken="tempToken123",
+        branchToken="branchToken456",
+        totalInstallments=12,
+        truncatedCardNumber="**** **** **** 1234",
+        brand="Visa",
+        cardHolderName="John Doe",
+        cardExpirationYear=2025,
+        cardExpirationMonth=12,
+    )
 
-    def setUp(self):
-        pass
 
-    def tearDown(self):
-        pass
+def test_card_data_view_model_creation(card_data_view_model):
+    """Test creating a CardDataViewModel instance"""
+    assert isinstance(card_data_view_model, CardDataViewModel)
+    assert card_data_view_model.token == "sampleToken"
+    assert card_data_view_model.temporary_token == "tempToken123"
+    assert card_data_view_model.branch_token == "branchToken456"
+    assert card_data_view_model.total_installments == 12
+    assert card_data_view_model.truncated_card_number == "**** **** **** 1234"
+    assert card_data_view_model.brand == "Visa"
+    assert card_data_view_model.card_holder_name == "John Doe"
+    assert card_data_view_model.card_expiration_year == 2025
+    assert card_data_view_model.card_expiration_month == 12
 
-    def testCardDataViewModel(self):
-        """Test CardDataViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.card_data_view_model.CardDataViewModel()  # noqa: E501
-        pass
+
+def test_card_data_view_model_to_dict(card_data_view_model):
+    """Test converting CardDataViewModel to dictionary"""
+    model_dict = card_data_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["token"] == "sampleToken"
+    assert model_dict["temporaryToken"] == "tempToken123"
+    assert model_dict["branchToken"] == "branchToken456"
+    assert model_dict["totalInstallments"] == 12
+    assert model_dict["truncatedCardNumber"] == "**** **** **** 1234"
+    assert model_dict["brand"] == "Visa"
+    assert model_dict["cardHolderName"] == "John Doe"
+    assert model_dict["cardExpirationYear"] == 2025
+    assert model_dict["cardExpirationMonth"] == 12
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_card_data_view_model_equality(card_data_view_model):
+    """Test equality comparison of CardDataViewModel instances"""
+    same_model = CardDataViewModel(
+        token="sampleToken",
+        temporaryToken="tempToken123",
+        branchToken="branchToken456",
+        totalInstallments=12,
+        truncatedCardNumber="**** **** **** 1234",
+        brand="Visa",
+        cardHolderName="John Doe",
+        cardExpirationYear=2025,
+        cardExpirationMonth=12,
+    )
+
+    different_model = CardDataViewModel(
+        token="differentToken",
+        temporaryToken="diffTempToken",
+        branchToken="diffBranchToken",
+        totalInstallments=6,
+        truncatedCardNumber="**** **** **** 5678",
+        brand="MasterCard",
+        cardHolderName="Jane Smith",
+        cardExpirationYear=2024,
+        cardExpirationMonth=11,
+    )
+
+    assert card_data_view_model == same_model
+    assert card_data_view_model != different_model

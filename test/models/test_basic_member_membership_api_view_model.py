@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -11,31 +11,89 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
+import pytest
 
-import evo_client
 from evo_client.models.basic_member_membership_api_view_model import (
     BasicMemberMembershipApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestBasicMemberMembershipApiViewModel(unittest.TestCase):
-    """BasicMemberMembershipApiViewModel unit test stubs"""
+@pytest.fixture
+def basic_member_membership_api_view_model():
+    return BasicMemberMembershipApiViewModel(
+        _IdVenda=1,
+        idMembership=2,
+        idMemberMembership=3,
+        idMemberMembershipRenewed=4,
+        numMembers=5,
+        flRenewed=True,
+        startDate=datetime(2023, 1, 1),
+        endDate=datetime(2023, 12, 31),
+        name="Basic Membership",
+        cancelDate=None,
+        saleDate=datetime(2023, 1, 1),
+        timeZone="UTC",
+        freezes=[],
+        flSuspenso=False,
+        freeze=False,
+        membershipStatus="Active",
+        membershipTypeId=1,
+        membershipType="Standard",
+        flAdditionalMembership=False,
+        flAllowLocker=True,
+        idCategoryMembership=1,
+    )
 
-    def setUp(self):
-        pass
 
-    def tearDown(self):
-        pass
+def test_basic_member_membership_api_view_model_creation(
+    basic_member_membership_api_view_model,
+):
+    """Test creating a BasicMemberMembershipApiViewModel instance"""
+    assert isinstance(
+        basic_member_membership_api_view_model, BasicMemberMembershipApiViewModel
+    )
+    assert basic_member_membership_api_view_model.id_venda == 1
+    assert basic_member_membership_api_view_model.id_membership == 2
+    assert basic_member_membership_api_view_model.name == "Basic Membership"
+    assert basic_member_membership_api_view_model.membership_status == "Active"
+    assert basic_member_membership_api_view_model.fl_renewed is True
 
-    def testBasicMemberMembershipApiViewModel(self):
-        """Test BasicMemberMembershipApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.basic_member_membership_api_view_model.BasicMemberMembershipApiViewModel()  # noqa: E501
-        pass
+
+def test_basic_member_membership_api_view_model_to_dict(
+    basic_member_membership_api_view_model,
+):
+    """Test converting BasicMemberMembershipApiViewModel to dictionary"""
+    model_dict = basic_member_membership_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["_IdVenda"] == 1
+    assert model_dict["idMembership"] == 2
+    assert model_dict["name"] == "Basic Membership"
+    assert model_dict["membershipStatus"] == "Active"
+    assert model_dict["flRenewed"] is True
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_basic_member_membership_api_view_model_equality(
+    basic_member_membership_api_view_model,
+):
+    """Test equality comparison of BasicMemberMembershipApiViewModel instances"""
+    same_model = BasicMemberMembershipApiViewModel(
+        _IdVenda=1,
+        idMembership=2,
+        name="Basic Membership",
+        membershipStatus="Active",
+        flRenewed=True,
+    )
+
+    different_model = BasicMemberMembershipApiViewModel(
+        _IdVenda=2,
+        idMembership=3,
+        name="Premium Membership",
+        membershipStatus="Inactive",
+        flRenewed=False,
+    )
+
+    assert basic_member_membership_api_view_model == same_model
+    assert basic_member_membership_api_view_model != different_model

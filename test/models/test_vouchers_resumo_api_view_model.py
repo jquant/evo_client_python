@@ -12,30 +12,79 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import evo_client
-from evo_client.models.vouchers_resumo_api_view_model import (
-    VouchersResumoApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+from evo_client.models.vouchers_resumo_api_view_model import VouchersResumoApiViewModel
 
 
-class TestVouchersResumoApiViewModel(unittest.TestCase):
-    """VouchersResumoApiViewModel unit test stubs"""
+@pytest.fixture
+def vouchers_resumo_api_view_model():
+    return VouchersResumoApiViewModel(
+        idVoucher=1,
+        nameVoucher="Discount Voucher",
+        typeVoucher="Percentage",
+        limited=True,
+        available=100,
+        used=50,
+        siteAvailable=True,
+        idMemberships=[1, 2, 3],
+        monthyDiscount=None,
+        yearlyDiscount=None,
+        serviceDiscount=None,
+    )
 
-    def setUp(self):
-        pass
 
-    def tearDown(self):
-        pass
+def test_vouchers_resumo_api_view_model_creation(vouchers_resumo_api_view_model):
+    """Test creating a VouchersResumoApiViewModel instance"""
+    assert isinstance(vouchers_resumo_api_view_model, VouchersResumoApiViewModel)
+    assert vouchers_resumo_api_view_model.id_voucher == 1
+    assert vouchers_resumo_api_view_model.name_voucher == "Discount Voucher"
+    assert vouchers_resumo_api_view_model.type_voucher == "Percentage"
+    assert vouchers_resumo_api_view_model.limited is True
+    assert vouchers_resumo_api_view_model.available == 100
+    assert vouchers_resumo_api_view_model.used == 50
+    assert vouchers_resumo_api_view_model.site_available is True
+    assert vouchers_resumo_api_view_model.id_memberships == [1, 2, 3]
 
-    def testVouchersResumoApiViewModel(self):
-        """Test VouchersResumoApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.vouchers_resumo_api_view_model.VouchersResumoApiViewModel()  # noqa: E501
-        pass
+
+def test_vouchers_resumo_api_view_model_to_dict(vouchers_resumo_api_view_model):
+    """Test converting VouchersResumoApiViewModel to dictionary"""
+    model_dict = vouchers_resumo_api_view_model.model_dump(by_alias=True)
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idVoucher"] == 1
+    assert model_dict["nameVoucher"] == "Discount Voucher"
+    assert model_dict["typeVoucher"] == "Percentage"
+    assert model_dict["limited"] is True
+    assert model_dict["available"] == 100
+    assert model_dict["used"] == 50
+    assert model_dict["siteAvailable"] is True
+    assert model_dict["idMemberships"] == [1, 2, 3]
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_vouchers_resumo_api_view_model_equality(vouchers_resumo_api_view_model):
+    """Test equality comparison of VouchersResumoApiViewModel instances"""
+    same_model = VouchersResumoApiViewModel(
+        idVoucher=1,
+        nameVoucher="Discount Voucher",
+        typeVoucher="Percentage",
+        limited=True,
+        available=100,
+        used=50,
+        siteAvailable=True,
+        idMemberships=[1, 2, 3],
+    )
+
+    different_model = VouchersResumoApiViewModel(
+        idVoucher=2,
+        nameVoucher="Another Voucher",
+        typeVoucher="Fixed",
+        limited=False,
+        available=200,
+        used=150,
+        siteAvailable=False,
+        idMemberships=[4, 5],
+    )
+
+    assert vouchers_resumo_api_view_model == same_model
+    assert vouchers_resumo_api_view_model != different_model

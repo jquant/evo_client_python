@@ -12,30 +12,52 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
+import pytest
 from evo_client.models.servico_adicional_api_view_model import (
     ServicoAdicionalApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestServicoAdicionalApiViewModel(unittest.TestCase):
-    """ServicoAdicionalApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testServicoAdicionalApiViewModel(self):
-        """Test ServicoAdicionalApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.servico_adicional_api_view_model.ServicoAdicionalApiViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def servico_adicional_api_view_model():
+    return ServicoAdicionalApiViewModel(
+        idService=1,
+        name="Additional Service",
+        value=100.0,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_servico_adicional_api_view_model_creation(servico_adicional_api_view_model):
+    """Test creating a ServicoAdicionalApiViewModel instance"""
+    assert isinstance(servico_adicional_api_view_model, ServicoAdicionalApiViewModel)
+    assert servico_adicional_api_view_model.id_service == 1
+    assert servico_adicional_api_view_model.name == "Additional Service"
+    assert servico_adicional_api_view_model.value == 100.0
+
+
+def test_servico_adicional_api_view_model_to_dict(servico_adicional_api_view_model):
+    """Test converting ServicoAdicionalApiViewModel to dictionary"""
+    model_dict = servico_adicional_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idService"] == 1
+    assert model_dict["name"] == "Additional Service"
+    assert model_dict["value"] == 100.0
+
+
+def test_servico_adicional_api_view_model_equality(servico_adicional_api_view_model):
+    """Test equality comparison of ServicoAdicionalApiViewModel instances"""
+    same_model = ServicoAdicionalApiViewModel(
+        idService=1,
+        name="Additional Service",
+        value=100.0,
+    )
+
+    different_model = ServicoAdicionalApiViewModel(
+        idService=2,
+        name="Different Service",
+        value=200.0,
+    )
+
+    assert servico_adicional_api_view_model == same_model
+    assert servico_adicional_api_view_model != different_model

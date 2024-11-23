@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -11,31 +11,76 @@
 """
 
 from __future__ import absolute_import
-
-import unittest
-
-import evo_client
-from evo_client.models.endereco_enotas_retorno import (
-    EnderecoEnotasRetorno,
-)  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.endereco_enotas_retorno import EnderecoEnotasRetorno
 
 
-class TestEnderecoEnotasRetorno(unittest.TestCase):
-    """EnderecoEnotasRetorno unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testEnderecoEnotasRetorno(self):
-        """Test EnderecoEnotasRetorno"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.endereco_enotas_retorno.EnderecoEnotasRetorno()  # noqa: E501
-        pass
+@pytest.fixture
+def endereco_enotas_retorno():
+    return EnderecoEnotasRetorno(
+        pais="Brazil",
+        uf="SP",
+        cidade="São Paulo",
+        logradouro="Avenida Paulista",
+        numero="1000",
+        complemento="Apt 101",
+        bairro="Bela Vista",
+        cep="01310-100",
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_endereco_enotas_retorno_creation(endereco_enotas_retorno):
+    """Test creating an EnderecoEnotasRetorno instance"""
+    model = endereco_enotas_retorno
+    assert isinstance(model, EnderecoEnotasRetorno)
+    assert model.pais == "Brazil"
+    assert model.uf == "SP"
+    assert model.cidade == "São Paulo"
+    assert model.logradouro == "Avenida Paulista"
+    assert model.numero == "1000"
+    assert model.complemento == "Apt 101"
+    assert model.bairro == "Bela Vista"
+    assert model.cep == "01310-100"
+
+
+def test_endereco_enotas_retorno_to_dict(endereco_enotas_retorno):
+    """Test converting EnderecoEnotasRetorno to dictionary"""
+    model_dict = endereco_enotas_retorno.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["pais"] == "Brazil"
+    assert model_dict["uf"] == "SP"
+    assert model_dict["cidade"] == "São Paulo"
+    assert model_dict["logradouro"] == "Avenida Paulista"
+    assert model_dict["numero"] == "1000"
+    assert model_dict["complemento"] == "Apt 101"
+    assert model_dict["bairro"] == "Bela Vista"
+    assert model_dict["cep"] == "01310-100"
+
+
+def test_endereco_enotas_retorno_equality(endereco_enotas_retorno):
+    """Test equality comparison of EnderecoEnotasRetorno instances"""
+    same_model = EnderecoEnotasRetorno(
+        pais="Brazil",
+        uf="SP",
+        cidade="São Paulo",
+        logradouro="Avenida Paulista",
+        numero="1000",
+        complemento="Apt 101",
+        bairro="Bela Vista",
+        cep="01310-100",
+    )
+
+    different_model = EnderecoEnotasRetorno(
+        pais="Argentina",
+        uf="BA",
+        cidade="Buenos Aires",
+        logradouro="Calle Falsa",
+        numero="123",
+        complemento="",
+        bairro="Centro",
+        cep="1000",
+    )
+
+    assert endereco_enotas_retorno == same_model
+    assert endereco_enotas_retorno != different_model

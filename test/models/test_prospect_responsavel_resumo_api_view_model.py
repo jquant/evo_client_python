@@ -12,30 +12,62 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import evo_client
 from evo_client.models.prospect_responsavel_resumo_api_view_model import (
     ProspectResponsavelResumoApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestProspectResponsavelResumoApiViewModel(unittest.TestCase):
-    """ProspectResponsavelResumoApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testProspectResponsavelResumoApiViewModel(self):
-        """Test ProspectResponsavelResumoApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.prospect_responsavel_resumo_api_view_model.ProspectResponsavelResumoApiViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def prospect_responsavel_resumo_api_view_model():
+    return ProspectResponsavelResumoApiViewModel(
+        name="Jane Doe",
+        document="123456789",
+        financialResponsible=True,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_prospect_responsavel_resumo_api_view_model_creation(
+    prospect_responsavel_resumo_api_view_model,
+):
+    """Test creating a ProspectResponsavelResumoApiViewModel instance"""
+    assert isinstance(
+        prospect_responsavel_resumo_api_view_model,
+        ProspectResponsavelResumoApiViewModel,
+    )
+    assert prospect_responsavel_resumo_api_view_model.name == "Jane Doe"
+    assert prospect_responsavel_resumo_api_view_model.document == "123456789"
+    assert prospect_responsavel_resumo_api_view_model.financial_responsible is True
+
+
+def test_prospect_responsavel_resumo_api_view_model_to_dict(
+    prospect_responsavel_resumo_api_view_model,
+):
+    """Test converting ProspectResponsavelResumoApiViewModel to dictionary"""
+    model_dict = prospect_responsavel_resumo_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["name"] == "Jane Doe"
+    assert model_dict["document"] == "123456789"
+    assert model_dict["financialResponsible"] is True
+
+
+def test_prospect_responsavel_resumo_api_view_model_equality(
+    prospect_responsavel_resumo_api_view_model,
+):
+    """Test equality comparison of ProspectResponsavelResumoApiViewModel instances"""
+    same_model = ProspectResponsavelResumoApiViewModel(
+        name="Jane Doe",
+        document="123456789",
+        financialResponsible=True,
+    )
+
+    different_model = ProspectResponsavelResumoApiViewModel(
+        name="John Smith",
+        document="987654321",
+        financialResponsible=False,
+    )
+
+    assert prospect_responsavel_resumo_api_view_model == same_model
+    assert prospect_responsavel_resumo_api_view_model != different_model

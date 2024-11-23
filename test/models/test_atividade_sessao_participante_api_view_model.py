@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,30 +12,89 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
+from datetime import datetime
 
-import evo_client
 from evo_client.models.atividade_sessao_participante_api_view_model import (
     AtividadeSessaoParticipanteApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
+from evo_client.exceptions.api_exceptions import ApiException
+from evo_client.models import EStatusAtividadeSessao
 
 
-class TestAtividadeSessaoParticipanteApiViewModel(unittest.TestCase):
-    """AtividadeSessaoParticipanteApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testAtividadeSessaoParticipanteApiViewModel(self):
-        """Test AtividadeSessaoParticipanteApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.atividade_sessao_participante_api_view_model.AtividadeSessaoParticipanteApiViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def atividade_sessao_participante_api_view_model():
+    return AtividadeSessaoParticipanteApiViewModel(
+        idMember=1,
+        idEmployee=2,
+        idProspect=3,
+        slotNumber=4,
+        name="John Doe",
+        photo="photo.jpg",
+        justifiedAbsence=True,
+        status=EStatusAtividadeSessao._0,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_atividade_sessao_participante_api_view_model_creation(
+    atividade_sessao_participante_api_view_model,
+):
+    """Test creating an AtividadeSessaoParticipanteApiViewModel instance"""
+    assert isinstance(
+        atividade_sessao_participante_api_view_model,
+        AtividadeSessaoParticipanteApiViewModel,
+    )
+    assert atividade_sessao_participante_api_view_model.id_member == 1
+    assert atividade_sessao_participante_api_view_model.id_employee == 2
+    assert atividade_sessao_participante_api_view_model.id_prospect == 3
+    assert atividade_sessao_participante_api_view_model.slot_number == 4
+    assert atividade_sessao_participante_api_view_model.name == "John Doe"
+    assert atividade_sessao_participante_api_view_model.photo == "photo.jpg"
+    assert atividade_sessao_participante_api_view_model.justified_absence is True
+    assert (
+        atividade_sessao_participante_api_view_model.status == EStatusAtividadeSessao._0
+    )
+
+
+def test_atividade_sessao_participante_api_view_model_to_dict(
+    atividade_sessao_participante_api_view_model,
+):
+    """Test converting AtividadeSessaoParticipanteApiViewModel to dictionary"""
+    model_dict = atividade_sessao_participante_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idParticipant"] == 1
+    assert model_dict["idSession"] == 2
+    assert model_dict["name"] == "John Doe"
+    assert model_dict["email"] == "john.doe@example.com"
+    assert model_dict["status"] == "Confirmed"
+
+
+def test_atividade_sessao_participante_api_view_model_equality(
+    atividade_sessao_participante_api_view_model,
+):
+    """Test equality comparison of AtividadeSessaoParticipanteApiViewModel instances"""
+    same_model = AtividadeSessaoParticipanteApiViewModel(
+        idMember=1,
+        idEmployee=2,
+        idProspect=3,
+        slotNumber=4,
+        name="John Doe",
+        photo="photo.jpg",
+        justifiedAbsence=True,
+        status=EStatusAtividadeSessao._0,
+    )
+
+    different_model = AtividadeSessaoParticipanteApiViewModel(
+        idMember=2,
+        idEmployee=3,
+        idProspect=4,
+        slotNumber=5,
+        name="Jane Smith",
+        photo="photo2.jpg",
+        justifiedAbsence=False,
+        status=EStatusAtividadeSessao._1,
+    )
+
+    assert atividade_sessao_participante_api_view_model == same_model
+    assert atividade_sessao_participante_api_view_model != different_model

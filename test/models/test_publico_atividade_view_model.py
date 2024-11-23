@@ -12,30 +12,45 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import evo_client
-from evo_client.models.publico_atividade_view_model import (
-    PublicoAtividadeViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+from evo_client.models.publico_atividade_view_model import PublicoAtividadeViewModel
 
 
-class TestPublicoAtividadeViewModel(unittest.TestCase):
-    """PublicoAtividadeViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testPublicoAtividadeViewModel(self):
-        """Test PublicoAtividadeViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.publico_atividade_view_model.PublicoAtividadeViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def publico_atividade_view_model():
+    return PublicoAtividadeViewModel(
+        idPublicoAtividade=1, idFilial=2, nome="General Public"
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_publico_atividade_view_model_creation(publico_atividade_view_model):
+    """Test creating a PublicoAtividadeViewModel instance"""
+    assert isinstance(publico_atividade_view_model, PublicoAtividadeViewModel)
+    assert publico_atividade_view_model.id_publico_atividade == 1
+    assert publico_atividade_view_model.id_filial == 2
+    assert publico_atividade_view_model.nome == "General Public"
+
+
+def test_publico_atividade_view_model_to_dict(publico_atividade_view_model):
+    """Test converting PublicoAtividadeViewModel to dictionary"""
+    model_dict = publico_atividade_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idPublicoAtividade"] == 1
+    assert model_dict["idFilial"] == 2
+    assert model_dict["nome"] == "General Public"
+
+
+def test_publico_atividade_view_model_equality(publico_atividade_view_model):
+    """Test equality comparison of PublicoAtividadeViewModel instances"""
+    same_model = PublicoAtividadeViewModel(
+        idPublicoAtividade=1, idFilial=2, nome="General Public"
+    )
+
+    different_model = PublicoAtividadeViewModel(
+        idPublicoAtividade=3, idFilial=4, nome="Specific Group"
+    )
+
+    assert publico_atividade_view_model == same_model
+    assert publico_atividade_view_model != different_model

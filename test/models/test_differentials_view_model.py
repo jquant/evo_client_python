@@ -12,30 +12,36 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.differentials_view_model import (
-    DifferentialsViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.differentials_view_model import DifferentialsViewModel
 
 
-class TestDifferentialsViewModel(unittest.TestCase):
-    """DifferentialsViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testDifferentialsViewModel(self):
-        """Test DifferentialsViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.differentials_view_model.DifferentialsViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def differentials_view_model():
+    return DifferentialsViewModel(title="Unique Feature", order=1)
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_differentials_view_model_creation(differentials_view_model):
+    """Test creating a DifferentialsViewModel instance"""
+    assert isinstance(differentials_view_model, DifferentialsViewModel)
+    assert differentials_view_model.title == "Unique Feature"
+    assert differentials_view_model.order == 1
+
+
+def test_differentials_view_model_to_dict(differentials_view_model):
+    """Test converting DifferentialsViewModel to dictionary"""
+    model_dict = differentials_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["title"] == "Unique Feature"
+    assert model_dict["order"] == 1
+
+
+def test_differentials_view_model_equality(differentials_view_model):
+    """Test equality comparison of DifferentialsViewModel instances"""
+    same_model = DifferentialsViewModel(title="Unique Feature", order=1)
+
+    different_model = DifferentialsViewModel(title="Another Feature", order=2)
+
+    assert differentials_view_model == same_model
+    assert differentials_view_model != different_model

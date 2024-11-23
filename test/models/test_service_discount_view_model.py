@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,30 +12,45 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.service_discount_view_model import (
-    ServiceDiscountViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.service_discount_view_model import ServiceDiscountViewModel
 
 
-class TestServiceDiscountViewModel(unittest.TestCase):
-    """ServiceDiscountViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testServiceDiscountViewModel(self):
-        """Test ServiceDiscountViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.service_discount_view_model.ServiceDiscountViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def service_discount_view_model():
+    return ServiceDiscountViewModel(
+        typeDiscountService="Percentage",
+        value=10.0,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_service_discount_view_model_creation(service_discount_view_model):
+    """Test creating a ServiceDiscountViewModel instance"""
+    assert isinstance(service_discount_view_model, ServiceDiscountViewModel)
+    assert service_discount_view_model.type_discount_service == "Percentage"
+    assert service_discount_view_model.value == 10.0
+
+
+def test_service_discount_view_model_to_dict(service_discount_view_model):
+    """Test converting ServiceDiscountViewModel to dictionary"""
+    model_dict = service_discount_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["typeDiscountService"] == "Percentage"
+    assert model_dict["value"] == 10.0
+
+
+def test_service_discount_view_model_equality(service_discount_view_model):
+    """Test equality comparison of ServiceDiscountViewModel instances"""
+    same_model = ServiceDiscountViewModel(
+        typeDiscountService="Percentage",
+        value=10.0,
+    )
+
+    different_model = ServiceDiscountViewModel(
+        typeDiscountService="Fixed",
+        value=20.0,
+    )
+
+    assert service_discount_view_model == same_model
+    assert service_discount_view_model != different_model

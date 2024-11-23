@@ -30,9 +30,6 @@ class RevenueCenterApiViewModel(BaseModel):
     id_dre_group: Optional[int] = Field(default=None, alias="idDreGroup")
     level: Optional[int] = None
 
-    
-        validate_assignment = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

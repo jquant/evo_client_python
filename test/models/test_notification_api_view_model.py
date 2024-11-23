@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,30 +12,46 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.notification_api_view_model import (
-    NotificationApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.notification_api_view_model import NotificationApiViewModel
 
 
-class TestNotificationApiViewModel(unittest.TestCase):
-    """NotificationApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testNotificationApiViewModel(self):
-        """Test NotificationApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.notification_api_view_model.NotificationApiViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def notification_api_view_model():
+    return NotificationApiViewModel(
+        idMember=1,
+        notificationMessage="Welcome to the gym!",
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_notification_api_view_model_creation(notification_api_view_model):
+    """Test creating a NotificationApiViewModel instance"""
+    model = notification_api_view_model
+    assert isinstance(model, NotificationApiViewModel)
+    assert model.id_member == 1
+    assert model.notification_message == "Welcome to the gym!"
+
+
+def test_notification_api_view_model_to_dict(notification_api_view_model):
+    """Test converting NotificationApiViewModel to dictionary"""
+    model_dict = notification_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idMember"] == 1
+    assert model_dict["notificationMessage"] == "Welcome to the gym!"
+
+
+def test_notification_api_view_model_equality(notification_api_view_model):
+    """Test equality comparison of NotificationApiViewModel instances"""
+    same_model = NotificationApiViewModel(
+        idMember=1,
+        notificationMessage="Welcome to the gym!",
+    )
+
+    different_model = NotificationApiViewModel(
+        idMember=2,
+        notificationMessage="Your membership has been updated.",
+    )
+
+    assert notification_api_view_model == same_model
+    assert notification_api_view_model != different_model

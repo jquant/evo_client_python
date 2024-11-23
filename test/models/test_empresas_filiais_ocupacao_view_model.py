@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -11,31 +11,69 @@
 """
 
 from __future__ import absolute_import
-
-import unittest
-
-import evo_client
+import pytest
 from evo_client.models.empresas_filiais_ocupacao_view_model import (
     EmpresasFiliaisOcupacaoViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestEmpresasFiliaisOcupacaoViewModel(unittest.TestCase):
-    """EmpresasFiliaisOcupacaoViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testEmpresasFiliaisOcupacaoViewModel(self):
-        """Test EmpresasFiliaisOcupacaoViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.empresas_filiais_ocupacao_view_model.EmpresasFiliaisOcupacaoViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def empresas_filiais_ocupacao_view_model():
+    return EmpresasFiliaisOcupacaoViewModel(
+        idBranch=1,
+        name="Main Branch",
+        occupation=50,
+        maxOccupation=100,
+        qtyMinutesOut=30,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_empresas_filiais_ocupacao_view_model_creation(
+    empresas_filiais_ocupacao_view_model,
+):
+    """Test creating an EmpresasFiliaisOcupacaoViewModel instance"""
+    model = empresas_filiais_ocupacao_view_model
+    assert isinstance(model, EmpresasFiliaisOcupacaoViewModel)
+    assert model.id_branch == 1
+    assert model.name == "Main Branch"
+    assert model.occupation == 50
+    assert model.max_occupation == 100
+    assert model.qty_minutes_out == 30
+
+
+def test_empresas_filiais_ocupacao_view_model_to_dict(
+    empresas_filiais_ocupacao_view_model,
+):
+    """Test converting EmpresasFiliaisOcupacaoViewModel to dictionary"""
+    model_dict = empresas_filiais_ocupacao_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idBranch"] == 1
+    assert model_dict["name"] == "Main Branch"
+    assert model_dict["occupation"] == 50
+    assert model_dict["maxOccupation"] == 100
+    assert model_dict["qtyMinutesOut"] == 30
+
+
+def test_empresas_filiais_ocupacao_view_model_equality(
+    empresas_filiais_ocupacao_view_model,
+):
+    """Test equality comparison of EmpresasFiliaisOcupacaoViewModel instances"""
+    same_model = EmpresasFiliaisOcupacaoViewModel(
+        idBranch=1,
+        name="Main Branch",
+        occupation=50,
+        maxOccupation=100,
+        qtyMinutesOut=30,
+    )
+
+    different_model = EmpresasFiliaisOcupacaoViewModel(
+        idBranch=2,
+        name="Secondary Branch",
+        occupation=60,
+        maxOccupation=120,
+        qtyMinutesOut=45,
+    )
+
+    assert empresas_filiais_ocupacao_view_model == same_model
+    assert empresas_filiais_ocupacao_view_model != different_model

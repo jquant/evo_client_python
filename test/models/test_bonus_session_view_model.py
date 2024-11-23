@@ -11,31 +11,53 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
+import pytest
 
-import evo_client
-from evo_client.models.bonus_session_view_model import (
-    BonusSessionViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+from evo_client.models.bonus_session_view_model import BonusSessionViewModel
 
 
-class TestBonusSessionViewModel(unittest.TestCase):
-    """BonusSessionViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testBonusSessionViewModel(self):
-        """Test BonusSessionViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.bonus_session_view_model.BonusSessionViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def bonus_session_view_model():
+    return BonusSessionViewModel(
+        idSession=1,
+        expirationDate=datetime(2024, 3, 15, 9, 0),
+        flBonusSession=True,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_bonus_session_view_model_creation(bonus_session_view_model):
+    """Test creating a BonusSessionViewModel instance"""
+    assert isinstance(bonus_session_view_model, BonusSessionViewModel)
+    assert bonus_session_view_model.id_session == 1
+    assert bonus_session_view_model.expiration_date == datetime(2024, 3, 15, 9, 0)
+    assert bonus_session_view_model.fl_bonus_session is True
+
+
+def test_bonus_session_view_model_to_dict(bonus_session_view_model):
+    """Test converting BonusSessionViewModel to dictionary"""
+    model_dict = bonus_session_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idSession"] == 1
+    assert model_dict["expirationDate"] == datetime(2024, 3, 15, 9, 0)
+    assert model_dict["flBonusSession"] is True
+
+
+def test_bonus_session_view_model_equality(bonus_session_view_model):
+    """Test equality comparison of BonusSessionViewModel instances"""
+    same_model = BonusSessionViewModel(
+        idSession=1,
+        expirationDate=datetime(2024, 3, 15, 9, 0),
+        flBonusSession=True,
+    )
+
+    different_model = BonusSessionViewModel(
+        idSession=2,
+        expirationDate=datetime(2025, 4, 20, 10, 0),
+        flBonusSession=False,
+    )
+
+    assert bonus_session_view_model == same_model
+    assert bonus_session_view_model != different_model

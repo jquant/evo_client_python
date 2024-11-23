@@ -11,31 +11,54 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
+import pytest
 
-import evo_client
-from evo_client.models.pix_payment_details_view_model import (
-    PixPaymentDetailsViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+from evo_client.models.pix_payment_details_view_model import PixPaymentDetailsViewModel
 
 
-class TestPixPaymentDetailsViewModel(unittest.TestCase):
-    """PixPaymentDetailsViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testPixPaymentDetailsViewModel(self):
-        """Test PixPaymentDetailsViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.pix_payment_details_view_model.PixPaymentDetailsViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def pix_payment_details_view_model():
+    return PixPaymentDetailsViewModel(
+        qrCode="sampleQRCode",
+        expirationDate=datetime(2024, 3, 15, 9, 0),
+        value=100.50,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_pix_payment_details_view_model_creation(pix_payment_details_view_model):
+    """Test creating a PixPaymentDetailsViewModel instance"""
+    model = pix_payment_details_view_model
+    assert isinstance(model, PixPaymentDetailsViewModel)
+    assert model.qr_code == "sampleQRCode"
+    assert model.expiration_date == datetime(2024, 3, 15, 9, 0)
+    assert model.value == 100.50
+
+
+def test_pix_payment_details_view_model_to_dict(pix_payment_details_view_model):
+    """Test converting PixPaymentDetailsViewModel to dictionary"""
+    model_dict = pix_payment_details_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["qrCode"] == "sampleQRCode"
+    assert model_dict["expirationDate"] == "2024-03-15T09:00:00"
+    assert model_dict["value"] == 100.50
+
+
+def test_pix_payment_details_view_model_equality(pix_payment_details_view_model):
+    """Test equality comparison of PixPaymentDetailsViewModel instances"""
+    same_model = PixPaymentDetailsViewModel(
+        qrCode="sampleQRCode",
+        expirationDate=datetime(2024, 3, 15, 9, 0),
+        value=100.50,
+    )
+
+    different_model = PixPaymentDetailsViewModel(
+        qrCode="differentQRCode",
+        expirationDate=datetime(2024, 3, 16, 10, 0),
+        value=200.75,
+    )
+
+    assert pix_payment_details_view_model == same_model
+    assert pix_payment_details_view_model != different_model

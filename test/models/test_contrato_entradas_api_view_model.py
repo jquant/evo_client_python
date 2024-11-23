@@ -12,30 +12,46 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
+import pytest
 from evo_client.models.contrato_entradas_api_view_model import (
     ContratoEntradasApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestContratoEntradasApiViewModel(unittest.TestCase):
-    """ContratoEntradasApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testContratoEntradasApiViewModel(self):
-        """Test ContratoEntradasApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.contrato_entradas_api_view_model.ContratoEntradasApiViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def contrato_entradas_api_view_model():
+    return ContratoEntradasApiViewModel(
+        entriesQuantity=5, idEntriesType=1, entriesTypeDescription="Standard Entry"
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_contrato_entradas_api_view_model_creation(contrato_entradas_api_view_model):
+    """Test creating a ContratoEntradasApiViewModel instance"""
+    assert isinstance(contrato_entradas_api_view_model, ContratoEntradasApiViewModel)
+    assert contrato_entradas_api_view_model.entries_quantity == 5
+    assert contrato_entradas_api_view_model.id_entries_type == 1
+    assert contrato_entradas_api_view_model.entries_type_description == "Standard Entry"
+
+
+def test_contrato_entradas_api_view_model_to_dict(contrato_entradas_api_view_model):
+    """Test converting ContratoEntradasApiViewModel to dictionary"""
+    model_dict = contrato_entradas_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["entriesQuantity"] == 5
+    assert model_dict["idEntriesType"] == 1
+    assert model_dict["entriesTypeDescription"] == "Standard Entry"
+
+
+def test_contrato_entradas_api_view_model_equality(contrato_entradas_api_view_model):
+    """Test equality comparison of ContratoEntradasApiViewModel instances"""
+    same_model = ContratoEntradasApiViewModel(
+        entriesQuantity=5, idEntriesType=1, entriesTypeDescription="Standard Entry"
+    )
+
+    different_model = ContratoEntradasApiViewModel(
+        entriesQuantity=10, idEntriesType=2, entriesTypeDescription="Premium Entry"
+    )
+
+    assert contrato_entradas_api_view_model == same_model
+    assert contrato_entradas_api_view_model != different_model

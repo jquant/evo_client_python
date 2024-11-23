@@ -35,9 +35,6 @@ class ServicosResumoApiViewModel(BaseModel):
         default=None, alias="onlineSalesObservations"
     )
 
-    
-        validate_assignment = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

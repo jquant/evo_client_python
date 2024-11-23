@@ -11,31 +11,168 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
+import pytest
 
-import evo_client
 from evo_client.models.empresas_convenios_api_view_model import (
     EmpresasConveniosApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestEmpresasConveniosApiViewModel(unittest.TestCase):
-    """EmpresasConveniosApiViewModel unit test stubs"""
+@pytest.fixture
+def empresas_convenios_api_view_model():
+    return EmpresasConveniosApiViewModel(
+        agreementCompanyId=1,
+        branchId=2,
+        corporateName="Corporate Name",
+        tradeName="Trade Name",
+        cnpj="12.345.678/0001-99",
+        postalCode="12345-678",
+        streetAddress="Street Address",
+        number="123",
+        complement="Suite 456",
+        neighborhood="Neighborhood",
+        city="City",
+        state="State",
+        businessEmail="business@example.com",
+        financialEmail="financial@example.com",
+        responsibleName="Responsible Name",
+        isDeletedFlag=False,
+        deletionDate=None,
+        employeeDeletionId=None,
+        openingDate=datetime(2020, 1, 1),
+        size="Medium",
+        economicActivityDescription="Economic Activity",
+        legalNatureDescription="Legal Nature",
+        phone="(12) 3456-7890",
+        registrationStatus=1,
+        category=2,
+        fpasContributor=True,
+        remarks="Some remarks",
+    )
 
-    def setUp(self):
-        pass
 
-    def tearDown(self):
-        pass
+def test_empresas_convenios_api_view_model_creation(empresas_convenios_api_view_model):
+    """Test creating an EmpresasConveniosApiViewModel instance"""
+    model = empresas_convenios_api_view_model
+    assert isinstance(model, EmpresasConveniosApiViewModel)
+    assert model.agreement_company_id == 1
+    assert model.branch_id == 2
+    assert model.corporate_name == "Corporate Name"
+    assert model.trade_name == "Trade Name"
+    assert model.cnpj == "12.345.678/0001-99"
+    assert model.postal_code == "12345-678"
+    assert model.street_address == "Street Address"
+    assert model.number == "123"
+    assert model.complement == "Suite 456"
+    assert model.neighborhood == "Neighborhood"
+    assert model.city == "City"
+    assert model.state == "State"
+    assert model.business_email == "business@example.com"
+    assert model.financial_email == "financial@example.com"
+    assert model.responsible_name == "Responsible Name"
+    assert model.is_deleted_flag is False
+    assert model.opening_date == datetime(2020, 1, 1)
+    assert model.size == "Medium"
+    assert model.economic_activity_description == "Economic Activity"
+    assert model.legal_nature_description == "Legal Nature"
+    assert model.phone == "(12) 3456-7890"
+    assert model.registration_status == 1
+    assert model.category == 2
+    assert model.fpas_contributor is True
+    assert model.remarks == "Some remarks"
 
-    def testEmpresasConveniosApiViewModel(self):
-        """Test EmpresasConveniosApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.empresas_convenios_api_view_model.EmpresasConveniosApiViewModel()  # noqa: E501
-        pass
+
+def test_empresas_convenios_api_view_model_to_dict(empresas_convenios_api_view_model):
+    """Test converting EmpresasConveniosApiViewModel to dictionary"""
+    model_dict = empresas_convenios_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["agreementCompanyId"] == 1
+    assert model_dict["branchId"] == 2
+    assert model_dict["corporateName"] == "Corporate Name"
+    assert model_dict["tradeName"] == "Trade Name"
+    assert model_dict["cnpj"] == "12.345.678/0001-99"
+    assert model_dict["postalCode"] == "12345-678"
+    assert model_dict["streetAddress"] == "Street Address"
+    assert model_dict["number"] == "123"
+    assert model_dict["complement"] == "Suite 456"
+    assert model_dict["neighborhood"] == "Neighborhood"
+    assert model_dict["city"] == "City"
+    assert model_dict["state"] == "State"
+    assert model_dict["businessEmail"] == "business@example.com"
+    assert model_dict["financialEmail"] == "financial@example.com"
+    assert model_dict["responsibleName"] == "Responsible Name"
+    assert model_dict["isDeletedFlag"] is False
+    assert model_dict["openingDate"] == "2020-01-01T00:00:00"
+    assert model_dict["size"] == "Medium"
+    assert model_dict["economicActivityDescription"] == "Economic Activity"
+    assert model_dict["legalNatureDescription"] == "Legal Nature"
+    assert model_dict["phone"] == "(12) 3456-7890"
+    assert model_dict["registrationStatus"] == 1
+    assert model_dict["category"] == 2
+    assert model_dict["fpasContributor"] is True
+    assert model_dict["remarks"] == "Some remarks"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_empresas_convenios_api_view_model_equality(empresas_convenios_api_view_model):
+    """Test equality comparison of EmpresasConveniosApiViewModel instances"""
+    same_model = EmpresasConveniosApiViewModel(
+        agreementCompanyId=1,
+        branchId=2,
+        corporateName="Corporate Name",
+        tradeName="Trade Name",
+        cnpj="12.345.678/0001-99",
+        postalCode="12345-678",
+        streetAddress="Street Address",
+        number="123",
+        complement="Suite 456",
+        neighborhood="Neighborhood",
+        city="City",
+        state="State",
+        businessEmail="business@example.com",
+        financialEmail="financial@example.com",
+        responsibleName="Responsible Name",
+        isDeletedFlag=False,
+        openingDate=datetime(2020, 1, 1),
+        size="Medium",
+        economicActivityDescription="Economic Activity",
+        legalNatureDescription="Legal Nature",
+        phone="(12) 3456-7890",
+        registrationStatus=1,
+        category=2,
+        fpasContributor=True,
+        remarks="Some remarks",
+    )
+
+    different_model = EmpresasConveniosApiViewModel(
+        agreementCompanyId=3,
+        branchId=4,
+        corporateName="Different Corporate Name",
+        tradeName="Different Trade Name",
+        cnpj="98.765.432/0001-11",
+        postalCode="87654-321",
+        streetAddress="Different Street Address",
+        number="456",
+        complement="Suite 789",
+        neighborhood="Different Neighborhood",
+        city="Different City",
+        state="Different State",
+        businessEmail="different_business@example.com",
+        financialEmail="different_financial@example.com",
+        responsibleName="Different Responsible Name",
+        isDeletedFlag=True,
+        openingDate=datetime(2021, 2, 2),
+        size="Large",
+        economicActivityDescription="Different Economic Activity",
+        legalNatureDescription="Different Legal Nature",
+        phone="(98) 7654-3210",
+        registrationStatus=2,
+        category=3,
+        fpasContributor=False,
+        remarks="Different remarks",
+    )
+
+    assert empresas_convenios_api_view_model == same_model
+    assert empresas_convenios_api_view_model != different_model

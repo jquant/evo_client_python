@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,30 +12,49 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import evo_client
 from evo_client.models.payables_api_sub_types_view_model import (
     PayablesApiSubTypesViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestPayablesApiSubTypesViewModel(unittest.TestCase):
-    """PayablesApiSubTypesViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testPayablesApiSubTypesViewModel(self):
-        """Test PayablesApiSubTypesViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.payables_api_sub_types_view_model.PayablesApiSubTypesViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def payables_api_sub_types_view_model():
+    return PayablesApiSubTypesViewModel(
+        id=1,
+        name="Subscription Fee",
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_payables_api_sub_types_view_model_creation(payables_api_sub_types_view_model):
+    """Test creating a PayablesApiSubTypesViewModel instance"""
+    model = payables_api_sub_types_view_model
+    assert isinstance(model, PayablesApiSubTypesViewModel)
+    assert model.id == 1
+    assert model.name == "Subscription Fee"
+
+
+def test_payables_api_sub_types_view_model_to_dict(payables_api_sub_types_view_model):
+    """Test converting PayablesApiSubTypesViewModel to dictionary"""
+    model_dict = payables_api_sub_types_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["id"] == 1
+    assert model_dict["name"] == "Subscription Fee"
+
+
+def test_payables_api_sub_types_view_model_equality(payables_api_sub_types_view_model):
+    """Test equality comparison of PayablesApiSubTypesViewModel instances"""
+    same_model = PayablesApiSubTypesViewModel(
+        id=1,
+        name="Subscription Fee",
+    )
+
+    different_model = PayablesApiSubTypesViewModel(
+        id=2,
+        name="Annual Fee",
+    )
+
+    assert payables_api_sub_types_view_model == same_model
+    assert payables_api_sub_types_view_model != different_model

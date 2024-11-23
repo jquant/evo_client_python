@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -11,29 +11,67 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
+import pytest
 
-import evo_client
-from evo_client.models.payables_api_view_model import PayablesApiViewModel  # noqa: E501
-from evo_client.rest import ApiException
-
-
-class TestPayablesApiViewModel(unittest.TestCase):
-    """PayablesApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testPayablesApiViewModel(self):
-        """Test PayablesApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.payables_api_view_model.PayablesApiViewModel()  # noqa: E501
-        pass
+from evo_client.models.payables_api_view_model import PayablesApiViewModel
+from evo_client.models.payables_api_sub_types_view_model import (
+    PayablesApiSubTypesViewModel,
+)
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture
+def payables_api_view_model():
+    return PayablesApiViewModel(
+        idPayable=1,
+        ammount=100.50,
+        dueDate=datetime(2024, 3, 15),
+        status=PayablesApiSubTypesViewModel(id=1),
+        description="Monthly subscription fee",
+    )
+
+
+def test_payables_api_view_model_creation(payables_api_view_model):
+    """Test creating a PayablesApiViewModel instance"""
+    model = payables_api_view_model
+    assert isinstance(model, PayablesApiViewModel)
+    assert model.id_payable == 1
+    assert model.ammount == 100.50
+    assert model.due_date == datetime(2024, 3, 15)
+    assert model.status == PayablesApiSubTypesViewModel(id=1)
+    assert model.description == "Monthly subscription fee"
+
+
+def test_payables_api_view_model_to_dict(payables_api_view_model):
+    """Test converting PayablesApiViewModel to dictionary"""
+    model_dict = payables_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idPayable"] == 1
+    assert model_dict["ammount"] == 100.50
+    assert model_dict["dueDate"] == "2024-03-15T00:00:00"
+    assert model_dict["status"] == PayablesApiSubTypesViewModel(id=1)
+    assert model_dict["description"] == "Monthly subscription fee"
+
+
+def test_payables_api_view_model_equality(payables_api_view_model):
+    """Test equality comparison of PayablesApiViewModel instances"""
+    same_model = PayablesApiViewModel(
+        idPayable=1,
+        ammount=100.50,
+        dueDate=datetime(2024, 3, 15),
+        status=PayablesApiSubTypesViewModel(id=1),
+        description="Monthly subscription fee",
+    )
+
+    different_model = PayablesApiViewModel(
+        idPayable=2,
+        ammount=200.75,
+        dueDate=datetime(2024, 4, 15),
+        status=PayablesApiSubTypesViewModel(id=2),
+        description="Annual subscription fee",
+    )
+
+    assert payables_api_view_model == same_model
+    assert payables_api_view_model != different_model

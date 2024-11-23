@@ -14,17 +14,11 @@ from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
-
-class TelefoneApiViewModel(BaseModel):
-    pass
-
-
-class MemberMembershipApiViewModel(BaseModel):
-    pass
-
-
-class MemberResponsibleViewModel(BaseModel):
-    pass
+from evo_client.models.telefone_api_view_model import TelefoneApiViewModel
+from evo_client.models.member_membership_api_view_model import (
+    MemberMembershipApiViewModel,
+)
+from evo_client.models.member_responsible_view_model import MemberResponsibleViewModel
 
 
 class MembersApiViewModel(BaseModel):

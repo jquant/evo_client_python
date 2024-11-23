@@ -11,31 +11,69 @@
 """
 
 from __future__ import absolute_import
+from datetime import datetime
 
-import unittest
+import pytest
 
-import evo_client
-from evo_client.models.revenue_center_api_view_model import (
-    RevenueCenterApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+from evo_client.models.revenue_center_api_view_model import RevenueCenterApiViewModel
 
 
-class TestRevenueCenterApiViewModel(unittest.TestCase):
-    """RevenueCenterApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testRevenueCenterApiViewModel(self):
-        """Test RevenueCenterApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.revenue_center_api_view_model.RevenueCenterApiViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def revenue_center_api_view_model():
+    return RevenueCenterApiViewModel(
+        idRevenueCenter=1,
+        description="Main Revenue Center",
+        active=True,
+        idRevenueCenterParent=None,
+        abreviation="MRC",
+        idDreGroup=10,
+        level=1,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_revenue_center_api_view_model_creation(revenue_center_api_view_model):
+    """Test creating a RevenueCenterApiViewModel instance"""
+    assert isinstance(revenue_center_api_view_model, RevenueCenterApiViewModel)
+    assert revenue_center_api_view_model.id_revenue_center == 1
+    assert revenue_center_api_view_model.description == "Main Revenue Center"
+    assert revenue_center_api_view_model.active is True
+    assert revenue_center_api_view_model.abreviation == "MRC"
+    assert revenue_center_api_view_model.id_dre_group == 10
+    assert revenue_center_api_view_model.level == 1
+
+
+def test_revenue_center_api_view_model_to_dict(revenue_center_api_view_model):
+    """Test converting RevenueCenterApiViewModel to dictionary"""
+    model_dict = revenue_center_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idRevenueCenter"] == 1
+    assert model_dict["description"] == "Main Revenue Center"
+    assert model_dict["active"] is True
+    assert model_dict["abreviation"] == "MRC"
+    assert model_dict["idDreGroup"] == 10
+    assert model_dict["level"] == 1
+
+
+def test_revenue_center_api_view_model_equality(revenue_center_api_view_model):
+    """Test equality comparison of RevenueCenterApiViewModel instances"""
+    same_model = RevenueCenterApiViewModel(
+        idRevenueCenter=1,
+        description="Main Revenue Center",
+        active=True,
+        abreviation="MRC",
+        idDreGroup=10,
+        level=1,
+    )
+
+    different_model = RevenueCenterApiViewModel(
+        idRevenueCenter=2,
+        description="Secondary Revenue Center",
+        active=False,
+        abreviation="SRC",
+        idDreGroup=20,
+        level=2,
+    )
+
+    assert revenue_center_api_view_model == same_model
+    assert revenue_center_api_view_model != different_model

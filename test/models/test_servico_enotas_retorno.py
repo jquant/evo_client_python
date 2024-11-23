@@ -12,28 +12,70 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.servico_enotas_retorno import ServicoEnotasRetorno  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.servico_enotas_retorno import ServicoEnotasRetorno
 
 
-class TestServicoEnotasRetorno(unittest.TestCase):
-    """ServicoEnotasRetorno unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testServicoEnotasRetorno(self):
-        """Test ServicoEnotasRetorno"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.servico_enotas_retorno.ServicoEnotasRetorno()  # noqa: E501
-        pass
+@pytest.fixture
+def servico_enotas_retorno():
+    return ServicoEnotasRetorno(
+        descricao="Service Description",
+        aliquotaIss=5.0,
+        issRetidoFonte=True,
+        codigoServicoMunicipio="1234",
+        itemListaServicoLC116="1.01",
+        cnae="1234567",
+        municipioPrestacaoServico=123,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_servico_enotas_retorno_creation(servico_enotas_retorno):
+    """Test creating a ServicoEnotasRetorno instance"""
+    assert isinstance(servico_enotas_retorno, ServicoEnotasRetorno)
+    assert servico_enotas_retorno.descricao == "Service Description"
+    assert servico_enotas_retorno.aliquota_iss == 5.0
+    assert servico_enotas_retorno.iss_retido_fonte is True
+    assert servico_enotas_retorno.codigo_servico_municipio == "1234"
+    assert servico_enotas_retorno.item_lista_servico_lc116 == "1.01"
+    assert servico_enotas_retorno.cnae == "1234567"
+    assert servico_enotas_retorno.municipio_prestacao_servico == 123
+
+
+def test_servico_enotas_retorno_to_dict(servico_enotas_retorno):
+    """Test converting ServicoEnotasRetorno to dictionary"""
+    model_dict = servico_enotas_retorno.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["descricao"] == "Service Description"
+    assert model_dict["aliquotaIss"] == 5.0
+    assert model_dict["issRetidoFonte"] is True
+    assert model_dict["codigoServicoMunicipio"] == "1234"
+    assert model_dict["itemListaServicoLC116"] == "1.01"
+    assert model_dict["cnae"] == "1234567"
+    assert model_dict["municipioPrestacaoServico"] == 123
+
+
+def test_servico_enotas_retorno_equality(servico_enotas_retorno):
+    """Test equality comparison of ServicoEnotasRetorno instances"""
+    same_model = ServicoEnotasRetorno(
+        descricao="Service Description",
+        aliquotaIss=5.0,
+        issRetidoFonte=True,
+        codigoServicoMunicipio="1234",
+        itemListaServicoLC116="1.01",
+        cnae="1234567",
+        municipioPrestacaoServico=123,
+    )
+
+    different_model = ServicoEnotasRetorno(
+        descricao="Different Description",
+        aliquotaIss=10.0,
+        issRetidoFonte=False,
+        codigoServicoMunicipio="5678",
+        itemListaServicoLC116="2.02",
+        cnae="7654321",
+        municipioPrestacaoServico=456,
+    )
+
+    assert servico_enotas_retorno == same_model
+    assert servico_enotas_retorno != different_model

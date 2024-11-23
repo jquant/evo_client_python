@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,28 +12,30 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.e_forma_contato import EFormaContato  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.e_forma_contato import EFormaContato
 
 
-class TestEFormaContato(unittest.TestCase):
-    """EFormaContato unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testEFormaContato(self):
-        """Test EFormaContato"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.e_forma_contato.EFormaContato()  # noqa: E501
-        pass
+@pytest.fixture
+def e_forma_contato():
+    return EFormaContato._1
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_e_forma_contato_creation(e_forma_contato):
+    """Test creating an EFormaContato instance"""
+    assert isinstance(e_forma_contato, EFormaContato)
+    assert e_forma_contato == "1"
+
+
+def test_e_forma_contato_to_dict(e_forma_contato):
+    """Test converting EFormaContato to dictionary"""
+    assert e_forma_contato.to_dict() == "1"
+
+
+def test_e_forma_contato_equality(e_forma_contato):
+    """Test equality comparison of EFormaContato instances"""
+    same_model = EFormaContato._1
+    different_model = EFormaContato._2
+
+    assert e_forma_contato == same_model
+    assert e_forma_contato != different_model

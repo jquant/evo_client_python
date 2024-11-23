@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,30 +12,51 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.month_discount_view_model import (
-    MonthDiscountViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.month_discount_view_model import MonthDiscountViewModel
 
 
-class TestMonthDiscountViewModel(unittest.TestCase):
-    """MonthDiscountViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testMonthDiscountViewModel(self):
-        """Test MonthDiscountViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.month_discount_view_model.MonthDiscountViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def month_discount_view_model():
+    return MonthDiscountViewModel(
+        typeDiscountMembership="Standard",
+        value=20.0,
+        numberMounths=3,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_month_discount_view_model_creation(month_discount_view_model):
+    """Test creating a MonthDiscountViewModel instance"""
+    model = month_discount_view_model
+    assert isinstance(model, MonthDiscountViewModel)
+    assert model.type_discount_membership == "Standard"
+    assert model.value == 20.0
+    assert model.number_mounths == 3
+
+
+def test_month_discount_view_model_to_dict(month_discount_view_model):
+    """Test converting MonthDiscountViewModel to dictionary"""
+    model_dict = month_discount_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["typeDiscountMembership"] == "Standard"
+    assert model_dict["value"] == 20.0
+    assert model_dict["numberMounths"] == 3
+
+
+def test_month_discount_view_model_equality(month_discount_view_model):
+    """Test equality comparison of MonthDiscountViewModel instances"""
+    same_model = MonthDiscountViewModel(
+        typeDiscountMembership="Standard",
+        value=20.0,
+        numberMounths=3,
+    )
+
+    different_model = MonthDiscountViewModel(
+        typeDiscountMembership="Premium",
+        value=30.0,
+        numberMounths=6,
+    )
+
+    assert month_discount_view_model == same_model
+    assert month_discount_view_model != different_model

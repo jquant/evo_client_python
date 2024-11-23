@@ -11,31 +11,38 @@
 """
 
 from __future__ import absolute_import
-
-import unittest
-
-import evo_client
-from evo_client.models.member_service_view_model import (
-    MemberServiceViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+from typing import Optional
+import pytest
+from evo_client.models.member_service_view_model import MemberServiceViewModel
 
 
-class TestMemberServiceViewModel(unittest.TestCase):
-    """MemberServiceViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testMemberServiceViewModel(self):
-        """Test MemberServiceViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.member_service_view_model.MemberServiceViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def member_service_view_model():
+    return MemberServiceViewModel(idService=1, nameService="Personal Training")
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_member_service_view_model_creation(member_service_view_model):
+    """Test creating a MemberServiceViewModel instance"""
+    model = member_service_view_model
+    assert isinstance(model, MemberServiceViewModel)
+    assert model.id_service == 1
+    assert model.name_service == "Personal Training"
+
+
+def test_member_service_view_model_to_dict(member_service_view_model):
+    """Test converting MemberServiceViewModel to dictionary"""
+    model_dict = member_service_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idService"] == 1
+    assert model_dict["nameService"] == "Personal Training"
+
+
+def test_member_service_view_model_equality(member_service_view_model):
+    """Test equality comparison of MemberServiceViewModel instances"""
+    same_model = MemberServiceViewModel(idService=1, nameService="Personal Training")
+
+    different_model = MemberServiceViewModel(idService=2, nameService="Group Class")
+
+    assert member_service_view_model == same_model
+    assert member_service_view_model != different_model

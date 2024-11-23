@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,28 +12,25 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
-from evo_client.models.e_origem_agendamento import EOrigemAgendamento  # noqa: E501
-from evo_client.rest import ApiException
+import pytest
+from evo_client.models.e_origem_agendamento import EOrigemAgendamento
 
 
-class TestEOrigemAgendamento(unittest.TestCase):
-    """EOrigemAgendamento unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testEOrigemAgendamento(self):
-        """Test EOrigemAgendamento"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.e_origem_agendamento.EOrigemAgendamento()  # noqa: E501
-        pass
+def test_e_origem_agendamento_creation():
+    """Test creating an EOrigemAgendamento instance"""
+    assert isinstance(EOrigemAgendamento._0, EOrigemAgendamento)
+    assert EOrigemAgendamento._0 == "0"
+    assert EOrigemAgendamento._1 == "1"
+    assert EOrigemAgendamento._2 == "2"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_e_origem_agendamento_to_dict():
+    """Test converting EOrigemAgendamento to dictionary"""
+    assert EOrigemAgendamento._0.to_dict() == "0"
+    assert EOrigemAgendamento._1.to_dict() == "1"
+
+
+def test_e_origem_agendamento_equality():
+    """Test equality comparison of EOrigemAgendamento instances"""
+    assert EOrigemAgendamento._0 == EOrigemAgendamento("0")
+    assert EOrigemAgendamento._1 != EOrigemAgendamento("0")

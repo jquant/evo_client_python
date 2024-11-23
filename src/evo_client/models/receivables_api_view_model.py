@@ -76,9 +76,6 @@ class ReceivablesApiViewModel(BaseModel):
     source: Optional[str] = None
     sale_date: Optional[datetime] = Field(default=None, alias="saleDate")
 
-    
-        validate_assignment = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

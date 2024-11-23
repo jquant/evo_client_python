@@ -3,7 +3,7 @@
 """
     EVO API
 
-    Use the DNS of your gym as the User and the Secret Key as the password.The authentication method used in the integration is Basic Authentication  # noqa: E501
+    Use the DNS of your gym as the User and the Secret Key as the password. The authentication method used in the integration is Basic Authentication  # noqa: E501
 
     OpenAPI spec version: v1
     
@@ -12,30 +12,62 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
+import pytest
 from evo_client.models.cliente_transferencia_view_model import (
     ClienteTransferenciaViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestClienteTransferenciaViewModel(unittest.TestCase):
-    """ClienteTransferenciaViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testClienteTransferenciaViewModel(self):
-        """Test ClienteTransferenciaViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.cliente_transferencia_view_model.ClienteTransferenciaViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def cliente_transferencia_view_model():
+    return ClienteTransferenciaViewModel(
+        idCliente=123,
+        idFilialDestino=456,
+        idBranchToken="token123",
+        idConsultorDestino=789,
+        idProfessorDestino=1011,
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_cliente_transferencia_view_model_creation(cliente_transferencia_view_model):
+    """Test creating a ClienteTransferenciaViewModel instance"""
+    assert isinstance(cliente_transferencia_view_model, ClienteTransferenciaViewModel)
+    assert cliente_transferencia_view_model.id_cliente == 123
+    assert cliente_transferencia_view_model.id_filial_destino == 456
+    assert cliente_transferencia_view_model.id_branch_token == "token123"
+    assert cliente_transferencia_view_model.id_consultor_destino == 789
+    assert cliente_transferencia_view_model.id_professor_destino == 1011
+
+
+def test_cliente_transferencia_view_model_to_dict(cliente_transferencia_view_model):
+    """Test converting ClienteTransferenciaViewModel to dictionary"""
+    model_dict = cliente_transferencia_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["idCliente"] == 123
+    assert model_dict["idFilialDestino"] == 456
+    assert model_dict["idBranchToken"] == "token123"
+    assert model_dict["idConsultorDestino"] == 789
+    assert model_dict["idProfessorDestino"] == 1011
+
+
+def test_cliente_transferencia_view_model_equality(cliente_transferencia_view_model):
+    """Test equality comparison of ClienteTransferenciaViewModel instances"""
+    same_model = ClienteTransferenciaViewModel(
+        idCliente=123,
+        idFilialDestino=456,
+        idBranchToken="token123",
+        idConsultorDestino=789,
+        idProfessorDestino=1011,
+    )
+
+    different_model = ClienteTransferenciaViewModel(
+        idCliente=124,
+        idFilialDestino=457,
+        idBranchToken="token124",
+        idConsultorDestino=790,
+        idProfessorDestino=1012,
+    )
+
+    assert cliente_transferencia_view_model == same_model
+    assert cliente_transferencia_view_model != different_model

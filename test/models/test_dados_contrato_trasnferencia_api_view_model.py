@@ -12,30 +12,57 @@
 
 from __future__ import absolute_import
 
-import unittest
-
-import evo_client
+import pytest
 from evo_client.models.dados_contrato_trasnferencia_api_view_model import (
     DadosContratoTrasnferenciaApiViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestDadosContratoTrasnferenciaApiViewModel(unittest.TestCase):
-    """DadosContratoTrasnferenciaApiViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testDadosContratoTrasnferenciaApiViewModel(self):
-        """Test DadosContratoTrasnferenciaApiViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.dados_contrato_trasnferencia_api_view_model.DadosContratoTrasnferenciaApiViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def dados_contrato_trasnferencia_api_view_model():
+    return DadosContratoTrasnferenciaApiViewModel(
+        flTransfer=True, idMemberTransfer=123, idMemberMembershipTransfer=456
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_dados_contrato_trasnferencia_api_view_model_creation(
+    dados_contrato_trasnferencia_api_view_model,
+):
+    """Test creating a DadosContratoTrasnferenciaApiViewModel instance"""
+    assert isinstance(
+        dados_contrato_trasnferencia_api_view_model,
+        DadosContratoTrasnferenciaApiViewModel,
+    )
+    assert dados_contrato_trasnferencia_api_view_model.fl_transfer is True
+    assert dados_contrato_trasnferencia_api_view_model.id_member_transfer == 123
+    assert (
+        dados_contrato_trasnferencia_api_view_model.id_member_membership_transfer == 456
+    )
+
+
+def test_dados_contrato_trasnferencia_api_view_model_to_dict(
+    dados_contrato_trasnferencia_api_view_model,
+):
+    """Test converting DadosContratoTrasnferenciaApiViewModel to dictionary"""
+    model_dict = dados_contrato_trasnferencia_api_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["flTransfer"] is True
+    assert model_dict["idMemberTransfer"] == 123
+    assert model_dict["idMemberMembershipTransfer"] == 456
+
+
+def test_dados_contrato_trasnferencia_api_view_model_equality(
+    dados_contrato_trasnferencia_api_view_model,
+):
+    """Test equality comparison of DadosContratoTrasnferenciaApiViewModel instances"""
+    same_model = DadosContratoTrasnferenciaApiViewModel(
+        flTransfer=True, idMemberTransfer=123, idMemberMembershipTransfer=456
+    )
+
+    different_model = DadosContratoTrasnferenciaApiViewModel(
+        flTransfer=False, idMemberTransfer=789, idMemberMembershipTransfer=101
+    )
+
+    assert dados_contrato_trasnferencia_api_view_model == same_model
+    assert dados_contrato_trasnferencia_api_view_model != different_model

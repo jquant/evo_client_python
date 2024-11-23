@@ -12,30 +12,56 @@
 
 from __future__ import absolute_import
 
-import unittest
+import pytest
 
-import evo_client
 from evo_client.models.receivables_api_sub_types_view_model import (
     ReceivablesApiSubTypesViewModel,
-)  # noqa: E501
-from evo_client.rest import ApiException
+)
 
 
-class TestReceivablesApiSubTypesViewModel(unittest.TestCase):
-    """ReceivablesApiSubTypesViewModel unit test stubs"""
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testReceivablesApiSubTypesViewModel(self):
-        """Test ReceivablesApiSubTypesViewModel"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = evo_client.models.receivables_api_sub_types_view_model.ReceivablesApiSubTypesViewModel()  # noqa: E501
-        pass
+@pytest.fixture
+def receivables_api_sub_types_view_model():
+    return ReceivablesApiSubTypesViewModel(
+        id=1,
+        name="Sample SubType",
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_receivables_api_sub_types_view_model_creation(
+    receivables_api_sub_types_view_model,
+):
+    """Test creating a ReceivablesApiSubTypesViewModel instance"""
+    assert isinstance(
+        receivables_api_sub_types_view_model, ReceivablesApiSubTypesViewModel
+    )
+    assert receivables_api_sub_types_view_model.id == 1
+    assert receivables_api_sub_types_view_model.name == "Sample SubType"
+
+
+def test_receivables_api_sub_types_view_model_to_dict(
+    receivables_api_sub_types_view_model,
+):
+    """Test converting ReceivablesApiSubTypesViewModel to dictionary"""
+    model_dict = receivables_api_sub_types_view_model.to_dict()
+
+    assert isinstance(model_dict, dict)
+    assert model_dict["id"] == 1
+    assert model_dict["name"] == "Sample SubType"
+
+
+def test_receivables_api_sub_types_view_model_equality(
+    receivables_api_sub_types_view_model,
+):
+    """Test equality comparison of ReceivablesApiSubTypesViewModel instances"""
+    same_model = ReceivablesApiSubTypesViewModel(
+        id=1,
+        name="Sample SubType",
+    )
+
+    different_model = ReceivablesApiSubTypesViewModel(
+        id=2,
+        name="Different SubType",
+    )
+
+    assert receivables_api_sub_types_view_model == same_model
+    assert receivables_api_sub_types_view_model != different_model
