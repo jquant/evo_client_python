@@ -72,7 +72,7 @@ def test_get_schedule_detail(activities_api: ActivitiesApi, mock_api_client: Moc
     mock_api_client.return_value = expected
 
     result = activities_api.get_schedule_detail(
-        id_configuration=1, activity_date=datetime(2023, 1, 1), async_req=False
+        config_id=1, activity_date=datetime(2023, 1, 1), async_req=False
     )
 
     assert result == expected

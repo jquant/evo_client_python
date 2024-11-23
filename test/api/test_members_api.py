@@ -4,7 +4,7 @@ import pytest
 from datetime import datetime
 from unittest.mock import patch, Mock
 
-from evo_client.api.members_api import MembersApi, Gender, ContactType
+from evo_client.api.members_api import MembersApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.member_authenticate_view_model import MemberAuthenticateViewModel
 from evo_client.models.members_basic_api_view_model import MembersBasicApiViewModel

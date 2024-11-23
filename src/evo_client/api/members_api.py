@@ -210,68 +210,6 @@ class MembersApi:
         )
 
     @overload
-    def api_v1_members_fitcoins_put(
-        self,
-        id_member: Optional[int] = None,
-        type: Optional[int] = None,
-        fitcoin: Optional[int] = None,
-        reason: Optional[str] = None,
-        async_req: bool = True,
-    ) -> Thread: ...
-
-    @overload
-    def api_v1_members_fitcoins_put(
-        self,
-        id_member: Optional[int] = None,
-        type: Optional[int] = None,
-        fitcoin: Optional[int] = None,
-        reason: Optional[str] = None,
-        async_req: bool = False,
-    ) -> None: ...
-
-    def api_v1_members_fitcoins_put(
-        self,
-        id_member: Optional[int] = None,
-        type: Optional[int] = None,
-        fitcoin: Optional[int] = None,
-        reason: Optional[str] = None,
-        async_req: bool = False,
-    ) -> Union[None, Thread]:
-        """Update a member fitcoins
-
-        This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
-
-        Args:
-            id_member: Id Member
-            type: 1 - Add Fitcoins, 2 - Remove Fitcoins
-            fitcoin: Quantity add/remove fitcoin
-            reason: Reason add/remove fitcoin
-            async_req: Execute request asynchronously
-
-        Returns:
-            None
-            If async_req is True, returns the request thread
-        """
-
-        query_params = {
-            "idMember": id_member,
-            "type": type,
-            "fitcoin": fitcoin,
-            "reason": reason,
-        }
-
-        return self.api_client.call_api(
-            resource_path=f"{self.base_path}/fitcoins",
-            method="PUT",
-            query_params=query_params,
-            response_type=None,
-            auth_settings=["Basic"],
-            async_req=async_req,
-            headers={"Accept": "application/json"},
-        )
-
-    @overload
     def get_members(
         self,
         name: Optional[str] = None,
