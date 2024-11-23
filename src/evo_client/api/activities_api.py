@@ -78,7 +78,7 @@ class ActivitiesApi:
     @overload
     def get_schedule_detail(
         self,
-        config_id: Optional[int] = None,
+        id_configuration: Optional[int] = None,
         activity_date: Optional[datetime] = None,
         session_id: Optional[int] = None,
         async_req: bool = True,
@@ -87,7 +87,7 @@ class ActivitiesApi:
     @overload
     def get_schedule_detail(
         self,
-        config_id: Optional[int] = None,
+        id_configuration: Optional[int] = None,
         activity_date: Optional[datetime] = None,
         session_id: Optional[int] = None,
         async_req: bool = False,
@@ -95,7 +95,7 @@ class ActivitiesApi:
 
     def get_schedule_detail(
         self,
-        config_id: Optional[int] = None,
+        id_configuration: Optional[int] = None,
         activity_date: Optional[datetime] = None,
         session_id: Optional[int] = None,
         async_req: bool = False,
@@ -104,18 +104,18 @@ class ActivitiesApi:
         Get activity schedule details.
 
         Args:
-            config_id: Activity configuration ID (required with activity_date)
-            activity_date: Activity date (required with config_id)
-            session_id: Activity session ID (alternative to config_id/activity_date)
+            id_configuration: Activity configuration ID (required with activity_date)
+            activity_date: Activity date (required with id_configuration)
+            session_id: Activity session ID (alternative to id_configuration/activity_date)
             async_req: Execute request asynchronously
         """
-        if not ((config_id and activity_date) or session_id):
+        if not ((id_configuration and activity_date) or session_id):
             raise ValueError(
                 "Either provide both config_id and activity_date, or session_id"
             )
 
         params = {
-            "idConfiguration": config_id,
+            "idConfiguration": id_configuration,
             "activityDate": activity_date,
             "idActivitySession": session_id,
         }

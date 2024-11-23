@@ -1,18 +1,19 @@
+ // Start of Selection
 # evo_client.EmployeesApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**api_v1_employees_delete**](EmployeesApi.md#api_v1_employees_delete) | **DELETE** /api/v1/employees | Delete Employees
-[**api_v1_employees_get**](EmployeesApi.md#api_v1_employees_get) | **GET** /api/v1/employees | Get Employees
-[**api_v1_employees_post**](EmployeesApi.md#api_v1_employees_post) | **POST** /api/v1/employees | Update Employees
-[**api_v1_employees_put**](EmployeesApi.md#api_v1_employees_put) | **PUT** /api/v1/employees | Add Employees
+[**delete_employee**](EmployeesApi.md#delete_employee) | **DELETE** /api/v1/employees | Delete an employee
+[**get_employees**](EmployeesApi.md#get_employees) | **GET** /api/v1/employees | Retrieve a list of employees
+[**update_employee**](EmployeesApi.md#update_employee) | **POST** /api/v1/employees | Update an existing employee
+[**create_employee**](EmployeesApi.md#create_employee) | **PUT** /api/v1/employees | Add a new employee
 
-# **api_v1_employees_delete**
-> api_v1_employees_delete(id_employee=id_employee)
+# **delete_employee**
+> delete_employee(employee_id=employee_id)
 
-Delete Employees
+Delete an employee
 
 ### Example
 ```python
@@ -21,6 +22,7 @@ import time
 import evo_client
 from evo_client.rest import ApiException
 from pprint import pprint
+
 # Configure HTTP basic authorization: Basic
 configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
@@ -28,20 +30,20 @@ configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
 api_instance = evo_client.EmployeesApi(evo_client.ApiClient(configuration))
-id_employee = 56 # int |  (optional)
+employee_id = 56  # int | ID of the employee to delete
 
 try:
-    # Delete Employees
-    api_instance.api_v1_employees_delete(id_employee=id_employee)
+    # Delete an employee
+    api_instance.delete_employee(employee_id=employee_id)
 except ApiException as e:
-    print("Exception when calling EmployeesApi->api_v1_employees_delete: %s\n" % e)
+    print("Exception when calling EmployeesApi->delete_employee: %s\n" % e)
 ```
 
 ### Parameters
 
-Name | Type | Description  | Notes
+Name | Type | Description | Notes
 ------------- | ------------- | ------------- | -------------
- **id_employee** | **int**|  | [optional] 
+**employee_id** | **int** | ID of the employee to delete | [optional] 
 
 ### Return type
 
@@ -58,10 +60,10 @@ void (empty response body)
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **api_v1_employees_get**
-> list[FuncionariosResumoApiViewModel] api_v1_employees_get(id_employee=id_employee, name=name, email=email, take=take, skip=skip)
+# **get_employees**
+> get_employees(employee_id=employee_id, name=name, email=email, take=take, skip=skip)
 
-Get Employees
+Retrieve a list of employees
 
 ### Example
 ```python
@@ -70,6 +72,7 @@ import time
 import evo_client
 from evo_client.rest import ApiException
 from pprint import pprint
+
 # Configure HTTP basic authorization: Basic
 configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
@@ -77,29 +80,29 @@ configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
 api_instance = evo_client.EmployeesApi(evo_client.ApiClient(configuration))
-id_employee = 56 # int |  (optional)
-name = 'name_example' # str |  (optional)
-email = 'email_example' # str |  (optional)
-take = 50 # int | Total number of records to return. (optional) (default to 50)
-skip = 0 # int | Total number of records to skip. (optional) (default to 0)
+employee_id = 56  # int | (optional)
+name = 'name_example'  # str | (optional)
+email = 'email_example'  # str | (optional)
+take = 50  # int | Total number of records to return. (optional) (default to 50)
+skip = 0  # int | Total number of records to skip. (optional) (default to 0)
 
 try:
-    # Get Employees
-    api_response = api_instance.api_v1_employees_get(id_employee=id_employee, name=name, email=email, take=take, skip=skip)
+    # Retrieve a list of employees
+    api_response = api_instance.get_employees(employee_id=employee_id, name=name, email=email, take=take, skip=skip)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling EmployeesApi->api_v1_employees_get: %s\n" % e)
+    print("Exception when calling EmployeesApi->get_employees: %s\n" % e)
 ```
 
 ### Parameters
 
-Name | Type | Description  | Notes
+Name | Type | Description | Notes
 ------------- | ------------- | ------------- | -------------
- **id_employee** | **int**|  | [optional] 
- **name** | **str**|  | [optional] 
- **email** | **str**|  | [optional] 
- **take** | **int**| Total number of records to return. | [optional] [default to 50]
- **skip** | **int**| Total number of records to skip. | [optional] [default to 0]
+**employee_id** | **int** | ID of the employee to filter | [optional] 
+**name** | **str** | Filter by employee name | [optional] 
+**email** | **str** | Filter by employee email | [optional] 
+**take** | **int** | Total number of records to return. | [optional] [default to 50]
+**skip** | **int** | Total number of records to skip. | [optional] [default to 0]
 
 ### Return type
 
@@ -116,10 +119,10 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **api_v1_employees_post**
-> api_v1_employees_post(body=body)
+# **update_employee**
+> update_employee(body=body)
 
-Update Employees
+Update an existing employee
 
 ### Example
 ```python
@@ -128,6 +131,7 @@ import time
 import evo_client
 from evo_client.rest import ApiException
 from pprint import pprint
+
 # Configure HTTP basic authorization: Basic
 configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
@@ -135,20 +139,20 @@ configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
 api_instance = evo_client.EmployeesApi(evo_client.ApiClient(configuration))
-body = evo_client.EmployeeApiIntegracaoAtualizacaoViewModel() # EmployeeApiIntegracaoAtualizacaoViewModel |  (optional)
+body = evo_client.EmployeeApiIntegracaoAtualizacaoViewModel()  # EmployeeApiIntegracaoAtualizacaoViewModel | (optional)
 
 try:
-    # Update Employees
-    api_instance.api_v1_employees_post(body=body)
+    # Update an employee
+    api_instance.update_employee(body=body)
 except ApiException as e:
-    print("Exception when calling EmployeesApi->api_v1_employees_post: %s\n" % e)
+    print("Exception when calling EmployeesApi->update_employee: %s\n" % e)
 ```
 
 ### Parameters
 
-Name | Type | Description  | Notes
+Name | Type | Description | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | [**EmployeeApiIntegracaoAtualizacaoViewModel**](EmployeeApiIntegracaoAtualizacaoViewModel.md)|  | [optional] 
+**body** | [**EmployeeApiIntegracaoAtualizacaoViewModel**](EmployeeApiIntegracaoAtualizacaoViewModel.md) | Employee data to update | [optional] 
 
 ### Return type
 
@@ -165,10 +169,10 @@ void (empty response body)
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **api_v1_employees_put**
-> api_v1_employees_put(body=body)
+# **create_employee**
+> create_employee(body=body)
 
-Add Employees
+Add a new employee
 
 ### Example
 ```python
@@ -177,6 +181,7 @@ import time
 import evo_client
 from evo_client.rest import ApiException
 from pprint import pprint
+
 # Configure HTTP basic authorization: Basic
 configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
@@ -184,20 +189,20 @@ configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
 api_instance = evo_client.EmployeesApi(evo_client.ApiClient(configuration))
-body = evo_client.EmployeeApiIntegracaoViewModel() # EmployeeApiIntegracaoViewModel |  (optional)
+body = evo_client.EmployeeApiIntegracaoViewModel()  # EmployeeApiIntegracaoViewModel | (optional)
 
 try:
-    # Add Employees
-    api_instance.api_v1_employees_put(body=body)
+    # Add a new employee
+    api_instance.create_employee(body=body)
 except ApiException as e:
-    print("Exception when calling EmployeesApi->api_v1_employees_put: %s\n" % e)
+    print("Exception when calling EmployeesApi->create_employee: %s\n" % e)
 ```
 
 ### Parameters
 
-Name | Type | Description  | Notes
+Name | Type | Description | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | [**EmployeeApiIntegracaoViewModel**](EmployeeApiIntegracaoViewModel.md)|  | [optional] 
+**body** | [**EmployeeApiIntegracaoViewModel**](EmployeeApiIntegracaoViewModel.md) | Employee data to add | [optional] 
 
 ### Return type
 
@@ -213,4 +218,3 @@ void (empty response body)
  - **Accept**: text/plain, application/json, text/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

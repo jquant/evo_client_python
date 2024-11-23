@@ -4,10 +4,10 @@ All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**accounts_get**](BankAccountsApi.md#accounts_get) | **GET** /api/v1/bank-accounts | Get bank accounts
+[**get_accounts**](BankAccountsApi.md#get_accounts) | **GET** /api/v1/bank-accounts | Get bank accounts
 
-# **accounts_get**
-> BankAccountsViewModel accounts_get()
+# **get_accounts**
+> BankAccountsViewModel get_accounts()
 
 Get bank accounts
 
@@ -28,10 +28,10 @@ api_instance = evo_client.BankAccountsApi(evo_client.ApiClient(configuration))
 
 try:
     # Get bank accounts
-    api_response = api_instance.accounts_get()
+    api_response = api_instance.get_accounts()
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling BankAccountsApi->accounts_get: %s\n" % e)
+    print("Exception when calling BankAccountsApi->get_accounts: %s\n" % e)
 ```
 
 ### Parameters

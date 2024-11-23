@@ -2,12 +2,14 @@
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
+## Methods
+
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**api_v1_partnership_get**](PartnershipApi.md#api_v1_partnership_get) | **GET** /api/v1/partnership | Get partnerships
+[**get_partnerships**](PartnershipApi.md#get_partnerships) | **GET** /api/v1/partnership | Get partnerships
 
-# **api_v1_partnership_get**
-> list[ConveniosApiViewModel] api_v1_partnership_get(status=status, description=description, dt_created=dt_created)
+## **get_partnerships**
+> list[ConveniosApiViewModel] get_partnerships(status=status, description=description, dt_created=dt_created)
 
 Get partnerships
 
@@ -18,6 +20,7 @@ import time
 import evo_client
 from evo_client.rest import ApiException
 from pprint import pprint
+
 # Configure HTTP basic authorization: Basic
 configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
@@ -31,10 +34,10 @@ dt_created = '2013-10-20T19:20:30+01:00' # datetime | Filter by registration dat
 
 try:
     # Get partnerships
-    api_response = api_instance.api_v1_partnership_get(status=status, description=description, dt_created=dt_created)
+    api_response = api_instance.get_partnerships(status=status, description=description, dt_created=dt_created)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling PartnershipApi->api_v1_partnership_get: %s\n" % e)
+    print("Exception when calling PartnershipApi->get_partnerships: %s\n" % e)
 ```
 
 ### Parameters
@@ -59,4 +62,5 @@ Name | Type | Description  | Notes
  - **Accept**: text/plain, application/json, text/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
+# End of Selection
+```

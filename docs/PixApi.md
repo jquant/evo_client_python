@@ -4,12 +4,12 @@ All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**code_get**](PixApi.md#code_get) | **GET** /api/v1/pix/qr-code | Get Qr-code
+[**get_qr_code**](PixApi.md#get_qr_code) | **GET** /api/v1/pix/qr-code | Get QR code
 
-# **code_get**
-> PixPaymentDetailsViewModel code_get(id_recebimento_pix=id_recebimento_pix)
+# **get_qr_code**
+> PixPaymentDetailsViewModel get_qr_code(pix_receipt_id=pix_receipt_id)
 
-Get Qr-code
+Get QR code
 
 ### Example
 ```python
@@ -25,21 +25,21 @@ configuration.password = 'YOUR_PASSWORD'
 
 # create an instance of the API class
 api_instance = evo_client.PixApi(evo_client.ApiClient(configuration))
-id_recebimento_pix = 56 # int |  (optional)
+pix_receipt_id = 56 # int |  (optional)
 
 try:
-    # Get Qr-code
-    api_response = api_instance.code_get(id_recebimento_pix=id_recebimento_pix)
+    # Get QR code
+    api_response = api_instance.get_qr_code(pix_receipt_id=pix_receipt_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling PixApi->code_get: %s\n" % e)
+    print("Exception when calling PixApi->get_qr_code: %s\n" % e)
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id_recebimento_pix** | **int**|  | [optional] 
+ **pix_receipt_id** | **int**| PIX receipt ID | [optional] 
 
 ### Return type
 
@@ -56,3 +56,5 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# End of Selection
+```

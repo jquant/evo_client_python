@@ -1,217 +1,201 @@
-# evo_client.ReceivablesApi
+# evo_client.receivables_api.ReceivablesApi
+
+This documentation refers to `receivables_api.py`.
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**api_v1_receivables_get**](ReceivablesApi.md#api_v1_receivables_get) | **GET** /api/v1/receivables | Get receivables
-[**api_v1_revenuecenter_get**](ReceivablesApi.md#api_v1_revenuecenter_get) | **GET** /api/v1/revenuecenter | Get Cost Center
-[**received_put**](ReceivablesApi.md#received_put) | **PUT** /api/v1/receivables/mark-received | 
+## Methods
 
-# **api_v1_receivables_get**
-> api_v1_receivables_get(registration_date_start=registration_date_start, registration_date_end=registration_date_end, due_date_start=due_date_start, due_date_end=due_date_end, receiving_date_start=receiving_date_start, receiving_date_end=receiving_date_end, competence_date_end=competence_date_end, competence_date_start=competence_date_start, cancellation_date_start=cancellation_date_start, cancellation_date_end=cancellation_date_end, charge_date_start=charge_date_start, charge_date_end=charge_date_end, update_date_start=update_date_start, update_date_end=update_date_end, description=description, ammount_start=ammount_start, ammount_end=ammount_end, payment_types=payment_types, account_status=account_status, take=take, skip=skip, member_id=member_id, id_sale=id_sale, id_receivable=id_receivable, invoice_date_start=invoice_date_start, invoice_date_end=invoice_date_end, invoice_canceled_date_start=invoice_canceled_date_start, invoice_canceled_date_end=invoice_canceled_date_end, sale_date_start=sale_date_start, sale_date_end=sale_date_end)
+Method | HTTP Request | Description
+--- | --- | ---
+[**api_v1_receivables_get**](ReceivablesApi.md#api_v1_receivables_get) | **GET** /api/v1/receivables | Retrieve receivables
+[**api_v1_revenuecenter_get**](ReceivablesApi.md#api_v1_revenuecenter_get) | **GET** /api/v1/revenuecenter | Retrieve cost centers
+[**received_put**](ReceivablesApi.md#received_put) | **PUT** /api/v1/receivables/mark-received | Mark receivables as received
 
-Get receivables
+### **api_v1_receivables_get**
+> `api_v1_receivables_get(registration_date_start, registration_date_end, due_date_start, due_date_end, receiving_date_start, receiving_date_end, competence_date_start, competence_date_end, cancellation_date_start, cancellation_date_end, charge_date_start, charge_date_end, update_date_start, update_date_end, description, ammount_start, ammount_end, payment_types, account_status, take, skip, member_id, id_sale, id_receivable, invoice_date_start, invoice_date_end, invoice_canceled_date_start, invoice_canceled_date_end, sale_date_start, sale_date_end)`
 
-### Example
+Retrieve receivables based on provided filters.
+
+#### Example
 ```python
 from __future__ import print_function
-import time
 import evo_client
 from evo_client.rest import ApiException
 from pprint import pprint
+
 # Configure HTTP basic authorization: Basic
 configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
-# create an instance of the API class
-api_instance = evo_client.ReceivablesApi(evo_client.ApiClient(configuration))
-registration_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by registration of the account starting in a date (yyyy-mm-dd) (optional)
-registration_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by registration of the account ending in a date (yyyy-mm-dd) (optional)
-due_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by due of the account starting in a date (yyyy-mm-dd) (optional)
-due_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by due of the account ending in a date (yyyy-mm-dd) (optional)
-receiving_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by receiving of the account starting in a date (yyyy-mm-dd) (optional)
-receiving_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by receiving of the account ending in a date (yyyy-mm-dd) (optional)
-competence_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by competence of the account ending in a date (yyyy-mm-dd) (optional)
-competence_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by competence of the account starting in a date (yyyy-mm-dd) (optional)
-cancellation_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by cancellation of the account starting in a date (yyyy-mm-dd) (optional)
-cancellation_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by cancellation of the account ending in a date (yyyy-mm-dd) (optional)
-charge_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by charge of the account starting in a date (yyyy-mm-dd) (optional)
-charge_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by charge of the account ending in a date (yyyy-mm-dd) (optional)
-update_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by update of the account starting in a date (yyyy-mm-dd) (optional)
-update_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by update of the account ending in a date (yyyy-mm-dd) (optional)
-description = 'description_example' # str | Filter by description (optional)
-ammount_start = 1.2 # float | Filter by minimun ammount (optional)
-ammount_end = 1.2 # float | Filter by maximun ammount (optional)
-payment_types = 'payment_types_example' # str | Filter by a comma separated list of payment types id. Types: 1 - Money, 2 - Credit Card, 3 - Debit Card, 4 - Check, 5 - Boleto Bancário, 6 - PagSeguro, 7 - Deposit, 8 - Account Debit, 9 - Internet, 11 - Sale Credits, 12 - On-line Credit Card, 13 - Transfer, 18 - Pix, 0 - Balance Due. (optional)
-account_status = 'account_status_example' # str | Filter by a comma separated list of status ids. Status: 1 - Opened, 2 - Received, 3 - Canceled, 4 - Overdue (optional)
-take = 50 # int | Total number of records to return. (Maximum of 50) (optional) (default to 50)
-skip = 0 # int | Total number of records to skip. (optional) (default to 0)
-member_id = 56 # int | Filter by a member Id. (optional)
-id_sale = 56 # int | Filter by a sale Id. (optional)
-id_receivable = 56 # int | Filter by a receivable Id. (optional)
-invoice_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by invoice date (yyyy-mm-dd) (optional)
-invoice_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by invoice date (yyyy-mm-dd) (optional)
-invoice_canceled_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by canceled invoice date (yyyy-mm-dd) (optional)
-invoice_canceled_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by canceled invoice date (yyyy-mm-dd) (optional)
-sale_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by sale date (yyyy-mm-dd) (optional)
-sale_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by sale date (yyyy-mm-dd) (optional)
+# Create an instance of the API class
+api_instance = evo_client.receivables_api.ReceivablesApi(evo_client.ApiClient(configuration))
+
+# Define filter parameters
+registration_date_start = '2023-01-01T00:00:00+00:00'  # datetime | Start date for registration (optional)
+registration_date_end = '2023-12-31T23:59:59+00:00'    # datetime | End date for registration (optional)
+# ... (other parameters)
 
 try:
-    # Get receivables
-    api_instance.api_v1_receivables_get(registration_date_start=registration_date_start, registration_date_end=registration_date_end, due_date_start=due_date_start, due_date_end=due_date_end, receiving_date_start=receiving_date_start, receiving_date_end=receiving_date_end, competence_date_end=competence_date_end, competence_date_start=competence_date_start, cancellation_date_start=cancellation_date_start, cancellation_date_end=cancellation_date_end, charge_date_start=charge_date_start, charge_date_end=charge_date_end, update_date_start=update_date_start, update_date_end=update_date_end, description=description, ammount_start=ammount_start, ammount_end=ammount_end, payment_types=payment_types, account_status=account_status, take=take, skip=skip, member_id=member_id, id_sale=id_sale, id_receivable=id_receivable, invoice_date_start=invoice_date_start, invoice_date_end=invoice_date_end, invoice_canceled_date_start=invoice_canceled_date_start, invoice_canceled_date_end=invoice_canceled_date_end, sale_date_start=sale_date_start, sale_date_end=sale_date_end)
+    # Retrieve receivables
+    api_instance.api_v1_receivables_get(
+        registration_date_start=registration_date_start,
+        registration_date_end=registration_date_end,
+        # ... (other parameters)
+    )
 except ApiException as e:
-    print("Exception when calling ReceivablesApi->api_v1_receivables_get: %s\n" % e)
+    print(f"Exception when calling ReceivablesApi->api_v1_receivables_get: {e}\n")
 ```
 
-### Parameters
+#### Parameters
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **registration_date_start** | **datetime**| Filter by registration of the account starting in a date (yyyy-mm-dd) | [optional] 
- **registration_date_end** | **datetime**| Filter by registration of the account ending in a date (yyyy-mm-dd) | [optional] 
- **due_date_start** | **datetime**| Filter by due of the account starting in a date (yyyy-mm-dd) | [optional] 
- **due_date_end** | **datetime**| Filter by due of the account ending in a date (yyyy-mm-dd) | [optional] 
- **receiving_date_start** | **datetime**| Filter by receiving of the account starting in a date (yyyy-mm-dd) | [optional] 
- **receiving_date_end** | **datetime**| Filter by receiving of the account ending in a date (yyyy-mm-dd) | [optional] 
- **competence_date_end** | **datetime**| Filter by competence of the account ending in a date (yyyy-mm-dd) | [optional] 
- **competence_date_start** | **datetime**| Filter by competence of the account starting in a date (yyyy-mm-dd) | [optional] 
- **cancellation_date_start** | **datetime**| Filter by cancellation of the account starting in a date (yyyy-mm-dd) | [optional] 
- **cancellation_date_end** | **datetime**| Filter by cancellation of the account ending in a date (yyyy-mm-dd) | [optional] 
- **charge_date_start** | **datetime**| Filter by charge of the account starting in a date (yyyy-mm-dd) | [optional] 
- **charge_date_end** | **datetime**| Filter by charge of the account ending in a date (yyyy-mm-dd) | [optional] 
- **update_date_start** | **datetime**| Filter by update of the account starting in a date (yyyy-mm-dd) | [optional] 
- **update_date_end** | **datetime**| Filter by update of the account ending in a date (yyyy-mm-dd) | [optional] 
- **description** | **str**| Filter by description | [optional] 
- **ammount_start** | **float**| Filter by minimun ammount | [optional] 
- **ammount_end** | **float**| Filter by maximun ammount | [optional] 
- **payment_types** | **str**| Filter by a comma separated list of payment types id. Types: 1 - Money, 2 - Credit Card, 3 - Debit Card, 4 - Check, 5 - Boleto Bancário, 6 - PagSeguro, 7 - Deposit, 8 - Account Debit, 9 - Internet, 11 - Sale Credits, 12 - On-line Credit Card, 13 - Transfer, 18 - Pix, 0 - Balance Due. | [optional] 
- **account_status** | **str**| Filter by a comma separated list of status ids. Status: 1 - Opened, 2 - Received, 3 - Canceled, 4 - Overdue | [optional] 
- **take** | **int**| Total number of records to return. (Maximum of 50) | [optional] [default to 50]
- **skip** | **int**| Total number of records to skip. | [optional] [default to 0]
- **member_id** | **int**| Filter by a member Id. | [optional] 
- **id_sale** | **int**| Filter by a sale Id. | [optional] 
- **id_receivable** | **int**| Filter by a receivable Id. | [optional] 
- **invoice_date_start** | **datetime**| Filter by invoice date (yyyy-mm-dd) | [optional] 
- **invoice_date_end** | **datetime**| Filter by invoice date (yyyy-mm-dd) | [optional] 
- **invoice_canceled_date_start** | **datetime**| Filter by canceled invoice date (yyyy-mm-dd) | [optional] 
- **invoice_canceled_date_end** | **datetime**| Filter by canceled invoice date (yyyy-mm-dd) | [optional] 
- **sale_date_start** | **datetime**| Filter by sale date (yyyy-mm-dd) | [optional] 
- **sale_date_end** | **datetime**| Filter by sale date (yyyy-mm-dd) | [optional] 
+Name | Type | Description | Notes
+--- | --- | --- | ---
+**registration_date_start** | **datetime** | Start date for account registration (yyyy-mm-dd) | [optional]
+**registration_date_end** | **datetime** | End date for account registration (yyyy-mm-dd) | [optional]
+**due_date_start** | **datetime** | Start date for account due (yyyy-mm-dd) | [optional]
+**due_date_end** | **datetime** | End date for account due (yyyy-mm-dd) | [optional]
+**receiving_date_start** | **datetime** | Start date for account receiving (yyyy-mm-dd) | [optional]
+**receiving_date_end** | **datetime** | End date for account receiving (yyyy-mm-dd) | [optional]
+**competence_date_start** | **datetime** | Start date for account competence (yyyy-mm-dd) | [optional]
+**competence_date_end** | **datetime** | End date for account competence (yyyy-mm-dd) | [optional]
+**cancellation_date_start** | **datetime** | Start date for account cancellation (yyyy-mm-dd) | [optional]
+**cancellation_date_end** | **datetime** | End date for account cancellation (yyyy-mm-dd) | [optional]
+**charge_date_start** | **datetime** | Start date for account charge (yyyy-mm-dd) | [optional]
+**charge_date_end** | **datetime** | End date for account charge (yyyy-mm-dd) | [optional]
+**update_date_start** | **datetime** | Start date for account update (yyyy-mm-dd) | [optional]
+**update_date_end** | **datetime** | End date for account update (yyyy-mm-dd) | [optional]
+**description** | **str** | Filter by description | [optional]
+**ammount_start** | **float** | Minimum amount filter | [optional]
+**ammount_end** | **float** | Maximum amount filter | [optional]
+**payment_types** | **str** | Comma-separated payment type IDs (e.g., 1,2,3) | [optional]
+**account_status** | **str** | Comma-separated account status IDs (e.g., 1,2) | [optional]
+**take** | **int** | Number of records to return (max 50) | [optional, default: 50]
+**skip** | **int** | Number of records to skip | [optional, default: 0]
+**member_id** | **int** | Filter by member ID | [optional]
+**id_sale** | **int** | Filter by sale ID | [optional]
+**id_receivable** | **int** | Filter by receivable ID | [optional]
+**invoice_date_start** | **datetime** | Start date for invoice (yyyy-mm-dd) | [optional]
+**invoice_date_end** | **datetime** | End date for invoice (yyyy-mm-dd) | [optional]
+**invoice_canceled_date_start** | **datetime** | Start date for canceled invoice (yyyy-mm-dd) | [optional]
+**invoice_canceled_date_end** | **datetime** | End date for canceled invoice (yyyy-mm-dd) | [optional]
+**sale_date_start** | **datetime** | Start date for sale (yyyy-mm-dd) | [optional]
+**sale_date_end** | **datetime** | End date for sale (yyyy-mm-dd) | [optional]
 
-### Return type
+#### Return type
 
-void (empty response body)
+`void` (empty response body)
 
-### Authorization
+#### Authorization
 
 [Basic](../README.md#Basic)
 
-### HTTP request headers
+#### HTTP Request Headers
 
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
+- **Content-Type**: Not defined
+- **Accept**: text/plain, application/json, text/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **api_v1_revenuecenter_get**
-> RevenueCenterApiViewModel api_v1_revenuecenter_get(take=take, skip=skip)
+### **api_v1_revenuecenter_get**
+> `RevenueCenterApiViewModel api_v1_revenuecenter_get(take, skip)`
 
-Get Cost Center
+Retrieve cost centers.
 
-### Example
+#### Example
 ```python
 from __future__ import print_function
-import time
 import evo_client
 from evo_client.rest import ApiException
 from pprint import pprint
+
 # Configure HTTP basic authorization: Basic
 configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
-# create an instance of the API class
-api_instance = evo_client.ReceivablesApi(evo_client.ApiClient(configuration))
-take = 50 # int | Total number of records to return. (optional) (default to 50)
-skip = 0 # int | Total number of records to skip. (optional) (default to 0)
+# Create an instance of the API class
+api_instance = evo_client.receivables_api.ReceivablesApi(evo_client.ApiClient(configuration))
+take = 50  # int | Number of records to return (default: 50)
+skip = 0   # int | Number of records to skip (default: 0)
 
 try:
-    # Get Cost Center
+    # Retrieve cost centers
     api_response = api_instance.api_v1_revenuecenter_get(take=take, skip=skip)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling ReceivablesApi->api_v1_revenuecenter_get: %s\n" % e)
+    print(f"Exception when calling ReceivablesApi->api_v1_revenuecenter_get: {e}\n")
 ```
 
-### Parameters
+#### Parameters
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **take** | **int**| Total number of records to return. | [optional] [default to 50]
- **skip** | **int**| Total number of records to skip. | [optional] [default to 0]
+Name | Type | Description | Notes
+--- | --- | --- | ---
+**take** | **int** | Number of records to return | [optional, default: 50]
+**skip** | **int** | Number of records to skip | [optional, default: 0]
 
-### Return type
+#### Return type
 
-[**RevenueCenterApiViewModel**](RevenueCenterApiViewModel.md)
+[`RevenueCenterApiViewModel`](RevenueCenterApiViewModel.md)
 
-### Authorization
+#### Authorization
 
 [Basic](../README.md#Basic)
 
-### HTTP request headers
+#### HTTP Request Headers
 
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
+- **Content-Type**: Not defined
+- **Accept**: text/plain, application/json, text/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **received_put**
-> received_put(body=body)
+### **received_put**
+> `received_put(body)`
 
+Mark receivables as received.
 
-
-### Example
+#### Example
 ```python
 from __future__ import print_function
-import time
 import evo_client
 from evo_client.rest import ApiException
 from pprint import pprint
+
 # Configure HTTP basic authorization: Basic
 configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
-# create an instance of the API class
-api_instance = evo_client.ReceivablesApi(evo_client.ApiClient(configuration))
-body = evo_client.ReceivablesMaskReceivedViewModel() # ReceivablesMaskReceivedViewModel |  (optional)
+# Create an instance of the API class
+api_instance = evo_client.receivables_api.ReceivablesApi(evo_client.ApiClient(configuration))
+body = evo_client.ReceivablesMaskReceivedViewModel()  # ReceivablesMaskReceivedViewModel | (optional)
 
 try:
     api_instance.received_put(body=body)
 except ApiException as e:
-    print("Exception when calling ReceivablesApi->received_put: %s\n" % e)
+    print(f"Exception when calling ReceivablesApi->received_put: {e}\n")
 ```
 
-### Parameters
+#### Parameters
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **body** | [**ReceivablesMaskReceivedViewModel**](ReceivablesMaskReceivedViewModel.md)|  | [optional] 
+Name | Type | Description | Notes
+--- | --- | --- | ---
+**body** | [`ReceivablesMaskReceivedViewModel`](ReceivablesMaskReceivedViewModel.md) | Data to mark receivables as received | [optional]
 
-### Return type
+#### Return type
 
-void (empty response body)
+`void` (empty response body)
 
-### Authorization
+#### Authorization
 
 [Basic](../README.md#Basic)
 
-### HTTP request headers
+#### HTTP Request Headers
 
- - **Content-Type**: application/json-patch+json, application/json, text/json, application/*+json
- - **Accept**: text/plain, application/json, text/json
+- **Content-Type**: application/json-patch+json, application/json, text/json, application/*+json
+- **Accept**: text/plain, application/json, text/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
+/* End of Selection */
+```
