@@ -20,7 +20,7 @@ Get gateway configurations
 from __future__ import print_function
 import time
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -70,7 +70,7 @@ Get branch configurations
 from __future__ import print_function
 import time
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -120,7 +120,7 @@ Get Occupation
 from __future__ import print_function
 import time
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -170,7 +170,7 @@ Get card flags
 from __future__ import print_function
 import time
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -220,7 +220,7 @@ Get card translations
 from __future__ import print_function
 import time
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic

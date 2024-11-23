@@ -20,7 +20,7 @@ Delete an employee
 from __future__ import print_function
 import time
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -70,7 +70,7 @@ Retrieve a list of employees
 from __future__ import print_function
 import time
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -129,7 +129,7 @@ Update an existing employee
 from __future__ import print_function
 import time
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -179,7 +179,7 @@ Add a new employee
 from __future__ import print_function
 import time
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic

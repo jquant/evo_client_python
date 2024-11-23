@@ -15,7 +15,7 @@ Insert a member notification
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 # Configure HTTP basic authorization: Basic
 configuration = evo_client.Configuration()

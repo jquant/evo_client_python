@@ -17,7 +17,7 @@ Remove a specific webhook by ID
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -66,7 +66,7 @@ List all webhooks created
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -114,7 +114,7 @@ Create webhooks so EVO will notify outside systems every time a certain event oc
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic

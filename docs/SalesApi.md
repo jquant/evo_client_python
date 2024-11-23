@@ -21,7 +21,7 @@ Retrieve a sale by its ID.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -80,7 +80,7 @@ Create a new sale.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -130,7 +130,7 @@ Retrieve a list of sales with optional filtering.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 from datetime import datetime
 
@@ -228,7 +228,7 @@ Retrieve items available for sale at a specific branch or site/totem.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -278,7 +278,7 @@ Retrieve the number of sales associated with a specific session ID.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 from datetime import datetime
 

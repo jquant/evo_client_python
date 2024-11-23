@@ -23,7 +23,7 @@ Retrieve a list of prospects based on the provided filters.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -110,7 +110,7 @@ Add a new prospect to the system.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -175,7 +175,7 @@ Update an existing prospect's information.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -238,7 +238,7 @@ Retrieve services associated with a specific prospect.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -290,7 +290,7 @@ Transfer a prospect to another branch or representative.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 
 # Configure HTTP basic authorization: Basic
 configuration = evo_client.Configuration()

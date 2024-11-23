@@ -22,26 +22,8 @@ from evo_client.core.api_client import ApiClient
 from typing import List, Optional, Union, overload
 from datetime import datetime
 from threading import Thread
-from enum import IntEnum
 
-from pydantic import BaseModel, Field
-from ..models.enotas_retorno import EnotasRetorno
-
-
-class InvoiceStatus(IntEnum):
-    """Invoice status enumeration."""
-
-    ISSUED = 1
-    WITH_ERROR = 2
-    CANCELED = 3
-
-
-class InvoiceType(IntEnum):
-    """Invoice type enumeration."""
-
-    NFSE = 1  # Service Invoice
-    NFE = 2  # Electronic Invoice
-    NFCE = 3  # Consumer Electronic Invoice
+from ..models.enotas_retorno import EnotasRetorno, InvoiceStatus, InvoiceType
 
 
 class InvoicesApi:

@@ -13,10 +13,27 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
+from enum import IntEnum
 
 from .cliente_enotas_retorno import ClienteEnotasRetorno
 from .servico_enotas_retorno import ServicoEnotasRetorno
 from .metadados_enotas_retorno import MetadadosEnotasRetorno
+
+
+class InvoiceStatus(IntEnum):
+    """Invoice status enumeration."""
+
+    ISSUED = 1
+    WITH_ERROR = 2
+    CANCELED = 3
+
+
+class InvoiceType(IntEnum):
+    """Invoice type enumeration."""
+
+    NFSE = 1  # Service Invoice
+    NFE = 2  # Electronic Invoice
+    NFCE = 3  # Consumer Electronic Invoice
 
 
 class EnotasRetorno(BaseModel):

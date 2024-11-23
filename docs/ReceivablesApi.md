@@ -21,7 +21,7 @@ Retrieve receivables based on provided filters.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -107,7 +107,7 @@ Retrieve cost centers.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -159,7 +159,7 @@ Mark receivables as received.
 ```python
 from __future__ import print_function
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic

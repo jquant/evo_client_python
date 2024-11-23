@@ -2,7 +2,6 @@ from typing import List, Optional, Union, overload
 from datetime import datetime
 from threading import Thread
 
-from pydantic import BaseModel
 
 from ..core.api_client import ApiClient
 from ..models.contratos_cancelados_resumo_api_view_model import (

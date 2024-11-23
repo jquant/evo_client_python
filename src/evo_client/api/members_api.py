@@ -1,8 +1,7 @@
 from typing import Optional, Union, Dict, Any, overload, List
 from threading import Thread
-from enum import Enum
 
-from pydantic import BaseModel
+
 from datetime import datetime
 
 from ..core.api_client import ApiClient
@@ -12,24 +11,7 @@ from ..models.members_basic_api_view_model import MembersBasicApiViewModel
 from ..models.member_data_view_model import MemberDataViewModel
 from ..models.member_service_view_model import MemberServiceViewModel
 from ..models.members_api_view_model import MembersApiViewModel
-
-
-class Gender(str, Enum):
-    MALE = "M"
-    FEMALE = "F"
-    OTHER = "P"
-
-
-class ContactType(int, Enum):
-    TELEPHONE = 1
-    CELLPHONE = 2
-
-
-class MemberTransferViewModel(BaseModel):
-    """Member transfer model."""
-
-    # Define fields based on ClienteTransferenciaViewModel
-    pass
+from ..models.member_transfer_view_model import MemberTransferViewModel
 
 
 class MembersApi:

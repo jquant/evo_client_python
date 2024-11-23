@@ -23,7 +23,6 @@ from typing import List, Optional, Union, overload
 from datetime import datetime
 from threading import Thread
 
-from pydantic import BaseModel
 
 from ..models.entradas_resumo_api_view_model import EntradasResumoApiViewModel
 

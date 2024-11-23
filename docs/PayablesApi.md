@@ -17,7 +17,7 @@ Get Cost Centers with pagination.
 from __future__ import print_function
 import time
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
@@ -70,7 +70,7 @@ Retrieve payables with optional filtering.
 from __future__ import print_function
 import time
 import evo_client
-from evo_client.rest import ApiException
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
 
 # Configure HTTP basic authorization: Basic
