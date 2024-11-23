@@ -20,9 +20,6 @@ class BusinessHoursViewModel(BaseModel):
         default=None, alias="idEmployeeCreation"
     )
 
-    class Config:
-        allow_population_by_field_name = True
-
     def to_dict(self) -> dict:
         """Convert model to dictionary."""
         return {

@@ -26,11 +26,6 @@ class BasicFreezeViewModel(BaseModel):
     start_date: Optional[datetime] = Field(default=None, alias="startDate")
     end_date: Optional[datetime] = Field(default=None, alias="endDate")
 
-    class Config:
-        """Pydantic model configuration"""
-
-        allow_population_by_field_name = True
-
     def to_dict(self) -> dict:
         """Returns the model properties as a dictionary"""
         return self.model_dump(by_alias=True)

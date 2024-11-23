@@ -48,9 +48,6 @@ class ContratosCanceladosParcelasApiViewModel(BaseModel):
         default=None, alias="paymentType"
     )
 
-    class Config:
-        arbitrary_types_allowed = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

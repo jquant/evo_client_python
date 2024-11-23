@@ -39,11 +39,6 @@ class AtividadeListApiViewModel(BaseModel):
     id_audience: Optional[int] = Field(default=None, alias="idAudience")
     discriminator: Optional[str] = None
 
-    class Config:
-        """Pydantic model configuration"""
-
-        allow_population_by_field_name = True
-
     def to_str(self) -> str:
         """Returns the string representation of the model using pprint"""
         return pprint.pformat(self.model_dump(by_alias=True))

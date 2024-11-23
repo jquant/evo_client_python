@@ -59,9 +59,6 @@ class AtividadeBasicoApiViewModel(BaseModel):
         default=None, alias="jsonConfigVagaPersonalizada"
     )
 
-    class Config:
-        allow_population_by_field_name = True
-
     def to_dict(self) -> dict:
         """Returns the model properties as a dictionary"""
         result = self.model_dump(by_alias=True)

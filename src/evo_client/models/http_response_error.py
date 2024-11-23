@@ -24,12 +24,6 @@ class HttpResponseError(BaseModel):
         default=None, alias="mensagens", description="List of error messages"
     )
 
-    class Config:
-        populate_by_name = True
-        json_encoders = {
-            # Add custom encoders if needed
-        }
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

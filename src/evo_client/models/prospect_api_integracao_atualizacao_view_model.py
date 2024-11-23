@@ -34,8 +34,7 @@ class ProspectApiIntegracaoAtualizacaoViewModel(BaseModel):
     cpf: Optional[str] = None
     token_gympass: Optional[str] = Field(default=None, alias="tokenGympass")
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

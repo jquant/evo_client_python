@@ -33,10 +33,6 @@ class ConveniosApiViewModel(BaseModel):
     discount_type: Optional[float] = Field(default=None, alias="discountType")
     advanced_discount: Optional[int] = Field(default=None, alias="advancedDiscount")
 
-    class Config:
-        populate_by_name = True
-        arbitrary_types_allowed = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

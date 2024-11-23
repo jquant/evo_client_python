@@ -23,10 +23,6 @@ class W12UtilsWebhookFilterViewModel(BaseModel):
     filter_type: Optional[str] = Field(default=None, alias="filterType")
     value: Optional[str] = None
 
-    class Config:
-        populate_by_name = True
-        arbitrary_types_allowed = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

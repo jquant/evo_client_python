@@ -53,11 +53,6 @@ class BasicMemberMembershipApiViewModel(BaseModel):
         default=None, alias="idCategoryMembership"
     )
 
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {datetime: lambda v: v.isoformat()}
-
     def to_dict(self) -> dict:
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

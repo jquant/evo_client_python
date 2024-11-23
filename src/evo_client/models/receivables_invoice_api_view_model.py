@@ -30,8 +30,7 @@ class ReceivablesInvoiceApiViewModel(BaseModel):
     id_invoice_type: Optional[int] = Field(default=None, alias="idInvoiceType")
     invoice_type: Optional[str] = Field(default=None, alias="invoiceType")
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

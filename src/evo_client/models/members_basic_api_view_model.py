@@ -67,12 +67,6 @@ class MembersBasicApiViewModel(BaseModel):
     personal_trainer: Optional[bool] = Field(default=None, alias="personalTrainer")
     personal_type: Optional[str] = Field(default=None, alias="personalType")
 
-    class Config:
-        """Pydantic model configuration"""
-
-        populate_by_name = True
-        validate_assignment = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

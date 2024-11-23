@@ -23,8 +23,7 @@ class ReceivablesApiSubTypesViewModel(BaseModel):
     id: Optional[int] = None
     name: Optional[str] = None
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

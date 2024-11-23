@@ -29,9 +29,6 @@ class EnderecoEnotasRetorno(BaseModel):
     bairro: Optional[str] = Field(default=None)
     cep: Optional[str] = Field(default=None)
 
-    class Config:
-        from_attributes = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump()

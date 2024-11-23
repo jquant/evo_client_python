@@ -29,8 +29,7 @@ class TelefoneApiViewModel(BaseModel):
     contact_type: Optional[str] = Field(default=None, alias="contactType")
     description: Optional[str] = None
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

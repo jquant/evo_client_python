@@ -33,8 +33,7 @@ class SalesItemsViewModel(BaseModel):
     not_inaugurated: Optional[bool] = Field(default=None, alias="notInaugurated")
     itens: Optional[List[SalesItemViewModel]] = None
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

@@ -31,12 +31,6 @@ class MemberAuthenticateViewModel(BaseModel):
     url_reset_password: Optional[str] = Field(default=None, alias="urlResetPassword")
     url_member_area: Optional[str] = Field(default=None, alias="urlMemberArea")
 
-    class Config:
-        """Pydantic model configuration"""
-
-        populate_by_name = True
-        validate_assignment = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

@@ -26,12 +26,6 @@ class PeriodizacaoApiViewModel(BaseModel):
     intensity_number: Optional[int] = Field(default=None, alias="intensityNumber")
     type: Optional[str] = None
 
-    class Config:
-        """Pydantic model configuration"""
-
-        populate_by_name = True
-        validate_assignment = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

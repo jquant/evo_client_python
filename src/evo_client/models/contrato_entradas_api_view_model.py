@@ -26,9 +26,6 @@ class ContratoEntradasApiViewModel(BaseModel):
         default=None, alias="entriesTypeDescription"
     )
 
-    class Config:
-        populate_by_name = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True)

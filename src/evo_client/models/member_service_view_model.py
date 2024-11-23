@@ -23,12 +23,6 @@ class MemberServiceViewModel(BaseModel):
     id_service: Optional[int] = Field(default=None, alias="idService")
     name_service: Optional[str] = Field(default=None, alias="nameService")
 
-    class Config:
-        """Pydantic model configuration"""
-
-        populate_by_name = True
-        validate_assignment = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

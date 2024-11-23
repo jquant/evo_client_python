@@ -44,11 +44,6 @@ class BankAccountsViewModel(BaseModel):
     inactive: Optional[bool] = None
     bank_integration: Optional[bool] = Field(default=None, alias="bankIntegration")
 
-    class Config:
-        """Pydantic model configuration"""
-
-        allow_population_by_field_name = True
-
     def to_dict(self) -> dict:
         """Returns the model properties as a dictionary"""
         return self.model_dump(by_alias=True)

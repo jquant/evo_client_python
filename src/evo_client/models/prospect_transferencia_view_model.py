@@ -24,8 +24,7 @@ class ProspectTransferenciaViewModel(BaseModel):
     id_filial_destino: Optional[int] = Field(default=None, alias="idFilialDestino")
     id_branch_token: Optional[str] = Field(default=None, alias="idBranchToken")
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

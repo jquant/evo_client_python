@@ -99,8 +99,7 @@ class SalesItemViewModel(BaseModel):
         default=None, alias="membershipBranches"
     )
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

@@ -48,12 +48,6 @@ class PayablesApiViewModel(BaseModel):
     categories: Optional[str] = None
     observation: Optional[str] = None
 
-    class Config:
-        """Pydantic model configuration"""
-
-        populate_by_name = True
-        validate_assignment = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

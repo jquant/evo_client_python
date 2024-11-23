@@ -76,8 +76,7 @@ class ReceivablesApiViewModel(BaseModel):
     source: Optional[str] = None
     sale_date: Optional[datetime] = Field(default=None, alias="saleDate")
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

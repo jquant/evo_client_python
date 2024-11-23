@@ -26,8 +26,7 @@ class ProspectResponsavelResumoApiViewModel(BaseModel):
         default=None, alias="financialResponsible"
     )
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

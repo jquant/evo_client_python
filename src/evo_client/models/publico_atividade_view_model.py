@@ -28,11 +28,6 @@ class PublicoAtividadeViewModel(BaseModel):
     id_filial: Optional[int] = Field(default=None, alias="idFilial")
     nome: Optional[str] = None
 
-    class Config:
-        """Pydantic model configuration"""
-
-        allow_population_by_field_name = True
-
     def to_dict(self) -> dict:
         """Returns the model properties as a dictionary"""
         result = self.model_dump(by_alias=True)

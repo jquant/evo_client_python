@@ -38,12 +38,6 @@ class EntradasResumoApiViewModel(BaseModel):
     entry_action: Optional[str] = Field(default=None, alias="entryAction")
     id_migration: Optional[str] = Field(default=None, alias="idMigration")
 
-    class Config:
-        """Pydantic model configuration"""
-
-        populate_by_name = True
-        validate_assignment = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

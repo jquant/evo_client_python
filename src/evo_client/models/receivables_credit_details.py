@@ -32,8 +32,7 @@ class ReceivablesCreditDetails(BaseModel):
         default=None, alias="idReceivableOrigin"
     )
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

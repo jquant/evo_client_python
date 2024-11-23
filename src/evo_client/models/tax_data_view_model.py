@@ -26,8 +26,7 @@ class TaxDataViewModel(BaseModel):
     cuit: Optional[str] = None
     tax_type: Optional[int] = Field(default=None, alias="taxType")
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

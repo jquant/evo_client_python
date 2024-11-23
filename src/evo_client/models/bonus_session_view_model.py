@@ -27,11 +27,6 @@ class BonusSessionViewModel(BaseModel):
     expiration_date: Optional[datetime] = Field(default=None, alias="expirationDate")
     fl_bonus_session: Optional[bool] = Field(default=None, alias="flBonusSession")
 
-    class Config:
-        """Pydantic model configuration"""
-
-        allow_population_by_field_name = True
-
     def to_dict(self) -> dict:
         """Returns the model properties as a dictionary"""
         return self.model_dump(by_alias=True)

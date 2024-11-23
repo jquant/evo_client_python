@@ -67,11 +67,6 @@ class ClienteDetalhesBasicosApiViewModel(BaseModel):
     registration_kind: Optional[str] = Field(default=None, alias="registrationKind")
     membership: Optional[BasicMemberMembershipApiViewModel] = None
 
-    class Config:
-        """Pydantic model configuration"""
-
-        allow_population_by_field_name = True
-
     def to_dict(self) -> dict:
         """Returns the model properties as a dictionary"""
         return self.model_dump(by_alias=True)

@@ -24,8 +24,7 @@ class SpsRelProspectsCadastradosConvertidos(BaseModel):
     apelido: Optional[str] = None
     marketing: Optional[str] = None
 
-    class Config:
-        populate_by_name = True
+    
         validate_assignment = True
 
     def to_dict(self):

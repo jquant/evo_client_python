@@ -58,6 +58,3 @@ class AtividadeAgendaApiViewModel(BaseModel):
     periodization: Optional[List[PeriodizacaoApiViewModel]] = None
     status: Optional[EStatusAtividade] = None
     status_name: Optional[str] = Field(default=None, alias="statusName")
-
-    class Config:
-        allow_population_by_field_name = True

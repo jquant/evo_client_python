@@ -13,9 +13,6 @@ class NotificationApiViewModel(BaseModel):
         default=None, alias="notificationMessage"
     )
 
-    class Config:
-        allow_population_by_field_name = True
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)

@@ -31,9 +31,6 @@ class ClienteEnotasRetorno(BaseModel):
     telefone: Optional[str] = None
     endereco: Optional[EnderecoEnotasRetorno] = None
 
-    class Config:
-        populate_by_name = True
-        arbitrary_types_allowed = True
 
     def to_dict(self):
         """Returns the model properties as a dict"""
