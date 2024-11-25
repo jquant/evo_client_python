@@ -1,7 +1,5 @@
 from __future__ import absolute_import
 
-# flake8: noqa
-
 # import apis into api package
 from evo_client.api.activities_api import ActivitiesApi
 from evo_client.api.bank_accounts_api import BankAccountsApi
@@ -21,7 +19,9 @@ from evo_client.api.prospects_api import ProspectsApi
 from evo_client.api.receivables_api import ReceivablesApi
 from evo_client.api.sales_api import SalesApi
 from evo_client.api.service_api import ServiceApi
+from evo_client.api.states_api import StatesApi
 from evo_client.api.voucher_api import VoucherApi
 from evo_client.api.webhook_api import WebhookApi
 from evo_client.api.workout_api import WorkoutApi
-from evo_client.api.states_api import StatesApi
+
+# flake8: noqa

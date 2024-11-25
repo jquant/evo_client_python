@@ -14,9 +14,7 @@ from __future__ import absolute_import
 
 import pytest
 
-from evo_client.models.receivables_credit_details import (
-    ReceivablesCreditDetails,
-)
+from evo_client.models.receivables_credit_details import ReceivablesCreditDetails
 
 
 @pytest.fixture

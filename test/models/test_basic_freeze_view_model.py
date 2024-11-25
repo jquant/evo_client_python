@@ -11,9 +11,11 @@
 """
 
 from __future__ import absolute_import
+
 from datetime import datetime
 
 import pytest
+
 from evo_client.models.basic_freeze_view_model import BasicFreezeViewModel
 
 

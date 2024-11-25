@@ -1,15 +1,10 @@
-from typing import Optional, List, Dict, Any, Union, overload
 from multiprocessing.pool import AsyncResult
-from typing import Any
+from typing import Any, Dict, List, Optional, Union, overload
 
 from ..core.api_client import ApiClient
+from ..models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
+from ..models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ..models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
-from ..models.w12_utils_webhook_header_view_model import (
-    W12UtilsWebhookHeaderViewModel,
-)
-from ..models.w12_utils_webhook_filter_view_model import (
-    W12UtilsWebhookFilterViewModel,
-)
 
 
 class WebhookApi:
@@ -22,10 +17,12 @@ class WebhookApi:
     @overload
     def delete_webhook(
         self, webhook_id: int, async_req: bool = True
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
-    def delete_webhook(self, webhook_id: int, async_req: bool = False) -> None: ...
+    def delete_webhook(self, webhook_id: int, async_req: bool = False) -> None:
+        ...
 
     def delete_webhook(
         self, webhook_id: int, async_req: bool = False
@@ -48,10 +45,12 @@ class WebhookApi:
         )
 
     @overload
-    def get_webhooks(self, async_req: bool = True) -> AsyncResult[Any]: ...
+    def get_webhooks(self, async_req: bool = True) -> AsyncResult[Any]:
+        ...
 
     @overload
-    def get_webhooks(self, async_req: bool = False) -> List[Dict[str, Any]]: ...
+    def get_webhooks(self, async_req: bool = False) -> List[Dict[str, Any]]:
+        ...
 
     def get_webhooks(
         self, async_req: bool = False
@@ -82,7 +81,8 @@ class WebhookApi:
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def create_webhook(
@@ -93,7 +93,8 @@ class WebhookApi:
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
         async_req: bool = False,
-    ) -> None: ...
+    ) -> None:
+        ...
 
     def create_webhook(
         self,

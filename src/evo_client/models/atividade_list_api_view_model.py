@@ -1,17 +1,6 @@
-import pprint
-
-from enum import IntEnum
-from datetime import datetime
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
-
-
-from .periodizacao_api_view_model import PeriodizacaoApiViewModel
-from .e_status_atividade import EStatusAtividade
-
-
-from enum import Enum
-from pydantic import BaseModel
 
 from .publico_atividade_view_model import PublicoAtividadeViewModel
 

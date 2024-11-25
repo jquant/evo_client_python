@@ -13,6 +13,7 @@
 from __future__ import absolute_import
 
 import pytest
+
 from evo_client.models.contratos_resumo_api_view_model import (
     ContratosResumoApiViewModel,
 )

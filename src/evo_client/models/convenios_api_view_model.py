@@ -11,7 +11,9 @@
 """
 
 from typing import Optional
+
 from pydantic import BaseModel, Field
+
 from .empresas_convenios_api_view_model import EmpresasConveniosApiViewModel
 
 

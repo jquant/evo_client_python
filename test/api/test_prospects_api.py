@@ -1,24 +1,25 @@
 """Tests for the ProspectsApi class."""
 
-import pytest
 from datetime import datetime
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
+
+import pytest
 
 from evo_client.api.prospects_api import ProspectsApi
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.prospects_resumo_api_view_model import (
-    ProspectsResumoApiViewModel,
+from evo_client.models.member_service_view_model import MemberServiceViewModel
+from evo_client.models.prospect_api_integracao_atualizacao_view_model import (
+    ProspectApiIntegracaoAtualizacaoViewModel,
 )
 from evo_client.models.prospect_api_integracao_view_model import (
     ProspectApiIntegracaoViewModel,
 )
 from evo_client.models.prospect_id_view_model import ProspectIdViewModel
-from evo_client.models.prospect_api_integracao_atualizacao_view_model import (
-    ProspectApiIntegracaoAtualizacaoViewModel,
-)
-from evo_client.models.member_service_view_model import MemberServiceViewModel
 from evo_client.models.prospect_transferencia_view_model import (
     ProspectTransferenciaViewModel,
+)
+from evo_client.models.prospects_resumo_api_view_model import (
+    ProspectsResumoApiViewModel,
 )
 
 

@@ -12,14 +12,14 @@
 
 from datetime import datetime
 from typing import List, Optional
-import pprint
+
 from pydantic import BaseModel, Field
 
+from .basic_member_membership_api_view_model import BasicMemberMembershipApiViewModel
+from .member_membership_api_view_model import MemberMembershipApiViewModel
+from .member_responsible_view_model import MemberResponsibleViewModel
 from .tax_data_view_model import TaxDataViewModel
 from .telefone_api_view_model import TelefoneApiViewModel
-from .member_responsible_view_model import MemberResponsibleViewModel
-from .member_membership_api_view_model import MemberMembershipApiViewModel
-from .basic_member_membership_api_view_model import BasicMemberMembershipApiViewModel
 
 
 class ClienteDetalhesBasicosApiViewModel(BaseModel):

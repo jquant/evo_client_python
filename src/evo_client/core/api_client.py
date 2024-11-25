@@ -9,6 +9,13 @@ from .configuration import Configuration
 from ..exceptions.api_exceptions import ApiClientError
 from multiprocessing.pool import AsyncResult
 from pydantic import BaseModel
+import logging
+from multiprocessing.pool import AsyncResult
+from typing import Any, Dict, List, Optional, Type, TypeVar, Union, overload
+
+from ..exceptions.api_exceptions import ApiClientError
+from .configuration import Configuration
+from .request_handler import RequestHandler
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +81,7 @@ class ApiClient:
         _request_timeout: Optional[Union[float, tuple]] = None,
     ) -> Union[Any, AsyncResult[Any]]: ...
 
+
     @overload
     def call_api(
         self,
@@ -92,6 +100,7 @@ class ApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
     ) -> Union[T, AsyncResult[T]]: ...
+
 
     @overload
     def call_api(
@@ -202,3 +211,4 @@ class ApiClient:
             _preload_content=_preload_content,
             _request_timeout=_request_timeout,
         )
+

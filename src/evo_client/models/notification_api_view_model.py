@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field
 from typing import Optional
-import pprint
+
+from pydantic import BaseModel, Field
 
 
 class NotificationApiViewModel(BaseModel):

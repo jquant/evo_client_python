@@ -12,6 +12,7 @@
 
 from datetime import datetime
 from typing import Optional
+
 from pydantic import BaseModel, Field
 
 from .prospect_responsavel_resumo_api_view_model import (

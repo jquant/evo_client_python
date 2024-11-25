@@ -1,17 +1,16 @@
 """Tests for the MembersApi class."""
 
+from unittest.mock import Mock, patch
+
 import pytest
-from datetime import datetime
-from unittest.mock import patch, Mock
 
 from evo_client.api.members_api import MembersApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.member_authenticate_view_model import MemberAuthenticateViewModel
-from evo_client.models.members_basic_api_view_model import MembersBasicApiViewModel
 from evo_client.models.member_data_view_model import MemberDataViewModel
 from evo_client.models.member_service_view_model import MemberServiceViewModel
-from evo_client.models.members_api_view_model import MembersApiViewModel
 from evo_client.models.member_transfer_view_model import MemberTransferViewModel
+from evo_client.models.members_basic_api_view_model import MembersBasicApiViewModel
 
 
 @pytest.fixture

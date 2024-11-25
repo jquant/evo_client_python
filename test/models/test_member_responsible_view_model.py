@@ -11,7 +11,9 @@
 """
 
 from __future__ import absolute_import
+
 import pytest
+
 from evo_client.models.member_responsible_view_model import MemberResponsibleViewModel
 
 

@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
@@ -37,7 +37,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
   formatting:
-    uses: ./.github/workflows/black-formatter.yml
+    uses: ./.github/workflows/black-formatter.yaml
     needs: flake
 
   tests-client:
@@ -49,15 +49,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Load .env file
-        uses: aarcangeli/load-dotenv@v1.0.0
-        with:
-          path: './tests'
-          filenames: |
-            .env
-          quiet: false
-          if-file-not-found: error
-
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
@@ -68,14 +59,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip 
           python -m pip install -e .
-          if [ -f ./tests-requirements.txt ]; then pip install -r ./tests-requirements.txt; fi
+          if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Test with pytest & Generate coverage report
         # https://github.com/pytest-dev/pytest-cov
         # https://pytest-cov.readthedocs.io/en/latest/readme.html
         run: |
-          pytest ./test -x --durations=10 --cov=./src/evo_client --cov-report=xml--cov-report=term-missing:skip-covered
+          pytest ./test -x --durations=10 --cov=./src/evo_client --cov-report=xml --cov-report=term-missing:skip-covered
  
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4

@@ -11,11 +11,13 @@
 """
 
 from __future__ import absolute_import
+
 import pytest
+
+from evo_client.models.e_tipo_gateway import ETipoGateway
 from evo_client.models.empresas_filiais_gateway_view_model import (
     EmpresasFiliaisGatewayViewModel,
 )
-from evo_client.models.e_tipo_gateway import ETipoGateway
 
 
 @pytest.fixture

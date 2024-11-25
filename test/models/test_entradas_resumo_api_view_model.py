@@ -11,7 +11,9 @@
 """
 
 from __future__ import absolute_import
+
 from datetime import datetime
+
 import pytest
 
 from evo_client.models.entradas_resumo_api_view_model import EntradasResumoApiViewModel

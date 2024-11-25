@@ -1,8 +1,9 @@
 """Tests for the InvoicesApi class."""
 
-import pytest
 from datetime import datetime
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
+
+import pytest
 
 from evo_client.api.invoices_api import InvoicesApi, InvoiceStatus, InvoiceType
 from evo_client.exceptions.api_exceptions import ApiException
