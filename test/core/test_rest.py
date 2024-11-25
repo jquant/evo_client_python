@@ -1,10 +1,13 @@
 """Tests for the RESTClient class."""
 
-from typing import Tuple
+from typing import Any, Tuple
 from unittest.mock import Mock, PropertyMock, patch
 
 import pytest
-from urllib3 import Timeout
+import urllib3
+from urllib3 import Timeout, exceptions
+
+import json
 
 from evo_client.core.configuration import Configuration
 from evo_client.core.response import RESTResponse
@@ -22,30 +25,39 @@ def rest_client():
         yield RESTClient(configuration=Configuration()), mock
 
 
-@pytest.fixture
-def mock_pool_manager():
-    """Create a mock pool manager."""
-    with patch(
-        "evo_client.core.rest.RESTClient._create_pool_manager",
-        return_value=PropertyMock(),
-    ) as mock:
-        yield mock
-
-
 def test_rest_client_initialization(rest_client: Tuple[RESTClient, Mock]):
     """Test initializing RESTClient."""
 
     assert isinstance(rest_client[0].pool_manager, Mock)
 
 
-def test_create_pool_manager_with_proxy(mock_pool_manager: Mock):
+def test_create_pool_manager_with_proxy():
     """Test creating a pool manager with a proxy."""
     config = Configuration()
     config.proxy = "http://proxy.example.com"
     rest_client = RESTClient(configuration=config)
+    assert isinstance(
+        rest_client.pool_manager, (urllib3.ProxyManager, urllib3.PoolManager)
+    )
 
-    assert isinstance(rest_client.pool_manager, Mock)
-    mock_pool_manager.assert_called_once()
+
+def test_create_pool_manager_with_cert_file():
+    """Test creating a pool manager with a cert file."""
+    config = Configuration(cert_file="cert.pem")
+    rest_client = RESTClient(configuration=config)
+    assert isinstance(
+        rest_client.pool_manager, (urllib3.ProxyManager, urllib3.PoolManager)
+    )
+
+
+def test_create_pool_manager_with_hostname_verification():
+    """Test creating a pool manager with a proxy."""
+    config = Configuration(assert_hostname=True)
+    config.proxy = "http://proxy.example.com"
+    rest_client = RESTClient(configuration=config)
+    assert isinstance(
+        rest_client.pool_manager, (urllib3.ProxyManager, urllib3.PoolManager)
+    )
 
 
 def test_request_get(rest_client: Tuple[RESTClient, Mock]):
@@ -86,11 +98,14 @@ def test_request_post(rest_client: Tuple[RESTClient, Mock]):
     assert kwargs["body"] == '{"data": "test"}'
 
 
-def test_request_error_handling(rest_client: Tuple[RESTClient, Mock]):
+def test_request_error_handling_bad_request(rest_client: Tuple[RESTClient, Mock]):
     """Test error handling in request method."""
     mock_pool_manager = rest_client[1]
-    mock_pool_manager.return_value.request.side_effect = ApiException(
-        status=500, reason="Request failed"
+    mock_pool_manager.return_value.request.return_value = Mock(
+        status=500,
+        reason="Request failed",
+        headers={"Content-Type": "application/json"},
+        data="",
     )
 
     with pytest.raises(ApiException) as exc_info:
@@ -99,11 +114,63 @@ def test_request_error_handling(rest_client: Tuple[RESTClient, Mock]):
             url="http://example.com/api",
         )
 
-    assert str(exc_info.value) == "(500)\nReason: Request failed"
+    assert (
+        str(exc_info.value)
+        == "(500)\nReason: Request failed\nHTTP response headers: {'Content-Type': 'application/json'}"
+    )
     mock_pool_manager.return_value.request.assert_called_once()
 
 
-def test_execute_request_with_body(rest_client: Tuple[RESTClient, Mock]):
+def test_request_error_handling_ssl_error(rest_client: Tuple[RESTClient, Mock]):
+    """Test error handling in request method."""
+    mock_pool_manager = rest_client[1]
+    mock_pool_manager.return_value.request.side_effect = exceptions.SSLError(
+        "Error message"
+    )
+
+    with pytest.raises(ApiException) as exc_info:
+        rest_client[0].request(
+            method="GET",
+            url="http://example.com/api",
+        )
+
+    assert str(exc_info.value) == "(0)\nReason: SSLError: Error message"
+    mock_pool_manager.return_value.request.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "body, content_type, query_params, body_output",
+    [
+        ({"data": "test"}, "application/json", None, '{"data": "test"}'),
+        (
+            {"data": "test"},
+            "application/json",
+            {"param1": "value1"},
+            '{"data": "test"}',
+        ),
+        (
+            {"field1": "value1"},
+            "application/x-www-form-urlencoded",
+            None,
+            None,
+        ),
+        (
+            {"file": "test.txt"},
+            "multipart/form-data",
+            None,
+            None,
+        ),
+        ("test", None, None, "test"),
+        ({"data": "test"}, None, None, '{"data": "test"}'),
+    ],
+)
+def test_execute_request_with_body(
+    rest_client: Tuple[RESTClient, Mock],
+    body: dict,
+    content_type: str,
+    query_params: dict,
+    body_output: Any,
+):
     """Test executing a request with a body."""
     mock_pool_manager = rest_client[1]
     mock_pool_manager.return_value.request.return_value = Mock(status=200, data="{}")
@@ -111,15 +178,51 @@ def test_execute_request_with_body(rest_client: Tuple[RESTClient, Mock]):
     response = rest_client[0]._execute_request_with_body(
         method="POST",
         url="http://example.com/api",
-        body={"data": "test"},
+        body=body,
+        headers={"Content-Type": content_type} if content_type else None,
+        query_params=query_params,
     )
 
     assert response.status == 200
     mock_pool_manager.return_value.request.assert_called_once()
     args, kwargs = mock_pool_manager.return_value.request.call_args
     assert args[0] == "POST"
-    assert args[1] == "http://example.com/api"
-    assert kwargs["body"] == '{"data": "test"}'
+    assert args[1] == "http://example.com/api" + (
+        "?" + "&".join([f"{k}={v}" for k, v in query_params.items()])
+        if query_params
+        else ""
+    )
+    if body_output:
+        assert kwargs["body"] == body_output
+
+
+@pytest.mark.parametrize(
+    "body, content_type",
+    [
+        ([1, 2, 3], None),
+    ],
+)
+def test_execute_request_with_body_exception(
+    rest_client: Tuple[RESTClient, Mock], body: dict, content_type: str
+):
+    """Test executing a request with a body."""
+    mock_pool_manager = rest_client[1]
+    mock_pool_manager.return_value.request.side_effect = ApiException(
+        status=500, reason="Request failed"
+    )
+
+    with pytest.raises(ApiException) as exc_info:
+        rest_client[0]._execute_request_with_body(
+            method="POST",
+            url="http://example.com/api",
+            body=body,
+            headers={"Content-Type": content_type} if content_type else None,
+        )
+
+    assert (
+        str(exc_info.value)
+        == "(0)\nReason: Cannot prepare request message for provided arguments."
+    )
 
 
 def test_execute_get_request(rest_client: Tuple[RESTClient, Mock]):

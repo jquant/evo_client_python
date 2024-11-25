@@ -78,7 +78,7 @@ def test_execute_none(request_handler: RequestHandler, mock_urllib3_response: Mo
     assert result["name"] == "test"
 
 
-def test_execute_async(request_handler, mock_urllib3_response):
+def test_execute_async(request_handler: RequestHandler, mock_urllib3_response: Mock):
     """Test execute_async method of RequestHandler."""
     request_handler.rest_client.request = Mock(return_value=mock_urllib3_response)
     async_result = request_handler.execute_async(
@@ -90,27 +90,27 @@ def test_execute_async(request_handler, mock_urllib3_response):
     assert result.name == "test"
 
 
-def test_prepare_headers(request_handler):
+def test_prepare_headers(request_handler: RequestHandler):
     """Test _prepare_headers method of RequestHandler."""
     headers = request_handler._prepare_headers({"Custom-Header": "value"})
     assert headers["Authorization"] == "Basic dGVzdDp0ZXN0"
     assert headers["Custom-Header"] == "value"
 
 
-def test_prepare_params(request_handler):
+def test_prepare_params(request_handler: RequestHandler):
     """Test _prepare_params method of RequestHandler."""
     params = request_handler._prepare_params({"param1": "value1"})
     assert params["param1"] == "value1"
 
 
-def test_get_request_options(request_handler):
+def test_get_request_options(request_handler: RequestHandler):
     """Test _get_request_options method of RequestHandler."""
     options = request_handler._get_request_options({"timeout": 10, "verify": False})
     assert options["request_timeout"] == 10
     assert options["verify_ssl"] == False
 
 
-def test_make_request(request_handler, mock_urllib3_response):
+def test_make_request(request_handler: RequestHandler, mock_urllib3_response: Mock):
     """Test _make_request method of RequestHandler."""
     request_handler.rest_client.request = Mock(return_value=mock_urllib3_response)
     result = request_handler._make_request(
