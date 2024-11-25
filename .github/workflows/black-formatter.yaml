@@ -35,7 +35,7 @@ jobs:
       # https://github.com/isort/isort-action
       - uses: isort/isort-action@master
         with:
-          sort-paths: "src/ tests/"
+          sort-paths: "src/ test/"
           configuration: "--atomic"
 
       # https://github.com/rickstaa/action-black/
@@ -43,7 +43,7 @@ jobs:
         uses: rickstaa/action-black@v1
         id: action_black
         with:
-          black_args: "src/ tests/"
+          black_args: "src/ test/"
 
       - name: Create Pull Request
         id: cpr
