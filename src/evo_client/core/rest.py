@@ -1,18 +1,15 @@
-
-from typing import Optional, Dict, Any, Union, Type, TypeVar
-
 import json
 import logging
 import ssl
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, TypeVar, Union
 from urllib.parse import urlencode
 
 import certifi
 import urllib3
+from pydantic import BaseModel
 from urllib3.response import BaseHTTPResponse
 
 from ..core.configuration import Configuration
-from pydantic import BaseModel
 from ..exceptions.api_exceptions import ApiException
 from .response import RESTResponse
 

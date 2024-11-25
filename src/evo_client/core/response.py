@@ -1,10 +1,20 @@
-
-from typing import Optional, Dict, Any, TypeVar, Type, Iterable
 import io
 import json
-from urllib3.response import HTTPResponse, BaseHTTPResponse
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    get_args,
+    get_origin,
+    overload,
+)
+
 from pydantic import BaseModel
-from typing import get_origin, get_args, List, overload
+from urllib3.response import BaseHTTPResponse
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -34,10 +44,12 @@ class RESTResponse(io.IOBase):
         raise ValueError("Response content is not in JSON format")
 
     @overload
-    def deserialize(self, response_type: Type[T]) -> T: ...
+    def deserialize(self, response_type: Type[T]) -> T:
+        ...
 
     @overload
-    def deserialize(self, response_type: Type[Iterable[T]]) -> List[T]: ...
+    def deserialize(self, response_type: Type[Iterable[T]]) -> List[T]:
+        ...
 
     def deserialize(self, response_type: Type[T] | Type[Iterable[T]]) -> T | List[T]:
         """Deserialize response data into the specified type."""

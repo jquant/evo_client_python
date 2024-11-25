@@ -3,7 +3,6 @@
 from unittest.mock import Mock, patch
 
 import pytest
-from unittest.mock import patch, Mock, PropertyMock
 
 from evo_client.core.api_client import ApiClient
 from evo_client.core.configuration import Configuration

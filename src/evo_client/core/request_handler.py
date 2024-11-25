@@ -1,15 +1,10 @@
-
-from typing import Any, Dict, Optional
-from multiprocessing.pool import ThreadPool, AsyncResult
-from typing import Any, Type, Union, TypeVar, Iterable, List, overload
 import logging
 from multiprocessing.pool import AsyncResult, ThreadPool
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union, overload
 
-from ..exceptions.api_exceptions import RequestError
-from .configuration import Configuration
-from .response import RESTResponse
 from pydantic import BaseModel
+
+from .configuration import Configuration
 from .rest import RESTClient
 
 logger = logging.getLogger(__name__)
@@ -30,12 +25,16 @@ class RequestHandler:
         self.pool.join()
 
     @overload
-    def execute(self, response_type: None, **kwargs) -> Any: ...
-    @overload
-    def execute(self, response_type: Type[T], **kwargs) -> T: ...
+    def execute(self, response_type: None, **kwargs) -> Any:
+        ...
 
     @overload
-    def execute(self, response_type: Type[Iterable[T]], **kwargs) -> List[T]: ...
+    def execute(self, response_type: Type[T], **kwargs) -> T:
+        ...
+
+    @overload
+    def execute(self, response_type: Type[Iterable[T]], **kwargs) -> List[T]:
+        ...
 
     def execute(
         self, response_type: Optional[Type[T] | Type[Iterable[T]]] = None, **kwargs
@@ -44,15 +43,18 @@ class RequestHandler:
         return self._make_request(response_type, **kwargs)
 
     @overload
-    def execute_async(self, response_type: None, **kwargs) -> AsyncResult[Any]: ...
+    def execute_async(self, response_type: None, **kwargs) -> AsyncResult[Any]:
+        ...
 
     @overload
-    def execute_async(self, response_type: Type[T], **kwargs) -> AsyncResult[T]: ...
+    def execute_async(self, response_type: Type[T], **kwargs) -> AsyncResult[T]:
+        ...
 
     @overload
     def execute_async(
         self, response_type: Type[Iterable[T]], **kwargs
-    ) -> AsyncResult[List[T]]: ...
+    ) -> AsyncResult[List[T]]:
+        ...
 
     def execute_async(
         self, response_type: Optional[Type[T] | Type[Iterable[T]]] = None, **kwargs
