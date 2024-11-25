@@ -66,7 +66,7 @@ jobs:
         # https://github.com/pytest-dev/pytest-cov
         # https://pytest-cov.readthedocs.io/en/latest/readme.html
         run: |
-          pytest ./test -x --durations=10 --cov=./src/evo_client --cov-report=xml--cov-report=term-missing:skip-covered
+          pytest ./test -x --durations=10 --cov=./src/evo_client --cov-report=xml --cov-report=term-missing:skip-covered
  
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
