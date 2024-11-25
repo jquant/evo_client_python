@@ -29,7 +29,7 @@ jobs:
           python -m pip install --upgrade autoflake
       - name: Removing unused variables and imports
         run: |
-          autoflake src/ tests/ --remove-unused-variables --remove-all-unused-imports --ignore-init-module-imports --recursive --in-place
+          autoflake src/ test/ --remove-unused-variables --remove-all-unused-imports --ignore-init-module-imports --recursive --in-place
 
       # https://github.com/PyCQA/isort
       # https://github.com/isort/isort-action
