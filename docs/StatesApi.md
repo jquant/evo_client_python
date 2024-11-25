@@ -1,43 +1,54 @@
-# swagger_client.StatesApi
+# evo_client.StatesApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**api_v1_states_get**](StatesApi.md#api_v1_states_get) | **GET** /api/v1/states | 
+[**get_states**](StatesApi.md#get_states) | **GET** /api/v1/states | Retrieve a list of available states/provinces
 
-# **api_v1_states_get**
-> api_v1_states_get()
+# **get_states**
+> get_states(async_req=False)
 
+### Description
 
+Retrieve a list of available states or provinces.
 
 ### Example
 ```python
 from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
+import evo_client
+from evo_client.exceptions.api_exceptions import ApiException
 from pprint import pprint
+
 # Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
+configuration = evo_client.Configuration()
 configuration.username = 'YOUR_USERNAME'
 configuration.password = 'YOUR_PASSWORD'
 
-# create an instance of the API class
-api_instance = swagger_client.StatesApi(swagger_client.ApiClient(configuration))
+# Create an instance of the API class
+api_instance = evo_client.StatesApi(evo_client.ApiClient(configuration))
 
 try:
-    api_instance.api_v1_states_get()
+    # Retrieve list of states
+    api_response = api_instance.get_states(async_req=False)
+    pprint(api_response)
 except ApiException as e:
-    print("Exception when calling StatesApi->api_v1_states_get: %s\n" % e)
+    print("Exception when calling StatesApi->get_states: %s\n" % e)
 ```
 
 ### Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description | Notes
+------------- | ------------- | ------------- | -------------
+**async_req** | **bool** | Execute request asynchronously | [optional] [default to False]
 
 ### Return type
 
-void (empty response body)
+**list[State]** – A list of state objects containing details such as:
+- State ID
+- State name
+- State abbreviation
+- Country information
 
 ### Authorization
 
@@ -49,4 +60,3 @@ void (empty response body)
  - **Accept**: text/plain, application/json, text/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

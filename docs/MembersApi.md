@@ -1,580 +1,392 @@
-# swagger_client.MembersApi
+# evo_client.MembersApi
 
 All URIs are relative to *https://evo-integracao-api.w12app.com.br*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**api_v1_members_auth_post**](MembersApi.md#api_v1_members_auth_post) | **POST** /api/v1/members/auth | Authenticate member
-[**api_v1_members_basic_get**](MembersApi.md#api_v1_members_basic_get) | **GET** /api/v1/members/basic | Get basic member information. This endpoint does not return sensitive information. To return a member it is necessary to search by e-mail or document or phone or idsMembers.
-[**api_v1_members_fitcoins_get**](MembersApi.md#api_v1_members_fitcoins_get) | **GET** /api/v1/members/fitcoins | Get member fitcoins
-[**api_v1_members_fitcoins_put**](MembersApi.md#api_v1_members_fitcoins_put) | **PUT** /api/v1/members/fitcoins | Update a member fitcoins
-[**api_v1_members_get**](MembersApi.md#api_v1_members_get) | **GET** /api/v1/members | Get members
-[**api_v1_members_id_member_card_put**](MembersApi.md#api_v1_members_id_member_card_put) | **PUT** /api/v1/members/{idMember}/card | Update a member card number
-[**api_v1_members_id_member_get**](MembersApi.md#api_v1_members_id_member_get) | **GET** /api/v1/members/{idMember} | Get member profile
-[**api_v1_members_reset_password_get**](MembersApi.md#api_v1_members_reset_password_get) | **GET** /api/v1/members/resetPassword | Get link for reset password
-[**api_v1_members_services_get**](MembersApi.md#api_v1_members_services_get) | **GET** /api/v1/members/services | Get member services
-[**api_v1_members_transfer_post**](MembersApi.md#api_v1_members_transfer_post) | **POST** /api/v1/members/transfer | 
-[**member_data_id_member_patch**](MembersApi.md#member_data_id_member_patch) | **PATCH** /api/v1/members/update-member-data/{idMember} | Update basic member data
+[**authenticate_member**](MembersApi.md#authenticate_member) | **POST** /api/v1/members/auth | Authenticate member
+[**get_basic_info**](MembersApi.md#get_basic_info) | **GET** /api/v1/members/basic | Get basic member information
+[**get_fitcoins**](MembersApi.md#get_fitcoins) | **GET** /api/v1/members/fitcoins | Get member fitcoins
+[**update_fitcoins**](MembersApi.md#update_fitcoins) | **PUT** /api/v1/members/fitcoins | Update member fitcoins
+[**get_members**](MembersApi.md#get_members) | **GET** /api/v1/members | Get members list
+[**update_member_card**](MembersApi.md#update_member_card) | **PUT** /api/v1/members/{idMember}/card | Update member card number
+[**get_member_profile**](MembersApi.md#get_member_profile) | **GET** /api/v1/members/{idMember} | Get member profile
+[**reset_password**](MembersApi.md#reset_password) | **GET** /api/v1/members/resetPassword | Get password reset link
+[**get_member_services**](MembersApi.md#get_member_services) | **GET** /api/v1/members/services | Get member services
+[**transfer_member**](MembersApi.md#transfer_member) | **POST** /api/v1/members/transfer | Transfer member to another branch
+[**update_member_data**](MembersApi.md#update_member_data) | **PATCH** /api/v1/members/update-member-data/{idMember} | Update basic member data
 
-# **api_v1_members_auth_post**
-> MemberAuthenticateViewModel api_v1_members_auth_post(email=email, password=password, change_password=change_password)
+# **authenticate_member**
+> MemberAuthenticateViewModel authenticate_member(email: str, password: str, change_password: bool = False, async_req: bool = False)
 
-Authenticate member
+Authenticate member.
 
 ### Example
 ```python
-from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-# Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
-configuration.username = 'YOUR_USERNAME'
-configuration.password = 'YOUR_PASSWORD'
+from evo_client import MembersApi
 
-# create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-email = 'email_example' # str | Member e-mail (optional)
-password = 'password_example' # str | Member password (optional)
-change_password = true # bool | Check true if the password has not been set, create a new one (optional)
+# Configure HTTP basic authorization
+api_instance = MembersApi()
 
 try:
     # Authenticate member
-    api_response = api_instance.api_v1_members_auth_post(email=email, password=password, change_password=change_password)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling MembersApi->api_v1_members_auth_post: %s\n" % e)
+    response = api_instance.authenticate_member(
+        email="user@example.com",
+        password="password123",
+        change_password=False
+    )
+    print(response)
+except Exception as e:
+    print(f"Exception when calling authenticate_member: {e}")
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **email** | **str**| Member e-mail | [optional] 
- **password** | **str**| Member password | [optional] 
- **change_password** | **bool**| Check true if the password has not been set, create a new one | [optional] 
+**email** | **str** | Member email | 
+**password** | **str** | Member password |
+**change_password** | **bool** | True if password needs to be changed | [optional] [default to False]
+**async_req** | **bool** | Execute request asynchronously | [optional] [default to False]
 
 ### Return type
 
 [**MemberAuthenticateViewModel**](MemberAuthenticateViewModel.md)
 
-### Authorization
-
-[Basic](../README.md#Basic)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **api_v1_members_basic_get**
-> MembersBasicApiViewModel api_v1_members_basic_get(email=email, document=document, phone=phone, id_member=id_member, take=take, skip=skip)
+# **get_basic_info**
+> MembersBasicApiViewModel get_basic_info(email: str, document: str, phone: str, id_member: int, take: int = 50, skip: int = 0)
 
 Get basic member information. This endpoint does not return sensitive information. To return a member it is necessary to search by e-mail or document or phone or idsMembers.
 
 ### Example
 ```python
-from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-# Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
-configuration.username = 'YOUR_USERNAME'
-configuration.password = 'YOUR_PASSWORD'
+from evo_client import MembersApi
 
-# create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-email = 'email_example' # str | Filter by a member e-mail (optional)
-document = 'document_example' # str | Filter by a member document (optional)
-phone = 'phone_example' # str | Filter by a member telephone or cellphone Ex.:1112341234 (optional)
-id_member = 56 # int | Filter by member id (optional)
-take = 50 # int | Total number of records to return. (Maximum of 50) (optional) (default to 50)
-skip = 0 # int | Total number of records to skip. (optional) (default to 0)
+# Configure HTTP basic authorization
+api_instance = MembersApi()
 
 try:
     # Get basic member information. This endpoint does not return sensitive information. To return a member it is necessary to search by e-mail or document or phone or idsMembers.
-    api_response = api_instance.api_v1_members_basic_get(email=email, document=document, phone=phone, id_member=id_member, take=take, skip=skip)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling MembersApi->api_v1_members_basic_get: %s\n" % e)
+    response = api_instance.get_basic_info(
+        email="user@example.com",
+        document="1234567890",
+        phone="1112341234",
+        id_member=56
+    )
+    print(response)
+except Exception as e:
+    print(f"Exception when calling get_basic_info: {e}")
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **email** | **str**| Filter by a member e-mail | [optional] 
- **document** | **str**| Filter by a member document | [optional] 
- **phone** | **str**| Filter by a member telephone or cellphone Ex.:1112341234 | [optional] 
- **id_member** | **int**| Filter by member id | [optional] 
- **take** | **int**| Total number of records to return. (Maximum of 50) | [optional] [default to 50]
- **skip** | **int**| Total number of records to skip. | [optional] [default to 0]
+**email** | **str** | Filter by a member e-mail | 
+**document** | **str** | Filter by a member document | 
+**phone** | **str** | Filter by a member telephone or cellphone Ex.:1112341234 | 
+**id_member** | **int** | Filter by member id | 
+**take** | **int** | Total number of records to return. (Maximum of 50) | [optional] [default to 50]
+**skip** | **int** | Total number of records to skip. | [optional] [default to 0]
 
 ### Return type
 
 [**MembersBasicApiViewModel**](MembersBasicApiViewModel.md)
 
-### Authorization
-
-[Basic](../README.md#Basic)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **api_v1_members_fitcoins_get**
-> api_v1_members_fitcoins_get(id_member=id_member)
+# **get_fitcoins**
+> void get_fitcoins(id_member: int)
 
 Get member fitcoins
 
 ### Example
 ```python
-from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-# Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
-configuration.username = 'YOUR_USERNAME'
-configuration.password = 'YOUR_PASSWORD'
+from evo_client import MembersApi
 
-# create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-id_member = 56 # int | Id Member (optional)
+# Configure HTTP basic authorization
+api_instance = MembersApi()
 
 try:
     # Get member fitcoins
-    api_instance.api_v1_members_fitcoins_get(id_member=id_member)
-except ApiException as e:
-    print("Exception when calling MembersApi->api_v1_members_fitcoins_get: %s\n" % e)
+    api_instance.get_fitcoins(id_member=56)
+except Exception as e:
+    print(f"Exception when calling get_fitcoins: {e}")
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id_member** | **int**| Id Member | [optional] 
+**id_member** | **int** | Id Member | 
 
 ### Return type
 
 void (empty response body)
 
-### Authorization
+# **update_fitcoins**
+> void update_fitcoins(id_member: int, type: int, fitcoin: int, reason: str)
 
-[Basic](../README.md#Basic)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **api_v1_members_fitcoins_put**
-> api_v1_members_fitcoins_put(id_member=id_member, type=type, fitcoin=fitcoin, reason=reason)
-
-Update a member fitcoins
+Update member fitcoins
 
 ### Example
 ```python
-from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-# Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
-configuration.username = 'YOUR_USERNAME'
-configuration.password = 'YOUR_PASSWORD'
+from evo_client import MembersApi
 
-# create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-id_member = 56 # int | Id Member (optional)
-type = 56 # int | 1 - Add Fitcoins, 2 - Remove Fitcoins (optional)
-fitcoin = 56 # int | Quantity add/remove fitcoin (optional)
-reason = 'reason_example' # str | Reason add/remove fitcoin (optional)
+# Configure HTTP basic authorization
+api_instance = MembersApi()
 
 try:
-    # Update a member fitcoins
-    api_instance.api_v1_members_fitcoins_put(id_member=id_member, type=type, fitcoin=fitcoin, reason=reason)
-except ApiException as e:
-    print("Exception when calling MembersApi->api_v1_members_fitcoins_put: %s\n" % e)
+    # Update member fitcoins
+    api_instance.update_fitcoins(
+        id_member=56,
+        type=1,
+        fitcoin=56,
+        reason="Reason for adding fitcoins"
+    )
+except Exception as e:
+    print(f"Exception when calling update_fitcoins: {e}")
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id_member** | **int**| Id Member | [optional] 
- **type** | **int**| 1 - Add Fitcoins, 2 - Remove Fitcoins | [optional] 
- **fitcoin** | **int**| Quantity add/remove fitcoin | [optional] 
- **reason** | **str**| Reason add/remove fitcoin | [optional] 
+**id_member** | **int** | Id Member | 
+**type** | **int** | 1 - Add Fitcoins, 2 - Remove Fitcoins | 
+**fitcoin** | **int** | Quantity add/remove fitcoin | 
+**reason** | **str** | Reason add/remove fitcoin | 
 
 ### Return type
 
 void (empty response body)
 
-### Authorization
-
-[Basic](../README.md#Basic)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **api_v1_members_get**
-> MembersApiViewModel api_v1_members_get(name=name, email=email, document=document, phone=phone, conversion_date_start=conversion_date_start, conversion_date_end=conversion_date_end, register_date_start=register_date_start, register_date_end=register_date_end, membership_start_date_start=membership_start_date_start, membership_start_date_end=membership_start_date_end, membership_cancel_date_start=membership_cancel_date_start, membership_cancel_date_end=membership_cancel_date_end, status=status, token_gympass=token_gympass, take=take, skip=skip, ids_members=ids_members, only_personal=only_personal, personal_type=personal_type, show_activity_data=show_activity_data)
+# **get_members**
+> MembersApiViewModel get_members(name: str, email: str, document: str, phone: str, conversion_date_start: datetime, conversion_date_end: datetime, register_date_start: datetime, register_date_end: datetime, membership_start_date_start: datetime, membership_start_date_end: datetime, membership_cancel_date_start: datetime, membership_cancel_date_end: datetime, status: int, token_gympass: str, take: int = 50, skip: int = 0, ids_members: str = None, only_personal: bool = False, personal_type: int = None, show_activity_data: bool = False)
 
 Get members
 
 ### Example
 ```python
-from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-# Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
-configuration.username = 'YOUR_USERNAME'
-configuration.password = 'YOUR_PASSWORD'
+from evo_client import MembersApi
 
-# create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-name = 'name_example' # str | Filter by members name (optional)
-email = 'email_example' # str | Filter by a member e-mail (optional)
-document = 'document_example' # str | Filter by a member document (optional)
-phone = 'phone_example' # str | Filter by a member telephone or cellphone Ex.:1112341234 (optional)
-conversion_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by a member conversion date starting in: (yyyy-mm-dd) (optional)
-conversion_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by a member conversion date ending in: (yyyy-mm-dd) (optional)
-register_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by a member register date starting in: (yyyy-mm-dd) (optional)
-register_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by a member register date ending in: (yyyy-mm-dd) (optional)
-membership_start_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by a membership start date from: (yyyy-mm-dd) (optional)
-membership_start_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by a membership start date to: (yyyy-mm-dd) (optional)
-membership_cancel_date_start = '2013-10-20T19:20:30+01:00' # datetime | Filter by a membership cancel date from: (yyyy-mm-dd) (optional)
-membership_cancel_date_end = '2013-10-20T19:20:30+01:00' # datetime | Filter by a membership cancel date to: (yyyy-mm-dd) (optional)
-status = 56 # int | Filter by a member state: 1 - Active (Suspendeds and Vips included), 2 - Inactive (optional)
-token_gympass = 'token_gympass_example' # str | Filter by the member gympass token gympass (optional)
-take = 50 # int | Total number of records to return. (Maximum of 50) (optional) (default to 50)
-skip = 0 # int | Total number of records to skip. (optional) (default to 0)
-ids_members = 'ids_members_example' # str | Filter by member ids. Add member ids separated by comma. Example: 1,2,3 (optional)
-only_personal = false # bool | Show only personal trainers (optional) (default to false)
-personal_type = 56 # int | Filter by personal type: 1 - Internal, 2 - External (optional)
-show_activity_data = false # bool |  (optional) (default to false)
+# Configure HTTP basic authorization
+api_instance = MembersApi()
 
 try:
     # Get members
-    api_response = api_instance.api_v1_members_get(name=name, email=email, document=document, phone=phone, conversion_date_start=conversion_date_start, conversion_date_end=conversion_date_end, register_date_start=register_date_start, register_date_end=register_date_end, membership_start_date_start=membership_start_date_start, membership_start_date_end=membership_start_date_end, membership_cancel_date_start=membership_cancel_date_start, membership_cancel_date_end=membership_cancel_date_end, status=status, token_gympass=token_gympass, take=take, skip=skip, ids_members=ids_members, only_personal=only_personal, personal_type=personal_type, show_activity_data=show_activity_data)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling MembersApi->api_v1_members_get: %s\n" % e)
+    response = api_instance.get_members(
+        name="John Doe",
+        email="john@example.com",
+        document="1234567890",
+        phone="1112341234",
+        conversion_date_start="2013-10-20T19:20:30+01:00",
+        conversion_date_end="2013-10-20T19:20:30+01:00",
+        register_date_start="2013-10-20T19:20:30+01:00",
+        register_date_end="2013-10-20T19:20:30+01:00",
+        membership_start_date_start="2013-10-20T19:20:30+01:00",
+        membership_start_date_end="2013-10-20T19:20:30+01:00",
+        membership_cancel_date_start="2013-10-20T19:20:30+01:00",
+        membership_cancel_date_end="2013-10-20T19:20:30+01:00",
+        status=1,
+        token_gympass="gympass123",
+        take=50,
+        skip=0,
+        ids_members="1,2,3",
+        only_personal=False,
+        personal_type=1,
+        show_activity_data=False
+    )
+    print(response)
+except Exception as e:
+    print(f"Exception when calling get_members: {e}")
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **name** | **str**| Filter by members name | [optional] 
- **email** | **str**| Filter by a member e-mail | [optional] 
- **document** | **str**| Filter by a member document | [optional] 
- **phone** | **str**| Filter by a member telephone or cellphone Ex.:1112341234 | [optional] 
- **conversion_date_start** | **datetime**| Filter by a member conversion date starting in: (yyyy-mm-dd) | [optional] 
- **conversion_date_end** | **datetime**| Filter by a member conversion date ending in: (yyyy-mm-dd) | [optional] 
- **register_date_start** | **datetime**| Filter by a member register date starting in: (yyyy-mm-dd) | [optional] 
- **register_date_end** | **datetime**| Filter by a member register date ending in: (yyyy-mm-dd) | [optional] 
- **membership_start_date_start** | **datetime**| Filter by a membership start date from: (yyyy-mm-dd) | [optional] 
- **membership_start_date_end** | **datetime**| Filter by a membership start date to: (yyyy-mm-dd) | [optional] 
- **membership_cancel_date_start** | **datetime**| Filter by a membership cancel date from: (yyyy-mm-dd) | [optional] 
- **membership_cancel_date_end** | **datetime**| Filter by a membership cancel date to: (yyyy-mm-dd) | [optional] 
- **status** | **int**| Filter by a member state: 1 - Active (Suspendeds and Vips included), 2 - Inactive | [optional] 
- **token_gympass** | **str**| Filter by the member gympass token gympass | [optional] 
- **take** | **int**| Total number of records to return. (Maximum of 50) | [optional] [default to 50]
- **skip** | **int**| Total number of records to skip. | [optional] [default to 0]
- **ids_members** | **str**| Filter by member ids. Add member ids separated by comma. Example: 1,2,3 | [optional] 
- **only_personal** | **bool**| Show only personal trainers | [optional] [default to false]
- **personal_type** | **int**| Filter by personal type: 1 - Internal, 2 - External | [optional] 
- **show_activity_data** | **bool**|  | [optional] [default to false]
+**name** | **str** | Filter by members name | 
+**email** | **str** | Filter by a member e-mail | 
+**document** | **str** | Filter by a member document | 
+**phone** | **str** | Filter by a member telephone or cellphone Ex.:1112341234 | 
+**conversion_date_start** | **datetime** | Filter by a member conversion date starting in: (yyyy-mm-dd) | 
+**conversion_date_end** | **datetime** | Filter by a member conversion date ending in: (yyyy-mm-dd) | 
+**register_date_start** | **datetime** | Filter by a member register date starting in: (yyyy-mm-dd) | 
+**register_date_end** | **datetime** | Filter by a member register date ending in: (yyyy-mm-dd) | 
+**membership_start_date_start** | **datetime** | Filter by a membership start date from: (yyyy-mm-dd) | 
+**membership_start_date_end** | **datetime** | Filter by a membership start date to: (yyyy-mm-dd) | 
+**membership_cancel_date_start** | **datetime** | Filter by a membership cancel date from: (yyyy-mm-dd) | 
+**membership_cancel_date_end** | **datetime** | Filter by a membership cancel date to: (yyyy-mm-dd) | 
+**status** | **int** | Filter by a member state: 1 - Active (Suspendeds and Vips included), 2 - Inactive | 
+**token_gympass** | **str** | Filter by the member gympass token gympass | 
+**take** | **int** | Total number of records to return. (Maximum of 50) | [optional] [default to 50]
+**skip** | **int** | Total number of records to skip. | [optional] [default to 0]
+**ids_members** | **str** | Filter by member ids. Add member ids separated by comma. Example: 1,2,3 | [optional]
+**only_personal** | **bool** | Show only personal trainers | [optional] [default to False]
+**personal_type** | **int** | Filter by personal type: 1 - Internal, 2 - External | [optional]
+**show_activity_data** | **bool** |  | [optional] [default to False]
 
 ### Return type
 
 [**MembersApiViewModel**](MembersApiViewModel.md)
 
-### Authorization
+# **update_member_card**
+> void update_member_card(id_member: int, card_number: str)
 
-[Basic](../README.md#Basic)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **api_v1_members_id_member_card_put**
-> api_v1_members_id_member_card_put(id_member, card_number=card_number)
-
-Update a member card number
+Update member card number
 
 ### Example
 ```python
-from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-# Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
-configuration.username = 'YOUR_USERNAME'
-configuration.password = 'YOUR_PASSWORD'
+from evo_client import MembersApi
 
-# create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-id_member = 56 # int | Filter by a member
-card_number = 'card_number_example' # str | Card number (optional)
+# Configure HTTP basic authorization
+api_instance = MembersApi()
 
 try:
-    # Update a member card number
-    api_instance.api_v1_members_id_member_card_put(id_member, card_number=card_number)
-except ApiException as e:
-    print("Exception when calling MembersApi->api_v1_members_id_member_card_put: %s\n" % e)
+    # Update member card number
+    api_instance.update_member_card(
+        id_member=56,
+        card_number="1234567890"
+    )
+except Exception as e:
+    print(f"Exception when calling update_member_card: {e}")
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id_member** | **int**| Filter by a member | 
- **card_number** | **str**| Card number | [optional] 
+**id_member** | **int** | Filter by a member | 
+**card_number** | **str** | Card number | [optional]
 
 ### Return type
 
 void (empty response body)
 
-### Authorization
-
-[Basic](../README.md#Basic)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **api_v1_members_id_member_get**
-> ClienteDetalhesBasicosApiViewModel api_v1_members_id_member_get(id_member)
+# **get_member_profile**
+> ClienteDetalhesBasicosApiViewModel get_member_profile(id_member: int)
 
 Get member profile
 
 ### Example
 ```python
-from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-# Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
-configuration.username = 'YOUR_USERNAME'
-configuration.password = 'YOUR_PASSWORD'
+from evo_client import MembersApi
 
-# create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-id_member = 56 # int | Filter by a member
+# Configure HTTP basic authorization
+api_instance = MembersApi()
 
 try:
     # Get member profile
-    api_response = api_instance.api_v1_members_id_member_get(id_member)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling MembersApi->api_v1_members_id_member_get: %s\n" % e)
+    response = api_instance.get_member_profile(id_member=56)
+    print(response)
+except Exception as e:
+    print(f"Exception when calling get_member_profile: {e}")
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id_member** | **int**| Filter by a member | 
+**id_member** | **int** | Filter by a member | 
 
 ### Return type
 
 [**ClienteDetalhesBasicosApiViewModel**](ClienteDetalhesBasicosApiViewModel.md)
 
-### Authorization
+# **reset_password**
+> MemberAuthenticateViewModel reset_password(sign_in: bool, user: str)
 
-[Basic](../README.md#Basic)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **api_v1_members_reset_password_get**
-> MemberAuthenticateViewModel api_v1_members_reset_password_get(sign_in=sign_in, user=user)
-
-Get link for reset password
+Get password reset link
 
 ### Example
 ```python
-from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-# Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
-configuration.username = 'YOUR_USERNAME'
-configuration.password = 'YOUR_PASSWORD'
+from evo_client import MembersApi
 
-# create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-sign_in = true # bool | Check true if after change password you want sign in (optional)
-user = 'user_example' # str | Filter by CPF, idMember or e-mail (optional)
+# Configure HTTP basic authorization
+api_instance = MembersApi()
 
 try:
-    # Get link for reset password
-    api_response = api_instance.api_v1_members_reset_password_get(sign_in=sign_in, user=user)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling MembersApi->api_v1_members_reset_password_get: %s\n" % e)
+    # Get password reset link
+    response = api_instance.reset_password(
+        sign_in=True,
+        user="1234567890"
+    )
+    print(response)
+except Exception as e:
+    print(f"Exception when calling reset_password: {e}")
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **sign_in** | **bool**| Check true if after change password you want sign in | [optional] 
- **user** | **str**| Filter by CPF, idMember or e-mail | [optional] 
+**sign_in** | **bool** | Check true if after change password you want sign in | [optional]
+**user** | **str** | Filter by CPF, idMember or e-mail | 
 
 ### Return type
 
 [**MemberAuthenticateViewModel**](MemberAuthenticateViewModel.md)
 
-### Authorization
-
-[Basic](../README.md#Basic)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **api_v1_members_services_get**
-> list[MemberServiceViewModel] api_v1_members_services_get(id_member=id_member)
+# **get_member_services**
+> list[MemberServiceViewModel] get_member_services(id_member: int)
 
 Get member services
 
 ### Example
 ```python
-from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-# Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
-configuration.username = 'YOUR_USERNAME'
-configuration.password = 'YOUR_PASSWORD'
+from evo_client import MembersApi
 
-# create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-id_member = 56 # int | Filter by member id (optional)
+# Configure HTTP basic authorization
+api_instance = MembersApi()
 
 try:
     # Get member services
-    api_response = api_instance.api_v1_members_services_get(id_member=id_member)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling MembersApi->api_v1_members_services_get: %s\n" % e)
+    response = api_instance.get_member_services(id_member=56)
+    print(response)
+except Exception as e:
+    print(f"Exception when calling get_member_services: {e}")
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id_member** | **int**| Filter by member id | [optional] 
+**id_member** | **int** | Filter by member id | 
 
 ### Return type
 
 [**list[MemberServiceViewModel]**](MemberServiceViewModel.md)
 
-### Authorization
+# **transfer_member**
+> void transfer_member(body: ClienteTransferenciaViewModel)
 
-[Basic](../README.md#Basic)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **api_v1_members_transfer_post**
-> api_v1_members_transfer_post(body=body)
-
-
+Transfer member to another branch
 
 ### Example
 ```python
-from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-# Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
-configuration.username = 'YOUR_USERNAME'
-configuration.password = 'YOUR_PASSWORD'
+from evo_client import MembersApi
 
-# create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-body = swagger_client.ClienteTransferenciaViewModel() # ClienteTransferenciaViewModel |  (optional)
+# Configure HTTP basic authorization
+api_instance = MembersApi()
 
 try:
-    api_instance.api_v1_members_transfer_post(body=body)
-except ApiException as e:
-    print("Exception when calling MembersApi->api_v1_members_transfer_post: %s\n" % e)
+    # Transfer member to another branch
+    api_instance.transfer_member(body=ClienteTransferenciaViewModel())
+except Exception as e:
+    print(f"Exception when calling transfer_member: {e}")
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | [**ClienteTransferenciaViewModel**](ClienteTransferenciaViewModel.md)|  | [optional] 
+**body** | [**ClienteTransferenciaViewModel**](ClienteTransferenciaViewModel.md) |  | 
 
 ### Return type
 
 void (empty response body)
 
-### Authorization
-
-[Basic](../README.md#Basic)
-
-### HTTP request headers
-
- - **Content-Type**: application/json-patch+json, application/json, text/json, application/*+json
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **member_data_id_member_patch**
-> bool member_data_id_member_patch(id_member, body=body)
+# **update_member_data**
+> bool update_member_data(id_member: int, body: MemberDataViewModel)
 
 Update basic member data
 
@@ -582,35 +394,28 @@ Example body                     Body           {              {                
 
 ### Example
 ```python
-from __future__ import print_function
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-# Configure HTTP basic authorization: Basic
-configuration = swagger_client.Configuration()
-configuration.username = 'YOUR_USERNAME'
-configuration.password = 'YOUR_PASSWORD'
+from evo_client import MembersApi
 
-# create an instance of the API class
-api_instance = swagger_client.MembersApi(swagger_client.ApiClient(configuration))
-id_member = 56 # int | 
-body = swagger_client.MemberDataViewModel() # MemberDataViewModel |  (optional)
+# Configure HTTP basic authorization
+api_instance = MembersApi()
 
 try:
     # Update basic member data
-    api_response = api_instance.member_data_id_member_patch(id_member, body=body)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling MembersApi->member_data_id_member_patch: %s\n" % e)
+    response = api_instance.update_member_data(
+        id_member=56,
+        body=MemberDataViewModel()
+    )
+    print(response)
+except Exception as e:
+    print(f"Exception when calling update_member_data: {e}")
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id_member** | **int**|  | 
- **body** | [**MemberDataViewModel**](MemberDataViewModel.md)|  | [optional] 
+**id_member** | **int** |  | 
+**body** | [**MemberDataViewModel**](MemberDataViewModel.md) |  | [optional]
 
 ### Return type
 
