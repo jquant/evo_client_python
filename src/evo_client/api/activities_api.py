@@ -27,26 +27,6 @@ class ActivitiesApi:
         self.api_client = api_client or ApiClient()
         self.base_path = "/api/v1/activities"
 
-    @overload
-    def get_activities(
-        self,
-        search: Optional[str] = None,
-        branch_id: Optional[int] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        async_req: bool = True,
-    ) -> AsyncResult[Any]: ...
-
-    @overload
-    def get_activities(
-        self,
-        search: Optional[str] = None,
-        branch_id: Optional[int] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        async_req: bool = False,
-    ) -> List[AtividadeListApiViewModel]: ...
-
     def get_activities(
         self,
         search: Optional[str] = None,
@@ -74,6 +54,7 @@ class ActivitiesApi:
             response_type=List[AtividadeListApiViewModel],
             auth_settings=["Basic"],
             async_req=async_req,
+            _return_http_data_only=True,
         )
 
     @overload

@@ -1,14 +1,16 @@
 from typing import Any, Dict, Optional
 from multiprocessing.pool import ThreadPool, AsyncResult
-from multiprocessing.pool import AsyncResult
-from typing import Any
+from typing import Any, Type, Union, TypeVar, Iterable, List, overload
 import logging
 
 from .rest import RESTClient
 from ..exceptions.api_exceptions import RequestError
 from .configuration import Configuration
+from .response import RESTResponse
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
+T = TypeVar("T", bound=BaseModel)
 
 
 class RequestHandler:
@@ -24,17 +26,38 @@ class RequestHandler:
         self.pool.close()
         self.pool.join()
 
-    def execute(self, **kwargs) -> Any:
-        """Execute a synchronous request."""
-        try:
-            return self._make_request(**kwargs)
-        except Exception as e:
-            logger.error(f"Request failed: {str(e)}")
-            raise RequestError(f"Request failed: {str(e)}")
+    @overload
+    def execute(self, response_type: None, **kwargs) -> Any: ...
+    @overload
+    def execute(self, response_type: Type[T], **kwargs) -> T: ...
 
-    def execute_async(self, **kwargs) -> AsyncResult[Any]:
+    @overload
+    def execute(self, response_type: Type[Iterable[T]], **kwargs) -> List[T]: ...
+
+    def execute(
+        self, response_type: Optional[Type[T] | Type[Iterable[T]]] = None, **kwargs
+    ) -> Union[T, List[T], Any]:
+        """Execute a synchronous request."""
+        return self._make_request(response_type, **kwargs)
+
+    @overload
+    def execute_async(self, response_type: None, **kwargs) -> AsyncResult[Any]: ...
+
+    @overload
+    def execute_async(self, response_type: Type[T], **kwargs) -> AsyncResult[T]: ...
+
+    @overload
+    def execute_async(
+        self, response_type: Type[Iterable[T]], **kwargs
+    ) -> AsyncResult[List[T]]: ...
+
+    def execute_async(
+        self, response_type: Optional[Type[T] | Type[Iterable[T]]] = None, **kwargs
+    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]:
         """Execute an asynchronous request."""
-        return self.pool.apply_async(self._make_request, kwds=kwargs)
+        return self.pool.apply_async(
+            self._make_request, args=(response_type,), kwds=kwargs
+        )
 
     def _prepare_headers(self, header_params: Optional[Dict] = None) -> Dict:
         """Prepare request headers with authentication."""
@@ -54,7 +77,9 @@ class RequestHandler:
             "verify_ssl": kwargs.get("verify", self.configuration.verify_ssl),
         }
 
-    def _make_request(self, **kwargs) -> Any:
+    def _make_request(
+        self, response_type: Optional[Type[T] | Type[Iterable[T]]] = None, **kwargs
+    ) -> Union[T, List[T], Any]:
         """Make the actual HTTP request."""
         method = kwargs.get("method", "GET")
         url = self.configuration.host + kwargs.get("resource_path", "")
@@ -78,4 +103,6 @@ class RequestHandler:
         )
 
         logger.debug(f"Received response: {response.status}")
-        return response
+        if response_type:
+            return response.deserialize(response_type)
+        return response.json()
