@@ -1,7 +1,8 @@
 """Tests for the StatesApi class."""
 
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import patch, Mock
 
 from evo_client.api.states_api import StatesApi
 from evo_client.exceptions.api_exceptions import ApiException

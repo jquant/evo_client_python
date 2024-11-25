@@ -11,17 +11,19 @@
 """
 
 from __future__ import absolute_import
+
 from datetime import datetime
+
 import pytest
 
-from evo_client.models.members_basic_api_view_model import MembersBasicApiViewModel
-from evo_client.models.telefone_api_view_model import TelefoneApiViewModel
-from evo_client.models.member_membership_api_view_model import (
-    MemberMembershipApiViewModel,
-)
 from evo_client.models.member_basic_responsible_view_model import (
     MemberBasicResponsibleViewModel,
 )
+from evo_client.models.member_membership_api_view_model import (
+    MemberMembershipApiViewModel,
+)
+from evo_client.models.members_basic_api_view_model import MembersBasicApiViewModel
+from evo_client.models.telefone_api_view_model import TelefoneApiViewModel
 
 
 @pytest.fixture

@@ -1,20 +1,21 @@
 """Tests for the ActivitiesApi class."""
 
-import pytest
 from datetime import datetime
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
+
+import pytest
 
 from evo_client.api.activities_api import ActivitiesApi
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
 from evo_client.models.atividade_basico_api_view_model import (
     AtividadeBasicoApiViewModel,
 )
+from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
 from evo_client.models.atividade_sessao_participante_api_view_model import (
     AtividadeSessaoParticipanteApiViewModel,
 )
-from evo_client.models.e_status_atividade_sessao import EStatusAtividadeSessao
 from evo_client.models.e_origem_agendamento import EOrigemAgendamento
+from evo_client.models.e_status_atividade_sessao import EStatusAtividadeSessao
 
 
 @pytest.fixture

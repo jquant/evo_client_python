@@ -1,12 +1,11 @@
-from typing import Optional, List, Dict, Any, Union, overload
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
-from typing import Any
+from typing import Any, List, Optional, Union, overload
 
 from ..core.api_client import ApiClient
-from ..models.sales_view_model import SalesViewModel
 from ..models.new_sale_view_model import NewSaleViewModel
 from ..models.sales_items_view_model import SalesItemsViewModel
+from ..models.sales_view_model import SalesViewModel
 
 
 class SalesApi:
@@ -17,14 +16,12 @@ class SalesApi:
         self.base_path = "/api/v1/sales"
 
     @overload
-    def get_sale_by_id(
-        self, sale_id: int, async_req: bool = True
-    ) -> AsyncResult[Any]: ...
+    def get_sale_by_id(self, sale_id: int, async_req: bool = True) -> AsyncResult[Any]:
+        ...
 
     @overload
-    def get_sale_by_id(
-        self, sale_id: int, async_req: bool = False
-    ) -> SalesViewModel: ...
+    def get_sale_by_id(self, sale_id: int, async_req: bool = False) -> SalesViewModel:
+        ...
 
     def get_sale_by_id(
         self, sale_id: int, async_req: bool = False
@@ -44,12 +41,14 @@ class SalesApi:
     @overload
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: bool = True
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: bool = False
-    ) -> NewSaleViewModel: ...
+    ) -> NewSaleViewModel:
+        ...
 
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: bool = False
@@ -95,7 +94,8 @@ class SalesApi:
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_sales(
@@ -117,7 +117,8 @@ class SalesApi:
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: bool = False,
-    ) -> SalesViewModel: ...
+    ) -> SalesViewModel:
+        ...
 
     def get_sales(
         self,
@@ -191,12 +192,14 @@ class SalesApi:
     @overload
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: bool = True
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: bool = False
-    ) -> List[SalesItemsViewModel]: ...
+    ) -> List[SalesItemsViewModel]:
+        ...
 
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: bool = False
@@ -216,12 +219,14 @@ class SalesApi:
     @overload
     def get_sale_by_session_id(
         self, session_id: str, date: Optional[datetime] = None, async_req: bool = True
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_sale_by_session_id(
         self, session_id: str, date: Optional[datetime] = None, async_req: bool = False
-    ) -> int: ...
+    ) -> int:
+        ...
 
     def get_sale_by_session_id(
         self, session_id: str, date: Optional[datetime] = None, async_req: bool = False

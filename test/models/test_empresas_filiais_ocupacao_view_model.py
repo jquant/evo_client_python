@@ -11,7 +11,9 @@
 """
 
 from __future__ import absolute_import
+
 import pytest
+
 from evo_client.models.empresas_filiais_ocupacao_view_model import (
     EmpresasFiliaisOcupacaoViewModel,
 )

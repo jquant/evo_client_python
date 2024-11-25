@@ -11,13 +11,15 @@
 """
 
 from __future__ import absolute_import
+
 from datetime import datetime
+
 import pytest
 
-from evo_client.models.enotas_retorno import EnotasRetorno
 from evo_client.models.cliente_enotas_retorno import ClienteEnotasRetorno
-from evo_client.models.servico_enotas_retorno import ServicoEnotasRetorno
+from evo_client.models.enotas_retorno import EnotasRetorno
 from evo_client.models.metadados_enotas_retorno import MetadadosEnotasRetorno
+from evo_client.models.servico_enotas_retorno import ServicoEnotasRetorno
 
 
 @pytest.fixture

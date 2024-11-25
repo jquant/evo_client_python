@@ -11,13 +11,12 @@
 """
 
 from __future__ import absolute_import
-from datetime import datetime
 
 import pytest
+
 from evo_client.models.prospect_api_integracao_view_model import (
     ProspectApiIntegracaoViewModel,
 )
-from evo_client.exceptions.api_exceptions import ApiException
 
 
 @pytest.fixture

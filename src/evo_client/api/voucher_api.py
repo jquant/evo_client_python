@@ -1,6 +1,5 @@
-from typing import Optional, List, Dict, Any, Union, overload
 from multiprocessing.pool import AsyncResult
-from typing import Any
+from typing import Any, Dict, List, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.vouchers_resumo_api_view_model import VouchersResumoApiViewModel
@@ -24,7 +23,8 @@ class VoucherApi:
         valid: Optional[bool] = None,
         voucher_type: Optional[int] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_vouchers(
@@ -37,7 +37,8 @@ class VoucherApi:
         valid: Optional[bool] = None,
         voucher_type: Optional[int] = None,
         async_req: bool = False,
-    ) -> List[VouchersResumoApiViewModel]: ...
+    ) -> List[VouchersResumoApiViewModel]:
+        ...
 
     def get_vouchers(
         self,
@@ -96,14 +97,16 @@ class VoucherApi:
         self,
         voucher_id: int,
         async_req: bool = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_voucher_details(
         self,
         voucher_id: int,
         async_req: bool = False,
-    ) -> Dict[str, Any]: ...
+    ) -> Dict[str, Any]:
+        ...
 
     def get_voucher_details(
         self,
@@ -145,7 +148,8 @@ class VoucherApi:
         usage_limit: Optional[int] = None,
         min_value: Optional[float] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def create_voucher(
@@ -159,7 +163,8 @@ class VoucherApi:
         usage_limit: Optional[int] = None,
         min_value: Optional[float] = None,
         async_req: bool = False,
-    ) -> Dict[str, Any]: ...
+    ) -> Dict[str, Any]:
+        ...
 
     def create_voucher(
         self,

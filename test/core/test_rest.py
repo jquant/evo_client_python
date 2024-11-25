@@ -1,13 +1,15 @@
 """Tests for the RESTClient class."""
 
-import pytest
 from typing import Tuple
-from unittest.mock import patch, Mock, PropertyMock
-from evo_client.core.rest import RESTClient
-from evo_client.core.configuration import Configuration
-from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.core.response import RESTResponse
+from unittest.mock import Mock, PropertyMock, patch
+
+import pytest
 from urllib3 import Timeout
+
+from evo_client.core.configuration import Configuration
+from evo_client.core.response import RESTResponse
+from evo_client.core.rest import RESTClient
+from evo_client.exceptions.api_exceptions import ApiException
 
 
 @pytest.fixture

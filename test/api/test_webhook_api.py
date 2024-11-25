@@ -1,17 +1,18 @@
 """Tests for the WebhookApi class."""
 
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import patch, Mock
 
 from evo_client.api.webhook_api import WebhookApi
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
-from evo_client.models.w12_utils_webhook_header_view_model import (
-    W12UtilsWebhookHeaderViewModel,
-)
 from evo_client.models.w12_utils_webhook_filter_view_model import (
     W12UtilsWebhookFilterViewModel,
 )
+from evo_client.models.w12_utils_webhook_header_view_model import (
+    W12UtilsWebhookHeaderViewModel,
+)
+from evo_client.models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
 
 
 @pytest.fixture

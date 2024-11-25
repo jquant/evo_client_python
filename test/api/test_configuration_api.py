@@ -1,19 +1,20 @@
 """Tests for the ConfigurationApi class."""
 
-import pytest
-from unittest.mock import patch, Mock
 from typing import Any, Dict, List
+from unittest.mock import Mock, patch
+
+import pytest
 
 from evo_client.api.configuration_api import ConfigurationApi
 from evo_client.exceptions.api_exceptions import ApiException
+from evo_client.models.bandeiras_basico_view_model import BandeirasBasicoViewModel
+from evo_client.models.configuracao_api_view_model import ConfiguracaoApiViewModel
 from evo_client.models.empresas_filiais_gateway_view_model import (
     EmpresasFiliaisGatewayViewModel,
 )
-from evo_client.models.configuracao_api_view_model import ConfiguracaoApiViewModel
 from evo_client.models.empresas_filiais_ocupacao_view_model import (
     EmpresasFiliaisOcupacaoViewModel,
 )
-from evo_client.models.bandeiras_basico_view_model import BandeirasBasicoViewModel
 
 
 @pytest.fixture

@@ -11,11 +11,12 @@
 """
 
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 from .month_discount_view_model import MonthDiscountViewModel
-from .year_discount_view_model import YearDiscountViewModel
 from .service_discount_view_model import ServiceDiscountViewModel
+from .year_discount_view_model import YearDiscountViewModel
 
 
 class VouchersResumoApiViewModel(BaseModel):

@@ -11,6 +11,7 @@
 """
 
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 from .sales_item_view_model import SalesItemViewModel

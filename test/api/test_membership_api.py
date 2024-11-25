@@ -1,15 +1,16 @@
 """Tests for the MembershipApi class."""
 
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import patch, Mock
 
 from evo_client.api.membership_api import MembershipApi
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.w12_utils_category_membership_view_model import (
-    W12UtilsCategoryMembershipViewModel,
-)
 from evo_client.models.contratos_resumo_api_view_model import (
     ContratosResumoApiViewModel,
+)
+from evo_client.models.w12_utils_category_membership_view_model import (
+    W12UtilsCategoryMembershipViewModel,
 )
 
 

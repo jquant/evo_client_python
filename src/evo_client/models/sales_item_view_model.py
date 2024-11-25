@@ -11,10 +11,11 @@
 """
 
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
-from .installment_view_model import InstallmentViewModel
 from .differentials_view_model import DifferentialsViewModel
+from .installment_view_model import InstallmentViewModel
 
 
 class SalesItemViewModel(BaseModel):

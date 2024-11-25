@@ -1,8 +1,8 @@
 """Tests for the VoucherApi class."""
 
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import patch, Mock
-from datetime import datetime
 
 from evo_client.api.voucher_api import VoucherApi
 from evo_client.exceptions.api_exceptions import ApiException

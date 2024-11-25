@@ -1,18 +1,19 @@
 """Tests for the EmployeesApi class."""
 
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import patch, Mock
 
 from evo_client.api.employees_api import EmployeesApi
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.funcionarios_resumo_api_view_model import (
-    FuncionariosResumoApiViewModel,
+from evo_client.models.employee_api_integracao_atualizacao_view_model import (
+    EmployeeApiIntegracaoAtualizacaoViewModel,
 )
 from evo_client.models.employee_api_integracao_view_model import (
     EmployeeApiIntegracaoViewModel,
 )
-from evo_client.models.employee_api_integracao_atualizacao_view_model import (
-    EmployeeApiIntegracaoAtualizacaoViewModel,
+from evo_client.models.funcionarios_resumo_api_view_model import (
+    FuncionariosResumoApiViewModel,
 )
 
 
