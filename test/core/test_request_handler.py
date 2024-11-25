@@ -1,12 +1,12 @@
 from unittest.mock import Mock
+
 import pytest
-from evo_client.core.request_handler import RequestHandler
-from evo_client.core.configuration import Configuration
-from evo_client.core.response import RESTResponse
-from urllib3.response import BaseHTTPResponse
 from pydantic import BaseModel
-from typing import List
-import multiprocessing.pool
+from urllib3.response import BaseHTTPResponse
+
+from evo_client.core.configuration import Configuration
+from evo_client.core.request_handler import RequestHandler
+from evo_client.core.response import RESTResponse
 
 
 class TestModel(BaseModel):
