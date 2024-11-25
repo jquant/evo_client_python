@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
@@ -37,7 +37,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
   formatting:
-    uses: ./.github/workflows/black-formatter.yml
+    uses: ./.github/workflows/black-formatter.yaml
     needs: flake
 
   tests-client:
