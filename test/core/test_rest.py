@@ -7,8 +7,6 @@ import pytest
 import urllib3
 from urllib3 import Timeout, exceptions
 
-import json
-
 from evo_client.core.configuration import Configuration
 from evo_client.core.response import RESTResponse
 from evo_client.core.rest import RESTClient
