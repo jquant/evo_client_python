@@ -11,16 +11,17 @@
 """
 
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
-from .diferenciais_api_view_model import DiferenciaisApiViewModel
-from .contrato_filiais_resumo_api_view_model import ContratoFiliaisResumoApiViewModel
-from .servico_adicional_api_view_model import ServicoAdicionalApiViewModel
-from .servico_anual_api_view_model import ServicoAnualApiViewModel
 from .contrato_entradas_api_view_model import ContratoEntradasApiViewModel
+from .contrato_filiais_resumo_api_view_model import ContratoFiliaisResumoApiViewModel
 from .contratos_resumo_pagina_venda_view_model import (
     ContratosResumoPaginaVendaViewModel,
 )
+from .diferenciais_api_view_model import DiferenciaisApiViewModel
+from .servico_adicional_api_view_model import ServicoAdicionalApiViewModel
+from .servico_anual_api_view_model import ServicoAnualApiViewModel
 
 
 class ContratosResumoApiViewModel(BaseModel):

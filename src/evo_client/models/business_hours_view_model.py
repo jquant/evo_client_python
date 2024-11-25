@@ -1,10 +1,7 @@
 from datetime import datetime
-from typing import List, Optional
-from pydantic import BaseModel, Field
-import pprint
+from typing import Optional
 
-from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class BusinessHoursViewModel(BaseModel):

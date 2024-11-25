@@ -1,16 +1,16 @@
-from typing import Optional, Dict, Any, Union
 import json
 import logging
 import ssl
+from typing import Any, Dict, Optional, Union
 from urllib.parse import urlencode
 
 import certifi
 import urllib3
-from urllib3.response import HTTPResponse, BaseHTTPResponse
+from urllib3.response import BaseHTTPResponse
 
-from .response import RESTResponse
-from ..exceptions.api_exceptions import ApiException
 from ..core.configuration import Configuration
+from ..exceptions.api_exceptions import ApiException
+from .response import RESTResponse
 
 logger = logging.getLogger(__name__)
 

@@ -1,14 +1,12 @@
 from __future__ import annotations
-from typing import Optional, Dict, Any, Union, List, Type, overload
+
 import logging
 from multiprocessing.pool import AsyncResult
-from typing import Any
-from functools import lru_cache
-from typing import TypeVar
-from .request_handler import RequestHandler
-from .configuration import Configuration
+from typing import Any, Dict, List, Optional, Type, TypeVar, Union, overload
+
 from ..exceptions.api_exceptions import ApiClientError
-from multiprocessing.pool import AsyncResult
+from .configuration import Configuration
+from .request_handler import RequestHandler
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +71,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def call_api(
@@ -92,7 +91,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Any: ...
+    ) -> Any:
+        ...
 
     def call_api(
         self,
@@ -136,12 +136,12 @@ class ApiClient:
             raise
 
     @overload
-    def _execute_request(
-        self, *, async_req: bool = True, **kwargs
-    ) -> AsyncResult[Any]: ...
+    def _execute_request(self, *, async_req: bool = True, **kwargs) -> AsyncResult[Any]:
+        ...
 
     @overload
-    def _execute_request(self, *, async_req: bool = False, **kwargs) -> Any: ...
+    def _execute_request(self, *, async_req: bool = False, **kwargs) -> Any:
+        ...
 
     def _execute_request(
         self, *, async_req: bool = True, **kwargs

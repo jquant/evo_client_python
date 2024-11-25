@@ -1,14 +1,15 @@
 """Tests for the SalesApi class."""
 
-import pytest
 from datetime import datetime
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
+
+import pytest
 
 from evo_client.api.sales_api import SalesApi
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.sales_view_model import SalesViewModel
 from evo_client.models.new_sale_view_model import NewSaleViewModel
 from evo_client.models.sales_items_view_model import SalesItemsViewModel
+from evo_client.models.sales_view_model import SalesViewModel
 
 
 @pytest.fixture

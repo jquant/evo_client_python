@@ -13,13 +13,11 @@
 from __future__ import absolute_import
 
 import pytest
-from datetime import datetime
 
+from evo_client.models import EStatusAtividadeSessao
 from evo_client.models.atividade_sessao_participante_api_view_model import (
     AtividadeSessaoParticipanteApiViewModel,
 )
-from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models import EStatusAtividadeSessao
 
 
 @pytest.fixture

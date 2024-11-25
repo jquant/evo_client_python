@@ -1,7 +1,8 @@
 """Tests for the BankAccountsApi class."""
 
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import patch, Mock
 
 from evo_client.api.bank_accounts_api import BankAccountsApi
 from evo_client.exceptions.api_exceptions import ApiException

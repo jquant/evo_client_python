@@ -11,8 +11,10 @@
 """
 
 from datetime import datetime
-from pydantic import BaseModel, Field
 from typing import Optional
+
+from pydantic import BaseModel, Field
+
 from .telefone_api_view_model import TelefoneApiViewModel
 
 

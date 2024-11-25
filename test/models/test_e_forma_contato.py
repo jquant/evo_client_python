@@ -13,6 +13,7 @@
 from __future__ import absolute_import
 
 import pytest
+
 from evo_client.models.e_forma_contato import EFormaContato
 
 

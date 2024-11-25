@@ -1,6 +1,5 @@
-from typing import Optional, Union, overload
 from multiprocessing.pool import AsyncResult
-from typing import Any
+from typing import Any, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.notification_api_view_model import NotificationApiViewModel
@@ -16,12 +15,14 @@ class NotificationsApi:
     @overload
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: bool = True
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: bool = False
-    ) -> None: ...
+    ) -> None:
+        ...
 
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: bool = False

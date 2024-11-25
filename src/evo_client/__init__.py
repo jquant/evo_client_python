@@ -33,19 +33,17 @@ from .api.prospects_api import ProspectsApi
 from .api.receivables_api import ReceivablesApi
 from .api.sales_api import SalesApi
 from .api.service_api import ServiceApi
+from .api.states_api import StatesApi
 from .api.voucher_api import VoucherApi
 from .api.webhook_api import WebhookApi
 from .api.workout_api import WorkoutApi
-from .api.states_api import StatesApi
 
 # import ApiClient
 from .core.api_client import ApiClient
 from .core.configuration import Configuration
 
 # import models into sdk package
-from .models.atividade_agenda_api_view_model import (
-    AtividadeAgendaApiViewModel,
-)
+from .models.atividade_agenda_api_view_model import AtividadeAgendaApiViewModel
 from .models.atividade_basico_api_view_model import AtividadeBasicoApiViewModel
 from .models.atividade_list_api_view_model import AtividadeListApiViewModel
 from .models.atividade_lugar_reserva_api_view_model import (
@@ -55,8 +53,6 @@ from .models.atividade_lugar_reserva_view_model import AtividadeLugarReservaView
 from .models.atividade_sessao_participante_api_view_model import (
     AtividadeSessaoParticipanteApiViewModel,
 )
-from .models.e_status_atividade_sessao import EStatusAtividadeSessao
-from .models.e_origem_agendamento import EOrigemAgendamento
 from .models.bandeiras_basico_view_model import BandeirasBasicoViewModel
 from .models.bank_accounts_view_model import BankAccountsViewModel
 from .models.basic_freeze_view_model import BasicFreezeViewModel
@@ -98,7 +94,9 @@ from .models.diferenciais_api_view_model import DiferenciaisApiViewModel
 from .models.differentials_view_model import DifferentialsViewModel
 from .models.e_forma_contato import EFormaContato
 from .models.e_forma_pagamento_totem import EFormaPagamentoTotem
+from .models.e_origem_agendamento import EOrigemAgendamento
 from .models.e_status_atividade import EStatusAtividade
+from .models.e_status_atividade_sessao import EStatusAtividadeSessao
 from .models.e_tipo_contrato import ETipoContrato
 from .models.e_tipo_gateway import ETipoGateway
 from .models.employee_api_integracao_atualizacao_view_model import (
@@ -106,9 +104,7 @@ from .models.employee_api_integracao_atualizacao_view_model import (
 )
 from .models.employee_api_integracao_view_model import EmployeeApiIntegracaoViewModel
 from .models.empresas_convenios_api_view_model import EmpresasConveniosApiViewModel
-from .models.empresas_filiais_gateway_view_model import (
-    EmpresasFiliaisGatewayViewModel,
-)
+from .models.empresas_filiais_gateway_view_model import EmpresasFiliaisGatewayViewModel
 from .models.empresas_filiais_ocupacao_view_model import (
     EmpresasFiliaisOcupacaoViewModel,
 )
@@ -174,9 +170,7 @@ from .models.vouchers_resumo_api_view_model import VouchersResumoApiViewModel
 from .models.w12_utils_category_membership_view_model import (
     W12UtilsCategoryMembershipViewModel,
 )
+from .models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 from .models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from .models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
-from .models.w12_utils_webhook_filter_view_model import (
-    W12UtilsWebhookFilterViewModel,
-)
 from .models.year_discount_view_model import YearDiscountViewModel

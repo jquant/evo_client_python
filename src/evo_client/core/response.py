@@ -1,6 +1,6 @@
-from typing import Optional, Dict, Any
 import io
 import json
+from typing import Any, Dict, Optional
 
 
 class RESTResponse(io.IOBase):

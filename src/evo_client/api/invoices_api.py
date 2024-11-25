@@ -13,18 +13,15 @@
 from __future__ import absolute_import
 
 import re  # noqa: F401
-
-# python 2 and python 3 compatibility library
-import six
+from datetime import datetime
+from multiprocessing.pool import AsyncResult
+from typing import Any, List, Optional, Union, overload
 
 from evo_client.core.api_client import ApiClient
 
-from typing import List, Optional, Union, overload
-from datetime import datetime
-from multiprocessing.pool import AsyncResult
-from typing import Any
-
 from ..models.enotas_retorno import EnotasRetorno, InvoiceStatus, InvoiceType
+
+# python 2 and python 3 compatibility library
 
 
 class InvoicesApi:
@@ -49,7 +46,8 @@ class InvoicesApi:
         status_invoice: Optional[List[InvoiceStatus]] = None,
         types_invoice: Optional[List[InvoiceType]] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_invoices(
@@ -66,7 +64,8 @@ class InvoicesApi:
         status_invoice: Optional[List[InvoiceStatus]] = None,
         types_invoice: Optional[List[InvoiceType]] = None,
         async_req: bool = False,
-    ) -> EnotasRetorno: ...
+    ) -> EnotasRetorno:
+        ...
 
     def get_invoices(
         self,

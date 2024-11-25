@@ -13,6 +13,7 @@
 from __future__ import absolute_import
 
 import pytest
+
 from evo_client.models.receivables_mask_received_view_model import (
     ReceivablesMaskReceivedViewModel,
 )

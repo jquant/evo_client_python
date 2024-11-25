@@ -12,11 +12,11 @@
 
 from datetime import datetime
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
-
-from .sales_items_view_model import SalesItemsViewModel
 from .receivables_api_view_model import ReceivablesApiViewModel
+from .sales_items_view_model import SalesItemsViewModel
 
 
 class SalesViewModel(BaseModel):

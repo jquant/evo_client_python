@@ -1,29 +1,22 @@
-from typing import Optional, Dict
+from typing import Optional
+
 from ..core.response import RESTResponse
 
 
 class ApiClientError(Exception):
     """Base exception for API client errors."""
 
-    pass
-
 
 class RequestError(ApiClientError):
     """Raised when a request fails."""
-
-    pass
 
 
 class DeserializationError(ApiClientError):
     """Raised when deserialization fails."""
 
-    pass
-
 
 class ConfigurationError(ApiClientError):
     """Raised when configuration is invalid."""
-
-    pass
 
 
 class ApiException(Exception):

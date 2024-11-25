@@ -20,9 +20,7 @@ from evo_client.models.atividade_agenda_api_view_model import (
 from evo_client.models.atividade_basico_api_view_model import (
     AtividadeBasicoApiViewModel,
 )
-from evo_client.models.atividade_list_api_view_model import (
-    AtividadeListApiViewModel,
-)
+from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
 from evo_client.models.atividade_lugar_reserva_api_view_model import (
     AtividadeLugarReservaApiViewModel,
 )
@@ -32,8 +30,6 @@ from evo_client.models.atividade_lugar_reserva_view_model import (
 from evo_client.models.atividade_sessao_participante_api_view_model import (
     AtividadeSessaoParticipanteApiViewModel,
 )
-from evo_client.models.e_origem_agendamento import EOrigemAgendamento
-from evo_client.models.e_status_atividade_sessao import EStatusAtividadeSessao
 from evo_client.models.bandeiras_basico_view_model import BandeirasBasicoViewModel
 from evo_client.models.bank_accounts_view_model import BankAccountsViewModel
 from evo_client.models.basic_freeze_view_model import BasicFreezeViewModel
@@ -85,7 +81,9 @@ from evo_client.models.diferenciais_api_view_model import DiferenciaisApiViewMod
 from evo_client.models.differentials_view_model import DifferentialsViewModel
 from evo_client.models.e_forma_contato import EFormaContato
 from evo_client.models.e_forma_pagamento_totem import EFormaPagamentoTotem
+from evo_client.models.e_origem_agendamento import EOrigemAgendamento
 from evo_client.models.e_status_atividade import EStatusAtividade
+from evo_client.models.e_status_atividade_sessao import EStatusAtividadeSessao
 from evo_client.models.e_tipo_contrato import ETipoContrato
 from evo_client.models.e_tipo_gateway import ETipoGateway
 from evo_client.models.employee_api_integracao_atualizacao_view_model import (
@@ -185,11 +183,11 @@ from evo_client.models.vouchers_resumo_api_view_model import VouchersResumoApiVi
 from evo_client.models.w12_utils_category_membership_view_model import (
     W12UtilsCategoryMembershipViewModel,
 )
+from evo_client.models.w12_utils_webhook_filter_view_model import (
+    W12UtilsWebhookFilterViewModel,
+)
 from evo_client.models.w12_utils_webhook_header_view_model import (
     W12UtilsWebhookHeaderViewModel,
 )
 from evo_client.models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
-from evo_client.models.w12_utils_webhook_filter_view_model import (
-    W12UtilsWebhookFilterViewModel,
-)
 from evo_client.models.year_discount_view_model import YearDiscountViewModel

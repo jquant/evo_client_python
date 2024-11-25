@@ -4,16 +4,17 @@ Handles authentication, logging, and connection settings for API requests.
 """
 
 from __future__ import annotations
+
 import copy
 import logging
 import multiprocessing
 import sys
-import urllib3
-from dataclasses import dataclass, field
-from typing import Dict, Optional, Callable, ClassVar
-from urllib.parse import urlparse
-from pydantic import BaseModel
 from base64 import b64encode
+from dataclasses import field
+from typing import Callable, Dict, Optional
+from urllib.parse import urlparse
+
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 

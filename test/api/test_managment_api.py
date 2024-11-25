@@ -1,9 +1,10 @@
 """Tests for the ManagementApi class."""
 
-import pytest
 from datetime import datetime
-from unittest.mock import patch, Mock
 from typing import List
+from unittest.mock import Mock, patch
+
+import pytest
 
 from evo_client.api.managment_api import ManagementApi
 from evo_client.exceptions.api_exceptions import ApiException

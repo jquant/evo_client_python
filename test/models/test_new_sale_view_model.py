@@ -13,10 +13,11 @@
 from __future__ import absolute_import
 
 import pytest
-from evo_client.models.new_sale_view_model import NewSaleViewModel
-from evo_client.models.member_new_sale_view_model import MemberNewSaleViewModel
+
 from evo_client.models.card_data_view_model import CardDataViewModel
 from evo_client.models.e_forma_pagamento_totem import EFormaPagamentoTotem
+from evo_client.models.member_new_sale_view_model import MemberNewSaleViewModel
+from evo_client.models.new_sale_view_model import NewSaleViewModel
 
 
 @pytest.fixture

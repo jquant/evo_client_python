@@ -11,8 +11,9 @@
 """
 
 from __future__ import absolute_import
-from typing import Optional
+
 import pytest
+
 from evo_client.models.member_new_sale_view_model import MemberNewSaleViewModel
 
 

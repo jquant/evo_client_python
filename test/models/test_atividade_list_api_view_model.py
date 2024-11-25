@@ -13,11 +13,8 @@
 from __future__ import absolute_import
 
 import pytest
-from datetime import datetime
 
-from evo_client.models.atividade_list_api_view_model import (
-    AtividadeListApiViewModel,
-)
+from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
 from evo_client.models.publico_atividade_view_model import PublicoAtividadeViewModel
 
 

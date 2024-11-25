@@ -11,13 +11,12 @@
 """
 
 from __future__ import absolute_import
+
 from datetime import datetime
 
 import pytest
 
-from evo_client.models.clientes_ativos_view_model import (
-    ClientesAtivosViewModel,
-)
+from evo_client.models.clientes_ativos_view_model import ClientesAtivosViewModel
 
 
 @pytest.fixture
