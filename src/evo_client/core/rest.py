@@ -1,11 +1,12 @@
 import json
 import logging
 import ssl
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, TypeVar, Union
 from urllib.parse import urlencode
 
 import certifi
 import urllib3
+from pydantic import BaseModel
 from urllib3.response import BaseHTTPResponse
 
 from ..core.configuration import Configuration
@@ -13,6 +14,7 @@ from ..exceptions.api_exceptions import ApiException
 from .response import RESTResponse
 
 logger = logging.getLogger(__name__)
+T = TypeVar("T", bound=BaseModel)
 
 
 class RESTClient:
@@ -85,12 +87,7 @@ class RESTClient:
                 logger.debug("Response body: %s", response.data)
 
             if not 200 <= response.status <= 299:
-                error_response = (
-                    RESTResponse(response)
-                    if not isinstance(response, RESTResponse)
-                    else response
-                )
-                raise ApiException(http_resp=error_response)
+                raise ApiException(http_resp=response)
 
             return response
 

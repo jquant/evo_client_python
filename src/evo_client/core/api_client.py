@@ -2,7 +2,20 @@ from __future__ import annotations
 
 import logging
 from multiprocessing.pool import AsyncResult
-from typing import Any, Dict, List, Optional, Type, TypeVar, Union, overload
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    overload,
+)
+
+from pydantic import BaseModel
 
 from ..exceptions.api_exceptions import ApiClientError
 from .configuration import Configuration
@@ -10,8 +23,7 @@ from .request_handler import RequestHandler
 
 logger = logging.getLogger(__name__)
 
-
-T = TypeVar("T")
+T = TypeVar("T", bound=BaseModel)
 
 
 class ApiClient:
@@ -59,19 +71,19 @@ class ApiClient:
         self,
         resource_path: str,
         method: str,
+        response_type: None = None,
         path_params: Optional[Dict[str, Any]] = None,
         query_params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
         body: Optional[Any] = None,
         post_params: Optional[Dict[str, Any]] = None,
         files: Optional[Dict[str, str]] = None,
-        response_type: Optional[Type[T]] = None,
         auth_settings: Optional[List[str]] = None,
-        async_req: bool = True,
+        async_req: bool = False,
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> AsyncResult[Any]:
+    ) -> Union[Any, AsyncResult[Any]]:
         ...
 
     @overload
@@ -79,43 +91,104 @@ class ApiClient:
         self,
         resource_path: str,
         method: str,
+        response_type: Type[T],
         path_params: Optional[Dict[str, Any]] = None,
         query_params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
         body: Optional[Any] = None,
         post_params: Optional[Dict[str, Any]] = None,
         files: Optional[Dict[str, str]] = None,
-        response_type: Optional[Type[T]] = None,
         auth_settings: Optional[List[str]] = None,
         async_req: bool = False,
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Any:
+    ) -> Union[T, AsyncResult[T]]:
+        ...
+
+    @overload
+    def call_api(
+        self,
+        resource_path: str,
+        method: str,
+        response_type: Type[Iterable[T]],
+        path_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        body: Optional[Any] = None,
+        post_params: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, str]] = None,
+        auth_settings: Optional[List[str]] = None,
+        async_req: bool = False,
+        _return_http_data_only: bool = True,
+        _preload_content: bool = True,
+        _request_timeout: Optional[Union[float, tuple]] = None,
+    ) -> Union[List[T], AsyncResult[List[T]]]:
+        ...
+
+    @overload
+    def call_api(
+        self,
+        resource_path: str,
+        method: str,
+        response_type: Optional[Type[T] | Type[Iterable[T]]] = None,
+        path_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        body: Optional[Any] = None,
+        post_params: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, str]] = None,
+        auth_settings: Optional[List[str]] = None,
+        async_req: Literal[True] = True,
+        _return_http_data_only: bool = True,
+        _preload_content: bool = True,
+        _request_timeout: Optional[Union[float, tuple]] = None,
+    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]:
+        ...
+
+    @overload
+    def call_api(
+        self,
+        resource_path: str,
+        method: str,
+        response_type: Optional[Type[T] | Type[Iterable[T]]] = None,
+        path_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        body: Optional[Any] = None,
+        post_params: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, str]] = None,
+        auth_settings: Optional[List[str]] = None,
+        async_req: Literal[False] = False,
+        _return_http_data_only: bool = True,
+        _preload_content: bool = True,
+        _request_timeout: Optional[Union[float, tuple]] = None,
+    ) -> Union[T, List[T], Any]:
         ...
 
     def call_api(
         self,
         resource_path: str,
         method: str,
+        response_type: Optional[Type[T] | Type[Iterable[T]]] = None,
         path_params: Optional[Dict[str, Any]] = None,
         query_params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
         body: Optional[Any] = None,
         post_params: Optional[Dict[str, Any]] = None,
         files: Optional[Dict[str, str]] = None,
-        response_type: Optional[Type[T]] = None,
         auth_settings: Optional[List[str]] = None,
         async_req: bool = False,
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[T, AsyncResult[Any]]:
+    ) -> Union[T, List[T], Any, AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]:
         """
         Makes the HTTP request (synchronous or asynchronous) and returns deserialized data.
         """
-        try:
-            return self._execute_request(
+        if async_req:
+            return self.request_handler.execute_async(
+                response_type=response_type,
                 resource_path=resource_path,
                 method=method,
                 path_params=path_params,
@@ -124,28 +197,24 @@ class ApiClient:
                 body=body,
                 post_params=post_params,
                 files=files,
-                response_type=response_type,
                 auth_settings=auth_settings,
-                async_req=async_req,
                 _return_http_data_only=_return_http_data_only,
                 _preload_content=_preload_content,
                 _request_timeout=_request_timeout,
             )
-        except Exception as e:
-            logger.error(f"API call failed: {str(e)}")
-            raise
 
-    @overload
-    def _execute_request(self, *, async_req: bool = True, **kwargs) -> AsyncResult[Any]:
-        ...
-
-    @overload
-    def _execute_request(self, *, async_req: bool = False, **kwargs) -> Any:
-        ...
-
-    def _execute_request(
-        self, *, async_req: bool = True, **kwargs
-    ) -> Union[Any, AsyncResult[Any]]:
-        if async_req:
-            return self.request_handler.execute_async(**kwargs)
-        return self.request_handler.execute(**kwargs)
+        return self.request_handler.execute(
+            response_type=response_type,
+            resource_path=resource_path,
+            method=method,
+            path_params=path_params,
+            query_params=query_params,
+            headers=headers,
+            body=body,
+            post_params=post_params,
+            files=files,
+            auth_settings=auth_settings,
+            _return_http_data_only=_return_http_data_only,
+            _preload_content=_preload_content,
+            _request_timeout=_request_timeout,
+        )

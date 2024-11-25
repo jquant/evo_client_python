@@ -68,6 +68,7 @@ class ActivitiesApi:
             response_type=List[AtividadeListApiViewModel],
             auth_settings=["Basic"],
             async_req=async_req,
+            _return_http_data_only=True,
         )
 
     @overload
