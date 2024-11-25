@@ -12,6 +12,7 @@
 
 from datetime import datetime
 from typing import Optional
+
 from pydantic import BaseModel, Field
 
 from .receivables_api_sub_types_view_model import ReceivablesApiSubTypesViewModel

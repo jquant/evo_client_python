@@ -11,15 +11,16 @@
 """
 
 from __future__ import absolute_import
+
 from datetime import datetime
 
 import pytest
 
-from evo_client.models.prospects_resumo_api_view_model import (
-    ProspectsResumoApiViewModel,
-)
 from evo_client.models.prospect_responsavel_resumo_api_view_model import (
     ProspectResponsavelResumoApiViewModel,
+)
+from evo_client.models.prospects_resumo_api_view_model import (
+    ProspectsResumoApiViewModel,
 )
 
 

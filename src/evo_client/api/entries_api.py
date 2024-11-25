@@ -13,18 +13,15 @@
 from __future__ import absolute_import
 
 import re  # noqa: F401
-
-# python 2 and python 3 compatibility library
-import six
+from datetime import datetime
+from multiprocessing.pool import AsyncResult
+from typing import Any, List, Optional, Union, overload
 
 from evo_client.core.api_client import ApiClient
 
-from typing import Any, List, Optional, Union, overload
-from datetime import datetime
-from multiprocessing.pool import AsyncResult
-
-
 from ..models.entradas_resumo_api_view_model import EntradasResumoApiViewModel
+
+# python 2 and python 3 compatibility library
 
 
 class EntriesApi:
@@ -44,7 +41,8 @@ class EntriesApi:
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_entries(
@@ -56,7 +54,8 @@ class EntriesApi:
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
         async_req: bool = False,
-    ) -> List[EntradasResumoApiViewModel]: ...
+    ) -> List[EntradasResumoApiViewModel]:
+        ...
 
     def get_entries(
         self,
@@ -115,7 +114,8 @@ class EntriesApi:
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_member_entries(
@@ -124,7 +124,8 @@ class EntriesApi:
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> List[EntradasResumoApiViewModel]: ...
+    ) -> List[EntradasResumoApiViewModel]:
+        ...
 
     def get_member_entries(
         self,
@@ -152,12 +153,14 @@ class EntriesApi:
     @overload
     def get_entry_by_id(
         self, entry_id: int, async_req: bool = True
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_entry_by_id(
         self, entry_id: int, async_req: bool = False
-    ) -> Optional[EntradasResumoApiViewModel]: ...
+    ) -> Optional[EntradasResumoApiViewModel]:
+        ...
 
     def get_entry_by_id(
         self, entry_id: int, async_req: bool = False

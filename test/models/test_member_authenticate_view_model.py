@@ -11,7 +11,9 @@
 """
 
 from __future__ import absolute_import
+
 import pytest
+
 from evo_client.models.member_authenticate_view_model import MemberAuthenticateViewModel
 
 

@@ -1,22 +1,13 @@
-import pprint
-
-from enum import IntEnum
 from datetime import datetime
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
-
-from .periodizacao_api_view_model import PeriodizacaoApiViewModel
-from .e_status_atividade import EStatusAtividade
-
-
-from enum import Enum
-from pydantic import BaseModel
-
+from .atividade_lugar_reserva_view_model import AtividadeLugarReservaViewModel
 from .atividade_sessao_participante_api_view_model import (
     AtividadeSessaoParticipanteApiViewModel,
 )
-from .atividade_lugar_reserva_view_model import AtividadeLugarReservaViewModel
+from .e_status_atividade import EStatusAtividade
 
 
 class AtividadeBasicoApiViewModel(BaseModel):

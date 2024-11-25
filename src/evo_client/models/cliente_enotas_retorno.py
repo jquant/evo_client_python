@@ -11,6 +11,7 @@
 """
 
 from typing import Optional
+
 from pydantic import BaseModel, Field
 
 from .endereco_enotas_retorno import EnderecoEnotasRetorno

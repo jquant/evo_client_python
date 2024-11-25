@@ -1,12 +1,10 @@
-from typing import Any, Dict, Optional
-from multiprocessing.pool import ThreadPool, AsyncResult
-from multiprocessing.pool import AsyncResult
-from typing import Any
 import logging
+from multiprocessing.pool import AsyncResult, ThreadPool
+from typing import Any, Dict, Optional
 
-from .rest import RESTClient
 from ..exceptions.api_exceptions import RequestError
 from .configuration import Configuration
+from .rest import RESTClient
 
 logger = logging.getLogger(__name__)
 

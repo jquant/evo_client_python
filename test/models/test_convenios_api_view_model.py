@@ -11,9 +11,9 @@
 """
 
 from __future__ import absolute_import
-from typing import Optional
 
 import pytest
+
 from evo_client.models.convenios_api_view_model import ConveniosApiViewModel
 
 

@@ -11,15 +11,16 @@
 """
 
 from __future__ import absolute_import
+
 from datetime import datetime
 
 import pytest
 
-from evo_client.models.contratos_cancelados_resumo_api_view_model import (
-    ContratosCanceladosResumoApiViewModel,
-)
 from evo_client.models.contratos_cancelados_parcelas_api_view_model import (
     ContratosCanceladosParcelasApiViewModel,
+)
+from evo_client.models.contratos_cancelados_resumo_api_view_model import (
+    ContratosCanceladosResumoApiViewModel,
 )
 from evo_client.models.dados_contrato_trasnferencia_api_view_model import (
     DadosContratoTrasnferenciaApiViewModel,

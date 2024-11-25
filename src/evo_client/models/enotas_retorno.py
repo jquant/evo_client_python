@@ -11,13 +11,14 @@
 """
 
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, Field
 from enum import IntEnum
+from typing import Optional
+
+from pydantic import BaseModel, Field
 
 from .cliente_enotas_retorno import ClienteEnotasRetorno
-from .servico_enotas_retorno import ServicoEnotasRetorno
 from .metadados_enotas_retorno import MetadadosEnotasRetorno
+from .servico_enotas_retorno import ServicoEnotasRetorno
 
 
 class InvoiceStatus(IntEnum):

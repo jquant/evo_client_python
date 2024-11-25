@@ -11,19 +11,20 @@
 """
 
 from __future__ import absolute_import
+
 from datetime import datetime
 
 import pytest
 
-from evo_client.models.receivables_api_view_model import ReceivablesApiViewModel
+from evo_client.models.log_tef_api_view_model import LogTefApiViewModel
 from evo_client.models.receivables_api_sub_types_view_model import (
     ReceivablesApiSubTypesViewModel,
 )
+from evo_client.models.receivables_api_view_model import ReceivablesApiViewModel
+from evo_client.models.receivables_credit_details import ReceivablesCreditDetails
 from evo_client.models.receivables_invoice_api_view_model import (
     ReceivablesInvoiceApiViewModel,
 )
-from evo_client.models.log_tef_api_view_model import LogTefApiViewModel
-from evo_client.models.receivables_credit_details import ReceivablesCreditDetails
 
 
 @pytest.fixture

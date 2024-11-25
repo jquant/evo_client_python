@@ -11,10 +11,12 @@
 """
 
 from typing import Optional
+
 from pydantic import BaseModel, Field
-from .member_new_sale_view_model import MemberNewSaleViewModel
+
 from .card_data_view_model import CardDataViewModel
 from .e_forma_pagamento_totem import EFormaPagamentoTotem
+from .member_new_sale_view_model import MemberNewSaleViewModel
 
 
 class NewSaleViewModel(BaseModel):

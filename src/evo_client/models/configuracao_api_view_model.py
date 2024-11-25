@@ -1,10 +1,7 @@
-from typing import Optional
-from pydantic import BaseModel, Field
-from typing import Optional
-import pprint
-
 from datetime import datetime
 from typing import List, Optional
+
+from pydantic import BaseModel, Field
 
 from .business_hours_view_model import BusinessHoursViewModel
 

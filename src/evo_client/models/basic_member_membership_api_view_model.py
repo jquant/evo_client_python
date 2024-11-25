@@ -12,6 +12,7 @@
 
 from datetime import datetime
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 from .basic_freeze_view_model import BasicFreezeViewModel

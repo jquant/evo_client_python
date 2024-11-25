@@ -12,10 +12,11 @@
 
 from datetime import datetime
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
-from .freeze_view_model import FreezeViewModel
 from .bonus_session_view_model import BonusSessionViewModel
+from .freeze_view_model import FreezeViewModel
 
 
 class MemberMembershipApiViewModel(BaseModel):
