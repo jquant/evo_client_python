@@ -1,9 +1,11 @@
-from unittest.mock import Mock
-import pytest
-from evo_client.core.response import RESTResponse
-from urllib3.response import BaseHTTPResponse
-from pydantic import BaseModel
 from typing import List
+from unittest.mock import Mock
+
+import pytest
+from pydantic import BaseModel
+from urllib3.response import BaseHTTPResponse
+
+from evo_client.core.response import RESTResponse
 
 
 class SomeBaseModel(BaseModel):
