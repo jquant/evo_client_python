@@ -17,7 +17,6 @@ from typing import (
 
 from pydantic import BaseModel
 
-from ..exceptions.api_exceptions import ApiClientError
 from .configuration import Configuration
 from .request_handler import RequestHandler
 
@@ -78,7 +77,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[Any, AsyncResult[Any]]: ...
+    ) -> Union[Any, AsyncResult[Any]]:
+        ...
 
     @overload
     def call_api(
@@ -97,7 +97,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[T, AsyncResult[T]]: ...
+    ) -> Union[T, AsyncResult[T]]:
+        ...
 
     @overload
     def call_api(
@@ -116,7 +117,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[List[T], AsyncResult[List[T]]]: ...
+    ) -> Union[List[T], AsyncResult[List[T]]]:
+        ...
 
     @overload
     def call_api(
@@ -135,7 +137,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]: ...
+    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]:
+        ...
 
     @overload
     def call_api(
@@ -154,7 +157,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[T, List[T], Any]: ...
+    ) -> Union[T, List[T], Any]:
+        ...
 
     def call_api(
         self,
