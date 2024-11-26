@@ -41,7 +41,7 @@ def test_create_pool_manager_with_proxy():
 
 def test_create_pool_manager_with_cert_file():
     """Test creating a pool manager with a cert file."""
-    config = Configuration(cert_file="cert.pem")
+    config = Configuration(cert_file="cert.pem", key_file="key.pem")
     rest_client = RESTClient(configuration=config)
     assert isinstance(
         rest_client.pool_manager, (urllib3.ProxyManager, urllib3.PoolManager)
