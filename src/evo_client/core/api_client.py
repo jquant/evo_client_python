@@ -37,7 +37,6 @@ class ApiClient:
         cookie: Optional[str] = None,
     ):
         self.configuration = configuration or Configuration()
-        self.validate_configuration()
 
         self.request_handler = RequestHandler(self.configuration)
 
@@ -62,10 +61,6 @@ class ApiClient:
     def user_agent(self, value: str) -> None:
         self.default_headers["User-Agent"] = value
 
-    def validate_configuration(self) -> None:
-        if not self.configuration.host:
-            raise ApiClientError("Host URL is required")
-
     @overload
     def call_api(
         self,
@@ -83,8 +78,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[Any, AsyncResult[Any]]:
-        ...
+    ) -> Union[Any, AsyncResult[Any]]: ...
 
     @overload
     def call_api(
@@ -103,8 +97,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[T, AsyncResult[T]]:
-        ...
+    ) -> Union[T, AsyncResult[T]]: ...
 
     @overload
     def call_api(
@@ -123,8 +116,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[List[T], AsyncResult[List[T]]]:
-        ...
+    ) -> Union[List[T], AsyncResult[List[T]]]: ...
 
     @overload
     def call_api(
@@ -143,8 +135,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]:
-        ...
+    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]: ...
 
     @overload
     def call_api(
@@ -163,8 +154,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[T, List[T], Any]:
-        ...
+    ) -> Union[T, List[T], Any]: ...
 
     def call_api(
         self,
