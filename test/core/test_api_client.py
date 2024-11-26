@@ -6,7 +6,6 @@ import pytest
 
 from evo_client.core.api_client import ApiClient
 from evo_client.core.configuration import Configuration
-from evo_client.exceptions.api_exceptions import ApiClientError
 
 
 @pytest.fixture

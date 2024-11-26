@@ -1,6 +1,7 @@
 import pytest
-from evo_client.core.configuration import Configuration
 from pydantic import ValidationError
+
+from evo_client.core.configuration import Configuration
 
 
 @pytest.fixture
