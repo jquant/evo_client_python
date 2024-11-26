@@ -5,7 +5,6 @@ import pytest
 import requests
 from pydantic import BaseModel
 
-
 from evo_client.core.response import RESTResponse
 from evo_client.exceptions.api_exceptions import ApiException
 
