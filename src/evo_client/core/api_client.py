@@ -17,7 +17,6 @@ from typing import (
 
 from pydantic import BaseModel
 
-from ..exceptions.api_exceptions import ApiClientError
 from .configuration import Configuration
 from .request_handler import RequestHandler
 
@@ -37,7 +36,6 @@ class ApiClient:
         cookie: Optional[str] = None,
     ):
         self.configuration = configuration or Configuration()
-        self.validate_configuration()
 
         self.request_handler = RequestHandler(self.configuration)
 
@@ -61,10 +59,6 @@ class ApiClient:
     @user_agent.setter
     def user_agent(self, value: str) -> None:
         self.default_headers["User-Agent"] = value
-
-    def validate_configuration(self) -> None:
-        if not self.configuration.host:
-            raise ApiClientError("Host URL is required")
 
     @overload
     def call_api(

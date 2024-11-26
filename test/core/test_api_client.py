@@ -40,8 +40,25 @@ def test_api_client_validate_configuration():
     with pytest.raises(
         ValueError, match="Value error, Invalid host URL format: Invalid host URL forma"
     ):
-        api_client = ApiClient(configuration=Configuration(host=""))
-        api_client.validate_configuration()
+        ApiClient(configuration=Configuration(host=""))
+
+
+def test_call_api_get_request_with(api_client: ApiClient, mock_request_handler: Mock):
+    """Test making a GET request using call_api."""
+    mock_request_handler.execute.return_value = {"key": "value"}
+
+    with api_client:
+        result = api_client.call_api(
+            resource_path="/test",
+            method="GET",
+            async_req=False,
+        )
+
+        assert result == {"key": "value"}
+        mock_request_handler.execute.assert_called_once()
+        args = mock_request_handler.execute.call_args[1]
+        assert args["method"] == "GET"
+        assert args["resource_path"] == "/test"
 
 
 def test_call_api_get_request(api_client: ApiClient, mock_request_handler: Mock):
