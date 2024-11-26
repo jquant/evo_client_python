@@ -1,6 +1,6 @@
 """Tests for the RESTClient class."""
 
-from typing import Any, Tuple
+from typing import Tuple
 from unittest.mock import Mock, patch
 
 import pytest

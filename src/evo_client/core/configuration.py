@@ -8,11 +8,11 @@ from __future__ import annotations
 import logging
 import multiprocessing
 import sys
-from base64 import b64encode
 from typing import Callable, Dict, Optional
 from urllib.parse import urlparse
-from requests.auth import HTTPBasicAuth
+
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
+from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger(__name__)
 

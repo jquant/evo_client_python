@@ -1,8 +1,8 @@
 from unittest.mock import Mock
 
 import pytest
-from pydantic import BaseModel
 import requests
+from pydantic import BaseModel
 
 from evo_client.core.configuration import Configuration
 from evo_client.core.request_handler import RequestHandler
