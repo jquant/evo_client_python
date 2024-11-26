@@ -6,7 +6,6 @@ import pytest
 
 from evo_client.core.api_client import ApiClient
 from evo_client.core.configuration import Configuration
-from evo_client.exceptions.api_exceptions import ApiClientError
 
 
 @pytest.fixture
@@ -38,10 +37,11 @@ def test_api_client_with_custom_headers():
 
 def test_api_client_validate_configuration():
     """Test validating configuration in ApiClient."""
-    with pytest.raises(ApiClientError) as exc_info:
+    with pytest.raises(
+        ValueError, match="Value error, Invalid host URL format: Invalid host URL forma"
+    ):
         api_client = ApiClient(configuration=Configuration(host=""))
         api_client.validate_configuration()
-    assert str(exc_info.value) == "Host URL is required"
 
 
 def test_call_api_get_request(api_client: ApiClient, mock_request_handler: Mock):

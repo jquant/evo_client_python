@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from urllib3.response import BaseHTTPResponse
 
 from evo_client.core.response import RESTResponse
+from evo_client.exceptions.api_exceptions import ApiException
 
 
 class SomeBaseModel(BaseModel):
@@ -132,3 +133,24 @@ def test_deserialize_list_of_models():
     assert all(isinstance(item, TestModel) for item in result)
     assert result[0].id == 1
     assert result[1].name == "test2"
+
+
+def test_error_handling():
+    mock_response = Mock(spec=BaseHTTPResponse)
+    mock_response.data = b'{"id": 1, "name": "test"}'
+    mock_response.headers = {"Content-Type": "application/json"}
+    mock_response.status = 500
+    mock_response.reason = "Some error message"
+    rest_response = RESTResponse(mock_response)
+
+    exception = ApiException(http_resp=rest_response)
+
+    with pytest.raises(ApiException) as exc_info:
+        raise exception
+
+    assert str(exc_info.value) == (
+        "(500)\n"
+        "Reason: Some error message\n"
+        "HTTP response headers: {'Content-Type': 'application/json'}\n"
+        'HTTP response body: b\'{"id": 1, "name": "test"}\''
+    )

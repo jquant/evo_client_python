@@ -41,7 +41,7 @@ def test_create_pool_manager_with_proxy():
 
 def test_create_pool_manager_with_cert_file():
     """Test creating a pool manager with a cert file."""
-    config = Configuration(cert_file="cert.pem")
+    config = Configuration(cert_file="cert.pem", key_file="key.pem")
     rest_client = RESTClient(configuration=config)
     assert isinstance(
         rest_client.pool_manager, (urllib3.ProxyManager, urllib3.PoolManager)
@@ -206,7 +206,8 @@ def test_execute_request_with_body_exception(
     """Test executing a request with a body."""
     mock_pool_manager = rest_client[1]
     mock_pool_manager.return_value.request.side_effect = ApiException(
-        status=500, reason="Request failed"
+        status=500,
+        reason="Request failed",
     )
 
     with pytest.raises(ApiException) as exc_info:

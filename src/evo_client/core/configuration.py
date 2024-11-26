@@ -5,16 +5,14 @@ Handles authentication, logging, and connection settings for API requests.
 
 from __future__ import annotations
 
-import copy
 import logging
 import multiprocessing
 import sys
 from base64 import b64encode
-from dataclasses import field
 from typing import Callable, Dict, Optional
 from urllib.parse import urlparse
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
 logger = logging.getLogger(__name__)
 
@@ -23,88 +21,78 @@ class Configuration(BaseModel):
     """Configuration settings for the API client."""
 
     # Base settings with validation
-    host: str = field(default="https://evo-integracao-api.w12app.com.br")
+    host: str = Field(
+        default="https://evo-integracao-api.w12app.com.br", validate_default=True
+    )
     temp_folder_path: Optional[str] = None
-    timeout: float = field(default=60.0, metadata={"min_value": 0.1})
+    timeout: float = Field(default=60.0, validate_default=True)
 
     # Authentication
-    api_key: Dict[str, str] = field(default_factory=dict)
-    api_key_prefix: Dict[str, str] = field(default_factory=dict)
+    api_key: Dict[str, str] = Field(default_factory=dict)
+    api_key_prefix: Dict[str, str] = Field(default_factory=dict)
     refresh_api_key_hook: Optional[Callable[["Configuration"], None]] = None
     username: str = ""
     password: str = ""
 
-    # Logging
-    logger_format: str = "%(asctime)s %(levelname)s %(message)s"
-    logger_file: Optional[str] = None
-    debug: bool = False
-
     # SSL/TLS
     verify_ssl: bool = True
     ssl_ca_cert: Optional[str] = None
-    cert_file: Optional[str] = None
-    key_file: Optional[str] = None
+    cert_file: Optional[str] = Field(default=None, validate_default=True)
+    key_file: Optional[str] = Field(default=None, validate_default=True)
     assert_hostname: Optional[bool] = None
 
     # Connection
-    connection_pool_maxsize: int = field(
+    connection_pool_maxsize: int = Field(
         default_factory=lambda: multiprocessing.cpu_count() * 5
     )
     proxy: Optional[str] = None
     safe_chars_for_path_param: str = ""
 
-    def __call__(self) -> Configuration:
-        if self._default_instance is None:
-            self._default_instance = self
-        assert self._default_instance is not None
-        return copy.copy(self._default_instance)
-
-    def set_default(self, default: Configuration) -> None:
-        """Set default configuration instance."""
-        self._default_instance = copy.copy(default)
-
-    def __post_init__(self):
-        """Initialize logging configuration and validate settings."""
-        self._validate_settings()
-        self._setup_logging()
-
-    def _validate_settings(self) -> None:
-        """Validate configuration settings."""
-        # Validate host URL
+    @field_validator("host")
+    @classmethod
+    def validate_host_format(cls, v: str) -> str:
+        """Validate host URL format."""
         try:
-            parsed = urlparse(self.host)
+            parsed = urlparse(v)
             if not all([parsed.scheme, parsed.netloc]):
                 raise ValueError("Invalid host URL format")
         except Exception as e:
-            raise ValueError(f"Invalid host URL: {e}")
+            raise ValueError(f"Invalid host URL format: {e}")
+        return v
 
-        # Validate timeout
-        if self.timeout <= 0:
+    @field_validator("timeout")
+    @classmethod
+    def validate_timeout_positive(cls, v: float) -> float:
+        """Validate timeout is positive."""
+        if v <= 0:
             raise ValueError("Timeout must be positive")
+        return v
 
-        # Validate SSL settings
-        if self.cert_file and not self.key_file:
-            raise ValueError("key_file is required when cert_file is provided")
+    @field_validator("cert_file", "key_file")
+    @classmethod
+    def validate_cert_key_files(
+        cls, v: Optional[str], info: ValidationInfo
+    ) -> Optional[str]:
+        """Validate cert_file and key_file are provided together."""
+        field_name = info.field_name
+        other_field = "key_file" if field_name == "cert_file" else "cert_file"
 
-    def _setup_logging(self) -> None:
-        """Configure logging handlers and formatters."""
-        self.logger_formatter = logging.Formatter(self.logger_format)
-        self._configure_logger_handlers()
-        self._set_debug_level()
+        # If we're setting a value
+        print(info.data)
+        if other_field in info.data:
+            if v is not None:
+                # Check if the other field has a value
+                if info.data[other_field] is None:
+                    raise ValueError(
+                        f"{other_field} is required when {field_name} is provided"
+                    )
+            else:
+                if info.data[other_field] is not None:
+                    raise ValueError(
+                        f"{field_name} is required when {other_field} is provided"
+                    )
 
-    def _configure_logger_handlers(self) -> None:
-        """Set up file or stream handlers based on configuration."""
-        if self.logger_file:
-            handler = logging.FileHandler(self.logger_file)
-        else:
-            handler = logging.StreamHandler()
-
-        handler.setFormatter(self.logger_formatter)
-        logger.addHandler(handler)
-
-    def _set_debug_level(self) -> None:
-        """Set logging level based on debug setting."""
-        logger.setLevel(logging.DEBUG if self.debug else logging.WARNING)
+        return v
 
     def get_api_key_with_prefix(self, identifier: str) -> Optional[str]:
         """Get API key with optional prefix."""
