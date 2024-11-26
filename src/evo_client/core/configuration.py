@@ -11,7 +11,7 @@ import sys
 from base64 import b64encode
 from typing import Callable, Dict, Optional
 from urllib.parse import urlparse
-
+from requests.auth import HTTPBasicAuth
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
 logger = logging.getLogger(__name__)
@@ -108,13 +108,12 @@ class Configuration(BaseModel):
             return key
         return None
 
-    def get_basic_auth_token(self) -> str:
+    def get_basic_auth_token(self) -> Optional[HTTPBasicAuth]:
         """Get HTTP basic authentication header."""
         if self.username or self.password:
-            credentials = f"{self.username}:{self.password}"
-            encoded_credentials = b64encode(credentials.encode("utf-8")).decode("utf-8")
-            return encoded_credentials
-        return ""
+            credentials = HTTPBasicAuth(self.username, self.password)
+            return credentials
+        return None
 
     def auth_settings(self) -> Dict[str, Dict]:
         """Get authentication settings dictionary."""

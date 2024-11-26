@@ -10,7 +10,7 @@ def default_configuration():
     return Configuration()
 
 
-def test_default_configuration_initialization(default_configuration):
+def test_default_configuration_initialization(default_configuration: Configuration):
     """Test initializing default configuration."""
     config = default_configuration
     assert config.host == "https://evo-integracao-api.w12app.com.br"
@@ -18,7 +18,7 @@ def test_default_configuration_initialization(default_configuration):
     assert config.verify_ssl is True
 
 
-def test_get_api_key_with_prefix_with_credentials(default_configuration):
+def test_get_api_key_with_prefix_with_credentials(default_configuration: Configuration):
     """Test getting API key with prefix."""
     default_configuration.api_key = {"ApiKey": "12345"}
     default_configuration.api_key_prefix = {"ApiKey": "Bearer"}
@@ -26,12 +26,14 @@ def test_get_api_key_with_prefix_with_credentials(default_configuration):
     assert api_key_with_prefix == "Bearer 12345"
 
 
-def test_get_basic_auth_token_with_credentials(default_configuration):
+def test_get_basic_auth_token_with_credentials(default_configuration: Configuration):
     """Test getting basic auth token."""
     default_configuration.username = "user"
     default_configuration.password = "pass"
-    basic_auth_token = default_configuration.get_basic_auth_token()
-    assert basic_auth_token == "dXNlcjpwYXNz"
+    basic_auth = default_configuration.get_basic_auth_token()
+    assert basic_auth is not None
+    assert basic_auth.username == "user"
+    assert basic_auth.password == "pass"
 
 
 def test_get_api_key_with_prefix():
@@ -45,10 +47,13 @@ def test_get_api_key_with_prefix():
 def test_get_basic_auth_token():
     """Test getting basic auth token."""
     config = Configuration(username="user", password="pass")
-    assert config.get_basic_auth_token() == "dXNlcjpwYXNz"
+    basic_auth = config.get_basic_auth_token()
+    assert basic_auth is not None
+    assert basic_auth.username == "user"
+    assert basic_auth.password == "pass"
 
     config = Configuration(username="", password="")
-    assert config.get_basic_auth_token() == ""
+    assert config.get_basic_auth_token() is None
 
 
 def test_refresh_api_key_hook():
@@ -81,8 +86,12 @@ def test_auth_settings(default_configuration):
     default_configuration.api_key = {"ApiKey": "12345"}
     default_configuration.api_key_prefix = {"ApiKey": "Bearer"}
     auth_settings = default_configuration.auth_settings()
+
     assert "Basic" in auth_settings
-    assert auth_settings["Basic"]["value"] == "dXNlcjpwYXNz"
+    basic_auth = auth_settings["Basic"]["value"]
+    assert basic_auth.username == "user"
+    assert basic_auth.password == "pass"
+
     assert "ApiKey" in auth_settings
     assert auth_settings["ApiKey"]["value"] == "Bearer 12345"
 
