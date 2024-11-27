@@ -28,13 +28,13 @@ jobs:
           python -m pip install --upgrade autoflake
       - name: Removing unused variables and imports
         run: |
-          autoflake src/ tests/ --remove-unused-variables --remove-all-unused-imports --ignore-init-module-imports --recursive --in-place
+          autoflake src/ test/ --remove-unused-variables --remove-all-unused-imports --ignore-init-module-imports --recursive --in-place
 
       # https://github.com/PyCQA/isort
       # https://github.com/isort/isort-action
       - uses: isort/isort-action@master
         with:
-          sort-paths: "src/ tests/"
+          sort-paths: "src/ test/"
           configuration: "--atomic"
 
       # https://github.com/rickstaa/action-black/
@@ -42,7 +42,7 @@ jobs:
         uses: rickstaa/action-black@v1
         id: action_black
         with:
-          black_args: "src/ tests/"
+          black_args: "src/ test/"
 
       - name: Set env.BRANCH
         run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
