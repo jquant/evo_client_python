@@ -39,6 +39,8 @@ jobs:
   formatting:
     uses: ./.github/workflows/black-formatter.yaml
     needs: flake
+    secrets:
+      BLACK_FORMATTER_PAT: ${{ secrets.PAT }}
 
   tests-client:
     name: Run evo_client Tests

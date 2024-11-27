@@ -2,6 +2,9 @@ name: Code Formatter
 
 on:
   workflow_call:
+    secrets:
+      BLACK_FORMATTER_PAT:
+        required: true
 
 jobs:
   build:
@@ -9,13 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set env.BRANCH
-        run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
 
       - name: Checkout repo
-        uses: actions/checkout@v4 
-        with:
-          repository: ${{ github.repository }}
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -29,13 +28,13 @@ jobs:
           python -m pip install --upgrade autoflake
       - name: Removing unused variables and imports
         run: |
-          autoflake src/ test/ --remove-unused-variables --remove-all-unused-imports --ignore-init-module-imports --recursive --in-place
+          autoflake src/ tests/ --remove-unused-variables --remove-all-unused-imports --ignore-init-module-imports --recursive --in-place
 
       # https://github.com/PyCQA/isort
       # https://github.com/isort/isort-action
       - uses: isort/isort-action@master
         with:
-          sort-paths: "src/ test/"
+          sort-paths: "src/ tests/"
           configuration: "--atomic"
 
       # https://github.com/rickstaa/action-black/
@@ -43,18 +42,22 @@ jobs:
         uses: rickstaa/action-black@v1
         id: action_black
         with:
-          black_args: "src/ test/"
+          black_args: "src/ tests/"
+
+      - name: Set env.BRANCH
+        run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
 
       - name: Create Pull Request
         id: cpr
         if: steps.action_black.outputs.is_formatted == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
-          # token criado no jquantinho
-          # https://github.com/peter-evans/create-pull-request/issues/48#issuecomment-537478081
-          token: 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
+          token: ${{ secrets.BLACK_FORMATTER_PAT }}
           title: "Format Python code with psf/black push"
+          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           commit-message: ":art: Format Python code with psf/black"
+          delete-branch: true
           body: |
             There appear to be some python formatting errors in ${{ github.sha }}. This pull request
             uses the [psf/black](https://github.com/psf/black) formatter to fix these issues.
