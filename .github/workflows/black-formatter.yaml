@@ -52,7 +52,7 @@ jobs:
         with:
           # token criado no jquantinho
           # https://github.com/peter-evans/create-pull-request/issues/48#issuecomment-537478081
-          token: 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
+          token: ${{ secrets.PAT }}
           title: "Format Python code with psf/black push"
           commit-message: ":art: Format Python code with psf/black"
           body: |
