@@ -9,24 +9,53 @@ from ..models.sales_view_model import SalesViewModel
 
 
 class SalesApi:
-    """Sales API client for EVO API."""
+    """Sales API client for EVO API.
+    
+    This class provides methods to interact with the sales endpoints of the EVO API,
+    including creating sales, retrieving sale information, and managing sale items.
+    
+    Args:
+        api_client (Optional[ApiClient]): The API client instance to use.
+            If not provided, a new instance will be created.
+    """
 
     def __init__(self, api_client: Optional[ApiClient] = None):
+        """Initialize the Sales API client.
+
+        Args:
+            api_client (Optional[ApiClient]): The API client instance to use.
+                If not provided, a new instance will be created.
+        """
         self.api_client = api_client or ApiClient()
         self.base_path = "/api/v1/sales"
 
     @overload
-    def get_sale_by_id(self, sale_id: int, async_req: bool = True) -> AsyncResult[Any]:
-        ...
+    def get_sale_by_id(self, sale_id: int, async_req: bool = True) -> AsyncResult[Any]: ...
 
     @overload
-    def get_sale_by_id(self, sale_id: int, async_req: bool = False) -> SalesViewModel:
-        ...
+    def get_sale_by_id(self, sale_id: int, async_req: bool = False) -> SalesViewModel: ...
 
     def get_sale_by_id(
         self, sale_id: int, async_req: bool = False
     ) -> Union[SalesViewModel, AsyncResult[Any]]:
-        """Get sale by ID."""
+        """Retrieve a specific sale by its ID.
+
+        Args:
+            sale_id (int): The unique identifier of the sale to retrieve.
+            async_req (bool, optional): Execute request asynchronously. Defaults to False.
+
+        Returns:
+            Union[SalesViewModel, AsyncResult[Any]]: The sale information if async_req is False,
+            otherwise an AsyncResult object.
+
+        Raises:
+            ValueError: If sale_id is not provided.
+            
+        Example:
+            >>> api = SalesApi()
+            >>> sale = api.get_sale_by_id(123)
+            >>> print(sale.total_value)
+        """
         if not sale_id:
             raise ValueError("sale_id is required")
 
@@ -41,29 +70,47 @@ class SalesApi:
     @overload
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: bool = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: bool = False
-    ) -> NewSaleViewModel:
-        ...
+    ) -> NewSaleViewModel: ...
 
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: bool = False
     ) -> Union[NewSaleViewModel, AsyncResult[Any]]:
-        """
-        Create a new sale.
+        """Create a new sale transaction.
 
-        Payment types:
-        - 1: Credit Card
-        - 2: Boleto
-        - 3: Sale Credits
-        - 4: Transfer
-        - 5: ValorZerado
-        - 6: LinkCheckout
-        - 7: Pix
+        Args:
+            body (:class:`~evo_client.models.new_sale_view_model.NewSaleViewModel`): 
+                The sale details including member information, service details, 
+                and payment information.
+            async_req (bool, optional): Execute request asynchronously. Defaults to False.
+
+        Returns:
+            Union[NewSaleViewModel, AsyncResult[Any]]: The created sale information if async_req
+            is False, otherwise an AsyncResult object.
+
+        Note:
+            Supported payment types:
+                - 1: Credit Card
+                - 2: Boleto
+                - 3: Sale Credits
+                - 4: Transfer
+                - 5: ValorZerado
+                - 6: LinkCheckout
+                - 7: Pix
+
+        Example:
+            >>> api = SalesApi()
+            >>> sale = NewSaleViewModel(
+            ...     id_branch=123,
+            ...     service_value=99.90,
+            ...     type_payment="1",
+            ...     total_installments=3
+            ... )
+            >>> result = api.create_sale(body=sale)
         """
         return self.api_client.call_api(
             resource_path=self.base_path,
@@ -73,52 +120,6 @@ class SalesApi:
             auth_settings=["Basic"],
             async_req=async_req,
         )
-
-    @overload
-    def get_sales(
-        self,
-        member_id: Optional[int] = None,
-        date_sale_start: Optional[datetime] = None,
-        date_sale_end: Optional[datetime] = None,
-        removal_date_start: Optional[datetime] = None,
-        removal_date_end: Optional[datetime] = None,
-        receivables_registration_date_start: Optional[datetime] = None,
-        receivables_registration_date_end: Optional[datetime] = None,
-        show_receivables: Optional[bool] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        only_membership: Optional[bool] = None,
-        at_least_monthly: Optional[bool] = None,
-        fl_swimming: Optional[bool] = None,
-        show_only_active_memberships: Optional[bool] = None,
-        show_allow_locker: Optional[bool] = None,
-        only_total_pass: Optional[bool] = None,
-        async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
-
-    @overload
-    def get_sales(
-        self,
-        member_id: Optional[int] = None,
-        date_sale_start: Optional[datetime] = None,
-        date_sale_end: Optional[datetime] = None,
-        removal_date_start: Optional[datetime] = None,
-        removal_date_end: Optional[datetime] = None,
-        receivables_registration_date_start: Optional[datetime] = None,
-        receivables_registration_date_end: Optional[datetime] = None,
-        show_receivables: Optional[bool] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        only_membership: Optional[bool] = None,
-        at_least_monthly: Optional[bool] = None,
-        fl_swimming: Optional[bool] = None,
-        show_only_active_memberships: Optional[bool] = None,
-        show_allow_locker: Optional[bool] = None,
-        only_total_pass: Optional[bool] = None,
-        async_req: bool = False,
-    ) -> SalesViewModel:
-        ...
 
     def get_sales(
         self,
@@ -140,26 +141,44 @@ class SalesApi:
         only_total_pass: Optional[bool] = None,
         async_req: bool = False,
     ) -> Union[SalesViewModel, AsyncResult[Any]]:
-        """
-        Get sales with various filtering options.
+        """Retrieve sales with various filtering options.
 
         Args:
-            member_id: Filter by member ID
-            date_sale_start: Filter sales starting from date
-            date_sale_end: Filter sales until date
-            removal_date_start: Filter removed sales from date
-            removal_date_end: Filter removed sales until date
-            receivables_registration_date_start: Filter receivables from date
-            receivables_registration_date_end: Filter receivables until date
-            show_receivables: Show sale receivables details
-            take: Number of records to return (max 100, default 25)
-            skip: Number of records to skip
-            only_membership: Return only membership sales
-            at_least_monthly: Filter out memberships less than 30 days
-            fl_swimming: Filter by swimming flag
-            show_only_active_memberships: Show only active memberships
-            show_allow_locker: Show sales with locker access
-            only_total_pass: Show only total pass sales
+            member_id (Optional[int]): Filter sales by member ID.
+            date_sale_start (Optional[datetime]): Filter sales starting from this date.
+            date_sale_end (Optional[datetime]): Filter sales until this date.
+            removal_date_start (Optional[datetime]): Filter removed sales from this date.
+            removal_date_end (Optional[datetime]): Filter removed sales until this date.
+            receivables_registration_date_start (Optional[datetime]): 
+                Filter receivables from this date.
+            receivables_registration_date_end (Optional[datetime]): 
+                Filter receivables until this date.
+            show_receivables (Optional[bool]): Include receivables details in response.
+            take (Optional[int]): Number of records to return (max 100, default 25).
+            skip (Optional[int]): Number of records to skip for pagination.
+            only_membership (Optional[bool]): Return only membership sales.
+            at_least_monthly (Optional[bool]): Filter out memberships less than 30 days.
+            fl_swimming (Optional[bool]): Filter by swimming flag.
+            show_only_active_memberships (Optional[bool]): Show only active memberships.
+            show_allow_locker (Optional[bool]): Show sales with locker access.
+            only_total_pass (Optional[bool]): Show only total pass sales.
+            async_req (bool, optional): Execute request asynchronously. Defaults to False.
+
+        Returns:
+            Union[SalesViewModel, AsyncResult[Any]]: List of sales matching the criteria if
+            async_req is False, otherwise an AsyncResult object.
+
+        Example:
+            >>> api = SalesApi()
+            >>> # Get all sales for a member in the last month
+            >>> from datetime import datetime, timedelta
+            >>> end_date = datetime.now()
+            >>> start_date = end_date - timedelta(days=30)
+            >>> sales = api.get_sales(
+            ...     member_id=123,
+            ...     date_sale_start=start_date,
+            ...     date_sale_end=end_date
+            ... )
         """
         params = {
             "idMember": member_id,
@@ -192,19 +211,33 @@ class SalesApi:
     @overload
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: bool = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: bool = False
-    ) -> List[SalesItemsViewModel]:
-        ...
+    ) -> List[SalesItemsViewModel]: ...
 
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: bool = False
     ) -> Union[List[SalesItemsViewModel], AsyncResult[Any]]:
-        """Get items available for sale."""
+        """Retrieve items available for sale.
+
+        Args:
+            branch_id (Optional[int]): Filter items by branch ID.
+            async_req (bool, optional): Execute request asynchronously. Defaults to False.
+
+        Returns:
+            Union[List[SalesItemsViewModel], AsyncResult[Any]]: List of available sale items if
+            async_req is False, otherwise an AsyncResult object.
+
+        Example:
+            >>> api = SalesApi()
+            >>> # Get all items available at a specific branch
+            >>> items = api.get_sales_items(branch_id=456)
+            >>> for item in items:
+            ...     print(f"{item.name}: {item.price}")
+        """
         params = {"idBranch": branch_id} if branch_id else {}
 
         return self.api_client.call_api(
@@ -219,19 +252,32 @@ class SalesApi:
     @overload
     def get_sale_by_session_id(
         self, session_id: str, date: Optional[datetime] = None, async_req: bool = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_sale_by_session_id(
         self, session_id: str, date: Optional[datetime] = None, async_req: bool = False
-    ) -> int:
-        ...
+    ) -> int: ...
 
     def get_sale_by_session_id(
         self, session_id: str, date: Optional[datetime] = None, async_req: bool = False
     ) -> Union[int, AsyncResult[Any]]:
-        """Get sale ID by session ID."""
+        """Retrieve a sale ID using the session identifier.
+
+        Args:
+            session_id (str): The session ID to look up.
+            date (Optional[datetime]): Filter by specific date.
+            async_req (bool, optional): Execute request asynchronously. Defaults to False.
+
+        Returns:
+            Union[int, AsyncResult[Any]]: The sale ID if async_req is False,
+            otherwise an AsyncResult object.
+
+        Example:
+            >>> api = SalesApi()
+            >>> sale_id = api.get_sale_by_session_id("session123")
+            >>> sale = api.get_sale_by_id(sale_id)
+        """
         params = {"sessionId": session_id, "date": date}
 
         return self.api_client.call_api(

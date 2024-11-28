@@ -7,7 +7,10 @@ from urllib.parse import urlencode
 import certifi
 import urllib3
 from pydantic import BaseModel
-from urllib3.response import BaseHTTPResponse
+try:
+    from urllib3.response import BaseHTTPResponse as HTTPResponse
+except ImportError:
+    from urllib3.response import HTTPResponse
 
 from ..core.configuration import Configuration
 from ..exceptions.api_exceptions import ApiException
@@ -94,7 +97,7 @@ class RESTClient:
         except urllib3.exceptions.SSLError as e:
             raise ApiException(status=0, reason=f"{type(e).__name__}: {str(e)}")
 
-    def _execute_request(self, method: str, url: str, **kwargs) -> BaseHTTPResponse:
+    def _execute_request(self, method: str, url: str, **kwargs) -> HTTPResponse:
         """Execute the actual HTTP request based on method type."""
         if method in ["POST", "PUT", "PATCH", "OPTIONS", "DELETE"]:
             return self._execute_request_with_body(method, url, **kwargs)
@@ -109,7 +112,7 @@ class RESTClient:
         body: Optional[Any] = None,
         post_params: Optional[Dict] = None,
         **kwargs
-    ) -> BaseHTTPResponse:
+    ) -> HTTPResponse:
         """Handle requests that may include a body."""
         if query_params:
             url += "?" + urlencode(query_params)
@@ -141,7 +144,7 @@ class RESTClient:
 
     def _handle_json_request(
         self, method: str, url: str, headers: Dict, body: Any, **kwargs
-    ) -> BaseHTTPResponse:
+    ) -> HTTPResponse:
         """Handle JSON requests."""
         request_body = json.dumps(body) if body is not None else "{}"
         return self.pool_manager.request(
@@ -156,7 +159,7 @@ class RESTClient:
         fields: Dict,
         encode_multipart: bool,
         **kwargs
-    ) -> BaseHTTPResponse:
+    ) -> HTTPResponse:
         """Handle form-encoded requests."""
         return self.pool_manager.request(
             method,
@@ -174,7 +177,7 @@ class RESTClient:
         query_params: Optional[Dict] = None,
         headers: Optional[Dict] = None,
         **kwargs
-    ) -> BaseHTTPResponse:
+    ) -> HTTPResponse:
         """Handle GET and HEAD requests."""
         return self.pool_manager.request(
             method, url, fields=query_params, headers=headers, **kwargs

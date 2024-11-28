@@ -14,7 +14,11 @@ from typing import (
 )
 
 from pydantic import BaseModel
-from urllib3.response import BaseHTTPResponse
+
+try:
+    from urllib3.response import BaseHTTPResponse as HTTPResponse
+except ImportError:
+    from urllib3.response import HTTPResponse
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -22,7 +26,7 @@ T = TypeVar("T", bound=BaseModel)
 class RESTResponse(io.IOBase):
     """Wrapper for urllib3 response object."""
 
-    def __init__(self, response: BaseHTTPResponse):
+    def __init__(self, response: HTTPResponse):
         self.urllib3_response = response
         self.status = response.status
         self.reason = response.reason
