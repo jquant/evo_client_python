@@ -16,37 +16,37 @@ Models
    .. py:attribute:: id_service
       :type: int
 
-      Unique identifier for the service
+      Unique identifier for the service. Ensure this ID is used consistently across all related models and methods. See also :ref:`service_model`.
 
    .. py:attribute:: id_branch
       :type: int
 
-      Branch ID where service is offered (for multi-location gyms)
+      Branch ID where service is offered (for multi-location gyms). Verify that this ID corresponds to an existing branch in the system. Refer to :ref:`branch_details` for more information.
 
    .. py:attribute:: name_service
       :type: str
 
-      Name of the service
+      Name of the service. This should be descriptive enough to convey the primary function of the service. See :ref:`service_naming_conventions`.
 
    .. py:attribute:: value
       :type: float
 
-      Price of the service
+      Price of the service. Ensure pricing adheres to the business rules and constraints. For pricing guidelines, see :ref:`pricing_policies`.
 
    .. py:attribute:: allow_entries
       :type: bool
 
-      Whether the service grants access to gym entries
+      Whether the service grants access to gym entries. Confirm that this attribute aligns with the service's intended permissions. See :ref:`entry_permissions`.
 
    .. py:attribute:: experimental_class
       :type: bool
 
-      Indicates if this is an experimental/trial service
+      Indicates if this is an experimental/trial service. Check if this attribute impacts service availability or pricing. Refer to :ref:`experimental_services`.
 
    .. py:attribute:: max_amount_installments
       :type: int
 
-      Maximum number of installments allowed for payment
+      Maximum number of installments allowed for payment. Validate against the business's payment policies. See :ref:`payment_policies`.
 
    .. py:attribute:: url_sale
       :type: str

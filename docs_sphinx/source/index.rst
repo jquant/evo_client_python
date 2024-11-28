@@ -99,7 +99,6 @@ Documentation Contents
 
    quickstart
    installation
-   authentication
    configuration
    best_practices
 

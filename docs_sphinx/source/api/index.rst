@@ -12,6 +12,8 @@ Core APIs
 
    members
    activities
+   member_membership
+   membership
 
 .. toctree::
    :maxdepth: 2
@@ -19,6 +21,10 @@ Core APIs
 
    sales
    finance/index
+   prospects
+   partnership
+   service
+   voucher
 
 .. toctree::
    :maxdepth: 2
@@ -27,6 +33,25 @@ Core APIs
    management/index
    configuration
    webhooks
+   notifications
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Employee Management
+
+   employees
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Workout Management
+
+   workout
+
+.. toctree::
+   :maxdepth: 2
+   :caption: General Operations
+
+   entries
 
 API Architecture
 --------------
