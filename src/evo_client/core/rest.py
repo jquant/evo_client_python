@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional, TypeVar, Union
 import requests
 from pydantic import BaseModel
 from requests.adapters import HTTPAdapter
+from requests.auth import HTTPBasicAuth
 from requests.sessions import Session
 
 from ..core.configuration import Configuration
@@ -57,6 +58,7 @@ class RESTClient:
         query_params: Optional[Dict] = None,
         headers: Optional[Dict] = None,
         body: Optional[Any] = None,
+        auth: Optional[HTTPBasicAuth] = None,
         preload_content: bool = True,
         request_timeout: Optional[Union[float, tuple]] = None,
     ) -> RESTResponse:
@@ -74,6 +76,7 @@ class RESTClient:
                 data=body if not isinstance(body, dict) else None,
                 timeout=self._get_timeout(request_timeout),
                 stream=not preload_content,
+                auth=auth,
             )
 
             rest_response = RESTResponse(response)

@@ -25,16 +25,13 @@ class RequestHandler:
         self.pool.join()
 
     @overload
-    def execute(self, response_type: None, **kwargs) -> Any:
-        ...
+    def execute(self, response_type: None, **kwargs) -> Any: ...
 
     @overload
-    def execute(self, response_type: Type[T], **kwargs) -> T:
-        ...
+    def execute(self, response_type: Type[T], **kwargs) -> T: ...
 
     @overload
-    def execute(self, response_type: Type[Iterable[T]], **kwargs) -> List[T]:
-        ...
+    def execute(self, response_type: Type[Iterable[T]], **kwargs) -> List[T]: ...
 
     def execute(
         self, response_type: Optional[Type[T] | Type[Iterable[T]]] = None, **kwargs
@@ -43,18 +40,15 @@ class RequestHandler:
         return self._make_request(response_type, **kwargs)
 
     @overload
-    def execute_async(self, response_type: None, **kwargs) -> AsyncResult[Any]:
-        ...
+    def execute_async(self, response_type: None, **kwargs) -> AsyncResult[Any]: ...
 
     @overload
-    def execute_async(self, response_type: Type[T], **kwargs) -> AsyncResult[T]:
-        ...
+    def execute_async(self, response_type: Type[T], **kwargs) -> AsyncResult[T]: ...
 
     @overload
     def execute_async(
         self, response_type: Type[Iterable[T]], **kwargs
-    ) -> AsyncResult[List[T]]:
-        ...
+    ) -> AsyncResult[List[T]]: ...
 
     def execute_async(
         self, response_type: Optional[Type[T] | Type[Iterable[T]]] = None, **kwargs
@@ -67,8 +61,6 @@ class RequestHandler:
     def _prepare_headers(self, header_params: Optional[Dict] = None) -> Dict:
         """Prepare request headers with authentication."""
         headers = header_params or {}
-        encoded_auth = self.configuration.get_basic_auth_token()
-        headers["Authorization"] = f"Basic {encoded_auth}"
         return headers
 
     def _prepare_params(self, query_params: Optional[Dict] = None) -> Dict:
@@ -103,6 +95,7 @@ class RequestHandler:
             headers=headers,
             query_params=query_params,
             body=body,
+            auth=self.configuration.get_basic_auth_token(),
             preload_content=True,
             request_timeout=request_options["request_timeout"],
         )
