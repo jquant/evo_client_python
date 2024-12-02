@@ -20,7 +20,8 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> CostCenterApiViewModel: ...
+    ) -> CostCenterApiViewModel:
+        ...
 
     @overload
     def get_cost_centers(
@@ -28,7 +29,9 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
+
     def get_cost_centers(
         self,
         take: Optional[int] = None,
@@ -76,7 +79,8 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> PayablesApiViewModel: ...
+    ) -> PayablesApiViewModel:
+        ...
 
     @overload
     def get_payables(
@@ -97,7 +101,8 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_payables(
         self,
