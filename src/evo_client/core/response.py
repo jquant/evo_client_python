@@ -43,10 +43,12 @@ class RESTResponse(io.IOBase):
         raise ValueError("Response content is not in JSON format")
 
     @overload
-    def deserialize(self, response_type: Type[T]) -> T: ...
+    def deserialize(self, response_type: Type[T]) -> T:
+        ...
 
     @overload
-    def deserialize(self, response_type: Type[Iterable[T]]) -> List[T]: ...
+    def deserialize(self, response_type: Type[Iterable[T]]) -> List[T]:
+        ...
 
     def deserialize(self, response_type: Type[T] | Type[Iterable[T]]) -> T | List[T]:
         """Deserialize response data into the specified type."""

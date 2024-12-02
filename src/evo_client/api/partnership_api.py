@@ -20,7 +20,8 @@ class PartnershipApi:
         description: Optional[str] = None,
         dt_created: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> List[ConveniosApiViewModel]: ...
+    ) -> List[ConveniosApiViewModel]:
+        ...
 
     @overload
     def get_partnerships(
@@ -29,7 +30,8 @@ class PartnershipApi:
         description: Optional[str] = None,
         dt_created: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_partnerships(
         self,

@@ -25,7 +25,8 @@ class EmployeesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> List[FuncionariosResumoApiViewModel]: ...
+    ) -> List[FuncionariosResumoApiViewModel]:
+        ...
 
     @overload
     def get_employees(
@@ -36,7 +37,9 @@ class EmployeesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
+
     def get_employees(
         self,
         employee_id: Optional[int] = None,
@@ -81,12 +84,15 @@ class EmployeesApi:
     @overload
     def delete_employee(
         self, employee_id: int, async_req: Literal[False] = False
-    ) -> Any: ...
+    ) -> Any:
+        ...
 
     @overload
     def delete_employee(
         self, employee_id: int, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
+
     def delete_employee(
         self, employee_id: int, async_req: bool = False
     ) -> Union[Any, AsyncResult[Any]]:
@@ -111,12 +117,15 @@ class EmployeesApi:
         self,
         employee: EmployeeApiIntegracaoViewModel,
         async_req: Literal[False] = False,
-    ) -> Any: ...
+    ) -> Any:
+        ...
 
     @overload
     def update_employee(
         self, employee: EmployeeApiIntegracaoViewModel, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
+
     def update_employee(
         self, employee: EmployeeApiIntegracaoViewModel, async_req: bool = False
     ) -> Union[Any, AsyncResult[Any]]:
@@ -141,14 +150,16 @@ class EmployeesApi:
         self,
         employee: EmployeeApiIntegracaoAtualizacaoViewModel,
         async_req: Literal[False] = False,
-    ) -> Union[Any, AsyncResult[Any]]: ...
+    ) -> Union[Any, AsyncResult[Any]]:
+        ...
 
     @overload
     def create_employee(
         self,
         employee: EmployeeApiIntegracaoAtualizacaoViewModel,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def create_employee(
         self,

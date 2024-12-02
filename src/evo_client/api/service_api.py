@@ -22,7 +22,8 @@ class ServiceApi:
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[False] = False,
-    ) -> List[ServicosResumoApiViewModel]: ...
+    ) -> List[ServicosResumoApiViewModel]:
+        ...
 
     @overload
     def get_services(
@@ -34,7 +35,8 @@ class ServiceApi:
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_services(
         self,
