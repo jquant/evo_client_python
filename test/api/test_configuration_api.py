@@ -1,6 +1,6 @@
 """Tests for the ConfigurationApi class."""
 
-from typing import Any, Dict, List
+from typing import List
 from unittest.mock import Mock, patch
 
 import pytest

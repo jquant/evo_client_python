@@ -15,12 +15,14 @@ class NotificationsApi:
     @overload
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: bool = True
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: bool = False
-    ) -> Any: ...
+    ) -> Any:
+        ...
 
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: bool = False
