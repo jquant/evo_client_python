@@ -93,7 +93,6 @@ def test_execute_async(request_handler: RequestHandler, mock_response: Mock):
 def test_prepare_headers(request_handler: RequestHandler):
     """Test _prepare_headers method of RequestHandler."""
     headers = request_handler._prepare_headers({"Custom-Header": "value"})
-    assert headers["Authorization"] == "Basic dGVzdDp0ZXN0"
     assert headers["Custom-Header"] == "value"
 
 

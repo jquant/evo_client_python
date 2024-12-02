@@ -78,7 +78,6 @@ class Configuration(BaseModel):
         other_field = "key_file" if field_name == "cert_file" else "cert_file"
 
         # If we're setting a value
-        print(info.data)
         if other_field in info.data:
             if v is not None:
                 # Check if the other field has a value

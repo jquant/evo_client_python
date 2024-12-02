@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional, TypeVar, Union
 import requests
 from pydantic import BaseModel
 from requests.adapters import HTTPAdapter
+from requests.auth import HTTPBasicAuth
 from requests.sessions import Session
 
 from ..core.configuration import Configuration
@@ -24,6 +25,7 @@ class RESTClient:
         maxsize: Optional[int] = None,
     ):
         self.session = self._create_session(configuration, pools_size, maxsize)
+        self.configuration = configuration
 
     def _create_session(
         self, config: Configuration, pools_size: int, maxsize: Optional[int]
@@ -57,12 +59,14 @@ class RESTClient:
         query_params: Optional[Dict] = None,
         headers: Optional[Dict] = None,
         body: Optional[Any] = None,
+        auth: Optional[HTTPBasicAuth] = None,
         preload_content: bool = True,
         request_timeout: Optional[Union[float, tuple]] = None,
     ) -> RESTResponse:
         """Execute HTTP request with proper error handling."""
         method = method.upper()
         headers = headers or {"Content-Type": "application/json"}
+        auth = auth or self.configuration.get_basic_auth_token()
 
         try:
             response = self.session.request(
@@ -74,6 +78,7 @@ class RESTClient:
                 data=body if not isinstance(body, dict) else None,
                 timeout=self._get_timeout(request_timeout),
                 stream=not preload_content,
+                auth=auth,
             )
 
             rest_response = RESTResponse(response)

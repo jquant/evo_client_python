@@ -67,8 +67,6 @@ class RequestHandler:
     def _prepare_headers(self, header_params: Optional[Dict] = None) -> Dict:
         """Prepare request headers with authentication."""
         headers = header_params or {}
-        encoded_auth = self.configuration.get_basic_auth_token()
-        headers["Authorization"] = f"Basic {encoded_auth}"
         return headers
 
     def _prepare_params(self, query_params: Optional[Dict] = None) -> Dict:
@@ -103,6 +101,7 @@ class RequestHandler:
             headers=headers,
             query_params=query_params,
             body=body,
+            auth=self.configuration.get_basic_auth_token(),
             preload_content=True,
             request_timeout=request_options["request_timeout"],
         )
