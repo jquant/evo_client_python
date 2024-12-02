@@ -1,8 +1,8 @@
 from unittest.mock import Mock
 
 import pytest
+import requests
 from pydantic import BaseModel
-from urllib3.response import BaseHTTPResponse
 
 from evo_client.core.configuration import Configuration
 from evo_client.core.request_handler import RequestHandler
@@ -50,37 +50,37 @@ def request_handler(mock_configuration):
 
 
 @pytest.fixture
-def mock_urllib3_response():
-    """Create a mock urllib3 response."""
-    mock_response = Mock(spec=BaseHTTPResponse)
-    mock_response.status = 200
+def mock_response():
+    """Create a mock requests response."""
+    mock_response = Mock(spec=requests.Response)
+    mock_response.status_code = 200
     mock_response.reason = "OK"
-    mock_response.data = b'{"id": 1, "name": "test"}'
+    mock_response.content = b'{"id": 1, "name": "test"}'
     mock_response.headers = {"Content-Type": "application/json"}
+    mock_response.json.return_value = {"id": 1, "name": "test"}
     return RESTResponse(mock_response)
 
 
-def test_execute(request_handler: RequestHandler, mock_urllib3_response: Mock):
+def test_execute(request_handler: RequestHandler, mock_response: Mock):
     """Test execute method of RequestHandler."""
-    request_handler.rest_client.request = Mock(return_value=mock_urllib3_response)
+    request_handler.rest_client.request = Mock(return_value=mock_response)
     result = request_handler.execute(TestModel, method="GET", resource_path="/test")
     assert isinstance(result, TestModel)
     assert result.id == 1
     assert result.name == "test"
 
 
-def test_execute_none(request_handler: RequestHandler, mock_urllib3_response: Mock):
-    """Test execute method of RequestHandler."""
-    request_handler.rest_client.request = Mock(return_value=mock_urllib3_response)
+def test_execute_none(request_handler: RequestHandler, mock_response: Mock):
+    """Test execute method of RequestHandler with None model."""
+    request_handler.rest_client.request = Mock(return_value=mock_response)
     result = request_handler.execute(None, method="GET", resource_path="/test")
     assert isinstance(result, dict)
-    assert result["id"] == 1
-    assert result["name"] == "test"
+    assert result == {"id": 1, "name": "test"}
 
 
-def test_execute_async(request_handler: RequestHandler, mock_urllib3_response: Mock):
+def test_execute_async(request_handler: RequestHandler, mock_response: Mock):
     """Test execute_async method of RequestHandler."""
-    request_handler.rest_client.request = Mock(return_value=mock_urllib3_response)
+    request_handler.rest_client.request = Mock(return_value=mock_response)
     async_result = request_handler.execute_async(
         TestModel, method="GET", resource_path="/test"
     )
@@ -110,9 +110,9 @@ def test_get_request_options(request_handler: RequestHandler):
     assert options["verify_ssl"] == False
 
 
-def test_make_request(request_handler: RequestHandler, mock_urllib3_response: Mock):
+def test_make_request(request_handler: RequestHandler, mock_response: Mock):
     """Test _make_request method of RequestHandler."""
-    request_handler.rest_client.request = Mock(return_value=mock_urllib3_response)
+    request_handler.rest_client.request = Mock(return_value=mock_response)
     result = request_handler._make_request(
         TestModel, method="GET", resource_path="/test"
     )

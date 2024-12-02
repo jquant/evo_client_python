@@ -2,8 +2,8 @@ from typing import List
 from unittest.mock import Mock
 
 import pytest
+import requests
 from pydantic import BaseModel
-from urllib3.response import BaseHTTPResponse
 
 from evo_client.core.response import RESTResponse
 from evo_client.exceptions.api_exceptions import ApiException
@@ -15,23 +15,25 @@ class SomeBaseModel(BaseModel):
 
 @pytest.fixture
 def mock_urllib3_response():
-    """Create a mock urllib3 response."""
-    mock_response = Mock(spec=BaseHTTPResponse)
-    mock_response.status = 200
+    """Create a mock requests response."""
+    mock_response = Mock(spec=requests.Response)
+    mock_response.status_code = 200
     mock_response.reason = "OK"
-    mock_response.data = b'{"key": "value"}'
+    mock_response.content = b'{"key": "value"}'
     mock_response.headers = {"Content-Type": "application/json"}
+    mock_response.json.return_value = {"key": "value"}
     return mock_response
 
 
 @pytest.fixture
 def mock_urllib3_response_list():
-    """Create a mock urllib3 response."""
-    mock_response = Mock(spec=BaseHTTPResponse)
-    mock_response.status = 200
+    """Create a mock requests response with list data."""
+    mock_response = Mock(spec=requests.Response)
+    mock_response.status_code = 200
     mock_response.reason = "OK"
-    mock_response.data = b'[{"key": "value"}, {"key": "value"}]'
+    mock_response.content = b'[{"key": "value"}, {"key": "value"}]'
     mock_response.headers = {"Content-Type": "application/json"}
+    mock_response.json.return_value = [{"key": "value"}, {"key": "value"}]
     return mock_response
 
 
@@ -103,11 +105,12 @@ class TestModel(BaseModel):
 
 def test_deserialize_single_model():
     # Mock response with single object
-    mock_response = Mock(spec=BaseHTTPResponse)
-    mock_response.data = b'{"id": 1, "name": "test"}'
+    mock_response = Mock(spec=requests.Response)
+    mock_response.content = b'{"id": 1, "name": "test"}'
     mock_response.headers = {"Content-Type": "application/json"}
-    mock_response.status = 200
+    mock_response.status_code = 200
     mock_response.reason = "OK"
+    mock_response.json.return_value = {"id": 1, "name": "test"}
     rest_response = RESTResponse(mock_response)
 
     # Test single model deserialization
@@ -119,11 +122,15 @@ def test_deserialize_single_model():
 
 def test_deserialize_list_of_models():
     # Mock response with list of objects
-    mock_response = Mock(spec=BaseHTTPResponse)
-    mock_response.data = b'[{"id": 1, "name": "test1"}, {"id": 2, "name": "test2"}]'
+    mock_response = Mock(spec=requests.Response)
+    mock_response.content = b'[{"id": 1, "name": "test1"}, {"id": 2, "name": "test2"}]'
     mock_response.headers = {"Content-Type": "application/json"}
-    mock_response.status = 200
+    mock_response.status_code = 200
     mock_response.reason = "OK"
+    mock_response.json.return_value = [
+        {"id": 1, "name": "test1"},
+        {"id": 2, "name": "test2"},
+    ]
     rest_response = RESTResponse(mock_response)
 
     # Test list deserialization
@@ -136,11 +143,12 @@ def test_deserialize_list_of_models():
 
 
 def test_error_handling():
-    mock_response = Mock(spec=BaseHTTPResponse)
-    mock_response.data = b'{"id": 1, "name": "test"}'
+    mock_response = Mock(spec=requests.Response)
+    mock_response.content = b'{"id": 1, "name": "test"}'
     mock_response.headers = {"Content-Type": "application/json"}
-    mock_response.status = 500
+    mock_response.status_code = 500
     mock_response.reason = "Some error message"
+    mock_response.json.return_value = {"id": 1, "name": "test"}
     rest_response = RESTResponse(mock_response)
 
     exception = ApiException(http_resp=rest_response)
