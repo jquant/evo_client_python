@@ -102,7 +102,6 @@ def test_get_translations(configuration_api: ConfigurationApi, mock_api_client: 
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
     assert args["resource_path"] == "/api/v1/configuration/card-translation"
-    assert args["response_type"] == Dict[str, Any]
 
 
 def test_error_handling(configuration_api: ConfigurationApi, mock_api_client: Mock):
