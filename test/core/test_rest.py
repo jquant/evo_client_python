@@ -6,6 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 from requests.auth import HTTPBasicAuth
+
 from evo_client.core.configuration import Configuration
 from evo_client.core.response import RESTResponse
 from evo_client.core.rest import RESTClient
