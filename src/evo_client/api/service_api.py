@@ -1,5 +1,5 @@
 from multiprocessing.pool import AsyncResult
-from typing import Any, List, Optional, Union, overload
+from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
@@ -21,7 +21,7 @@ class ServiceApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         active: Optional[bool] = None,
-        async_req: bool = True,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]:
         ...
 
@@ -34,7 +34,7 @@ class ServiceApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         active: Optional[bool] = None,
-        async_req: bool = False,
+        async_req: Literal[False] = False,
     ) -> List[ServicosResumoApiViewModel]:
         ...
 

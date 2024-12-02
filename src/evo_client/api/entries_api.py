@@ -15,7 +15,7 @@ from __future__ import absolute_import
 import re  # noqa: F401
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
-from typing import Any, List, Optional, Union, overload
+from typing import Any, List, Literal, Optional, Union, overload
 
 from evo_client.core.api_client import ApiClient
 
@@ -40,7 +40,7 @@ class EntriesApi:
         skip: Optional[int] = None,
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
-        async_req: bool = True,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]:
         ...
 
@@ -53,7 +53,7 @@ class EntriesApi:
         skip: Optional[int] = None,
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
-        async_req: bool = False,
+        async_req: Literal[False] = False,
     ) -> List[EntradasResumoApiViewModel]:
         ...
 
@@ -113,7 +113,7 @@ class EntriesApi:
         member_id: int,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
-        async_req: bool = True,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]:
         ...
 
@@ -123,7 +123,7 @@ class EntriesApi:
         member_id: int,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
-        async_req: bool = False,
+        async_req: Literal[False] = False,
     ) -> List[EntradasResumoApiViewModel]:
         ...
 
@@ -152,13 +152,13 @@ class EntriesApi:
 
     @overload
     def get_entry_by_id(
-        self, entry_id: int, async_req: bool = True
+        self, entry_id: int, async_req: Literal[True] = True
     ) -> AsyncResult[Any]:
         ...
 
     @overload
     def get_entry_by_id(
-        self, entry_id: int, async_req: bool = False
+        self, entry_id: int, async_req: Literal[False] = False
     ) -> Optional[EntradasResumoApiViewModel]:
         ...
 

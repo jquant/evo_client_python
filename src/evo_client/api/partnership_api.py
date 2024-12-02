@@ -1,6 +1,6 @@
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
-from typing import Any, List, Optional, Union, overload
+from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.convenios_api_view_model import ConveniosApiViewModel
@@ -19,7 +19,7 @@ class PartnershipApi:
         status: Optional[int] = None,
         description: Optional[str] = None,
         dt_created: Optional[datetime] = None,
-        async_req: bool = True,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]:
         ...
 
@@ -29,7 +29,7 @@ class PartnershipApi:
         status: Optional[int] = None,
         description: Optional[str] = None,
         dt_created: Optional[datetime] = None,
-        async_req: bool = False,
+        async_req: Literal[False] = False,
     ) -> List[ConveniosApiViewModel]:
         ...
 

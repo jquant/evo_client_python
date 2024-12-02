@@ -1,5 +1,5 @@
 from multiprocessing.pool import AsyncResult
-from typing import Any, Optional, Union, overload
+from typing import Any, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.bank_accounts_view_model import BankAccountsViewModel
@@ -23,11 +23,11 @@ class BankAccountsApi:
         self.base_path = "/api/v1/bank-accounts"
 
     @overload
-    def get_accounts(self, async_req: bool = True) -> BankAccountsViewModel:
+    def get_accounts(self, async_req: Literal[True] = True) -> BankAccountsViewModel:
         ...
 
     @overload
-    def get_accounts(self, async_req: bool = False) -> AsyncResult[Any]:
+    def get_accounts(self, async_req: Literal[False] = False) -> AsyncResult[Any]:
         ...
 
     def get_accounts(

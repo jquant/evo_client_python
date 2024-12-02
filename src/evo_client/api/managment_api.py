@@ -1,6 +1,6 @@
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
-from typing import Any, List, Optional, Union, overload
+from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.clientes_ativos_view_model import ClientesAtivosViewModel
@@ -18,12 +18,12 @@ class ManagementApi:
         self.base_path = "/api/v1/management"
 
     @overload
-    def get_active_clients(self, async_req: bool = True) -> AsyncResult[Any]:
+    def get_active_clients(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
         ...
 
     @overload
     def get_active_clients(
-        self, async_req: bool = False
+        self, async_req: Literal[False] = False
     ) -> List[ClientesAtivosViewModel]:
         ...
 
@@ -53,7 +53,7 @@ class ManagementApi:
         self,
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
-        async_req: bool = True,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]:
         ...
 
@@ -62,7 +62,7 @@ class ManagementApi:
         self,
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
-        async_req: bool = False,
+        async_req: Literal[False] = False,
     ) -> List[SpsRelProspectsCadastradosConvertidos]:
         ...
 
@@ -100,7 +100,7 @@ class ManagementApi:
         self,
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
-        async_req: bool = True,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]:
         ...
 
@@ -109,7 +109,7 @@ class ManagementApi:
         self,
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
-        async_req: bool = False,
+        async_req: Literal[False] = False,
     ) -> List[ContratoNaoRenovadosViewModel]:
         ...
 

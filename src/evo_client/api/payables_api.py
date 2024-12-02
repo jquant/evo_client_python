@@ -1,6 +1,6 @@
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
-from typing import Any, Optional, Union, overload
+from typing import Any, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.cost_center_api_view_model import CostCenterApiViewModel
@@ -19,7 +19,7 @@ class PayablesApi:
         self,
         take: Optional[int] = None,
         skip: Optional[int] = None,
-        async_req: bool = True,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]:
         ...
 
@@ -28,7 +28,7 @@ class PayablesApi:
         self,
         take: Optional[int] = None,
         skip: Optional[int] = None,
-        async_req: bool = False,
+        async_req: Literal[False] = False,
     ) -> CostCenterApiViewModel:
         ...
 
@@ -78,7 +78,7 @@ class PayablesApi:
         account_status: Optional[str] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
-        async_req: bool = True,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]:
         ...
 
@@ -100,7 +100,7 @@ class PayablesApi:
         account_status: Optional[str] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
-        async_req: bool = False,
+        async_req: Literal[False] = False,
     ) -> PayablesApiViewModel:
         ...
 
