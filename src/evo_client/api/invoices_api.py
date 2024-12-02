@@ -45,9 +45,8 @@ class InvoicesApi:
         member_id: Optional[int] = None,
         status_invoice: Optional[List[InvoiceStatus]] = None,
         types_invoice: Optional[List[InvoiceType]] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> EnotasRetorno: ...
 
     @overload
     def get_invoices(
@@ -63,9 +62,8 @@ class InvoicesApi:
         member_id: Optional[int] = None,
         status_invoice: Optional[List[InvoiceStatus]] = None,
         types_invoice: Optional[List[InvoiceType]] = None,
-        async_req: Literal[False] = False,
-    ) -> EnotasRetorno:
-        ...
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
 
     def get_invoices(
         self,

@@ -18,14 +18,14 @@ class ManagementApi:
         self.base_path = "/api/v1/management"
 
     @overload
-    def get_active_clients(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
-        ...
+    def get_active_clients(
+        self, async_req: Literal[False] = False
+    ) -> List[ClientesAtivosViewModel]: ...
 
     @overload
     def get_active_clients(
-        self, async_req: Literal[False] = False
-    ) -> List[ClientesAtivosViewModel]:
-        ...
+        self, async_req: Literal[True] = True
+    ) -> AsyncResult[Any]: ...
 
     def get_active_clients(
         self, async_req: bool = False
@@ -53,18 +53,16 @@ class ManagementApi:
         self,
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> List[SpsRelProspectsCadastradosConvertidos]: ...
 
     @overload
     def get_prospects(
         self,
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
-        async_req: Literal[False] = False,
-    ) -> List[SpsRelProspectsCadastradosConvertidos]:
-        ...
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
 
     def get_prospects(
         self,
@@ -100,18 +98,16 @@ class ManagementApi:
         self,
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> List[ContratoNaoRenovadosViewModel]: ...
 
     @overload
     def get_non_renewed_clients(
         self,
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
-        async_req: Literal[False] = False,
-    ) -> List[ContratoNaoRenovadosViewModel]:
-        ...
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
 
     def get_non_renewed_clients(
         self,

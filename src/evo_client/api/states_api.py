@@ -12,12 +12,10 @@ class StatesApi:
         self.base_path = "/api/v1/states"
 
     @overload
-    def get_states(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
-        ...
+    def get_states(self, async_req: Literal[False] = False) -> Any: ...
 
     @overload
-    def get_states(self, async_req: Literal[False] = False) -> Any:
-        ...
+    def get_states(self, async_req: Literal[True] = True) -> AsyncResult[Any]: ...
 
     def get_states(self, async_req: bool = False) -> Union[Any, AsyncResult[Any]]:
         """

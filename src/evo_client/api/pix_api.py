@@ -14,17 +14,15 @@ class PixApi:
 
     @overload
     def get_qr_code(
-        self, pix_receipt_id: Optional[int] = None, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
-
-    @overload
-    def get_qr_code(
         self,
         pix_receipt_id: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> PixPaymentDetailsViewModel:
-        ...
+    ) -> PixPaymentDetailsViewModel: ...
+
+    @overload
+    def get_qr_code(
+        self, pix_receipt_id: Optional[int] = None, async_req: Literal[True] = True
+    ) -> AsyncResult[Any]: ...
 
     def get_qr_code(
         self, pix_receipt_id: Optional[int] = None, async_req: bool = False

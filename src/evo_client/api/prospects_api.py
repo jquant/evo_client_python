@@ -35,9 +35,8 @@ class ProspectsApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         gympass_id: Optional[str] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> List[ProspectsResumoApiViewModel]: ...
 
     @overload
     def get_prospects(
@@ -54,9 +53,8 @@ class ProspectsApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         gympass_id: Optional[str] = None,
-        async_req: Literal[False] = False,
-    ) -> List[ProspectsResumoApiViewModel]:
-        ...
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
 
     def get_prospects(
         self,
@@ -118,17 +116,15 @@ class ProspectsApi:
 
     @overload
     def create_prospect(
-        self, prospect: ProspectApiIntegracaoViewModel, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
-
-    @overload
-    def create_prospect(
         self,
         prospect: ProspectApiIntegracaoViewModel,
         async_req: Literal[False] = False,
-    ) -> ProspectIdViewModel:
-        ...
+    ) -> ProspectIdViewModel: ...
+
+    @overload
+    def create_prospect(
+        self, prospect: ProspectApiIntegracaoViewModel, async_req: Literal[True] = True
+    ) -> AsyncResult[Any]: ...
 
     def create_prospect(
         self, prospect: ProspectApiIntegracaoViewModel, async_req: bool = False
@@ -165,18 +161,15 @@ class ProspectsApi:
     def update_prospect(
         self,
         prospect: ProspectApiIntegracaoAtualizacaoViewModel,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> ProspectIdViewModel: ...
 
     @overload
     def update_prospect(
         self,
         prospect: ProspectApiIntegracaoAtualizacaoViewModel,
-        async_req: Literal[False] = False,
-    ) -> ProspectIdViewModel:
-        ...
-
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
     def update_prospect(
         self,
         prospect: ProspectApiIntegracaoAtualizacaoViewModel,
@@ -210,16 +203,13 @@ class ProspectsApi:
 
     @overload
     def get_services(
-        self, prospect_id: Optional[int] = None, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+        self, prospect_id: Optional[int] = None, async_req: Literal[False] = False
+    ) -> List[MemberServiceViewModel]: ...
 
     @overload
     def get_services(
-        self, prospect_id: Optional[int] = None, async_req: Literal[False] = False
-    ) -> List[MemberServiceViewModel]:
-        ...
-
+        self, prospect_id: Optional[int] = None, async_req: Literal[True] = True
+    ) -> AsyncResult[Any]: ...
     def get_services(
         self, prospect_id: Optional[int] = None, async_req: bool = False
     ) -> Union[List[MemberServiceViewModel], AsyncResult[Any]]:
@@ -243,17 +233,15 @@ class ProspectsApi:
 
     @overload
     def transfer_prospect(
-        self, transfer: ProspectTransferenciaViewModel, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
-
-    @overload
-    def transfer_prospect(
         self,
         transfer: ProspectTransferenciaViewModel,
         async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+    ) -> Any: ...
+
+    @overload
+    def transfer_prospect(
+        self, transfer: ProspectTransferenciaViewModel, async_req: Literal[True] = True
+    ) -> AsyncResult[Any]: ...
 
     def transfer_prospect(
         self, transfer: ProspectTransferenciaViewModel, async_req: bool = False

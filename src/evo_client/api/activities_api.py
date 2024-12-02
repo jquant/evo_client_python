@@ -26,9 +26,8 @@ class ActivitiesApi:
         branch_id: Optional[int] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> List[AtividadeListApiViewModel]: ...
 
     @overload
     def get_activities(
@@ -37,9 +36,8 @@ class ActivitiesApi:
         branch_id: Optional[int] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
-        async_req: Literal[False] = False,
-    ) -> List[AtividadeListApiViewModel]:
-        ...
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
 
     def get_activities(
         self,
@@ -77,9 +75,8 @@ class ActivitiesApi:
         config_id: Optional[int] = None,
         activity_date: Optional[datetime] = None,
         session_id: Optional[int] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> AtividadeBasicoApiViewModel: ...
 
     @overload
     def get_schedule_detail(
@@ -87,9 +84,8 @@ class ActivitiesApi:
         config_id: Optional[int] = None,
         activity_date: Optional[datetime] = None,
         session_id: Optional[int] = None,
-        async_req: Literal[False] = False,
-    ) -> AtividadeBasicoApiViewModel:
-        ...
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
 
     def get_schedule_detail(
         self,
@@ -136,9 +132,8 @@ class ActivitiesApi:
         prospect_id: Optional[int] = None,
         slot_number: Optional[int] = None,
         origin: Optional[EOrigemAgendamento] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> Any: ...
 
     @overload
     def enroll(
@@ -149,9 +144,8 @@ class ActivitiesApi:
         prospect_id: Optional[int] = None,
         slot_number: Optional[int] = None,
         origin: Optional[EOrigemAgendamento] = None,
-        async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
 
     def enroll(
         self,
@@ -207,9 +201,8 @@ class ActivitiesApi:
         only_availables: bool = False,
         show_full_week: bool = False,
         branch_token: Optional[str] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> List[AtividadeSessaoParticipanteApiViewModel]: ...
 
     @overload
     def get_schedule(
@@ -223,9 +216,8 @@ class ActivitiesApi:
         only_availables: bool = False,
         show_full_week: bool = False,
         branch_token: Optional[str] = None,
-        async_req: Literal[False] = False,
-    ) -> List[AtividadeSessaoParticipanteApiViewModel]:
-        ...
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
 
     def get_schedule(
         self,
@@ -288,10 +280,8 @@ class ActivitiesApi:
         service: str,
         activity_exists: bool = False,
         branch_id: Optional[int] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
-
+        async_req: Literal[False] = False,
+    ) -> Any: ...
     @overload
     def create_experimental_class(
         self,
@@ -301,9 +291,8 @@ class ActivitiesApi:
         service: str,
         activity_exists: bool = False,
         branch_id: Optional[int] = None,
-        async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
 
     def create_experimental_class(
         self,
@@ -342,9 +331,8 @@ class ActivitiesApi:
         config_id: Optional[int] = None,
         activity_date: Optional[datetime] = None,
         session_id: Optional[int] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def change_status(
@@ -355,9 +343,8 @@ class ActivitiesApi:
         config_id: Optional[int] = None,
         activity_date: Optional[datetime] = None,
         session_id: Optional[int] = None,
-        async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+        async_req: Literal[True] = True,
+    ) -> Any: ...
 
     def change_status(
         self,
@@ -399,15 +386,13 @@ class ActivitiesApi:
 
     @overload
     def get_unavailable_spots(
-        self, config_id: int, date: datetime, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+        self, config_id: int, date: datetime, async_req: Literal[False] = False
+    ) -> List[int]: ...
 
     @overload
     def get_unavailable_spots(
-        self, config_id: int, date: datetime, async_req: Literal[False] = False
-    ) -> List[int]:
-        ...
+        self, config_id: int, date: datetime, async_req: Literal[True] = True
+    ) -> AsyncResult[Any]: ...
 
     def get_unavailable_spots(
         self, config_id: int, date: datetime, async_req: bool = False

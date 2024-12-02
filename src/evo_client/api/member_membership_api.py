@@ -31,9 +31,8 @@ class MemberMembershipApi:
         schedule_cancellation_date: Optional[datetime] = None,
         add_fine: bool = False,
         value_fine: Optional[float] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> Any: ...
 
     @overload
     def cancel_membership(
@@ -50,9 +49,8 @@ class MemberMembershipApi:
         schedule_cancellation_date: Optional[datetime] = None,
         add_fine: bool = False,
         value_fine: Optional[float] = None,
-        async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
 
     def cancel_membership(
         self,
@@ -114,16 +112,13 @@ class MemberMembershipApi:
 
     @overload
     def get_membership(
-        self, id_member_membership: int, async_req: Literal[True] = True
-    ) -> MemberMembershipApiViewModel:
-        ...
+        self, id_member_membership: int, async_req: Literal[False] = False
+    ) -> MemberMembershipApiViewModel: ...
 
     @overload
     def get_membership(
-        self, id_member_membership: int, async_req: Literal[False] = False
-    ) -> MemberMembershipApiViewModel:
-        ...
-
+        self, id_member_membership: int, async_req: Literal[True] = True
+    ) -> MemberMembershipApiViewModel: ...
     def get_membership(
         self, id_member_membership: int, async_req: bool = False
     ) -> Union[MemberMembershipApiViewModel, AsyncResult[Any]]:
@@ -159,9 +154,8 @@ class MemberMembershipApi:
         contract_type: Optional[str] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
-        async_req: Literal[True] = True,
-    ) -> List[ContratosCanceladosResumoApiViewModel]:
-        ...
+        async_req: Literal[False] = False,
+    ) -> List[ContratosCanceladosResumoApiViewModel]: ...
 
     @overload
     def get_canceled_memberships(
@@ -179,10 +173,8 @@ class MemberMembershipApi:
         contract_type: Optional[str] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
-        async_req: Literal[False] = False,
-    ) -> List[ContratosCanceladosResumoApiViewModel]:
-        ...
-
+        async_req: Literal[True] = True,
+    ) -> List[ContratosCanceladosResumoApiViewModel]: ...
     def get_canceled_memberships(
         self,
         id_member: Optional[int] = None,

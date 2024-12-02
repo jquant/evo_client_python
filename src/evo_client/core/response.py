@@ -43,12 +43,10 @@ class RESTResponse(io.IOBase):
         raise ValueError("Response content is not in JSON format")
 
     @overload
-    def deserialize(self, response_type: Type[T]) -> T:
-        ...
+    def deserialize(self, response_type: Type[T]) -> T: ...
 
     @overload
-    def deserialize(self, response_type: Type[Iterable[T]]) -> List[T]:
-        ...
+    def deserialize(self, response_type: Type[Iterable[T]]) -> List[T]: ...
 
     def deserialize(self, response_type: Type[T] | Type[Iterable[T]]) -> T | List[T]:
         """Deserialize response data into the specified type."""
@@ -59,7 +57,6 @@ class RESTResponse(io.IOBase):
         origin = get_origin(response_type)
         if origin is list:
             item_type = get_args(response_type)[0]
-            print(origin, item_type)
             return list(item_type.model_validate(item) for item in self.json())
 
         # Direct construction for simple types
