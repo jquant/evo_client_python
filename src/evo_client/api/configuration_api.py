@@ -13,7 +13,7 @@
 from __future__ import absolute_import
 
 from multiprocessing.pool import AsyncResult
-from typing import Any, Dict, List, Optional, Union, overload
+from typing import Any, Dict, List, Literal, Optional, Union, overload
 
 from evo_client.core.api_client import ApiClient
 
@@ -34,12 +34,12 @@ class ConfigurationApi:
 
     @overload
     def get_gateway_config(
-        self, async_req: bool = True
+        self, async_req: Literal[True] = True
     ) -> Union[EmpresasFiliaisGatewayViewModel, AsyncResult[Any]]: ...
 
     @overload
     def get_gateway_config(
-        self, async_req: bool = False
+        self, async_req: Literal[False] = False
     ) -> EmpresasFiliaisGatewayViewModel: ...
 
     def get_gateway_config(
@@ -65,12 +65,12 @@ class ConfigurationApi:
 
     @overload
     def get_branch_config(
-        self, async_req: bool = True
+        self, async_req: Literal[True] = True
     ) -> Union[ConfiguracaoApiViewModel, AsyncResult[Any]]: ...
 
     @overload
     def get_branch_config(
-        self, async_req: bool = False
+        self, async_req: Literal[False] = False
     ) -> ConfiguracaoApiViewModel: ...
 
     def get_branch_config(
@@ -96,12 +96,12 @@ class ConfigurationApi:
 
     @overload
     def get_occupations(
-        self, async_req: bool = True
+        self, async_req: Literal[True] = True
     ) -> Union[List[EmpresasFiliaisOcupacaoViewModel], AsyncResult[Any]]: ...
 
     @overload
     def get_occupations(
-        self, async_req: bool = False
+        self, async_req: Literal[False] = False
     ) -> List[EmpresasFiliaisOcupacaoViewModel]: ...
 
     def get_occupations(
@@ -127,12 +127,12 @@ class ConfigurationApi:
 
     @overload
     def get_card_flags(
-        self, async_req: bool = True
+        self, async_req: Literal[True] = True
     ) -> Union[List[BandeirasBasicoViewModel], AsyncResult[Any]]: ...
 
     @overload
     def get_card_flags(
-        self, async_req: bool = False
+        self, async_req: Literal[False] = False
     ) -> List[BandeirasBasicoViewModel]: ...
 
     def get_card_flags(
@@ -157,10 +157,10 @@ class ConfigurationApi:
         )
 
     @overload
-    def get_translations(self, async_req: bool = True) -> AsyncResult[Any]: ...
+    def get_translations(self, async_req: Literal[True] = True) -> AsyncResult[Any]: ...
 
     @overload
-    def get_translations(self, async_req: bool = False) -> Any: ...
+    def get_translations(self, async_req: Literal[False] = False) -> Any: ...
 
     def get_translations(self, async_req: bool = False) -> Union[Any, AsyncResult[Any]]:
         """

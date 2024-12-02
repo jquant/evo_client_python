@@ -1,5 +1,5 @@
 from multiprocessing.pool import AsyncResult
-from typing import Any, Dict, List, Optional, Union, overload
+from typing import Any, Dict, List, Optional, Union, overload, Literal
 
 from ..core.api_client import ApiClient
 from ..models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
@@ -16,11 +16,13 @@ class WebhookApi:
 
     @overload
     def delete_webhook(
-        self, webhook_id: int, async_req: bool = True
+        self, webhook_id: int, async_req: Literal[True] = True
     ) -> AsyncResult[Any]: ...
 
     @overload
-    def delete_webhook(self, webhook_id: int, async_req: bool = False) -> Any: ...
+    def delete_webhook(
+        self, webhook_id: int, async_req: Literal[False] = False
+    ) -> Any: ...
 
     def delete_webhook(
         self, webhook_id: int, async_req: bool = False
@@ -43,10 +45,10 @@ class WebhookApi:
         )
 
     @overload
-    def get_webhooks(self, async_req: bool = True) -> AsyncResult[Any]: ...
+    def get_webhooks(self, async_req: Literal[True] = True) -> AsyncResult[Any]: ...
 
     @overload
-    def get_webhooks(self, async_req: bool = False) -> Any: ...
+    def get_webhooks(self, async_req: Literal[False] = False) -> Any: ...
 
     def get_webhooks(self, async_req: bool = False) -> Union[Any, AsyncResult[Any]]:
         """
@@ -73,7 +75,7 @@ class WebhookApi:
         branch_id: Optional[int] = None,
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
-        async_req: bool = True,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]: ...
 
     @overload
@@ -84,7 +86,7 @@ class WebhookApi:
         branch_id: Optional[int] = None,
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
-        async_req: bool = False,
+        async_req: Literal[False] = False,
     ) -> Any: ...
 
     def create_webhook(

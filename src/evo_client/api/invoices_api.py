@@ -15,7 +15,7 @@ from __future__ import absolute_import
 import re  # noqa: F401
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
-from typing import Any, List, Optional, Union, overload
+from typing import Any, List, Optional, Union, overload, Literal
 
 from evo_client.core.api_client import ApiClient
 
@@ -45,9 +45,8 @@ class InvoicesApi:
         member_id: Optional[int] = None,
         status_invoice: Optional[List[InvoiceStatus]] = None,
         types_invoice: Optional[List[InvoiceType]] = None,
-        async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_invoices(
@@ -63,9 +62,8 @@ class InvoicesApi:
         member_id: Optional[int] = None,
         status_invoice: Optional[List[InvoiceStatus]] = None,
         types_invoice: Optional[List[InvoiceType]] = None,
-        async_req: bool = False,
-    ) -> EnotasRetorno:
-        ...
+        async_req: Literal[False] = False,
+    ) -> EnotasRetorno: ...
 
     def get_invoices(
         self,

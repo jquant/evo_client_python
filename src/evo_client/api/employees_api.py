@@ -1,5 +1,5 @@
 from multiprocessing.pool import AsyncResult
-from typing import Any, List, Optional, Union, overload
+from typing import Any, List, Optional, Union, overload, Literal
 
 from ..core.api_client import ApiClient
 from ..models.employee_api_integracao_atualizacao_view_model import (
@@ -24,7 +24,7 @@ class EmployeesApi:
         email: Optional[str] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
-        async_req: bool = True,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]: ...
 
     @overload
@@ -35,7 +35,7 @@ class EmployeesApi:
         email: Optional[str] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
-        async_req: bool = False,
+        async_req: Literal[False] = False,
     ) -> List[FuncionariosResumoApiViewModel]: ...
 
     def get_employees(
@@ -81,11 +81,13 @@ class EmployeesApi:
 
     @overload
     def delete_employee(
-        self, employee_id: int, async_req: bool = True
+        self, employee_id: int, async_req: Literal[True] = True
     ) -> AsyncResult[Any]: ...
 
     @overload
-    def delete_employee(self, employee_id: int, async_req: bool = False) -> Any: ...
+    def delete_employee(
+        self, employee_id: int, async_req: Literal[False] = False
+    ) -> Any: ...
 
     def delete_employee(
         self, employee_id: int, async_req: bool = False
@@ -108,12 +110,14 @@ class EmployeesApi:
 
     @overload
     def update_employee(
-        self, employee: EmployeeApiIntegracaoViewModel, async_req: bool = True
+        self, employee: EmployeeApiIntegracaoViewModel, async_req: Literal[True] = True
     ) -> AsyncResult[Any]: ...
 
     @overload
     def update_employee(
-        self, employee: EmployeeApiIntegracaoViewModel, async_req: bool = False
+        self,
+        employee: EmployeeApiIntegracaoViewModel,
+        async_req: Literal[False] = False,
     ) -> Any: ...
 
     def update_employee(
@@ -139,14 +143,14 @@ class EmployeesApi:
     def create_employee(
         self,
         employee: EmployeeApiIntegracaoAtualizacaoViewModel,
-        async_req: bool = True,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]: ...
 
     @overload
     def create_employee(
         self,
         employee: EmployeeApiIntegracaoAtualizacaoViewModel,
-        async_req: bool = False,
+        async_req: Literal[False] = False,
     ) -> Union[Any, AsyncResult[Any]]: ...
 
     def create_employee(

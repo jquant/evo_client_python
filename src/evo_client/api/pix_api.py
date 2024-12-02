@@ -1,5 +1,5 @@
 from multiprocessing.pool import AsyncResult
-from typing import Any, Optional, Union, overload
+from typing import Any, Optional, Union, overload, Literal
 
 from ..core.api_client import ApiClient
 from ..models.pix_payment_details_view_model import PixPaymentDetailsViewModel
@@ -14,15 +14,15 @@ class PixApi:
 
     @overload
     def get_qr_code(
-        self, pix_receipt_id: Optional[int] = None, async_req: bool = True
-    ) -> AsyncResult[Any]:
-        ...
+        self, pix_receipt_id: Optional[int] = None, async_req: Literal[True] = True
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_qr_code(
-        self, pix_receipt_id: Optional[int] = None, async_req: bool = False
-    ) -> PixPaymentDetailsViewModel:
-        ...
+        self,
+        pix_receipt_id: Optional[int] = None,
+        async_req: Literal[False] = False,
+    ) -> PixPaymentDetailsViewModel: ...
 
     def get_qr_code(
         self, pix_receipt_id: Optional[int] = None, async_req: bool = False
