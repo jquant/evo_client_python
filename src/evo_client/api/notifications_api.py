@@ -15,18 +15,16 @@ class NotificationsApi:
     @overload
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: bool = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: bool = False
-    ) -> None:
-        ...
+    ) -> Any: ...
 
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: bool = False
-    ) -> Union[None, AsyncResult[Any]]:
+    ) -> Union[Any, AsyncResult[Any]]:
         """
         Create a new member notification.
 

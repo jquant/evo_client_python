@@ -23,8 +23,7 @@ class VoucherApi:
         valid: Optional[bool] = None,
         voucher_type: Optional[int] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_vouchers(
@@ -37,8 +36,7 @@ class VoucherApi:
         valid: Optional[bool] = None,
         voucher_type: Optional[int] = None,
         async_req: bool = False,
-    ) -> List[VouchersResumoApiViewModel]:
-        ...
+    ) -> List[VouchersResumoApiViewModel]: ...
 
     def get_vouchers(
         self,
@@ -97,22 +95,20 @@ class VoucherApi:
         self,
         voucher_id: int,
         async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_voucher_details(
         self,
         voucher_id: int,
         async_req: bool = False,
-    ) -> Dict[str, Any]:
-        ...
+    ) -> Any: ...
 
     def get_voucher_details(
         self,
         voucher_id: int,
         async_req: bool = False,
-    ) -> Union[Dict[str, Any], AsyncResult[Any]]:
+    ) -> Union[Any, AsyncResult[Any]]:
         """
         Get detailed information about a specific voucher.
 
@@ -130,7 +126,6 @@ class VoucherApi:
         return self.api_client.call_api(
             resource_path=f"{self.base_path}/{voucher_id}",
             method="GET",
-            response_type=Dict[str, Any],
             headers={"Accept": ["text/plain", "application/json", "text/json"]},
             auth_settings=["Basic"],
             async_req=async_req,
@@ -148,8 +143,7 @@ class VoucherApi:
         usage_limit: Optional[int] = None,
         min_value: Optional[float] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def create_voucher(
@@ -163,8 +157,7 @@ class VoucherApi:
         usage_limit: Optional[int] = None,
         min_value: Optional[float] = None,
         async_req: bool = False,
-    ) -> Dict[str, Any]:
-        ...
+    ) -> Any: ...
 
     def create_voucher(
         self,
@@ -177,7 +170,7 @@ class VoucherApi:
         usage_limit: Optional[int] = None,
         min_value: Optional[float] = None,
         async_req: bool = False,
-    ) -> Union[Dict[str, Any], AsyncResult[Any]]:
+    ) -> Union[Any, AsyncResult[Any]]:
         """
         Create a new voucher.
 
@@ -210,7 +203,6 @@ class VoucherApi:
             resource_path=self.base_path,
             method="POST",
             body={k: v for k, v in voucher_data.items() if v is not None},
-            response_type=Dict[str, Any],
             headers={
                 "Accept": ["text/plain", "application/json", "text/json"],
                 "Content-Type": ["application/json"],
