@@ -22,8 +22,8 @@ class VoucherApi:
         skip: Optional[int] = None,
         valid: Optional[bool] = None,
         voucher_type: Optional[int] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> List[VouchersResumoApiViewModel]:
         ...
 
     @overload
@@ -36,8 +36,8 @@ class VoucherApi:
         skip: Optional[int] = None,
         valid: Optional[bool] = None,
         voucher_type: Optional[int] = None,
-        async_req: Literal[False] = False,
-    ) -> List[VouchersResumoApiViewModel]:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def get_vouchers(
@@ -96,16 +96,16 @@ class VoucherApi:
     def get_voucher_details(
         self,
         voucher_id: int,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> Any:
         ...
 
     @overload
     def get_voucher_details(
         self,
         voucher_id: int,
-        async_req: Literal[False] = False,
-    ) -> Any:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def get_voucher_details(
@@ -146,8 +146,8 @@ class VoucherApi:
         branch_id: Optional[int] = None,
         usage_limit: Optional[int] = None,
         min_value: Optional[float] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> Any:
         ...
 
     @overload
@@ -161,8 +161,8 @@ class VoucherApi:
         branch_id: Optional[int] = None,
         usage_limit: Optional[int] = None,
         min_value: Optional[float] = None,
-        async_req: Literal[False] = False,
-    ) -> Any:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def create_voucher(

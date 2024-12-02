@@ -15,13 +15,13 @@ class WebhookApi:
         self.base_path = "/api/v1/webhook"
 
     @overload
-    def delete_webhook(
-        self, webhook_id: int, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
+    def delete_webhook(self, webhook_id: int, async_req: Literal[False] = False) -> Any:
         ...
 
     @overload
-    def delete_webhook(self, webhook_id: int, async_req: Literal[False] = False) -> Any:
+    def delete_webhook(
+        self, webhook_id: int, async_req: Literal[True] = True
+    ) -> AsyncResult[Any]:
         ...
 
     def delete_webhook(
@@ -45,11 +45,11 @@ class WebhookApi:
         )
 
     @overload
-    def get_webhooks(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
+    def get_webhooks(self, async_req: Literal[False] = False) -> Any:
         ...
 
     @overload
-    def get_webhooks(self, async_req: Literal[False] = False) -> Any:
+    def get_webhooks(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
         ...
 
     def get_webhooks(self, async_req: bool = False) -> Union[Any, AsyncResult[Any]]:
@@ -77,8 +77,8 @@ class WebhookApi:
         branch_id: Optional[int] = None,
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> Any:
         ...
 
     @overload
@@ -89,8 +89,8 @@ class WebhookApi:
         branch_id: Optional[int] = None,
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
-        async_req: Literal[False] = False,
-    ) -> Any:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def create_webhook(

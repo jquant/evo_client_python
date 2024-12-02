@@ -25,8 +25,8 @@ class WorkoutApi:
         professor_id: Optional[int] = None,
         total_weeks: Optional[int] = None,
         weekly_frequency: Optional[int] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> Any:
         ...
 
     @overload
@@ -42,8 +42,8 @@ class WorkoutApi:
         professor_id: Optional[int] = None,
         total_weeks: Optional[int] = None,
         weekly_frequency: Optional[int] = None,
-        async_req: Literal[False] = False,
-    ) -> Any:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def update_workout(
@@ -106,8 +106,8 @@ class WorkoutApi:
         workout_id: Optional[int] = None,
         inactive: Optional[bool] = None,
         deleted: Optional[bool] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> Any:
         ...
 
     @overload
@@ -119,8 +119,8 @@ class WorkoutApi:
         workout_id: Optional[int] = None,
         inactive: Optional[bool] = None,
         deleted: Optional[bool] = None,
-        async_req: Literal[False] = False,
-    ) -> Any:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def get_client_workouts(
@@ -170,8 +170,8 @@ class WorkoutApi:
         year: Optional[int] = None,
         skip: Optional[int] = None,
         take: Optional[int] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> Any:
         ...
 
     @overload
@@ -182,8 +182,8 @@ class WorkoutApi:
         year: Optional[int] = None,
         skip: Optional[int] = None,
         take: Optional[int] = None,
-        async_req: Literal[False] = False,
-    ) -> Any:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def get_workouts_by_month_year_professor(
@@ -227,8 +227,8 @@ class WorkoutApi:
         self,
         employee_id: Optional[int] = None,
         tag_id: Optional[int] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> Any:
         ...
 
     @overload
@@ -236,8 +236,8 @@ class WorkoutApi:
         self,
         employee_id: Optional[int] = None,
         tag_id: Optional[int] = None,
-        async_req: Literal[False] = False,
-    ) -> Any:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def get_default_workouts(
@@ -285,8 +285,8 @@ class WorkoutApi:
         prospect_id: Optional[int] = None,
         employee_id: Optional[int] = None,
         prescription_date: Optional[datetime] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> bool:
         ...
 
     @overload
@@ -298,8 +298,8 @@ class WorkoutApi:
         prospect_id: Optional[int] = None,
         employee_id: Optional[int] = None,
         prescription_date: Optional[datetime] = None,
-        async_req: Literal[False] = False,
-    ) -> bool:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def link_workout_to_client(

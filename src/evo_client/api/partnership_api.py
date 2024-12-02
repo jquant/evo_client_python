@@ -19,8 +19,8 @@ class PartnershipApi:
         status: Optional[int] = None,
         description: Optional[str] = None,
         dt_created: Optional[datetime] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> List[ConveniosApiViewModel]:
         ...
 
     @overload
@@ -29,8 +29,8 @@ class PartnershipApi:
         status: Optional[int] = None,
         description: Optional[str] = None,
         dt_created: Optional[datetime] = None,
-        async_req: Literal[False] = False,
-    ) -> List[ConveniosApiViewModel]:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def get_partnerships(

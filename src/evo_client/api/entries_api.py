@@ -40,8 +40,8 @@ class EntriesApi:
         skip: Optional[int] = None,
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> List[EntradasResumoApiViewModel]:
         ...
 
     @overload
@@ -53,8 +53,8 @@ class EntriesApi:
         skip: Optional[int] = None,
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
-        async_req: Literal[False] = False,
-    ) -> List[EntradasResumoApiViewModel]:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def get_entries(
@@ -113,8 +113,8 @@ class EntriesApi:
         member_id: int,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> List[EntradasResumoApiViewModel]:
         ...
 
     @overload
@@ -123,8 +123,8 @@ class EntriesApi:
         member_id: int,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
-        async_req: Literal[False] = False,
-    ) -> List[EntradasResumoApiViewModel]:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def get_member_entries(
@@ -152,14 +152,14 @@ class EntriesApi:
 
     @overload
     def get_entry_by_id(
-        self, entry_id: int, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
+        self, entry_id: int, async_req: Literal[False] = False
+    ) -> Optional[EntradasResumoApiViewModel]:
         ...
 
     @overload
     def get_entry_by_id(
-        self, entry_id: int, async_req: Literal[False] = False
-    ) -> Optional[EntradasResumoApiViewModel]:
+        self, entry_id: int, async_req: Literal[True] = True
+    ) -> AsyncResult[Any]:
         ...
 
     def get_entry_by_id(

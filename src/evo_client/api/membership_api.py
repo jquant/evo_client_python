@@ -16,13 +16,13 @@ class MembershipApi:
         self.base_path = "/api/v1/membership"
 
     @overload
-    def get_categories(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
-        ...
-
-    @overload
     def get_categories(
         self, async_req: Literal[False] = False
     ) -> List[W12UtilsCategoryMembershipViewModel]:
+        ...
+
+    @overload
+    def get_categories(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
         ...
 
     def get_categories(
@@ -46,8 +46,8 @@ class MembershipApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         active: Optional[bool] = None,
-        async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
+        async_req: Literal[False] = False,
+    ) -> List[ContratosResumoApiViewModel]:
         ...
 
     @overload
@@ -59,8 +59,8 @@ class MembershipApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         active: Optional[bool] = None,
-        async_req: Literal[False] = False,
-    ) -> List[ContratosResumoApiViewModel]:
+        async_req: Literal[True] = True,
+    ) -> AsyncResult[Any]:
         ...
 
     def get_memberships(

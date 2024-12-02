@@ -59,7 +59,6 @@ class RESTResponse(io.IOBase):
         origin = get_origin(response_type)
         if origin is list:
             item_type = get_args(response_type)[0]
-            print(origin, item_type)
             return list(item_type.model_validate(item) for item in self.json())
 
         # Direct construction for simple types
