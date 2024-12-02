@@ -23,12 +23,12 @@ class BankAccountsApi:
         self.base_path = "/api/v1/bank-accounts"
 
     @overload
-    def get_accounts(
-        self, async_req: Literal[True] = True
-    ) -> BankAccountsViewModel: ...
+    def get_accounts(self, async_req: Literal[True] = True) -> BankAccountsViewModel:
+        ...
 
     @overload
-    def get_accounts(self, async_req: Literal[False] = False) -> AsyncResult[Any]: ...
+    def get_accounts(self, async_req: Literal[False] = False) -> AsyncResult[Any]:
+        ...
 
     def get_accounts(
         self, async_req: bool = False

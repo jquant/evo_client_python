@@ -1,5 +1,5 @@
 from multiprocessing.pool import AsyncResult
-from typing import Any, List, Optional, Union, overload, Literal
+from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.contratos_resumo_api_view_model import ContratosResumoApiViewModel
@@ -16,12 +16,14 @@ class MembershipApi:
         self.base_path = "/api/v1/membership"
 
     @overload
-    def get_categories(self, async_req: Literal[True] = True) -> AsyncResult[Any]: ...
+    def get_categories(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_categories(
         self, async_req: Literal[False] = False
-    ) -> List[W12UtilsCategoryMembershipViewModel]: ...
+    ) -> List[W12UtilsCategoryMembershipViewModel]:
+        ...
 
     def get_categories(
         self, async_req: bool = False
@@ -45,7 +47,8 @@ class MembershipApi:
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_memberships(
@@ -57,7 +60,8 @@ class MembershipApi:
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[False] = False,
-    ) -> List[ContratosResumoApiViewModel]: ...
+    ) -> List[ContratosResumoApiViewModel]:
+        ...
 
     def get_memberships(
         self,
