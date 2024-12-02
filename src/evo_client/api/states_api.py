@@ -12,14 +12,12 @@ class StatesApi:
         self.base_path = "/api/v1/states"
 
     @overload
-    def get_states(self, async_req: bool = True) -> AsyncResult[Any]:
-        ...
+    def get_states(self, async_req: bool = True) -> AsyncResult[Any]: ...
 
     @overload
-    def get_states(self, async_req: bool = False) -> None:
-        ...
+    def get_states(self, async_req: bool = False) -> Any: ...
 
-    def get_states(self, async_req: bool = False) -> Union[None, AsyncResult[Any]]:
+    def get_states(self, async_req: bool = False) -> Union[Any, AsyncResult[Any]]:
         """
         Get list of available states/provinces.
 

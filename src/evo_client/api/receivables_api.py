@@ -51,8 +51,7 @@ class ReceivablesApi:
         sale_date_start: Optional[datetime] = None,
         sale_date_end: Optional[datetime] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_receivables(
@@ -88,8 +87,7 @@ class ReceivablesApi:
         sale_date_start: Optional[datetime] = None,
         sale_date_end: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> List[ReceivablesApiViewModel]:
-        ...
+    ) -> List[ReceivablesApiViewModel]: ...
 
     def get_receivables(
         self,
@@ -213,8 +211,7 @@ class ReceivablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_revenue_centers(
@@ -222,8 +219,7 @@ class ReceivablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: bool = False,
-    ) -> RevenueCenterApiViewModel:
-        ...
+    ) -> RevenueCenterApiViewModel: ...
 
     def get_revenue_centers(
         self,
@@ -256,18 +252,16 @@ class ReceivablesApi:
     @overload
     def mark_received(
         self, receivables: ReceivablesMaskReceivedViewModel, async_req: bool = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def mark_received(
         self, receivables: ReceivablesMaskReceivedViewModel, async_req: bool = False
-    ) -> None:
-        ...
+    ) -> Any: ...
 
     def mark_received(
         self, receivables: ReceivablesMaskReceivedViewModel, async_req: bool = False
-    ) -> Union[None, AsyncResult[Any]]:
+    ) -> Union[Any, AsyncResult[Any]]:
         """
         Mark receivables as received.
 

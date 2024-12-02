@@ -26,8 +26,7 @@ class WorkoutApi:
         total_weeks: Optional[int] = None,
         weekly_frequency: Optional[int] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def update_workout(
@@ -43,8 +42,7 @@ class WorkoutApi:
         total_weeks: Optional[int] = None,
         weekly_frequency: Optional[int] = None,
         async_req: bool = False,
-    ) -> None:
-        ...
+    ) -> Any: ...
 
     def update_workout(
         self,
@@ -59,7 +57,7 @@ class WorkoutApi:
         total_weeks: Optional[int] = None,
         weekly_frequency: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[None, AsyncResult[Any]]:
+    ) -> Union[Any, AsyncResult[Any]]:
         """
         Update a client's prescribed workout.
 
@@ -107,8 +105,7 @@ class WorkoutApi:
         inactive: Optional[bool] = None,
         deleted: Optional[bool] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_client_workouts(
@@ -120,8 +117,7 @@ class WorkoutApi:
         inactive: Optional[bool] = None,
         deleted: Optional[bool] = None,
         async_req: bool = False,
-    ) -> List[Dict[str, Any]]:
-        ...
+    ) -> Any: ...
 
     def get_client_workouts(
         self,
@@ -132,7 +128,7 @@ class WorkoutApi:
         inactive: Optional[bool] = None,
         deleted: Optional[bool] = None,
         async_req: bool = False,
-    ) -> Union[List[Dict[str, Any]], AsyncResult[Any]]:
+    ) -> Union[Any, AsyncResult[Any]]:
         """
         Get workouts for a client, prospect or employee.
 
@@ -158,7 +154,6 @@ class WorkoutApi:
             resource_path=f"{self.base_path}/default-client-workout",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
-            response_type=List[Dict[str, Any]],
             auth_settings=["Basic"],
             async_req=async_req,
         )
@@ -172,8 +167,7 @@ class WorkoutApi:
         skip: Optional[int] = None,
         take: Optional[int] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_workouts_by_month_year_professor(
@@ -184,8 +178,7 @@ class WorkoutApi:
         skip: Optional[int] = None,
         take: Optional[int] = None,
         async_req: bool = False,
-    ) -> List[Dict[str, Any]]:
-        ...
+    ) -> Any: ...
 
     def get_workouts_by_month_year_professor(
         self,
@@ -195,7 +188,7 @@ class WorkoutApi:
         skip: Optional[int] = None,
         take: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[List[Dict[str, Any]], AsyncResult[Any]]:
+    ) -> Union[Any, AsyncResult[Any]]:
         """
         Get workouts filtered by month, year and/or professor.
 
@@ -219,7 +212,6 @@ class WorkoutApi:
             resource_path=f"{self.base_path}/workout-monthyear-professor",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
-            response_type=List[Dict[str, Any]],
             auth_settings=["Basic"],
             async_req=async_req,
         )
@@ -230,8 +222,7 @@ class WorkoutApi:
         employee_id: Optional[int] = None,
         tag_id: Optional[int] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def get_default_workouts(
@@ -239,15 +230,14 @@ class WorkoutApi:
         employee_id: Optional[int] = None,
         tag_id: Optional[int] = None,
         async_req: bool = False,
-    ) -> List[Dict[str, Any]]:
-        ...
+    ) -> Any: ...
 
     def get_default_workouts(
         self,
         employee_id: Optional[int] = None,
         tag_id: Optional[int] = None,
         async_req: bool = False,
-    ) -> Union[List[Dict[str, Any]], AsyncResult[Any]]:
+    ) -> Union[Any, AsyncResult[Any]]:
         """
         Get all default workouts with optional filtering.
 
@@ -274,7 +264,6 @@ class WorkoutApi:
             resource_path=f"{self.base_path}/default-workout",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
-            response_type=List[Dict[str, Any]],
             auth_settings=["Basic"],
             async_req=async_req,
         )
@@ -289,8 +278,7 @@ class WorkoutApi:
         employee_id: Optional[int] = None,
         prescription_date: Optional[datetime] = None,
         async_req: bool = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     @overload
     def link_workout_to_client(
@@ -302,8 +290,7 @@ class WorkoutApi:
         employee_id: Optional[int] = None,
         prescription_date: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> bool:
-        ...
+    ) -> bool: ...
 
     def link_workout_to_client(
         self,
