@@ -1,6 +1,6 @@
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
-from typing import Any, List, Optional, Union, overload, Literal
+from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.receivables_api_view_model import ReceivablesApiViewModel
@@ -51,7 +51,8 @@ class ReceivablesApi:
         sale_date_start: Optional[datetime] = None,
         sale_date_end: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_receivables(
@@ -87,7 +88,8 @@ class ReceivablesApi:
         sale_date_start: Optional[datetime] = None,
         sale_date_end: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> List[ReceivablesApiViewModel]: ...
+    ) -> List[ReceivablesApiViewModel]:
+        ...
 
     def get_receivables(
         self,
@@ -211,7 +213,8 @@ class ReceivablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_revenue_centers(
@@ -219,7 +222,8 @@ class ReceivablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> RevenueCenterApiViewModel: ...
+    ) -> RevenueCenterApiViewModel:
+        ...
 
     def get_revenue_centers(
         self,
@@ -254,14 +258,16 @@ class ReceivablesApi:
         self,
         receivables: ReceivablesMaskReceivedViewModel,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def mark_received(
         self,
         receivables: ReceivablesMaskReceivedViewModel,
         async_req: Literal[False] = False,
-    ) -> Any: ...
+    ) -> Any:
+        ...
 
     def mark_received(
         self, receivables: ReceivablesMaskReceivedViewModel, async_req: bool = False

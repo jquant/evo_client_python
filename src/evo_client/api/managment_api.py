@@ -1,6 +1,6 @@
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
-from typing import Any, List, Optional, Union, overload, Literal
+from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.clientes_ativos_view_model import ClientesAtivosViewModel
@@ -18,14 +18,14 @@ class ManagementApi:
         self.base_path = "/api/v1/management"
 
     @overload
-    def get_active_clients(
-        self, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]: ...
+    def get_active_clients(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_active_clients(
         self, async_req: Literal[False] = False
-    ) -> List[ClientesAtivosViewModel]: ...
+    ) -> List[ClientesAtivosViewModel]:
+        ...
 
     def get_active_clients(
         self, async_req: bool = False
@@ -54,7 +54,8 @@ class ManagementApi:
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_prospects(
@@ -62,7 +63,8 @@ class ManagementApi:
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> List[SpsRelProspectsCadastradosConvertidos]: ...
+    ) -> List[SpsRelProspectsCadastradosConvertidos]:
+        ...
 
     def get_prospects(
         self,
@@ -99,7 +101,8 @@ class ManagementApi:
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def get_non_renewed_clients(
@@ -107,7 +110,8 @@ class ManagementApi:
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> List[ContratoNaoRenovadosViewModel]: ...
+    ) -> List[ContratoNaoRenovadosViewModel]:
+        ...
 
     def get_non_renewed_clients(
         self,

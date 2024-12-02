@@ -1,6 +1,6 @@
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
-from typing import Any, List, Optional, Union, overload, Literal
+from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.contratos_cancelados_resumo_api_view_model import (
@@ -32,7 +32,8 @@ class MemberMembershipApi:
         add_fine: bool = False,
         value_fine: Optional[float] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     @overload
     def cancel_membership(
@@ -50,7 +51,8 @@ class MemberMembershipApi:
         add_fine: bool = False,
         value_fine: Optional[float] = None,
         async_req: Literal[False] = False,
-    ) -> Any: ...
+    ) -> Any:
+        ...
 
     def cancel_membership(
         self,
@@ -113,12 +115,14 @@ class MemberMembershipApi:
     @overload
     def get_membership(
         self, id_member_membership: int, async_req: Literal[True] = True
-    ) -> MemberMembershipApiViewModel: ...
+    ) -> MemberMembershipApiViewModel:
+        ...
 
     @overload
     def get_membership(
         self, id_member_membership: int, async_req: Literal[False] = False
-    ) -> MemberMembershipApiViewModel: ...
+    ) -> MemberMembershipApiViewModel:
+        ...
 
     def get_membership(
         self, id_member_membership: int, async_req: bool = False
@@ -156,7 +160,8 @@ class MemberMembershipApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> List[ContratosCanceladosResumoApiViewModel]: ...
+    ) -> List[ContratosCanceladosResumoApiViewModel]:
+        ...
 
     @overload
     def get_canceled_memberships(
@@ -175,7 +180,8 @@ class MemberMembershipApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> List[ContratosCanceladosResumoApiViewModel]: ...
+    ) -> List[ContratosCanceladosResumoApiViewModel]:
+        ...
 
     def get_canceled_memberships(
         self,
