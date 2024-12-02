@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 import requests
-
+from requests.auth import HTTPBasicAuth
 from evo_client.core.configuration import Configuration
 from evo_client.core.response import RESTResponse
 from evo_client.core.rest import RESTClient
@@ -19,7 +19,9 @@ def rest_client():
         "evo_client.core.rest.requests.Session",
         return_value=Mock(),
     ) as mock:
-        yield RESTClient(configuration=Configuration()), mock
+        yield RESTClient(
+            configuration=Configuration(username="test", password="test")
+        ), mock
 
 
 def test_rest_client_initialization(rest_client: Tuple[RESTClient, Mock]):
@@ -71,6 +73,7 @@ def test_request_get(rest_client: Tuple[RESTClient, Mock]):
         json=None,
         data=None,
         timeout=None,
+        auth=HTTPBasicAuth("test", "test"),
         stream=True,
     )
 
@@ -101,6 +104,7 @@ def test_request_post(rest_client: Tuple[RESTClient, Mock]):
         headers={"Content-Type": "application/json"},
         json={"data": "test"},
         data=None,
+        auth=HTTPBasicAuth("test", "test"),
         timeout=None,
         stream=True,
     )

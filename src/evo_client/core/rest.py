@@ -25,6 +25,7 @@ class RESTClient:
         maxsize: Optional[int] = None,
     ):
         self.session = self._create_session(configuration, pools_size, maxsize)
+        self.configuration = configuration
 
     def _create_session(
         self, config: Configuration, pools_size: int, maxsize: Optional[int]
@@ -65,6 +66,7 @@ class RESTClient:
         """Execute HTTP request with proper error handling."""
         method = method.upper()
         headers = headers or {"Content-Type": "application/json"}
+        auth = auth or self.configuration.get_basic_auth_token()
 
         try:
             response = self.session.request(
