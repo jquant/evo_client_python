@@ -9,7 +9,7 @@ from evo_client.core.request_handler import RequestHandler
 from evo_client.core.response import RESTResponse
 
 
-class TestModel(BaseModel):
+class SampleModel(BaseModel):
     id: int
     name: str
 
@@ -64,8 +64,8 @@ def mock_response():
 def test_execute(request_handler: RequestHandler, mock_response: Mock):
     """Test execute method of RequestHandler."""
     request_handler.rest_client.request = Mock(return_value=mock_response)
-    result = request_handler.execute(TestModel, method="GET", resource_path="/test")
-    assert isinstance(result, TestModel)
+    result = request_handler.execute(SampleModel, method="GET", resource_path="/test")
+    assert isinstance(result, SampleModel)
     assert result.id == 1
     assert result.name == "test"
 
@@ -82,10 +82,10 @@ def test_execute_async(request_handler: RequestHandler, mock_response: Mock):
     """Test execute_async method of RequestHandler."""
     request_handler.rest_client.request = Mock(return_value=mock_response)
     async_result = request_handler.execute_async(
-        TestModel, method="GET", resource_path="/test"
+        SampleModel, method="GET", resource_path="/test"
     )
     result = async_result.get()
-    assert isinstance(result, TestModel)
+    assert isinstance(result, SampleModel)
     assert result.id == 1
     assert result.name == "test"
 
@@ -113,8 +113,8 @@ def test_make_request(request_handler: RequestHandler, mock_response: Mock):
     """Test _make_request method of RequestHandler."""
     request_handler.rest_client.request = Mock(return_value=mock_response)
     result = request_handler._make_request(
-        TestModel, method="GET", resource_path="/test"
+        SampleModel, method="GET", resource_path="/test"
     )
-    assert isinstance(result, TestModel)
+    assert isinstance(result, SampleModel)
     assert result.id == 1
     assert result.name == "test"

@@ -18,6 +18,7 @@ class PaymentMethod(str, Enum):
 
 
 class ActivityStatus(int, Enum):
+    """Status of a membership"""
     FREE = 0
     AVAILABLE = 1
     FULL = 2

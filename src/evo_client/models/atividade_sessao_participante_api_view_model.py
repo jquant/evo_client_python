@@ -2,14 +2,15 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
-from .e_status_atividade_sessao import EStatusAtividadeSessao
+from .e_status_atividade_sessao import EStatusAtividadeAgendamento
 
 
 class AtividadeSessaoParticipanteApiViewModel(BaseModel):
     """Activity Session Participant API View Model
 
-    This model represents a participant in an activity session in the EVO API system.
-    Auto-generated from OpenAPI/Swagger specification.
+    This model represents an activity session in the EVO API system.
+    Used by get_schedule() to return activity schedules with their status
+    (LIVRE, LOTADA, etc.)
     """
 
     id_member: Optional[int] = Field(default=None, alias="idMember")
@@ -21,7 +22,7 @@ class AtividadeSessaoParticipanteApiViewModel(BaseModel):
     photo: Optional[str] = None
     justified_absence: Optional[bool] = Field(default=None, alias="justifiedAbsence")
     id_sale_item: Optional[int] = Field(default=None, alias="idSaleItem")
-    status: Optional[EStatusAtividadeSessao] = None
+    status: Optional[EStatusAtividadeAgendamento] = None
     exclusive: Optional[bool] = None
     id_branch: Optional[int] = Field(default=None, alias="idBranch")
     branch_name: Optional[str] = Field(default=None, alias="branchName")

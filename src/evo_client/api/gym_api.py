@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from typing import List, Optional, Dict, Any, Union, cast, TypeVar, Generic, Literal, overload
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, date
 from multiprocessing.pool import AsyncResult, Pool
 from decimal import Decimal
 from loguru import logger
@@ -426,20 +426,64 @@ class GymApi:
             activity_schedules = {}
             if include_details:
                 for act in activities:
-                    schedules = self.activities_api.get_schedule(
-                        member_id=None,
-                        date=None,
-                        branch_id=branch_id,
-                        activity_ids=[act.id_activity] if act.id_activity is not None else None,
-                        audience_ids=None,
-                        take=None,
-                        only_availables=False,
-                        show_full_week=False,
-                        branch_token=None,
-                        async_req=False
-                    )
-                    if schedules:
-                        activity_schedules[act.id_activity] = schedules
+                    try:
+                        # Get basic schedule first
+                        schedules = self.activities_api.get_schedule(
+                            member_id=None,
+                            date=datetime.now(),
+                            branch_id=branch_id,
+                            activity_ids=[act.id_activity] if act.id_activity is not None else None,
+                            audience_ids=None,
+                            take=None,
+                            only_availables=False,
+                            show_full_week=False,
+                            branch_token=None,
+                            async_req=False
+                        )
+                        
+                        if schedules:
+                            # Convert list of schedules to dictionary by weekday
+                            schedule_dict = {}
+                            for schedule in schedules:
+                                try:
+                                    config_id = getattr(schedule, "idConfiguration", None)
+                                    activity_date = getattr(schedule, "date", None) or datetime.now()
+                                    session_id = getattr(schedule, "idActivitySession", None)
+
+                                    if session_id:
+                                        # If we have a session ID, use that
+                                        detail = self.activities_api.get_schedule_detail(
+                                            config_id=None,
+                                            activity_date=None,
+                                            session_id=session_id,
+                                            async_req=False
+                                        )
+                                    elif config_id:
+                                        # Otherwise use config_id and activity_date
+                                        detail = self.activities_api.get_schedule_detail(
+                                            config_id=config_id,
+                                            activity_date=activity_date,
+                                            session_id=None,
+                                            async_req=False
+                                        )
+                                    else:
+                                        # Skip if we don't have either required combination
+                                        continue
+                                    
+                                    if detail and detail.week_day is not None:
+                                        weekday = str(detail.week_day)
+                                        if weekday not in schedule_dict:
+                                            schedule_dict[weekday] = []
+                                        if detail.date:
+                                            schedule_dict[weekday].append(detail.date.time())
+                                except Exception as e:
+                                    logger.warning(f"Error getting schedule detail: {str(e)}")
+                                    continue
+                        
+                        activity_schedules[act.id_activity] = schedule_dict
+                    except Exception as e:
+                        logger.warning(f"Error getting schedule for activity {act.id_activity}: {str(e)}")
+                        continue
 
             # Create activities with enhanced information
             gym_kb.activities = [
@@ -454,7 +498,7 @@ class GymApi:
                         (emp.name for emp in employees if emp.id_employee == act.id_activity),
                         None
                     ),
-                    schedule=activity_schedules.get(act.id_activity, {}) if include_details else {},
+                    schedule=activity_schedules.get(act.id_activity, {}),  # Use converted dictionary
                     status=ActivityStatus.AVAILABLE,  # Default to available
                     photo=act.photo,  # Add photo if available
                     color=act.color,  # Add color if available
@@ -477,7 +521,7 @@ class GymApi:
                     ),
                     allowChoosingSpot=getattr(act, 'allow_choosing_spot', False),
                     spots=getattr(act, 'spots', None),
-                    sessionDetails=activity_schedules.get(act.id_activity, []) if include_details else []
+                    sessionDetails=[]  # Skip session details for now to avoid status conversion issues
                 ) for act in activities
             ]
 
@@ -520,7 +564,7 @@ class GymApi:
             # First populate categories with default values for missing fields
             gym_kb.membership_categories = [
                 MembershipCategory(
-                    id=cat.id,
+                    id=cat.id_category_membership,
                     name=cat.name or "",
                     description="",  # Default empty description
                     isActive=True,  # Default to active
@@ -563,7 +607,7 @@ class GymApi:
             gym_kb.available_services = [
                 MembershipService(
                     id=service.id_service or 0,
-                    name=service.name or "",
+                    name=service.name_service or "",
                     description=service.online_sales_observations or "",
                     price=Decimal(str(service.value or 0)),
                     isRecurring=False,  # Not available in API model
@@ -747,48 +791,27 @@ class GymApi:
 
     def _group_overdue_receivables(self, receivables: List[Receivable]) -> List[OverdueMember]:
         """Group overdue receivables by member."""
-        member_map: Dict[int, List[Receivable]] = {}
-        overdue_members: List[OverdueMember] = []
-
-        # Group receivables by member
-        for receivable in receivables:
-            if receivable.member_id:
-                if receivable.member_id not in member_map:
-                    member_map[receivable.member_id] = []
-                member_map[receivable.member_id].append(receivable)
-
-        # Create OverdueMember objects
-        for member_id, member_receivables in member_map.items():
-            # Sort receivables by due date
-            member_receivables.sort(key=lambda r: r.due_date)
-            
-            # Calculate total overdue amount
-            total_overdue = sum((r.amount - (r.amount_paid or Decimal(0))) for r in member_receivables)
-            
-            # Get the earliest overdue date
-            overdue_since = member_receivables[0].due_date if member_receivables else datetime.now()
-            
-            # Get the last payment date
-            last_payment = None
-            for r in reversed(member_receivables):
-                if r.receiving_date:
-                    last_payment = r.receiving_date
-                    break
-            
-            overdue_members.append(OverdueMember(
-                id=member_id,
-                member_id=member_id,
-                name=member_receivables[0].member_name or "Unknown",
-                branch_id=member_receivables[0].branch_id,
-                total_overdue=Decimal(str(total_overdue or 0)),
-                overdue_since=overdue_since,
-                last_payment_date=last_payment,
-                overdue_receivables=member_receivables
-            ))
+        member_map: Dict[int, OverdueMember] = {}
         
-        # Sort by total overdue amount descending
-        overdue_members.sort(key=lambda m: m.total_overdue, reverse=True)
-        return overdue_members
+        for receivable in receivables:
+            if receivable.member_id and receivable.member_id not in member_map:
+                member_map[receivable.member_id] = OverdueMember(
+                    id=receivable.member_id,
+                    name=receivable.member_name or "Unknown",
+                    member_id=receivable.member_id,
+                    total_overdue=Decimal('0.00'),
+                    overdue_since=receivable.due_date or datetime.now(),
+                    overdue_receivables=[],
+                    branch_id=receivable.branch_id,
+                    last_payment_date=None
+                )
+            
+            if receivable.member_id:
+                member = member_map[receivable.member_id]
+                member.total_overdue += receivable.amount - (receivable.amount_paid or Decimal('0.00'))
+                member.overdue_receivables.append(receivable)
+        
+        return list(member_map.values())
 
     def _convert_sale(self, sale_vm: SalesViewModel) -> Sale:
         """Convert SDK sale model to our Sale model."""
@@ -905,89 +928,6 @@ class GymApi:
     ) -> TypedAsyncResult[GymOperatingData]:
         ...
 
-    def _convert_entry(self, entry: Any) -> GymEntry:
-        """Convert SDK entry model to our GymEntry model."""
-        try:
-            entry_type = EntryType.REGULAR
-            if entry.entry_type:
-                if entry.entry_type.lower() == "guest":
-                    entry_type = EntryType.GUEST
-                elif entry.entry_type.lower() == "trial":
-                    entry_type = EntryType.TRIAL
-                elif entry.entry_type.lower() == "event":
-                    entry_type = EntryType.EVENT
-
-            return GymEntry(
-                idEntry=entry.id or 0,
-                idMember=entry.id_member,
-                idProspect=entry.id_prospect,
-                registerDate=entry.date or datetime.now(),
-                entryType=entry_type,
-                status=EntryStatus.VALID,  # Default to valid since API doesn't provide status
-                idBranch=entry.id_branch,
-                idActivity=None,  # API doesn't provide activity info
-                idMembership=None,  # API doesn't provide membership info
-                deviceId=entry.device,
-                notes=entry.block_reason
-            )
-        except Exception as e:
-            logger.error(f"Error converting entry: {str(e)}")
-            return GymEntry(
-                idEntry=0,
-                idMember=None,
-                idProspect=None,
-                registerDate=datetime.now(),
-                entryType=EntryType.REGULAR,
-                status=EntryStatus.INVALID,
-                idBranch=None,
-                idActivity=None,
-                idMembership=None,
-                deviceId=None,
-                notes=None
-            )
-
-    def _aggregate_operating_data(
-        self,
-        results: List[Any],
-        from_date: Optional[datetime],
-        to_date: Optional[datetime]
-    ) -> GymOperatingData:
-        """Aggregate async results into a single GymOperatingData object."""
-        operating_data = GymOperatingData(
-            data_from=from_date,
-            data_to=to_date
-        )
-        
-        try:
-            # Unpack results in the same order they were requested
-            active_members, contracts, prospects, non_renewed, receivables, entries = results
-            
-            if active_members:
-                operating_data.active_members = [m.to_dict() for m in active_members]
-            
-            if contracts:
-                operating_data.active_contracts = contracts
-            
-            if prospects:
-                operating_data.prospects = [p.to_dict() for p in prospects]
-            
-            if non_renewed:
-                operating_data.non_renewed_members = [m.to_dict() for m in non_renewed]
-            
-            if receivables:
-                operating_data.receivables = [self._convert_receivable(r) for r in receivables]
-            
-            if entries:
-                operating_data.recent_entries = [self._convert_entry(e) for e in entries]
-            
-            # Calculate metrics after all data is aggregated
-            operating_data.calculate_metrics()
-                
-        except Exception as e:
-            logger.error(f"Error aggregating operating data: {str(e)}")
-            
-        return operating_data
-
     def get_operating_data(
         self,
         branch_id: Optional[int] = None,
@@ -1026,7 +966,7 @@ class GymApi:
                     registration_date_end=to_date,
                     async_req=True
                 )
-                
+
                 entries_result = self.entries_api.get_entries(
                     register_date_start=from_date,
                     register_date_end=to_date,
@@ -1124,7 +1064,6 @@ class GymApi:
             )
 
             return operating_data
-
         except Exception as e:
             logger.error(f"Error getting operating data: {str(e)}")
             return GymOperatingData(data_from=from_date, data_to=to_date)
@@ -1468,3 +1407,105 @@ class GymApi:
         except Exception as e:
             logger.error(f"Error processing member data: {str(e)}")
             raise
+
+    def _convert_entry(self, entry: Any) -> GymEntry:
+        """Convert SDK entry model to our GymEntry model."""
+        try:
+            entry_type = EntryType.REGULAR
+            if entry.entry_type:
+                if entry.entry_type.lower() == "guest":
+                    entry_type = EntryType.GUEST
+                elif entry.entry_type.lower() == "trial":
+                    entry_type = EntryType.TRIAL
+                elif entry.entry_type.lower() == "event":
+                    entry_type = EntryType.EVENT
+
+            return GymEntry(
+                idEntry=entry.id or 0,
+                idMember=entry.id_member,
+                idProspect=entry.id_prospect,
+                registerDate=entry.date or datetime.now(),
+                entryType=entry_type,
+                status=EntryStatus.VALID,  # Default to valid since API doesn't provide status
+                idBranch=entry.id_branch,
+                idActivity=None,  # API doesn't provide activity info
+                idMembership=None,  # API doesn't provide membership info
+                deviceId=entry.device,
+                notes=entry.block_reason
+            )
+        except Exception as e:
+            logger.error(f"Error converting entry: {str(e)}")
+            return GymEntry(
+                idEntry=0,
+                idMember=None,
+                idProspect=None,
+                registerDate=datetime.now(),
+                entryType=EntryType.REGULAR,
+                status=EntryStatus.INVALID,
+                idBranch=None,
+                idActivity=None,
+                idMembership=None,
+                deviceId=None,
+                notes=None
+            )
+
+    def _aggregate_operating_data(
+        self,
+        results: List[Any],
+        from_date: Optional[datetime],
+        to_date: Optional[datetime]
+    ) -> GymOperatingData:
+        """Aggregate async results into a single GymOperatingData object."""
+        operating_data = GymOperatingData(
+            data_from=from_date,
+            data_to=to_date
+        )
+        
+        try:
+            # Unpack results in the same order they were requested
+            active_members, contracts, prospects, non_renewed, receivables, entries = results
+            
+            if active_members:
+                operating_data.active_members = [m.to_dict() for m in active_members]
+            
+            if contracts:
+                operating_data.active_contracts = contracts
+            
+            if prospects:
+                operating_data.prospects = [p.to_dict() for p in prospects]
+            
+            if non_renewed:
+                operating_data.non_renewed_members = [m.to_dict() for m in non_renewed]
+            
+            if receivables:
+                operating_data.receivables = [self._convert_receivable(r) for r in receivables]
+                operating_data.overdue_members = self._group_overdue_receivables([
+                    self._convert_receivable(r) for r in receivables 
+                    if r.status == ReceivableStatus.OVERDUE
+                ])
+            
+            if entries:
+                operating_data.recent_entries = [self._convert_entry(e) for e in entries]
+            
+            # Calculate metrics
+            mrr = Decimal('0.00')
+            if contracts:
+                contract_mrr = sum((Decimal(str(contract.plan.price)) if hasattr(contract.plan, 'price') else Decimal('0.00')) 
+                                 for contract in contracts if contract.plan)
+                mrr = Decimal(str(contract_mrr))
+
+            total_active = len(active_members) if active_members else 0
+            total_churned = len(non_renewed) if non_renewed else 0
+            churn_rate = Decimal('0.00')
+            if total_active > 0:
+                churn_rate = Decimal(str(total_churned / total_active * 100))
+
+            operating_data.mrr = mrr
+            operating_data.churn_rate = churn_rate
+            operating_data.total_active_members = total_active
+            operating_data.total_churned_members = total_churned
+            
+        except Exception as e:
+            logger.error(f"Error aggregating operating data: {str(e)}")
+            
+        return operating_data

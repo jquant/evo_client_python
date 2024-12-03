@@ -91,8 +91,8 @@ if __name__ == "__main__":
     import os
     
     # Get credentials from environment variables
-    username = os.getenv('EVO_USERNAME')
-    password = os.getenv('EVO_PASSWORD')
+    username = "redfit"
+    password = "D180781C-E858-4482-9EF9-13BF9F2DCA4F"
     host = os.getenv('EVO_API_HOST', 'https://evo-integracao-api.w12app.com.br')
     
     if not username or not password:
