@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class BandeirasBasicoViewModel(BaseModel):
@@ -9,6 +9,7 @@ class BandeirasBasicoViewModel(BaseModel):
     This model represents basic flag information in the EVO API system.
     Auto-generated from OpenAPI/Swagger specification.
     """
+    model_config = ConfigDict(populate_by_name=True)
 
     value: Optional[str] = None
     text: Optional[str] = None

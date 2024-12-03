@@ -24,6 +24,8 @@ from ..models.gym_model import (
     MembersFiles,
     MemberProfile,
     MemberEventType,
+    PaymentMethod,
+    MembershipStatus,
     
     # Configuration models
     BranchConfig,
@@ -31,13 +33,10 @@ from ..models.gym_model import (
     BusinessHours,
     PaymentPolicy,
     GatewayConfig,
-    CardFlag,
     OccupationArea,
-    FAQ,
     
     # Status enums
     ActivityStatus,
-    MembershipStatus,
     EntryStatus,
     EntryType,
     
@@ -47,8 +46,6 @@ from ..models.gym_model import (
     OverdueMember,
     
     # Sales models
-    PaymentMethod,
-    CardData,
     Sale,
     NewSale,
 )
@@ -59,8 +56,6 @@ from ..models.new_sale_view_model import NewSaleViewModel
 from ..models.card_data_view_model import CardDataViewModel
 from ..models.e_forma_pagamento_totem import EFormaPagamentoTotem
 from ..models.sales_item_view_model import SalesItemViewModel
-from ..models.w12_utils_category_membership_view_model import W12UtilsCategoryMembershipViewModel
-from ..models.business_hours_view_model import BusinessHoursViewModel
 
 # API clients
 from ..api.configuration_api import ConfigurationApi
@@ -75,6 +70,7 @@ from ..api.receivables_api import ReceivablesApi
 from ..api.sales_api import SalesApi
 from ..api.managment_api import ManagementApi
 from ..api.members_api import MembersApi
+from ..api.prospects_api import ProspectsApi
 
 from ..models.e_tipo_gateway import ETipoGateway
 
@@ -96,7 +92,7 @@ def _convert_category(category_data: Dict[str, Any]) -> Optional[MembershipCateg
             id=category_data.get('id', 0),
             name=category_data.get('name', 'Standard'),
             description=category_data.get('description'),
-            is_active=category_data.get('is_active', True),
+            isActive=category_data.get('is_active', True),
             features=category_data.get('features', []),
             restrictions=category_data.get('restrictions')
         )
@@ -124,6 +120,7 @@ class GymApi:
         self.sales_api = SalesApi(api_client)
         self.management_api = ManagementApi(api_client)
         self.members_api = MembersApi(api_client)
+        self.prospects_api = ProspectsApi(api_client)
         self._pool = Pool(processes=1)  # Single process pool for async operations
 
     def __del__(self):
@@ -133,29 +130,20 @@ class GymApi:
             self._pool.join()
 
     def _convert_receivable(self, receivable: Any) -> Receivable:
-        """Convert SDK receivable model to our model."""
-        status = ReceivableStatus.PENDING
-        if receivable.status:
-            if receivable.status.value == "1":  # Assuming 1 is paid
-                status = ReceivableStatus.PAID
-            elif receivable.status.value == "2":  # Assuming 2 is overdue
-                status = ReceivableStatus.OVERDUE
-            elif receivable.status.value == "3":  # Assuming 3 is cancelled
-                status = ReceivableStatus.CANCELLED
-
+        """Convert API receivable model to internal model."""
         return Receivable(
-            id=receivable.id_receivable or 0,
-            description=receivable.description or "",
-            amount=Decimal(str(receivable.ammount or 0)),
-            amount_paid=Decimal(str(receivable.ammount_paid or 0)) if receivable.ammount_paid else None,
-            due_date=receivable.due_date or datetime.now(),
-            receiving_date=receivable.receiving_date,
-            status=status,
-            member_id=receivable.id_member_payer,
-            member_name=receivable.payer_name,
-            branch_id=receivable.id_branch_member,
-            current_installment=receivable.current_installment,
-            total_installments=receivable.total_installments
+            id=receivable.idReceivable,
+            description=receivable.description,
+            amount=Decimal(str(receivable.ammount)) if receivable.ammount is not None else Decimal('0.00'),
+            amount_paid=Decimal(str(receivable.ammountPaid)) if receivable.ammountPaid is not None else Decimal('0.00'),
+            due_date=receivable.dueDate,
+            receiving_date=receivable.receivingDate,
+            status=ReceivableStatus(receivable.status.value) if receivable.status else ReceivableStatus.PENDING,
+            member_id=receivable.idMemberPayer,
+            member_name=receivable.payerName,
+            branch_id=receivable.idBranchMember,
+            current_installment=receivable.currentInstallment,
+            total_installments=receivable.totalInstallments
         )
 
     @overload
@@ -185,98 +173,75 @@ class GymApi:
         active_only: bool = True,
         async_req: bool = False,
     ) -> Union[List[MembershipContract], TypedAsyncResult[List[MembershipContract]]]:
-        """
-        Get membership contracts for a member or branch.
-        
-        Args:
-            member_id: Optional ID of a specific member
-            branch_id: Optional ID of a specific branch
-            active_only: Whether to return only active contracts
-            async_req: If True, returns AsyncResult
-            
-        Returns:
-            List[MembershipContract]: List of membership contracts
-        """
+        """Get membership contracts."""
         try:
-            # Get memberships using the membership API
-            memberships_result = self.membership_api.get_memberships(
-                branch_id=branch_id,
+            # Get memberships from API
+            memberships = self.membership_api.get_memberships(
+                id_membership=member_id,
+                id_branch=branch_id,
                 active=active_only,
+                take=50,  # Maximum allowed
+                skip=0,
                 async_req=True if async_req else False  # type: ignore
             )
-            
-            if isinstance(memberships_result, AsyncResult):
-                def convert_result(result: Any) -> List[MembershipContract]:
-                    if isinstance(result, list):
-                        return self._convert_memberships_to_contracts(result, member_id)
-                    return []
 
-                async_result = create_async_result(
-                    pool=self._pool,
-                    callback=convert_result,
-                    error_callback=lambda e: []
+            # Handle async result
+            if isinstance(memberships, AsyncResult):
+                memberships = memberships.get()
+
+            # Convert to contracts
+            contracts = []
+            for membership in memberships:
+                plan = GymPlan(
+                    nameMembership=membership.name_membership or "",
+                    value=Decimal(str(membership.value_next_month)) if membership.value_next_month is not None else Decimal('0.00'),
+                    description=membership.description or "",
+                    features=membership.differentials or [],
+                    duration=membership.duration or 12,
+                    payment_methods=[PaymentMethod.CREDIT_CARD],
+                    accessBranches=membership.access_branches or False,
+                    maxAmountInstallments=membership.max_amount_installments or 1,
+                    isActive=not membership.inactive,
+                    enrollment_fee=None,
+                    annual_fee=None,
+                    cancellation_notice_days=30,
+                    category=None,
+                    available_services=[]
                 )
-                return cast(TypedAsyncResult[List[MembershipContract]], async_result)
-            
-            if memberships_result is None:
-                return []
-                
-            return self._convert_memberships_to_contracts(memberships_result, member_id)
-            
-        except Exception as e:
-            print(f"Error fetching contracts: {str(e)}")
-            return []
 
-    def _convert_memberships_to_contracts(self, memberships: List[Any], member_id: Optional[int] = None) -> List[MembershipContract]:
-        """Convert SDK membership models to our contract models."""
-        contracts = []
-        for membership in memberships:
-            try:
-                category = _convert_category({
-                    'id': membership.id_category_membership or 0,
-                    'name': "Standard",  # Default value
-                    'description': None,
-                    'is_active': True,
-                    'features': [],
-                    'restrictions': None,
-                })
-                
+                category = MembershipCategory(
+                    id=membership.id_category_membership,
+                    name="",  # Not available in API response
+                    description="",  # Not available in API response
+                    isActive=True,  # Default value
+                    features=[],  # Not available in API response
+                    restrictions=None  # Not available in API response
+                )
+
                 contract = MembershipContract(
-                    idMemberMembership=membership.id_member_membership or 0,
-                    idMember=membership.id_member or 0,
-                    plan=GymPlan(
-                        nameMembership=membership.name or "",
-                        value=Decimal(str(membership.value_next_month or 0)),
-                        description="",  # Not available in this model
-                        features=[],  # Not available in this model
-                        duration=1,  # Default value
-                        enrollment_fee=None,
-                        annual_fee=None,
-                        cancellation_notice_days=30,
-                        payment_methods=[PaymentMethod.CREDIT_CARD],
-                        accessBranches=False,  # Not available in this model
-                        category=category,
-                        available_services=[],
-                        maxAmountInstallments=1,  # Not available in this model
-                        isActive=membership.membership_status == "Active"
-                    ),
+                    idMemberMembership=membership.id_member_membership,
+                    idMember=membership.id_member,
+                    plan=plan,
                     category=category,
-                    status=MembershipStatus(membership.membership_status.lower()) if membership.membership_status else MembershipStatus.PENDING,
-                    startDate=membership.start_date or datetime.now(),
-                    endDate=membership.end_date,
-                    lastRenewalDate=membership.sale_date,
-                    nextRenewalDate=membership.next_charge,
-                    paymentDay=membership.payment_day or 1,
-                    isAutoRenewal=False,  # Not available in this model
-                    totalValue=Decimal(str(membership.value_next_month or 0)),
-                    installments=1,  # Not available in this model
-                    idBranch=None  # Not available in this model
+                    status=MembershipStatus.ACTIVE,  # Default value since we're filtering for active
+                    startDate=datetime.now(),  # Default value
+                    endDate=None,  # Not available in API response
+                    lastRenewalDate=None,  # Not available in API response
+                    nextRenewalDate=None,  # Not available in API response
+                    paymentDay=1,  # Default value
+                    totalValue=Decimal(str(membership.value_next_month)) if membership.value_next_month is not None else Decimal('0.00'),
+                    idBranch=branch_id
                 )
                 contracts.append(contract)
-            except Exception as e:
-                print(f"Error converting membership {membership}: {str(e)}")
-                continue
-        return contracts
+
+            return contracts
+
+        except ApiException as e:
+            logger.error(f"API error getting contracts: {str(e)}")
+            return []
+        except Exception as e:
+            logger.error(f"Error getting contracts: {str(e)}")
+            return []
 
     def get_gym_knowledge_base(
         self,
@@ -284,87 +249,32 @@ class GymApi:
         include_activity_details: bool = False,
         async_req: bool = False
     ) -> Union[GymKnowledgeBase, TypedAsyncResult[GymKnowledgeBase]]:
-        """
-        Get complete knowledge base for a gym chain or specific branch by aggregating data from various APIs
-        
-        Args:
-            branch_id: Optional ID of a specific branch
-            include_activity_details: Whether to include detailed activity information (schedules, spots, etc.)
-            async_req: If True, returns AsyncResult
-            
-        Returns:
-            GymKnowledgeBase: Complete knowledge base including locations, plans, and policies
-        """
+        """Get complete knowledge base for a gym branch."""
         try:
-            # Get basic configuration
-            logger.info(f"Fetching gym configuration for branch_id={branch_id}")
-            config_result = self.configuration_api.get_branch_config(
-                async_req=True if async_req else False  # type: ignore
-            )
-
-            # Handle async result
-            if isinstance(config_result, AsyncResult):
-                logger.debug("Got async result, waiting for completion...")
-                config_result = config_result.get()
-
-            # Extract configuration from response
-            config = None
-            try:
-                # Log the raw response for debugging
-                logger.debug(f"Raw API response: {config_result}")
-                logger.debug(f"Response type: {type(config_result)}")
-
-                # If it's a list, extract the first item or matching branch
-                if isinstance(config_result, list):
-                    logger.info(f"Got list response with {len(config_result)} items")
-                    if branch_id is not None:
-                        logger.debug(f"Looking for branch_id={branch_id} in response")
-                        config = next(
-                            (cfg for cfg in config_result if getattr(cfg, 'id_branch', None) == branch_id),
-                            config_result[0] if config_result else None
-                        )
-                        if config:
-                            logger.info(f"Found matching branch configuration for branch_id={branch_id}")
-                        else:
-                            logger.warning(f"Branch {branch_id} not found, using first available")
-                    else:
-                        logger.info("No branch_id specified, using first configuration")
-                        config = config_result[0] if config_result else None
-                else:
-                    # If it's a single item, use it directly
-                    logger.info("Got single item response")
-                    config = config_result
-
-                if config:
-                    logger.debug(f"Selected configuration: id_branch={getattr(config, 'id_branch', None)}, name={getattr(config, 'name', None)}")
-                else:
-                    logger.warning("No valid configuration found")
-
-            except Exception as e:
-                logger.error(f"Error processing configuration: {str(e)}")
-                config = None
-
-            if config is None:
-                logger.warning("Creating empty knowledge base due to missing configuration")
-                return self._create_empty_knowledge_base()
-
-            # Create knowledge base from the selected configuration
-            logger.info("Creating knowledge base from configuration")
-            gym_kb = self._create_knowledge_base(config, branch_id, async_req)
-
-            # Populate additional data if not async
+            # Get configuration data
+            config = self.configuration_api.get_branch_config(async_req=False)
+            
+            # Create base knowledge base from configuration
+            gym_kb = self._create_knowledge_base(config[0] if config else None, branch_id)
+            
+            # If not async, populate all data
             if not async_req:
-                logger.info("Populating additional data")
                 gym_kb = self._populate_activities(gym_kb, branch_id, include_activity_details)
                 gym_kb = self._populate_memberships(gym_kb, branch_id)
                 gym_kb = self._populate_gateway_config(gym_kb)
                 gym_kb = self._populate_occupations(gym_kb)
+                return gym_kb
+            else:
+                # Create async result that will process all data
+                async_result = create_async_result(
+                    pool=self._pool,
+                    callback=lambda x: self._create_knowledge_base(x[0], branch_id),
+                    error_callback=lambda e: logger.error(f"Error in async knowledge base creation: {str(e)}")
+                )
+                return async_result
 
-            logger.info("Successfully created gym knowledge base")
-            return gym_kb
-            
         except Exception as e:
-            logger.exception(f"Error fetching complete gym knowledge base: {str(e)}")
+            logger.error(f"Error getting gym knowledge base: {str(e)}")
             return self._create_empty_knowledge_base()
 
     def _create_empty_knowledge_base(self) -> GymKnowledgeBase:
@@ -372,27 +282,27 @@ class GymApi:
         return GymKnowledgeBase(
             name="Unknown",
             addresses=[],
-            business_hours=[],
+            businessHours=[],
             activities=[],
             plans=[],
             faqs=[],
-            membership_categories=[],
-            available_services=[],
-            payment_policy=PaymentPolicy(
-                active_member_discount=30,
-                inactive_member_discount=50,
-                accepted_payment_methods=[
+            membershipCategories=[],
+            availableServices=[],
+            paymentPolicy=PaymentPolicy(
+                activeMemberDiscount=30,
+                inactiveMemberDiscount=50,
+                acceptedPaymentMethods=[
                     PaymentMethod.CREDIT_CARD,
-                    PaymentMethod.DEBIT_CARD,
+                    PaymentMethod.TRANSFER,
                     PaymentMethod.PIX
                 ],
-                pix_key=None,
-                installment_available=True,
-                cancellation_fee_percentage=10
+                pixKey=None,
+                installmentAvailable=True,
+                cancellationFeePercentage=10
             )
         )
 
-    def _create_knowledge_base(self, config: Any, branch_id: Optional[int] = None, async_req: bool = False) -> GymKnowledgeBase:
+    def _create_knowledge_base(self, config: Any, branch_id: Optional[int] = None, async_req: bool = False, include_activity_details: bool = False) -> GymKnowledgeBase:
         """Create a knowledge base from configuration data."""
         # Handle business hours
         business_hours = config.business_hours
@@ -402,7 +312,7 @@ class GymApi:
             business_hours = []
 
         gym_kb = GymKnowledgeBase(
-            name=config.name or "",
+            name=config.name or "Unknown",
             addresses=[
                 Address(
                     street=config.address or "",
@@ -410,12 +320,12 @@ class GymApi:
                     neighborhood=config.neighborhood or "",
                     city=config.city or "",
                     state=config.state or "",
-                    postal_code=config.zip_code or "",
+                    postalCode=config.zip_code or "",
                     country="Brasil",  # Default for this SDK
                     phone=config.telephone or ""
                 )
             ],
-            business_hours=[
+            businessHours=[
                 BusinessHours(
                     idHour=bh.id_hour or None,
                     idBranch=bh.id_branch or None,
@@ -435,21 +345,21 @@ class GymApi:
             activities=[],  # Will be populated later
             plans=[],  # Will be populated later
             faqs=[],  # Will be populated later
-            membership_categories=[],  # Will be populated later
-            available_services=[],  # Will be populated later
-            payment_policy=PaymentPolicy(
-                active_member_discount=30,  # Default values since not in SDK
-                inactive_member_discount=50,
-                accepted_payment_methods=[
+            membershipCategories=[],  # Will be populated later
+            availableServices=[],  # Will be populated later
+            paymentPolicy=PaymentPolicy(
+                activeMemberDiscount=30,  # Default values since not in SDK
+                inactiveMemberDiscount=50,
+                acceptedPaymentMethods=[
                     PaymentMethod.CREDIT_CARD,
-                    PaymentMethod.DEBIT_CARD,
-                    PaymentMethod.PIX
+                    PaymentMethod.PIX,
+                    PaymentMethod.TRANSFER
                 ],
-                pix_key=None,
-                installment_available=True,
-                cancellation_fee_percentage=10
+                pixKey=None,
+                installmentAvailable=True,
+                cancellationFeePercentage=10
             ),
-            branch_config=BranchConfig(
+            branchConfig=BranchConfig(
                 idBranch=config.id_branch or 0,
                 name=config.name or "",
                 tradingName=config.internal_name or "",
@@ -462,7 +372,7 @@ class GymApi:
                     neighborhood=config.neighborhood or "",
                     city=config.city or "",
                     state=config.state or "",
-                    postal_code=config.zip_code or "",
+                    postalCode=config.zip_code or "",
                     country="Brasil",
                     phone=config.telephone or ""
                 ),
@@ -491,7 +401,7 @@ class GymApi:
 
         # Populate additional data if not async
         if not async_req:
-            gym_kb = self._populate_activities(gym_kb, branch_id)
+            gym_kb = self._populate_activities(gym_kb, branch_id, include_activity_details)
             gym_kb = self._populate_memberships(gym_kb, branch_id)
             gym_kb = self._populate_gateway_config(gym_kb)
             gym_kb = self._populate_occupations(gym_kb)
@@ -499,39 +409,37 @@ class GymApi:
         return gym_kb
 
     def _populate_activities(self, gym_kb: GymKnowledgeBase, branch_id: Optional[int] = None, include_details: bool = False) -> GymKnowledgeBase:
-        """Populate activities data in the knowledge base."""
+        """Populate activities in the knowledge base."""
         try:
-            # Get basic activity list
-            activities_result = self.activities_api.get_activities(branch_id=branch_id)
-            employees_result = self.employees_api.get_employees()
+            # Get activities and employees
+            activities = self.activities_api.get_activities(branch_id=branch_id, async_req=False)
+            employees = self.employees_api.get_employees(
+                employee_id=None,
+                name=None,
+                email=None,
+                take=None,
+                skip=None,
+                async_req=False
+            )
 
-            # Handle async results
-            activities = activities_result.get() if isinstance(activities_result, AsyncResult) else activities_result
-            employees = employees_result.get() if isinstance(employees_result, AsyncResult) else employees_result
-
-            if not isinstance(activities, list) or not isinstance(employees, list):
-                return gym_kb
-
-            # Get schedule for all activities if details are requested
-            schedule_result = None
+            # Get activity schedules if needed
             activity_schedules = {}
             if include_details:
-                schedule_result = self.activities_api.get_schedule(
-                    branch_id=branch_id,
-                    date=datetime.now(),
-                    show_full_week=True
-                )
-                schedule = schedule_result.get() if isinstance(schedule_result, AsyncResult) else schedule_result
-
-                # Create a mapping of activity schedules by activity ID
-                if isinstance(schedule, list):
-                    for session in schedule:
-                        # Access id_activity through model fields
-                        activity_id = getattr(session, 'id_activity', None)
-                        if activity_id is not None:
-                            if activity_id not in activity_schedules:
-                                activity_schedules[activity_id] = []
-                            activity_schedules[activity_id].append(session)
+                for act in activities:
+                    schedules = self.activities_api.get_schedule(
+                        member_id=None,
+                        date=None,
+                        branch_id=branch_id,
+                        activity_ids=[act.id_activity] if act.id_activity is not None else None,
+                        audience_ids=None,
+                        take=None,
+                        only_availables=False,
+                        show_full_week=False,
+                        branch_token=None,
+                        async_req=False
+                    )
+                    if schedules:
+                        activity_schedules[act.id_activity] = schedules
 
             # Create activities with enhanced information
             gym_kb.activities = [
@@ -539,9 +447,9 @@ class GymApi:
                     id=act.id_activity or 0,
                     name=act.name or "",
                     description=act.description or "",
-                    max_capacity=act.total_records or 0,
-                    requires_reservation=True,  # Default to requiring reservation
-                    duration_minutes=60,  # Default duration since not in API model
+                    maxCapacity=act.total_records or 0,
+                    requiresReservation=True,  # Default to requiring reservation
+                    durationMinutes=60,  # Default duration since not in API model
                     instructor=next(
                         (emp.name for emp in employees if emp.id_employee == act.id_activity),
                         None
@@ -550,20 +458,33 @@ class GymApi:
                     status=ActivityStatus.AVAILABLE,  # Default to available
                     photo=act.photo,  # Add photo if available
                     color=act.color,  # Add color if available
-                    activity_group=act.activity_group,  # Add group if available
-                    show_on_mobile=act.show_on_mobile,  # Add mobile visibility
-                    show_on_website=act.show_on_website,  # Add website visibility
+                    activityGroup=act.activity_group,  # Add group if available
+                    showOnMobile=act.show_on_mobile,  # Add mobile visibility
+                    showOnWebsite=act.show_on_website,  # Add website visibility
                     audience=[  # Add audience information
                         str(audience.nome)  # Convert to string to handle None values
                         for audience in (act.audience or [])
                         if hasattr(audience, 'nome') and audience.nome is not None
                     ],
-                    session_details=activity_schedules.get(act.id_activity, []) if include_details else []
+                    instructorPhoto=next(
+                        (emp.photo_url for emp in employees if emp.id_employee == act.id_activity),
+                        None
+                    ),
+                    area=getattr(act, 'area', None),
+                    branchName=next(
+                        (emp.name for emp in employees if emp.id_employee == act.id_activity),
+                        None
+                    ),
+                    allowChoosingSpot=getattr(act, 'allow_choosing_spot', False),
+                    spots=getattr(act, 'spots', None),
+                    sessionDetails=activity_schedules.get(act.id_activity, []) if include_details else []
                 ) for act in activities
             ]
+
+            return gym_kb
         except Exception as e:
-            logger.exception(f"Error populating activities: {str(e)}")
-        return gym_kb
+            logger.error(f"Error populating activities: {str(e)}")
+            return gym_kb
 
     def _populate_memberships(
         self,
@@ -599,10 +520,10 @@ class GymApi:
             # First populate categories with default values for missing fields
             gym_kb.membership_categories = [
                 MembershipCategory(
-                    id=cat.id_category_membership or 0,
-                    name=cat.name or "Standard",
+                    id=cat.id,
+                    name=cat.name or "",
                     description="",  # Default empty description
-                    is_active=True,  # Default to active
+                    isActive=True,  # Default to active
                     features=[],  # Default empty features
                     restrictions=None  # Default no restrictions
                 ) for cat in categories
@@ -624,14 +545,14 @@ class GymApi:
                     cancellation_notice_days=plan.min_period_stay_membership or 30,
                     payment_methods=[PaymentMethod.CREDIT_CARD],
                     accessBranches=bool(plan.access_branches),
-                    category=category_map.get((plan.membership_type or "").lower(), MembershipCategory(
+                    category=category_map.get((plan.membership_type or "").lower()) if plan.membership_type else MembershipCategory(
                         id=0,
                         name="Standard",
                         description="",
-                        is_active=True,
+                        isActive=True,
                         features=[],
                         restrictions=None
-                    )),
+                    ),
                     available_services=[],
                     maxAmountInstallments=plan.max_amount_installments or 1,
                     isActive=not plan.inactive
@@ -642,11 +563,11 @@ class GymApi:
             gym_kb.available_services = [
                 MembershipService(
                     id=service.id_service or 0,
-                    name=service.name_service or "",
+                    name=service.name or "",
                     description=service.online_sales_observations or "",
                     price=Decimal(str(service.value or 0)),
-                    is_recurring=False,  # Not available in API model
-                    duration_days=30  # Default value
+                    isRecurring=False,  # Not available in API model
+                    durationDays=30  # Default value
                 ) for service in services
             ]
 
@@ -672,10 +593,10 @@ class GymApi:
                         id=1,  # Default ID since not in API model
                         name="Payment Gateway",  # Default name
                         type=gateway_type,
-                        merchant_id="",  # Not available in API model
-                        merchant_key="",  # Not available in API model
-                        is_active=True,  # Default to active
-                        accepted_flags=flags
+                        merchantId="",  # Not available in API model
+                        merchantKey="",  # Not available in API model
+                        isActive=True,  # Default to active
+                        acceptedFlags=flags
                     )
                 except Exception as e:
                     print(f"Error populating gateway config: {str(e)}")
@@ -699,7 +620,7 @@ class GymApi:
                         id=occ.id_branch or 0,
                         name=occ.name or "Unknown",  # Convert None to default string
                         description=f"Max Occupation: {occ.max_occupation or 0}, Current: {occ.occupation or 0}",
-                        is_active=True  # Not available in SDK model
+                        isActive=True  # Not available in SDK model
                     ) for occ in occupation_areas
                     if hasattr(occ, 'id_branch') and hasattr(occ, 'name')  # Only include if required fields exist
                 ]
@@ -1074,129 +995,138 @@ class GymApi:
         to_date: Optional[datetime] = None,
         async_req: bool = False,
     ) -> Union[GymOperatingData, TypedAsyncResult[GymOperatingData]]:
-        """
-        Get operational data for a gym branch.
-        
-        This method aggregates various operational data like active members,
-        prospects, receivables, etc. into a single GymOperatingData object.
-        It also calculates key metrics like MRR and Churn Rate for the period.
-        
-        Args:
-            branch_id: Optional ID of a specific branch
-            from_date: Optional start date for time-based data
-            to_date: Optional end date for time-based data
-            async_req: If True, returns AsyncResult
-            
-        Returns:
-            GymOperatingData: Aggregated operational data with calculated metrics,
-                            or AsyncResult if async_req=True
-        """
+        """Get operating data for a gym branch."""
         try:
             if async_req:
                 # Start all async requests
-                results = [
-                    self.management_api.get_active_clients(async_req=True),
-                    self.get_contracts(branch_id=branch_id, active_only=True, async_req=True),
-                    self.management_api.get_prospects(
-                        dt_start=from_date,
-                        dt_end=to_date,
-                        async_req=True
-                    ),
-                    self.management_api.get_non_renewed_clients(
-                        dt_start=from_date,
-                        dt_end=to_date,
-                        async_req=True
-                    ),
-                    self.receivables_api.get_receivables(
-                        registration_date_start=from_date,
-                        registration_date_end=to_date,
-                        take=50,
-                        skip=0,
-                        async_req=True
-                    ),
-                    self.entries_api.get_entries(
-                        register_date_start=from_date,
-                        register_date_end=to_date,
-                        take=1000,
-                        skip=0,
-                        entry_id=None,
-                        member_id=None,
-                        async_req=True
-                    )
-                ]
+                active_members_result = self.management_api.get_active_clients(
+                    async_req=True
+                )
                 
-                # Create async result that will aggregate all data
+                active_contracts_result = self.get_contracts(
+                    branch_id=branch_id,
+                    active_only=True,
+                    async_req=True
+                )
+                
+                prospects_result = self.prospects_api.get_prospects(
+                    register_date_start=from_date,
+                    register_date_end=to_date,
+                    async_req=True
+                )
+                
+                non_renewed_result = self.management_api.get_non_renewed_clients(
+                    dt_start=from_date,
+                    dt_end=to_date,
+                    async_req=True
+                )
+                
+                receivables_result = self.receivables_api.get_receivables(
+                    registration_date_start=from_date,
+                    registration_date_end=to_date,
+                    async_req=True
+                )
+                
+                entries_result = self.entries_api.get_entries(
+                    register_date_start=from_date,
+                    register_date_end=to_date,
+                    async_req=True
+                )
+                
+                # Create async result that will process all data
                 async_result = create_async_result(
                     pool=self._pool,
-                    callback=lambda _: self._aggregate_operating_data([r.get() for r in results], from_date, to_date),
+                    callback=lambda _: self._aggregate_operating_data(
+                        [
+                            active_members_result.get(),
+                            active_contracts_result.get(),
+                            prospects_result.get(),
+                            non_renewed_result.get(),
+                            receivables_result.get(),
+                            entries_result.get()
+                        ],
+                        from_date,
+                        to_date
+                    ),
                     error_callback=lambda e: GymOperatingData(data_from=from_date, data_to=to_date)
                 )
                 
                 return cast(TypedAsyncResult[GymOperatingData], async_result)
             
             # Synchronous execution
-            operating_data = GymOperatingData(
-                data_from=from_date,
-                data_to=to_date
-            )
-            
-            # Get active members and contracts
-            active_members = self.management_api.get_active_clients(async_req=False)
-            if active_members:
-                operating_data.active_members = [m.to_dict() for m in active_members]
-            
-            contracts = self.get_contracts(branch_id=branch_id, active_only=True, async_req=False)
-            if contracts:
-                operating_data.active_contracts = contracts
-            
-            # Get prospects and non-renewed members
-            prospects = self.management_api.get_prospects(
-                dt_start=from_date,
-                dt_end=to_date,
+            active_members = self.management_api.get_active_clients(
                 async_req=False
             )
-            if prospects:
-                operating_data.prospects = [p.to_dict() for p in prospects]
-            
+
+            active_contracts = self.get_contracts(
+                branch_id=branch_id,
+                active_only=True,
+                async_req=False
+            )
+
+            prospects = self.prospects_api.get_prospects(
+                register_date_start=from_date,
+                register_date_end=to_date,
+                async_req=False
+            )
+
             non_renewed = self.management_api.get_non_renewed_clients(
                 dt_start=from_date,
                 dt_end=to_date,
                 async_req=False
             )
-            if non_renewed:
-                operating_data.non_renewed_members = [m.to_dict() for m in non_renewed]
-            
-            # Get receivables and overdue members
+
             receivables = self.receivables_api.get_receivables(
                 registration_date_start=from_date,
                 registration_date_end=to_date,
-                take=50,
-                skip=0,
                 async_req=False
             )
-            if receivables:
-                operating_data.receivables = [self._convert_receivable(r) for r in receivables]
-            
-            # Get recent entries
+
             entries = self.entries_api.get_entries(
                 register_date_start=from_date,
                 register_date_end=to_date,
-                take=1000,
-                skip=0,
-                entry_id=None,
-                member_id=None,
                 async_req=False
             )
-            if entries:
-                operating_data.recent_entries = [self._convert_entry(e) for e in entries]
-            
-            # Calculate metrics after all data is loaded
-            operating_data.calculate_metrics()
-            
+
+            # Calculate MRR and churn rate
+            mrr = Decimal('0.00')
+            if active_contracts:
+                contract_mrr = sum((Decimal(str(contract.plan.price)) if hasattr(contract.plan, 'price') else Decimal('0.00')) 
+                                 for contract in active_contracts if contract.plan)
+                mrr = Decimal(str(contract_mrr))
+
+            total_active = len(active_members) if active_members else 0
+            total_churned = len(non_renewed) if non_renewed else 0
+            churn_rate = Decimal('0.00')
+            if total_active > 0:
+                churn_rate = Decimal(str(total_churned / total_active * 100))
+
+            # Convert SDK models to dictionaries
+            active_members_dict = [member.to_dict() for member in (active_members or [])]
+            prospects_dict = [prospect.to_dict() for prospect in (prospects or [])]
+            non_renewed_dict = [member.to_dict() for member in (non_renewed or [])]
+
+            # Create operating data from SDK responses
+            operating_data = GymOperatingData(
+                data_from=from_date,
+                data_to=to_date,
+                active_members=active_members_dict,
+                active_contracts=active_contracts or [],
+                prospects=prospects_dict,
+                non_renewed_members=non_renewed_dict,
+                receivables=[self._convert_receivable(r) for r in (receivables or [])],
+                overdue_members=self._group_overdue_receivables([self._convert_receivable(r) for r in (receivables or []) if r.status == ReceivableStatus.OVERDUE]),
+                recent_entries=[self._convert_entry(e) for e in (entries or [])],
+                mrr=mrr,
+                churn_rate=churn_rate,
+                total_active_members=total_active,
+                total_churned_members=total_churned
+            )
+
             return operating_data
-            
+
         except Exception as e:
-            logger.error(f"Error fetching operating data: {str(e)}")
+            logger.error(f"Error getting operating data: {str(e)}")
             return GymOperatingData(data_from=from_date, data_to=to_date)
 
     @overload

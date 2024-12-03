@@ -7,9 +7,14 @@ from pydantic import ConfigDict
 
 
 class PaymentMethod(str, Enum):
-    CREDIT_CARD = "credit_card"
-    DEBIT_CARD = "debit_card"
-    PIX = "pix"
+    """Payment method enumeration"""
+    CREDIT_CARD = "1"
+    BOLETO = "2"
+    SALE_CREDITS = "3"
+    TRANSFER = "4"
+    VALOR_ZERADO = "5"
+    LINK_CHECKOUT = "6"
+    PIX = "7"
 
 
 class ActivityStatus(int, Enum):
@@ -77,59 +82,67 @@ class BusinessHours(BaseModel):
 
 class Address(BaseModel):
     """Physical address information"""
+    model_config = ConfigDict(populate_by_name=True)
+
     street: str
     number: str
     neighborhood: str
     city: str
     state: str
-    postal_code: str
+    postal_code: str = Field(alias="postalCode")
     country: str = Field(default="Brasil")
     phone: str
 
 
 class Activity(BaseModel):
     """Activity or class information"""
+    model_config = ConfigDict(populate_by_name=True)
+
     id: int
     name: str
     description: str
-    max_capacity: int
-    requires_reservation: bool = Field(default=False)
-    duration_minutes: int
+    max_capacity: int = Field(alias="maxCapacity")
+    requires_reservation: bool = Field(default=False, alias="requiresReservation")
+    duration_minutes: int = Field(alias="durationMinutes")
     instructor: Optional[str] = None
     schedule: Dict[str, List[time]]  # Day of week -> list of times
     status: ActivityStatus = Field(default=ActivityStatus.AVAILABLE)
     photo: Optional[str] = None
     color: Optional[str] = None
-    activity_group: Optional[str] = None
-    show_on_mobile: Optional[bool] = Field(default=True)
-    show_on_website: Optional[bool] = Field(default=True)
+    activity_group: Optional[str] = Field(alias="activityGroup")
+    show_on_mobile: Optional[bool] = Field(default=True, alias="showOnMobile")
+    show_on_website: Optional[bool] = Field(default=True, alias="showOnWebsite")
     audience: List[str] = Field(default_factory=list)
-    instructor_photo: Optional[str] = None
+    instructor_photo: Optional[str] = Field(alias="instructorPhoto")
     area: Optional[str] = None
-    branch_name: Optional[str] = None
-    allow_choosing_spot: Optional[bool] = Field(default=False)
+    branch_name: Optional[str] = Field(alias="branchName")
+    allow_choosing_spot: Optional[bool] = Field(default=False, alias="allowChoosingSpot")
     spots: Optional[List[Dict[str, Union[int, bool, str]]]] = None  # Spot reservations
-    session_details: Optional[List[Dict[str, Any]]] = Field(default_factory=list)  # Schedule details
+    session_details: Optional[List[Dict[str, Any]]] = Field(default_factory=list, alias="sessionDetails")  # Schedule details
 
 
 class MembershipCategory(BaseModel):
     """Category of membership"""
+    model_config = ConfigDict(populate_by_name=True)
+
     id: int
     name: str
     description: Optional[str] = None
-    is_active: bool = Field(default=True)
+    is_active: bool = Field(default=True, alias="isActive")
     features: List[str] = Field(default_factory=list)
     restrictions: Optional[List[str]] = None
 
 
 class MembershipService(BaseModel):
     """Additional services included in membership"""
+    model_config = ConfigDict(populate_by_name=True)
+
     id: int
     name: str
     description: str
     price: Decimal
-    is_recurring: bool = Field(default=True)
-    duration_days: Optional[int] = None
+    is_recurring: bool = Field(default=True, alias="isRecurring")
+    duration_days: Optional[int] = Field(alias="durationDays")
 
 
 class GymPlan(BaseModel):
@@ -154,45 +167,55 @@ class GymPlan(BaseModel):
 
 class FAQ(BaseModel):
     """Frequently asked question"""
+    model_config = ConfigDict(populate_by_name=True)
+
     question: str
     answer: str
 
 
 class PaymentPolicy(BaseModel):
     """Payment and billing policies"""
-    active_member_discount: Optional[int] = Field(default=30)  # 30% discount
-    inactive_member_discount: Optional[int] = Field(default=50)  # 50% discount
-    accepted_payment_methods: List[PaymentMethod]
-    pix_key: Optional[str] = None
-    installment_available: bool = Field(default=False)
-    cancellation_fee_percentage: Optional[int] = Field(default=10)  # 10% of remaining commitment
+    model_config = ConfigDict(populate_by_name=True)
+
+    active_member_discount: Optional[int] = Field(default=30, alias="activeMemberDiscount")  # 30% discount
+    inactive_member_discount: Optional[int] = Field(default=50, alias="inactiveMemberDiscount")  # 50% discount
+    accepted_payment_methods: List[PaymentMethod] = Field(alias="acceptedPaymentMethods")
+    pix_key: Optional[str] = Field(alias="pixKey")
+    installment_available: bool = Field(default=False, alias="installmentAvailable")
+    cancellation_fee_percentage: Optional[int] = Field(default=10, alias="cancellationFeePercentage")  # 10% of remaining commitment
 
 
 class CardFlag(BaseModel):
     """Card flag/brand information"""
+    model_config = ConfigDict(populate_by_name=True)
+
     id: int
     name: str
     code: str
-    is_active: bool = Field(default=True)
+    is_active: bool = Field(default=True, alias="isActive")
 
 
 class GatewayConfig(BaseModel):
     """Payment gateway configuration"""
+    model_config = ConfigDict(populate_by_name=True)
+
     id: int
     name: str
     type: str
-    merchant_id: Optional[str] = None
-    merchant_key: Optional[str] = None
-    is_active: bool = Field(default=True)
-    accepted_flags: List[CardFlag] = Field(default_factory=list)
+    merchant_id: Optional[str] = Field(alias="merchantId")
+    merchant_key: Optional[str] = Field(alias="merchantKey")
+    is_active: bool = Field(default=True, alias="isActive")
+    accepted_flags: List[CardFlag] = Field(default_factory=list, alias="acceptedFlags")
 
 
 class OccupationArea(BaseModel):
     """Occupation/Professional area information"""
+    model_config = ConfigDict(populate_by_name=True)
+
     id: int
     name: str
     description: Optional[str] = None
-    is_active: bool = Field(default=True)
+    is_active: bool = Field(default=True, alias="isActive")
 
 
 class BranchConfig(BaseModel):
@@ -251,34 +274,10 @@ class MembershipContract(BaseModel):
 
 class GymKnowledgeBase(BaseModel):
     """Complete knowledge base for a gym chain including locations, plans, and policies"""
-    name: str = Field(description="Name of the gym")
-    addresses: List[Address] = Field(description="List of gym locations")
-    business_hours: List[BusinessHours] = Field(description="Standard business hours")  # Changed from single object to list
-    plans: List[GymPlan] = Field(description="Available membership plans")
-    activities: List[Activity] = Field(description="Available activities and classes")
-    faqs: List[FAQ] = Field(description="Frequently asked questions")
-    payment_policy: PaymentPolicy = Field(description="Payment and billing policies")
-    branch_config: Optional[BranchConfig] = Field(
-        default=None,
-        description="Branch-specific configuration"
-    )
-    membership_categories: List[MembershipCategory] = Field(
-        default_factory=list,
-        description="Available membership categories"
-    )
-    available_services: List[MembershipService] = Field(
-        default_factory=list,
-        description="Additional services that can be added to memberships"
-    )
-    entries: List[GymEntry] = Field(
-        default_factory=list,
-        description="Record of gym entries"
-    )
-
-    class Config:
-        """Model configuration"""
-        title = "Gym Knowledge Base"
-        json_schema_extra = {
+    model_config = ConfigDict(
+        populate_by_name=True,
+        title="Gym Knowledge Base",
+        json_schema_extra={
             "examples": [{
                 "name": "C4 Gym",
                 "addresses": [{
@@ -298,6 +297,34 @@ class GymKnowledgeBase(BaseModel):
                 }
             }]
         }
+    )
+
+    name: str = Field(description="Name of the gym")
+    addresses: List[Address] = Field(description="List of gym locations")
+    business_hours: List[BusinessHours] = Field(alias="businessHours", description="Standard business hours")
+    plans: List[GymPlan] = Field(description="Available membership plans")
+    activities: List[Activity] = Field(description="Available activities and classes")
+    faqs: List[FAQ] = Field(description="Frequently asked questions")
+    payment_policy: PaymentPolicy = Field(alias="paymentPolicy", description="Payment and billing policies")
+    branch_config: Optional[BranchConfig] = Field(
+        default=None,
+        alias="branchConfig",
+        description="Branch-specific configuration"
+    )
+    membership_categories: List[MembershipCategory] = Field(
+        default_factory=list,
+        alias="membershipCategories",
+        description="Available membership categories"
+    )
+    available_services: List[MembershipService] = Field(
+        default_factory=list,
+        alias="availableServices",
+        description="Additional services that can be added to memberships"
+    )
+    entries: List[GymEntry] = Field(
+        default_factory=list,
+        description="Record of gym entries"
+    )
 
 
 class ReceivableStatus(str, Enum):
@@ -344,7 +371,7 @@ class OverdueMember(BaseModel):
     total_overdue: Decimal
     overdue_since: datetime
     last_payment_date: Optional[datetime] = None
-    overdue_receivables: List[Receivable]
+    overdue_receivables: List[Receivable] = Field(default_factory=list)
 
 
 class CardData(BaseModel):

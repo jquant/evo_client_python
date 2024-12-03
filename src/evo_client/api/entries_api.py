@@ -135,44 +135,65 @@ class EntriesApi:
         async_req: bool = False,
     ) -> Union[List[EntradasResumoApiViewModel], AsyncResult[Any]]:
         """
-        Convenience method to get entries for a specific member.
+        Get entries for a specific member.
 
         Args:
-            member_id: ID of the member
-            start_date: Optional start date filter
-            end_date: Optional end date filter
+            member_id: ID of the member to get entries for
+            start_date: Start date filter
+            end_date: End date filter
             async_req: Execute request asynchronously
+
+        Returns:
+            List of entries or AsyncResult[Any] if async
         """
-        return self.get_entries(
-            member_id=member_id,
-            register_date_start=start_date,
-            register_date_end=end_date,
-            async_req=async_req,
-        )
+        if async_req:
+            return self.get_entries(
+                register_date_start=start_date,
+                register_date_end=end_date,
+                member_id=member_id,
+                async_req=True,
+            )
+        else:
+            return self.get_entries(
+                register_date_start=start_date,
+                register_date_end=end_date,
+                member_id=member_id,
+                async_req=False,
+            )
 
     @overload
     def get_entry_by_id(
-        self, entry_id: int, async_req: Literal[False] = False
+        self,
+        entry_id: int,
+        async_req: Literal[False] = False,
     ) -> Optional[EntradasResumoApiViewModel]:
         ...
 
     @overload
     def get_entry_by_id(
-        self, entry_id: int, async_req: Literal[True] = True
+        self,
+        entry_id: int,
+        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]:
         ...
 
     def get_entry_by_id(
-        self, entry_id: int, async_req: bool = False
+        self,
+        entry_id: int,
+        async_req: bool = False,
     ) -> Union[Optional[EntradasResumoApiViewModel], AsyncResult[Any]]:
         """
         Get a specific entry by ID.
 
         Args:
-            entry_id: ID of the entry to retrieve
+            entry_id: ID of the entry to get
             async_req: Execute request asynchronously
+
+        Returns:
+            Entry if found, None if not found, or AsyncResult[Any] if async
         """
-        entries = self.get_entries(entry_id=entry_id, async_req=async_req)
-        if isinstance(entries, AsyncResult):
-            return entries
-        return entries[0] if entries else None
+        if async_req:
+            return self.get_entries(entry_id=entry_id, async_req=True)
+        else:
+            result = self.get_entries(entry_id=entry_id, async_req=False)
+            return result[0] if result else None

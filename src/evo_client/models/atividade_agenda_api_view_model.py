@@ -9,7 +9,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from .atividade_lugar_reserva_api_view_model import AtividadeLugarReservaApiViewModel
 from .e_status_atividade import EStatusAtividade
@@ -21,6 +21,7 @@ class AtividadeAgendaApiViewModel(BaseModel):
 
     Do not edit the class manually.
     """
+    model_config = ConfigDict(populate_by_name=True)
 
     id_configuration: Optional[int] = Field(default=None, alias="idConfiguration")
     id_activity: Optional[int] = Field(default=None, alias="idActivity")

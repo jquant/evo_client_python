@@ -1,10 +1,12 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class BusinessHoursViewModel(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     id_hour: Optional[int] = Field(default=None, alias="idHour")
     id_branch: Optional[int] = Field(default=None, alias="idBranch")
     week_day: Optional[str] = Field(default=None, alias="weekDay")
