@@ -47,7 +47,7 @@ def test_get_gateway_config(configuration_api: ConfigurationApi, mock_api_client
 
 def test_get_branch_config(configuration_api: ConfigurationApi, mock_api_client: Mock):
     """Test getting branch configurations."""
-    expected = ConfiguracaoApiViewModel()
+    expected = [ConfiguracaoApiViewModel()]
     mock_api_client.return_value = expected
 
     result = configuration_api.get_branch_config(async_req=False)
@@ -57,7 +57,7 @@ def test_get_branch_config(configuration_api: ConfigurationApi, mock_api_client:
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
     assert args["resource_path"] == "/api/v1/configuration"
-    assert args["response_type"] == ConfiguracaoApiViewModel
+    assert args["response_type"] == List[ConfiguracaoApiViewModel]
 
 
 def test_get_occupations(configuration_api: ConfigurationApi, mock_api_client: Mock):
