@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .e_tipo_gateway import ETipoGateway
 
@@ -15,6 +15,13 @@ class EmpresasFiliaisGatewayViewModel(BaseModel):
     dados_gateway: Optional[object] = Field(default=None, alias="dadosGateway")
     exibir_tipo_cartao: Optional[bool] = Field(default=None, alias="exibirTipoCartao")
     fl_tokeniza_backend: Optional[bool] = Field(default=None, alias="flTokenizaBackend")
+
+    @field_validator("tipo_gateway", mode="before")
+    def convert_tipo_gateway(cls, v):
+        """Convert integer tipo_gateway to string format."""
+        if isinstance(v, int):
+            return str(v)
+        return v
 
     def to_dict(self):
         """Returns the model properties as a dict"""

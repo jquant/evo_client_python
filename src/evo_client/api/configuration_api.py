@@ -68,18 +68,18 @@ class ConfigurationApi:
     @overload
     def get_branch_config(
         self, async_req: Literal[False] = False
-    ) -> ConfiguracaoApiViewModel:
+    ) -> List[ConfiguracaoApiViewModel]:
         ...
 
     @overload
     def get_branch_config(
         self, async_req: Literal[True] = True
-    ) -> Union[ConfiguracaoApiViewModel, AsyncResult[Any]]:
+    ) -> Union[List[ConfiguracaoApiViewModel], AsyncResult[Any]]:
         ...
 
     def get_branch_config(
         self, async_req: bool = False
-    ) -> Union[ConfiguracaoApiViewModel, AsyncResult[Any]]:
+    ) -> Union[List[ConfiguracaoApiViewModel], AsyncResult[Any]]:
         """
         Get branch configurations.
 
@@ -87,12 +87,12 @@ class ConfigurationApi:
             async_req: Execute request asynchronously
 
         Returns:
-            Branch configuration or AsyncResult[Any] if async
+            List of branch configurations or AsyncResult[Any] if async
         """
         return self.api_client.call_api(
             resource_path=self.base_path,
             method="GET",
-            response_type=ConfiguracaoApiViewModel,
+            response_type=List[ConfiguracaoApiViewModel],
             auth_settings=["Basic"],
             async_req=async_req,
             headers={"Accept": "application/json"},

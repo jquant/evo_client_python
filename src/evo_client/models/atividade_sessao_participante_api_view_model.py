@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .e_status_atividade_sessao import EStatusAtividadeSessao
 
@@ -28,6 +28,13 @@ class AtividadeSessaoParticipanteApiViewModel(BaseModel):
     replacement: Optional[bool] = None
     suspended: Optional[bool] = None
     removed: Optional[bool] = None
+
+    @field_validator("status", mode="before")
+    def convert_status(cls, v):
+        """Convert integer status to string format."""
+        if isinstance(v, int):
+            return str(v)
+        return v
 
     def to_dict(self) -> dict:
         """Returns the model properties as a dictionary"""
