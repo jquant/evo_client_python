@@ -1,10 +1,21 @@
 from __future__ import absolute_import
 
-from typing import List, Optional, Dict, Any, Union, cast, TypeVar, Generic, Literal, overload
+from typing import (
+    List,
+    Optional,
+    Dict,
+    Any,
+    Union,
+    cast,
+    TypeVar,
+    Generic,
+    Literal,
+    overload,
+)
 from datetime import datetime, time, timedelta, date
 from multiprocessing.pool import AsyncResult, Pool
 from decimal import Decimal
-from loguru import logger
+from logging import getLogger
 
 from ..core.api_client import ApiClient
 from ..core.configuration import Configuration
@@ -26,7 +37,6 @@ from ..models.gym_model import (
     MemberEventType,
     PaymentMethod,
     MembershipStatus,
-    
     # Configuration models
     BranchConfig,
     Address,
@@ -34,17 +44,14 @@ from ..models.gym_model import (
     PaymentPolicy,
     GatewayConfig,
     OccupationArea,
-    
     # Status enums
     ActivityStatus,
     EntryStatus,
     EntryType,
-    
     # Receivables models
     Receivable,
     ReceivableStatus,
     OverdueMember,
-    
     # Sales models
     Sale,
     NewSale,
@@ -74,31 +81,43 @@ from ..api.prospects_api import ProspectsApi
 
 from ..models.e_tipo_gateway import ETipoGateway
 
-T = TypeVar('T')
+T = TypeVar("T")
+
+logger = getLogger(__name__)
+
 
 class TypedAsyncResult(AsyncResult, Generic[T]):
     """Type-safe wrapper for AsyncResult."""
+
     def get(self) -> T:
         return super().get()
 
-def create_async_result(pool: Pool, callback: Any, error_callback: Any) -> TypedAsyncResult[Any]:
+
+def create_async_result(
+    pool: Pool, callback: Any, error_callback: Any
+) -> TypedAsyncResult[Any]:
     """Create a typed AsyncResult."""
-    return cast(TypedAsyncResult[Any], AsyncResult(pool=pool, callback=callback, error_callback=error_callback))
+    return cast(
+        TypedAsyncResult[Any],
+        AsyncResult(pool=pool, callback=callback, error_callback=error_callback),
+    )
+
 
 def _convert_category(category_data: Dict[str, Any]) -> Optional[MembershipCategory]:
     """Convert category data to MembershipCategory model."""
     try:
         return MembershipCategory(
-            id=category_data.get('id', 0),
-            name=category_data.get('name', 'Standard'),
-            description=category_data.get('description'),
-            isActive=category_data.get('is_active', True),
-            features=category_data.get('features', []),
-            restrictions=category_data.get('restrictions')
+            id=category_data.get("id", 0),
+            name=category_data.get("name", "Standard"),
+            description=category_data.get("description"),
+            isActive=category_data.get("is_active", True),
+            features=category_data.get("features", []),
+            restrictions=category_data.get("restrictions"),
         )
     except Exception as e:
         print(f"Error converting category: {str(e)}")
         return None
+
 
 class GymApi:
     """Gym API client for EVO API."""
@@ -125,7 +144,7 @@ class GymApi:
 
     def __del__(self):
         """Clean up resources."""
-        if hasattr(self, '_pool'):
+        if hasattr(self, "_pool"):
             self._pool.close()
             self._pool.join()
 
@@ -134,16 +153,28 @@ class GymApi:
         return Receivable(
             id=receivable.idReceivable,
             description=receivable.description,
-            amount=Decimal(str(receivable.ammount)) if receivable.ammount is not None else Decimal('0.00'),
-            amount_paid=Decimal(str(receivable.ammountPaid)) if receivable.ammountPaid is not None else Decimal('0.00'),
+            amount=(
+                Decimal(str(receivable.ammount))
+                if receivable.ammount is not None
+                else Decimal("0.00")
+            ),
+            amount_paid=(
+                Decimal(str(receivable.ammountPaid))
+                if receivable.ammountPaid is not None
+                else Decimal("0.00")
+            ),
             due_date=receivable.dueDate,
             receiving_date=receivable.receivingDate,
-            status=ReceivableStatus(receivable.status.value) if receivable.status else ReceivableStatus.PENDING,
+            status=(
+                ReceivableStatus(receivable.status.value)
+                if receivable.status
+                else ReceivableStatus.PENDING
+            ),
             member_id=receivable.idMemberPayer,
             member_name=receivable.payerName,
             branch_id=receivable.idBranchMember,
             current_installment=receivable.currentInstallment,
-            total_installments=receivable.totalInstallments
+            total_installments=receivable.totalInstallments,
         )
 
     @overload
@@ -153,8 +184,7 @@ class GymApi:
         branch_id: Optional[int] = None,
         active_only: bool = True,
         async_req: Literal[False] = False,
-    ) -> List[MembershipContract]:
-        ...
+    ) -> List[MembershipContract]: ...
 
     @overload
     def get_contracts(
@@ -163,8 +193,7 @@ class GymApi:
         branch_id: Optional[int] = None,
         active_only: bool = True,
         async_req: Literal[True] = True,
-    ) -> TypedAsyncResult[List[MembershipContract]]:
-        ...
+    ) -> TypedAsyncResult[List[MembershipContract]]: ...
 
     def get_contracts(
         self,
@@ -182,7 +211,7 @@ class GymApi:
                 active=active_only,
                 take=50,  # Maximum allowed
                 skip=0,
-                async_req=True if async_req else False  # type: ignore
+                async_req=True if async_req else False,  # type: ignore
             )
 
             # Handle async result
@@ -194,7 +223,11 @@ class GymApi:
             for membership in memberships:
                 plan = GymPlan(
                     nameMembership=membership.name_membership or "",
-                    value=Decimal(str(membership.value_next_month)) if membership.value_next_month is not None else Decimal('0.00'),
+                    value=(
+                        Decimal(str(membership.value_next_month))
+                        if membership.value_next_month is not None
+                        else Decimal("0.00")
+                    ),
                     description=membership.description or "",
                     features=membership.differentials or [],
                     duration=membership.duration or 12,
@@ -206,7 +239,7 @@ class GymApi:
                     annual_fee=None,
                     cancellation_notice_days=30,
                     category=None,
-                    available_services=[]
+                    available_services=[],
                 )
 
                 category = MembershipCategory(
@@ -215,7 +248,7 @@ class GymApi:
                     description="",  # Not available in API response
                     isActive=True,  # Default value
                     features=[],  # Not available in API response
-                    restrictions=None  # Not available in API response
+                    restrictions=None,  # Not available in API response
                 )
 
                 contract = MembershipContract(
@@ -229,8 +262,12 @@ class GymApi:
                     lastRenewalDate=None,  # Not available in API response
                     nextRenewalDate=None,  # Not available in API response
                     paymentDay=1,  # Default value
-                    totalValue=Decimal(str(membership.value_next_month)) if membership.value_next_month is not None else Decimal('0.00'),
-                    idBranch=branch_id
+                    totalValue=(
+                        Decimal(str(membership.value_next_month))
+                        if membership.value_next_month is not None
+                        else Decimal("0.00")
+                    ),
+                    idBranch=branch_id,
                 )
                 contracts.append(contract)
 
@@ -247,19 +284,23 @@ class GymApi:
         self,
         branch_id: Optional[int] = None,
         include_activity_details: bool = False,
-        async_req: bool = False
+        async_req: bool = False,
     ) -> Union[GymKnowledgeBase, TypedAsyncResult[GymKnowledgeBase]]:
         """Get complete knowledge base for a gym branch."""
         try:
             # Get configuration data
             config = self.configuration_api.get_branch_config(async_req=False)
-            
+
             # Create base knowledge base from configuration
-            gym_kb = self._create_knowledge_base(config[0] if config else None, branch_id)
-            
+            gym_kb = self._create_knowledge_base(
+                config[0] if config else None, branch_id
+            )
+
             # If not async, populate all data
             if not async_req:
-                gym_kb = self._populate_activities(gym_kb, branch_id, include_activity_details)
+                gym_kb = self._populate_activities(
+                    gym_kb, branch_id, include_activity_details
+                )
                 gym_kb = self._populate_memberships(gym_kb, branch_id)
                 gym_kb = self._populate_gateway_config(gym_kb)
                 gym_kb = self._populate_occupations(gym_kb)
@@ -269,7 +310,9 @@ class GymApi:
                 async_result = create_async_result(
                     pool=self._pool,
                     callback=lambda x: self._create_knowledge_base(x[0], branch_id),
-                    error_callback=lambda e: logger.error(f"Error in async knowledge base creation: {str(e)}")
+                    error_callback=lambda e: logger.error(
+                        f"Error in async knowledge base creation: {str(e)}"
+                    ),
                 )
                 return async_result
 
@@ -294,15 +337,21 @@ class GymApi:
                 acceptedPaymentMethods=[
                     PaymentMethod.CREDIT_CARD,
                     PaymentMethod.TRANSFER,
-                    PaymentMethod.PIX
+                    PaymentMethod.PIX,
                 ],
                 pixKey=None,
                 installmentAvailable=True,
-                cancellationFeePercentage=10
-            )
+                cancellationFeePercentage=10,
+            ),
         )
 
-    def _create_knowledge_base(self, config: Any, branch_id: Optional[int] = None, async_req: bool = False, include_activity_details: bool = False) -> GymKnowledgeBase:
+    def _create_knowledge_base(
+        self,
+        config: Any,
+        branch_id: Optional[int] = None,
+        async_req: bool = False,
+        include_activity_details: bool = False,
+    ) -> GymKnowledgeBase:
         """Create a knowledge base from configuration data."""
         # Handle business hours
         business_hours = config.business_hours
@@ -322,7 +371,7 @@ class GymApi:
                     state=config.state or "",
                     postalCode=config.zip_code or "",
                     country="Brasil",  # Default for this SDK
-                    phone=config.telephone or ""
+                    phone=config.telephone or "",
                 )
             ],
             businessHours=[
@@ -339,8 +388,9 @@ class GymApi:
                     weekday_start=time(6, 0),
                     weekday_end=time(23, 0),
                     weekend_start=time(9, 0),
-                    weekend_end=time(15, 0)
-                ) for bh in business_hours
+                    weekend_end=time(15, 0),
+                )
+                for bh in business_hours
             ],
             activities=[],  # Will be populated later
             plans=[],  # Will be populated later
@@ -353,11 +403,11 @@ class GymApi:
                 acceptedPaymentMethods=[
                     PaymentMethod.CREDIT_CARD,
                     PaymentMethod.PIX,
-                    PaymentMethod.TRANSFER
+                    PaymentMethod.TRANSFER,
                 ],
                 pixKey=None,
                 installmentAvailable=True,
-                cancellationFeePercentage=10
+                cancellationFeePercentage=10,
             ),
             branchConfig=BranchConfig(
                 idBranch=config.id_branch or 0,
@@ -374,7 +424,7 @@ class GymApi:
                     state=config.state or "",
                     postalCode=config.zip_code or "",
                     country="Brasil",
-                    phone=config.telephone or ""
+                    phone=config.telephone or "",
                 ),
                 businessHours=[
                     BusinessHours(
@@ -390,36 +440,46 @@ class GymApi:
                         weekday_start=time(6, 0),
                         weekday_end=time(23, 0),
                         weekend_start=time(9, 0),
-                        weekend_end=time(15, 0)
-                    ) for bh in business_hours
+                        weekend_end=time(15, 0),
+                    )
+                    for bh in business_hours
                 ],
                 gatewayConfig=None,  # Will be populated later
                 occupations=[],  # Will be populated later
-                translations={}  # Default empty translations
-            )
+                translations={},  # Default empty translations
+            ),
         )
 
         # Populate additional data if not async
         if not async_req:
-            gym_kb = self._populate_activities(gym_kb, branch_id, include_activity_details)
+            gym_kb = self._populate_activities(
+                gym_kb, branch_id, include_activity_details
+            )
             gym_kb = self._populate_memberships(gym_kb, branch_id)
             gym_kb = self._populate_gateway_config(gym_kb)
             gym_kb = self._populate_occupations(gym_kb)
-        
+
         return gym_kb
 
-    def _populate_activities(self, gym_kb: GymKnowledgeBase, branch_id: Optional[int] = None, include_details: bool = False) -> GymKnowledgeBase:
+    def _populate_activities(
+        self,
+        gym_kb: GymKnowledgeBase,
+        branch_id: Optional[int] = None,
+        include_details: bool = False,
+    ) -> GymKnowledgeBase:
         """Populate activities in the knowledge base."""
         try:
             # Get activities and employees
-            activities = self.activities_api.get_activities(branch_id=branch_id, async_req=False)
+            activities = self.activities_api.get_activities(
+                branch_id=branch_id, async_req=False
+            )
             employees = self.employees_api.get_employees(
                 employee_id=None,
                 name=None,
                 email=None,
                 take=None,
                 skip=None,
-                async_req=False
+                async_req=False,
             )
 
             # Get activity schedules if needed
@@ -432,57 +492,78 @@ class GymApi:
                             member_id=None,
                             date=datetime.now(),
                             branch_id=branch_id,
-                            activity_ids=[act.id_activity] if act.id_activity is not None else None,
+                            activity_ids=(
+                                [act.id_activity]
+                                if act.id_activity is not None
+                                else None
+                            ),
                             audience_ids=None,
                             take=None,
                             only_availables=False,
                             show_full_week=False,
                             branch_token=None,
-                            async_req=False
+                            async_req=False,
                         )
-                        
+
                         if schedules:
                             # Convert list of schedules to dictionary by weekday
                             schedule_dict = {}
                             for schedule in schedules:
                                 try:
-                                    config_id = getattr(schedule, "idConfiguration", None)
-                                    activity_date = getattr(schedule, "date", None) or datetime.now()
-                                    session_id = getattr(schedule, "idActivitySession", None)
+                                    config_id = getattr(
+                                        schedule, "idConfiguration", None
+                                    )
+                                    activity_date = (
+                                        getattr(schedule, "date", None)
+                                        or datetime.now()
+                                    )
+                                    session_id = getattr(
+                                        schedule, "idActivitySession", None
+                                    )
 
                                     if session_id:
                                         # If we have a session ID, use that
-                                        detail = self.activities_api.get_schedule_detail(
-                                            config_id=None,
-                                            activity_date=None,
-                                            session_id=session_id,
-                                            async_req=False
+                                        detail = (
+                                            self.activities_api.get_schedule_detail(
+                                                config_id=None,
+                                                activity_date=None,
+                                                session_id=session_id,
+                                                async_req=False,
+                                            )
                                         )
                                     elif config_id:
                                         # Otherwise use config_id and activity_date
-                                        detail = self.activities_api.get_schedule_detail(
-                                            config_id=config_id,
-                                            activity_date=activity_date,
-                                            session_id=None,
-                                            async_req=False
+                                        detail = (
+                                            self.activities_api.get_schedule_detail(
+                                                config_id=config_id,
+                                                activity_date=activity_date,
+                                                session_id=None,
+                                                async_req=False,
+                                            )
                                         )
                                     else:
                                         # Skip if we don't have either required combination
                                         continue
-                                    
+
                                     if detail and detail.week_day is not None:
                                         weekday = str(detail.week_day)
                                         if weekday not in schedule_dict:
                                             schedule_dict[weekday] = []
                                         if detail.date:
-                                            schedule_dict[weekday].append(detail.date.time())
+                                            schedule_dict[weekday].append(
+                                                detail.date.time()
+                                            )
                                 except Exception as e:
-                                    logger.warning(f"Error getting schedule detail: {str(e)}")
+                                    logger.warning(
+                                        f"Error getting schedule detail: {str(e)}"
+                                    )
                                     continue
-                        
+
                         activity_schedules[act.id_activity] = schedule_dict
                     except Exception as e:
-                        logger.warning(f"Error getting schedule for activity {act.id_activity}: {str(e)}")
+                        logger.warning(
+                            f"Error getting schedule for activity {act.id_activity}: {str(e)}"
+                        )
                         continue
 
             # Create activities with enhanced information
@@ -495,10 +576,16 @@ class GymApi:
                     requiresReservation=True,  # Default to requiring reservation
                     durationMinutes=60,  # Default duration since not in API model
                     instructor=next(
-                        (emp.name for emp in employees if emp.id_employee == act.id_activity),
-                        None
+                        (
+                            emp.name
+                            for emp in employees
+                            if emp.id_employee == act.id_activity
+                        ),
+                        None,
                     ),
-                    schedule=activity_schedules.get(act.id_activity, {}),  # Use converted dictionary
+                    schedule=activity_schedules.get(
+                        act.id_activity, {}
+                    ),  # Use converted dictionary
                     status=ActivityStatus.AVAILABLE,  # Default to available
                     photo=act.photo,  # Add photo if available
                     color=act.color,  # Add color if available
@@ -508,21 +595,30 @@ class GymApi:
                     audience=[  # Add audience information
                         str(audience.nome)  # Convert to string to handle None values
                         for audience in (act.audience or [])
-                        if hasattr(audience, 'nome') and audience.nome is not None
+                        if hasattr(audience, "nome") and audience.nome is not None
                     ],
                     instructorPhoto=next(
-                        (emp.photo_url for emp in employees if emp.id_employee == act.id_activity),
-                        None
+                        (
+                            emp.photo_url
+                            for emp in employees
+                            if emp.id_employee == act.id_activity
+                        ),
+                        None,
                     ),
-                    area=getattr(act, 'area', None),
+                    area=getattr(act, "area", None),
                     branchName=next(
-                        (emp.name for emp in employees if emp.id_employee == act.id_activity),
-                        None
+                        (
+                            emp.name
+                            for emp in employees
+                            if emp.id_employee == act.id_activity
+                        ),
+                        None,
                     ),
-                    allowChoosingSpot=getattr(act, 'allow_choosing_spot', False),
-                    spots=getattr(act, 'spots', None),
-                    sessionDetails=[]  # Skip session details for now to avoid status conversion issues
-                ) for act in activities
+                    allowChoosingSpot=getattr(act, "allow_choosing_spot", False),
+                    spots=getattr(act, "spots", None),
+                    sessionDetails=[],  # Skip session details for now to avoid status conversion issues
+                )
+                for act in activities
             ]
 
             return gym_kb
@@ -534,7 +630,7 @@ class GymApi:
         self,
         gym_kb: GymKnowledgeBase,
         branch_id: Optional[int] = None,
-        async_req: bool = False
+        async_req: bool = False,
     ) -> GymKnowledgeBase:
         """Populate membership plans and categories."""
         try:
@@ -542,23 +638,41 @@ class GymApi:
             memberships_result = self.membership_api.get_memberships(
                 branch_id=branch_id,
                 active=True,  # Only get active memberships
-                async_req=True if async_req else False  # type: ignore
+                async_req=True if async_req else False,  # type: ignore
             )
             categories_result = self.membership_api.get_categories(
                 async_req=True if async_req else False  # type: ignore
             )
             services_result = self.service_api.get_services(
                 branch_id=branch_id,
-                async_req=True if async_req else False  # type: ignore
+                async_req=True if async_req else False,  # type: ignore
             )
 
             # Handle async results
-            memberships = memberships_result.get() if isinstance(memberships_result, AsyncResult) else memberships_result
-            categories = categories_result.get() if isinstance(categories_result, AsyncResult) else categories_result
-            services = services_result.get() if isinstance(services_result, AsyncResult) else services_result
+            memberships = (
+                memberships_result.get()
+                if isinstance(memberships_result, AsyncResult)
+                else memberships_result
+            )
+            categories = (
+                categories_result.get()
+                if isinstance(categories_result, AsyncResult)
+                else categories_result
+            )
+            services = (
+                services_result.get()
+                if isinstance(services_result, AsyncResult)
+                else services_result
+            )
 
-            if not isinstance(memberships, list) or not isinstance(categories, list) or not isinstance(services, list):
-                logger.warning("Invalid response type for memberships, categories, or services")
+            if (
+                not isinstance(memberships, list)
+                or not isinstance(categories, list)
+                or not isinstance(services, list)
+            ):
+                logger.warning(
+                    "Invalid response type for memberships, categories, or services"
+                )
                 return gym_kb
 
             # First populate categories with default values for missing fields
@@ -569,12 +683,15 @@ class GymApi:
                     description="",  # Default empty description
                     isActive=True,  # Default to active
                     features=[],  # Default empty features
-                    restrictions=None  # Default no restrictions
-                ) for cat in categories
+                    restrictions=None,  # Default no restrictions
+                )
+                for cat in categories
             ]
 
             # Create a mapping of category names to categories for easy lookup
-            category_map = {cat.name.lower(): cat for cat in gym_kb.membership_categories}
+            category_map = {
+                cat.name.lower(): cat for cat in gym_kb.membership_categories
+            }
 
             # Then populate plans with their categories
             gym_kb.plans = [
@@ -589,18 +706,23 @@ class GymApi:
                     cancellation_notice_days=plan.min_period_stay_membership or 30,
                     payment_methods=[PaymentMethod.CREDIT_CARD],
                     accessBranches=bool(plan.access_branches),
-                    category=category_map.get((plan.membership_type or "").lower()) if plan.membership_type else MembershipCategory(
-                        id=0,
-                        name="Standard",
-                        description="",
-                        isActive=True,
-                        features=[],
-                        restrictions=None
+                    category=(
+                        category_map.get((plan.membership_type or "").lower())
+                        if plan.membership_type
+                        else MembershipCategory(
+                            id=0,
+                            name="Standard",
+                            description="",
+                            isActive=True,
+                            features=[],
+                            restrictions=None,
+                        )
                     ),
                     available_services=[],
                     maxAmountInstallments=plan.max_amount_installments or 1,
-                    isActive=not plan.inactive
-                ) for plan in memberships
+                    isActive=not plan.inactive,
+                )
+                for plan in memberships
             ]
 
             # Finally, populate available services
@@ -611,8 +733,9 @@ class GymApi:
                     description=service.online_sales_observations or "",
                     price=Decimal(str(service.value or 0)),
                     isRecurring=False,  # Not available in API model
-                    durationDays=30  # Default value
-                ) for service in services
+                    durationDays=30,  # Default value
+                )
+                for service in services
             ]
 
             return gym_kb
@@ -624,14 +747,22 @@ class GymApi:
         """Populate gateway configuration in the knowledge base."""
         try:
             gateway_result = self.configuration_api.get_gateway_config()
-            gateway_config = gateway_result.get() if isinstance(gateway_result, AsyncResult) else gateway_result
+            gateway_config = (
+                gateway_result.get()
+                if isinstance(gateway_result, AsyncResult)
+                else gateway_result
+            )
 
             if gateway_config and gym_kb.branch_config:
                 flags = []  # Card flags will be populated from a different endpoint
                 try:
                     # Convert tipo_gateway enum to string
-                    gateway_type = str(gateway_config.tipo_gateway.value) if gateway_config.tipo_gateway else "0"
-                    
+                    gateway_type = (
+                        str(gateway_config.tipo_gateway.value)
+                        if gateway_config.tipo_gateway
+                        else "0"
+                    )
+
                     # Update branch config with gateway info
                     gym_kb.branch_config.gateway_config = GatewayConfig(
                         id=1,  # Default ID since not in API model
@@ -640,7 +771,7 @@ class GymApi:
                         merchantId="",  # Not available in API model
                         merchantKey="",  # Not available in API model
                         isActive=True,  # Default to active
-                        acceptedFlags=flags
+                        acceptedFlags=flags,
                     )
                 except Exception as e:
                     print(f"Error populating gateway config: {str(e)}")
@@ -653,7 +784,11 @@ class GymApi:
         """Populate occupation areas in the knowledge base."""
         try:
             occupations_result = self.configuration_api.get_occupations()
-            occupation_areas = occupations_result.get() if isinstance(occupations_result, AsyncResult) else occupations_result
+            occupation_areas = (
+                occupations_result.get()
+                if isinstance(occupations_result, AsyncResult)
+                else occupations_result
+            )
 
             if not isinstance(occupation_areas, list):
                 return gym_kb
@@ -664,9 +799,11 @@ class GymApi:
                         id=occ.id_branch or 0,
                         name=occ.name or "Unknown",  # Convert None to default string
                         description=f"Max Occupation: {occ.max_occupation or 0}, Current: {occ.occupation or 0}",
-                        isActive=True  # Not available in SDK model
-                    ) for occ in occupation_areas
-                    if hasattr(occ, 'id_branch') and hasattr(occ, 'name')  # Only include if required fields exist
+                        isActive=True,  # Not available in SDK model
+                    )
+                    for occ in occupation_areas
+                    if hasattr(occ, "id_branch")
+                    and hasattr(occ, "name")  # Only include if required fields exist
                 ]
         except Exception as e:
             print(f"Error populating occupations: {str(e)}")
@@ -679,11 +816,11 @@ class GymApi:
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         status: Optional[ReceivableStatus] = None,
-        async_req: bool = False
+        async_req: bool = False,
     ) -> Union[List[Receivable], TypedAsyncResult[List[Receivable]]]:
         """
         Get receivables filtered by member, branch, date range, and status.
-        
+
         Args:
             member_id: Optional ID of a specific member
             branch_id: Optional ID of a specific branch
@@ -691,7 +828,7 @@ class GymApi:
             end_date: Optional end date for filtering receivables
             status: Optional status to filter by
             async_req: If True, returns AsyncResult
-            
+
         Returns:
             List[Receivable]: List of receivables matching the filters
         """
@@ -711,10 +848,11 @@ class GymApi:
                 due_date_start=start_date,
                 due_date_end=end_date,
                 account_status=account_status,
-                async_req=True if async_req else False  # type: ignore
+                async_req=True if async_req else False,  # type: ignore
             )
 
             if isinstance(receivables_result, AsyncResult):
+
                 def convert_result(result: Any) -> List[Receivable]:
                     if isinstance(result, list):
                         return [self._convert_receivable(r) for r in result]
@@ -723,14 +861,14 @@ class GymApi:
                 async_result = create_async_result(
                     pool=self._pool,
                     callback=convert_result,
-                    error_callback=lambda e: []
+                    error_callback=lambda e: [],
                 )
                 return cast(TypedAsyncResult[List[Receivable]], async_result)
 
             # Handle SDK response
             if receivables_result is None:
                 return []
-            
+
             if not isinstance(receivables_result, list):
                 try:
                     # Try to convert to list if it's an iterable
@@ -750,16 +888,16 @@ class GymApi:
         self,
         branch_id: Optional[int] = None,
         min_days_overdue: int = 1,
-        async_req: bool = False
+        async_req: bool = False,
     ) -> Union[List[OverdueMember], TypedAsyncResult[List[OverdueMember]]]:
         """
         Get members with overdue payments.
-        
+
         Args:
             branch_id: Optional ID of a specific branch
             min_days_overdue: Minimum number of days overdue (default: 1)
             async_req: If True, returns AsyncResult
-            
+
         Returns:
             List[OverdueMember]: List of members with overdue payments
         """
@@ -769,17 +907,18 @@ class GymApi:
                 branch_id=branch_id,
                 end_date=end_date,
                 status=ReceivableStatus.OVERDUE,
-                async_req=async_req
+                async_req=async_req,
             )
 
             if isinstance(receivables_result, AsyncResult):
+
                 def convert_result(result: List[Receivable]) -> List[OverdueMember]:
                     return self._group_overdue_receivables(result)
 
                 async_result = create_async_result(
                     pool=self._pool,
                     callback=convert_result,
-                    error_callback=lambda e: []
+                    error_callback=lambda e: [],
                 )
                 return cast(TypedAsyncResult[List[OverdueMember]], async_result)
 
@@ -789,55 +928,75 @@ class GymApi:
             print(f"Error fetching overdue members: {str(e)}")
             return []
 
-    def _group_overdue_receivables(self, receivables: List[Receivable]) -> List[OverdueMember]:
+    def _group_overdue_receivables(
+        self, receivables: List[Receivable]
+    ) -> List[OverdueMember]:
         """Group overdue receivables by member."""
         member_map: Dict[int, OverdueMember] = {}
-        
+
         for receivable in receivables:
             if receivable.member_id and receivable.member_id not in member_map:
                 member_map[receivable.member_id] = OverdueMember(
                     id=receivable.member_id,
                     name=receivable.member_name or "Unknown",
                     member_id=receivable.member_id,
-                    total_overdue=Decimal('0.00'),
+                    total_overdue=Decimal("0.00"),
                     overdue_since=receivable.due_date or datetime.now(),
                     overdue_receivables=[],
                     branch_id=receivable.branch_id,
-                    last_payment_date=None
+                    last_payment_date=None,
                 )
-            
+
             if receivable.member_id:
                 member = member_map[receivable.member_id]
-                member.total_overdue += receivable.amount - (receivable.amount_paid or Decimal('0.00'))
+                member.total_overdue += receivable.amount - (
+                    receivable.amount_paid or Decimal("0.00")
+                )
                 member.overdue_receivables.append(receivable)
-        
+
         return list(member_map.values())
 
     def _convert_sale(self, sale_vm: SalesViewModel) -> Sale:
         """Convert SDK sale model to our Sale model."""
         # Get the first sale item which contains service details
-        sale_item = sale_vm.sale_itens[0].itens[0] if sale_vm.sale_itens and sale_vm.sale_itens[0].itens else None
-        
+        sale_item = (
+            sale_vm.sale_itens[0].itens[0]
+            if sale_vm.sale_itens and sale_vm.sale_itens[0].itens
+            else None
+        )
+
         # Get payment type from sale item or default to CREDIT_CARD
         payment_type = None
         if sale_item and isinstance(sale_item, SalesItemViewModel):
             payment_type = str(sale_item.type) if sale_item.type is not None else None
-        
+
         return Sale(
             id=sale_vm.id_sale,
             idBranch=sale_vm.id_branch,
             idMember=sale_vm.id_member,
             idService=sale_item.id_membership if sale_item else None,
-            serviceValue=Decimal(str(sale_item.service_value)) if sale_item and sale_item.service_value else Decimal("0"),
-            payment_method=PaymentMethod(payment_type) if payment_type else PaymentMethod.CREDIT_CARD,
-            totalInstallments=getattr(sale_item, "installments_count", 1) if sale_item else 1,
+            serviceValue=(
+                Decimal(str(sale_item.service_value))
+                if sale_item and sale_item.service_value
+                else Decimal("0")
+            ),
+            payment_method=(
+                PaymentMethod(payment_type)
+                if payment_type
+                else PaymentMethod.CREDIT_CARD
+            ),
+            totalInstallments=(
+                getattr(sale_item, "installments_count", 1) if sale_item else 1
+            ),
             createdAt=sale_vm.sale_date or datetime.now(),
-            status="active" if not sale_vm.removed else "cancelled"
+            status="active" if not sale_vm.removed else "cancelled",
         )
 
     def get_sale(self, sale_id: int) -> Sale:
         """Get a sale by its ID."""
-        sale_vm = cast(SalesViewModel, self.sales_api.get_sale_by_id(sale_id, async_req=False))
+        sale_vm = cast(
+            SalesViewModel, self.sales_api.get_sale_by_id(sale_id, async_req=False)
+        )
         return self._convert_sale(sale_vm)
 
     def create_sale(self, sale: NewSale) -> Sale:
@@ -852,14 +1011,25 @@ class GymApi:
             payment=EFormaPagamentoTotem(sale.payment_method.value),
             typePayment=sale.payment_method.value,
             totalInstallments=sale.total_installments,
-            cardData=CardDataViewModel(**sale.card_data.model_dump(by_alias=True)) if sale.card_data else None,
+            cardData=(
+                CardDataViewModel(**sale.card_data.model_dump(by_alias=True))
+                if sale.card_data
+                else None
+            ),
         )
 
         # Create the sale
-        result = cast(NewSaleViewModel, self.sales_api.create_sale(sale_vm, async_req=False))
+        result = cast(
+            NewSaleViewModel, self.sales_api.create_sale(sale_vm, async_req=False)
+        )
         if result and result.id_membership:
             # After creating the sale, fetch its details using the membership ID
-            created_sale = cast(SalesViewModel, self.sales_api.get_sale_by_id(int(result.id_membership), async_req=False))
+            created_sale = cast(
+                SalesViewModel,
+                self.sales_api.get_sale_by_id(
+                    int(result.id_membership), async_req=False
+                ),
+            )
             return self._convert_sale(created_sale)
         raise ValueError("Failed to create sale: missing sale ID in response")
 
@@ -876,7 +1046,7 @@ class GymApi:
         async_req: bool = False,
     ) -> List[Sale]:
         """Get sales with optional filters.
-        
+
         Args:
             id_member: Filter by member ID
             date_sale_start: Start date for filtering sales
@@ -888,21 +1058,27 @@ class GymApi:
             async_req: Whether to make the request asynchronously
         """
         try:
-            sales_vm = cast(List[SalesViewModel], self.sales_api.get_sales(
-                member_id=id_member,
-                date_sale_start=date_sale_start,
-                date_sale_end=date_sale_end,
-                show_receivables=show_receivables,
-                take=take,
-                skip=skip,
-                async_req=True if async_req else False  # type: ignore
-            ))
-            
+            sales_vm = cast(
+                List[SalesViewModel],
+                self.sales_api.get_sales(
+                    member_id=id_member,
+                    date_sale_start=date_sale_start,
+                    date_sale_end=date_sale_end,
+                    show_receivables=show_receivables,
+                    take=take,
+                    skip=skip,
+                    async_req=True if async_req else False,  # type: ignore
+                ),
+            )
+
             return [
-                self._convert_sale(sale) for sale in sales_vm
-                if sale and sale.sale_itens and sale.sale_itens[0].itens and
-                isinstance(sale.sale_itens[0].itens[0], SalesItemViewModel) and
-                sale.sale_itens[0].itens[0].service_value is not None
+                self._convert_sale(sale)
+                for sale in sales_vm
+                if sale
+                and sale.sale_itens
+                and sale.sale_itens[0].itens
+                and isinstance(sale.sale_itens[0].itens[0], SalesItemViewModel)
+                and sale.sale_itens[0].itens[0].service_value is not None
             ]
         except Exception as e:
             print(f"Error getting sales: {str(e)}")
@@ -915,8 +1091,7 @@ class GymApi:
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> GymOperatingData:
-        ...
+    ) -> GymOperatingData: ...
 
     @overload
     def get_operating_data(
@@ -925,8 +1100,7 @@ class GymApi:
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> TypedAsyncResult[GymOperatingData]:
-        ...
+    ) -> TypedAsyncResult[GymOperatingData]: ...
 
     def get_operating_data(
         self,
@@ -942,37 +1116,33 @@ class GymApi:
                 active_members_result = self.management_api.get_active_clients(
                     async_req=True
                 )
-                
+
                 active_contracts_result = self.get_contracts(
-                    branch_id=branch_id,
-                    active_only=True,
-                    async_req=True
+                    branch_id=branch_id, active_only=True, async_req=True
                 )
-                
+
                 prospects_result = self.prospects_api.get_prospects(
                     register_date_start=from_date,
                     register_date_end=to_date,
-                    async_req=True
+                    async_req=True,
                 )
-                
+
                 non_renewed_result = self.management_api.get_non_renewed_clients(
-                    dt_start=from_date,
-                    dt_end=to_date,
-                    async_req=True
+                    dt_start=from_date, dt_end=to_date, async_req=True
                 )
-                
+
                 receivables_result = self.receivables_api.get_receivables(
                     registration_date_start=from_date,
                     registration_date_end=to_date,
-                    async_req=True
+                    async_req=True,
                 )
 
                 entries_result = self.entries_api.get_entries(
                     register_date_start=from_date,
                     register_date_end=to_date,
-                    async_req=True
+                    async_req=True,
                 )
-                
+
                 # Create async result that will process all data
                 async_result = create_async_result(
                     pool=self._pool,
@@ -983,66 +1153,71 @@ class GymApi:
                             prospects_result.get(),
                             non_renewed_result.get(),
                             receivables_result.get(),
-                            entries_result.get()
+                            entries_result.get(),
                         ],
                         from_date,
-                        to_date
+                        to_date,
                     ),
-                    error_callback=lambda e: GymOperatingData(data_from=from_date, data_to=to_date)
+                    error_callback=lambda e: GymOperatingData(
+                        data_from=from_date, data_to=to_date
+                    ),
                 )
-                
+
                 return cast(TypedAsyncResult[GymOperatingData], async_result)
-            
+
             # Synchronous execution
-            active_members = self.management_api.get_active_clients(
-                async_req=False
-            )
+            active_members = self.management_api.get_active_clients(async_req=False)
 
             active_contracts = self.get_contracts(
-                branch_id=branch_id,
-                active_only=True,
-                async_req=False
+                branch_id=branch_id, active_only=True, async_req=False
             )
 
             prospects = self.prospects_api.get_prospects(
                 register_date_start=from_date,
                 register_date_end=to_date,
-                async_req=False
+                async_req=False,
             )
 
             non_renewed = self.management_api.get_non_renewed_clients(
-                dt_start=from_date,
-                dt_end=to_date,
-                async_req=False
+                dt_start=from_date, dt_end=to_date, async_req=False
             )
 
             receivables = self.receivables_api.get_receivables(
                 registration_date_start=from_date,
                 registration_date_end=to_date,
-                async_req=False
+                async_req=False,
             )
 
             entries = self.entries_api.get_entries(
                 register_date_start=from_date,
                 register_date_end=to_date,
-                async_req=False
+                async_req=False,
             )
 
             # Calculate MRR and churn rate
-            mrr = Decimal('0.00')
+            mrr = Decimal("0.00")
             if active_contracts:
-                contract_mrr = sum((Decimal(str(contract.plan.price)) if hasattr(contract.plan, 'price') else Decimal('0.00')) 
-                                 for contract in active_contracts if contract.plan)
+                contract_mrr = sum(
+                    (
+                        Decimal(str(contract.plan.price))
+                        if hasattr(contract.plan, "price")
+                        else Decimal("0.00")
+                    )
+                    for contract in active_contracts
+                    if contract.plan
+                )
                 mrr = Decimal(str(contract_mrr))
 
             total_active = len(active_members) if active_members else 0
             total_churned = len(non_renewed) if non_renewed else 0
-            churn_rate = Decimal('0.00')
+            churn_rate = Decimal("0.00")
             if total_active > 0:
                 churn_rate = Decimal(str(total_churned / total_active * 100))
 
             # Convert SDK models to dictionaries
-            active_members_dict = [member.to_dict() for member in (active_members or [])]
+            active_members_dict = [
+                member.to_dict() for member in (active_members or [])
+            ]
             prospects_dict = [prospect.to_dict() for prospect in (prospects or [])]
             non_renewed_dict = [member.to_dict() for member in (non_renewed or [])]
 
@@ -1055,12 +1230,18 @@ class GymApi:
                 prospects=prospects_dict,
                 non_renewed_members=non_renewed_dict,
                 receivables=[self._convert_receivable(r) for r in (receivables or [])],
-                overdue_members=self._group_overdue_receivables([self._convert_receivable(r) for r in (receivables or []) if r.status == ReceivableStatus.OVERDUE]),
+                overdue_members=self._group_overdue_receivables(
+                    [
+                        self._convert_receivable(r)
+                        for r in (receivables or [])
+                        if r.status == ReceivableStatus.OVERDUE
+                    ]
+                ),
                 recent_entries=[self._convert_entry(e) for e in (entries or [])],
                 mrr=mrr,
                 churn_rate=churn_rate,
                 total_active_members=total_active,
-                total_churned_members=total_churned
+                total_churned_members=total_churned,
             )
 
             return operating_data
@@ -1075,8 +1256,7 @@ class GymApi:
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> MembersFiles:
-        ...
+    ) -> MembersFiles: ...
 
     @overload
     def get_members_files(
@@ -1085,8 +1265,7 @@ class GymApi:
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> TypedAsyncResult[MembersFiles]:
-        ...
+    ) -> TypedAsyncResult[MembersFiles]: ...
 
     def get_members_files(
         self,
@@ -1097,166 +1276,182 @@ class GymApi:
     ) -> Union[MembersFiles, TypedAsyncResult[MembersFiles]]:
         """
         Get comprehensive data about specified members.
-        
+
         This method fetches all available data about the specified members,
         including their complete history of interactions with the gym.
-        
+
         Args:
             member_ids: List of member IDs to analyze
             from_date: Optional start date for historical data
             to_date: Optional end date for historical data
             async_req: If True, returns AsyncResult
-            
+
         Returns:
             MembersFiles: Comprehensive member data and metrics,
                          or AsyncResult if async_req=True
         """
         try:
             members_files = MembersFiles(
-                member_ids=member_ids,
-                data_from=from_date,
-                data_to=to_date
+                member_ids=member_ids, data_from=from_date, data_to=to_date
             )
-            
+
             if async_req:
                 # Start all async requests for each member
                 async_results = []
                 for member_id in member_ids:
                     # Basic member info
-                    async_results.append(self.members_api.get_member_profile(
-                        id_member=member_id,
-                        async_req=True
-                    ))
-                    
+                    async_results.append(
+                        self.members_api.get_member_profile(
+                            id_member=member_id, async_req=True
+                        )
+                    )
+
                     # Contracts
-                    async_results.append(self.get_contracts(
-                        member_id=member_id,
-                        active_only=False,
-                        async_req=True
-                    ))
-                    
+                    async_results.append(
+                        self.get_contracts(
+                            member_id=member_id, active_only=False, async_req=True
+                        )
+                    )
+
                     # Entries
-                    async_results.append(self.entries_api.get_entries(
-                        register_date_start=from_date,
-                        register_date_end=to_date,
-                        member_id=member_id,
-                        async_req=True
-                    ))
-                    
+                    async_results.append(
+                        self.entries_api.get_entries(
+                            register_date_start=from_date,
+                            register_date_end=to_date,
+                            member_id=member_id,
+                            async_req=True,
+                        )
+                    )
+
                     # Receivables
-                    async_results.append(self.receivables_api.get_receivables(
-                        member_id=member_id,
-                        registration_date_start=from_date,
-                        registration_date_end=to_date,
-                        async_req=True
-                    ))
-                    
+                    async_results.append(
+                        self.receivables_api.get_receivables(
+                            member_id=member_id,
+                            registration_date_start=from_date,
+                            registration_date_end=to_date,
+                            async_req=True,
+                        )
+                    )
+
                     # Activity sessions
-                    async_results.append(self.activities_api.get_schedule(
-                        member_id=member_id,
-                        date=from_date,
-                        show_full_week=True,
-                        async_req=True
-                    ))
-                
+                    async_results.append(
+                        self.activities_api.get_schedule(
+                            member_id=member_id,
+                            date=from_date,
+                            show_full_week=True,
+                            async_req=True,
+                        )
+                    )
+
                 # Create async result that will process all data
                 async_result = create_async_result(
                     pool=self._pool,
                     callback=lambda _: self._process_members_files(
-                        [r.get() for r in async_results],
-                        member_ids,
-                        members_files
+                        [r.get() for r in async_results], member_ids, members_files
                     ),
-                    error_callback=lambda e: members_files
+                    error_callback=lambda e: members_files,
                 )
-                
+
                 return cast(TypedAsyncResult[MembersFiles], async_result)
-            
+
             # Synchronous execution
             for member_id in member_ids:
                 # Get member profile
                 member = self.members_api.get_member_profile(
-                    id_member=member_id,
-                    async_req=False
+                    id_member=member_id, async_req=False
                 )
-                
+
                 if member:
                     profile = self._create_member_profile(member)
-                    
+
                     # Get contracts
                     contracts = self.get_contracts(
-                        member_id=member_id,
-                        active_only=False,
-                        async_req=False
+                        member_id=member_id, active_only=False, async_req=False
                     )
                     if contracts:
                         profile.contracts_history = contracts
                         # Find current contract
-                        active_contracts = [c for c in contracts if c.status == MembershipStatus.ACTIVE]
+                        active_contracts = [
+                            c for c in contracts if c.status == MembershipStatus.ACTIVE
+                        ]
                         if active_contracts:
                             profile.current_contract = active_contracts[0]
                             profile.is_active = True
-                    
+
                     # Get entries
                     entries = self.entries_api.get_entries(
                         register_date_start=from_date,
                         register_date_end=to_date,
                         member_id=member_id,
-                        async_req=False
+                        async_req=False,
                     )
                     if entries:
-                        profile.entries_history = [self._convert_entry(e) for e in entries]
+                        profile.entries_history = [
+                            self._convert_entry(e) for e in entries
+                        ]
                         profile.total_entries = len(profile.entries_history)
                         if profile.entries_history:
                             profile.last_entry = profile.entries_history[-1]
-                    
+
                     # Get receivables
                     receivables = self.receivables_api.get_receivables(
                         member_id=member_id,
                         registration_date_start=from_date,
                         registration_date_end=to_date,
-                        async_req=False
+                        async_req=False,
                     )
                     if receivables:
-                        profile.receivables = [self._convert_receivable(r) for r in receivables]
+                        profile.receivables = [
+                            self._convert_receivable(r) for r in receivables
+                        ]
                         # Calculate financial summaries
                         for receivable in profile.receivables:
                             if receivable.status == ReceivableStatus.PAID:
-                                profile.total_paid += receivable.amount or Decimal('0.00')
+                                profile.total_paid += receivable.amount or Decimal(
+                                    "0.00"
+                                )
                             elif receivable.status == ReceivableStatus.PENDING:
-                                profile.pending_payments += receivable.amount or Decimal('0.00')
+                                profile.pending_payments += (
+                                    receivable.amount or Decimal("0.00")
+                                )
                             elif receivable.status == ReceivableStatus.OVERDUE:
-                                profile.overdue_payments += receivable.amount or Decimal('0.00')
-                    
+                                profile.overdue_payments += (
+                                    receivable.amount or Decimal("0.00")
+                                )
+
                     # Get activity sessions
                     sessions = self.activities_api.get_schedule(
                         member_id=member_id,
                         date=from_date,
                         show_full_week=True,
-                        async_req=False
+                        async_req=False,
                     )
                     if sessions:
                         profile.total_classes_attended = len(sessions)
                         # Track favorite activities
                         activity_counts: Dict[str, int] = {}
                         for session in sessions:
-                            activity_name = getattr(session, 'activity_name', None)
+                            activity_name = getattr(session, "activity_name", None)
                             if activity_name:
-                                activity_counts[activity_name] = activity_counts.get(activity_name, 0) + 1
+                                activity_counts[activity_name] = (
+                                    activity_counts.get(activity_name, 0) + 1
+                                )
                         profile.favorite_activities = sorted(
                             activity_counts.keys(),
                             key=lambda x: activity_counts[x],
-                            reverse=True
-                        )[:5]  # Top 5 activities
-                    
+                            reverse=True,
+                        )[
+                            :5
+                        ]  # Top 5 activities
+
                     # Build timeline
                     self._build_member_timeline(profile)
-                    
+
                     # Add profile to collection
                     members_files.add_member(profile)
-            
+
             return members_files
-            
+
         except Exception as e:
             logger.error(f"Error fetching members files: {str(e)}")
             return members_files
@@ -1268,7 +1463,7 @@ class GymApi:
             name=member.name or "",
             email=member.email,
             phone=member.phone,
-            photo_url=member.photo_url
+            photo_url=member.photo_url,
         )
 
     def _build_member_timeline(self, profile: MemberProfile) -> None:
@@ -1281,9 +1476,9 @@ class GymApi:
                 description=f"Gym entry - {entry.entry_type.value}",
                 related_id=entry.id,
                 branch_id=entry.branch_id,
-                status=entry.status.value
+                status=entry.status.value,
             )
-            
+
         # Add financial transactions
         for receivable in profile.receivables:
             # Payment made
@@ -1295,9 +1490,13 @@ class GymApi:
                     related_id=receivable.id,
                     amount=receivable.amount_paid,
                     transaction_type="payment",
-                    payment_method=receivable.payment_method if hasattr(receivable, 'payment_method') else None
+                    payment_method=(
+                        receivable.payment_method
+                        if hasattr(receivable, "payment_method")
+                        else None
+                    ),
                 )
-            
+
             # Payment due
             if receivable.status == ReceivableStatus.OVERDUE:
                 profile.add_timeline_event(
@@ -1307,17 +1506,14 @@ class GymApi:
                     related_id=receivable.id,
                     amount=receivable.amount,
                     transaction_type="overdue",
-                    status="overdue"
+                    status="overdue",
                 )
-            
+
         # Sort all events by timestamp
         profile.timeline.sort(key=lambda x: x.timestamp)
 
     def _process_members_files(
-        self,
-        results: List[Any],
-        member_ids: List[int],
-        members_files: MembersFiles
+        self, results: List[Any], member_ids: List[int], members_files: MembersFiles
     ) -> MembersFiles:
         """Process async results into MembersFiles object."""
         try:
@@ -1326,64 +1522,78 @@ class GymApi:
             for i, member_id in enumerate(member_ids):
                 base_idx = i * results_per_member
                 member = results[base_idx]
-                
+
                 if member:
                     profile = self._create_member_profile(member)
-                    
+
                     # Process contracts
                     contracts = results[base_idx + 1]
                     if contracts:
                         profile.contracts_history = contracts
-                        active_contracts = [c for c in contracts if c.status == MembershipStatus.ACTIVE]
+                        active_contracts = [
+                            c for c in contracts if c.status == MembershipStatus.ACTIVE
+                        ]
                         if active_contracts:
                             profile.current_contract = active_contracts[0]
                             profile.is_active = True
-                    
+
                     # Process entries
                     entries = results[base_idx + 2]
                     if entries:
-                        profile.entries_history = [self._convert_entry(e) for e in entries]
+                        profile.entries_history = [
+                            self._convert_entry(e) for e in entries
+                        ]
                         profile.total_entries = len(profile.entries_history)
                         if profile.entries_history:
                             profile.last_entry = profile.entries_history[-1]
-                    
+
                     # Process receivables
                     receivables = results[base_idx + 3]
                     if receivables:
-                        profile.receivables = [self._convert_receivable(r) for r in receivables]
+                        profile.receivables = [
+                            self._convert_receivable(r) for r in receivables
+                        ]
                         # Calculate financial summaries
                         for receivable in profile.receivables:
                             if receivable.status == ReceivableStatus.PAID:
-                                profile.total_paid += receivable.amount or Decimal('0.00')
+                                profile.total_paid += receivable.amount or Decimal(
+                                    "0.00"
+                                )
                             elif receivable.status == ReceivableStatus.PENDING:
-                                profile.pending_payments += receivable.amount or Decimal('0.00')
+                                profile.pending_payments += (
+                                    receivable.amount or Decimal("0.00")
+                                )
                             elif receivable.status == ReceivableStatus.OVERDUE:
-                                profile.overdue_payments += receivable.amount or Decimal('0.00')
-                    
+                                profile.overdue_payments += (
+                                    receivable.amount or Decimal("0.00")
+                                )
+
                     # Process activity sessions
                     sessions = results[base_idx + 4]
                     if sessions:
                         profile.total_classes_attended = len(sessions)
                         activity_counts: Dict[str, int] = {}
                         for session in sessions:
-                            activity_name = getattr(session, 'activity_name', None)
+                            activity_name = getattr(session, "activity_name", None)
                             if activity_name:
-                                activity_counts[activity_name] = activity_counts.get(activity_name, 0) + 1
+                                activity_counts[activity_name] = (
+                                    activity_counts.get(activity_name, 0) + 1
+                                )
                         profile.favorite_activities = sorted(
                             activity_counts.keys(),
                             key=lambda x: activity_counts[x],
-                            reverse=True
+                            reverse=True,
                         )[:5]
-                    
+
                     # Build timeline
                     self._build_member_timeline(profile)
-                    
+
                     # Add profile to collection
                     members_files.add_member(profile)
-            
+
         except Exception as e:
             logger.error(f"Error processing members files: {str(e)}")
-            
+
         return members_files
 
     def _process_member_data(self, profile: MemberProfile, results: List[Any]) -> None:
@@ -1396,11 +1606,11 @@ class GymApi:
                 # Calculate financial summaries
                 for receivable in profile.receivables:
                     if receivable.status == ReceivableStatus.PAID:
-                        profile.total_paid += receivable.amount or Decimal('0.00')
+                        profile.total_paid += receivable.amount or Decimal("0.00")
                     elif receivable.status == ReceivableStatus.PENDING:
-                        profile.pending_payments += receivable.amount or Decimal('0.00')
+                        profile.pending_payments += receivable.amount or Decimal("0.00")
                     elif receivable.status == ReceivableStatus.OVERDUE:
-                        profile.overdue_payments += receivable.amount or Decimal('0.00')
+                        profile.overdue_payments += receivable.amount or Decimal("0.00")
 
             # Build timeline after all data is processed
             self._build_member_timeline(profile)
@@ -1431,7 +1641,7 @@ class GymApi:
                 idActivity=None,  # API doesn't provide activity info
                 idMembership=None,  # API doesn't provide membership info
                 deviceId=entry.device,
-                notes=entry.block_reason
+                notes=entry.block_reason,
             )
         except Exception as e:
             logger.error(f"Error converting entry: {str(e)}")
@@ -1446,57 +1656,70 @@ class GymApi:
                 idActivity=None,
                 idMembership=None,
                 deviceId=None,
-                notes=None
+                notes=None,
             )
 
     def _aggregate_operating_data(
         self,
         results: List[Any],
         from_date: Optional[datetime],
-        to_date: Optional[datetime]
+        to_date: Optional[datetime],
     ) -> GymOperatingData:
         """Aggregate async results into a single GymOperatingData object."""
-        operating_data = GymOperatingData(
-            data_from=from_date,
-            data_to=to_date
-        )
-        
+        operating_data = GymOperatingData(data_from=from_date, data_to=to_date)
+
         try:
             # Unpack results in the same order they were requested
-            active_members, contracts, prospects, non_renewed, receivables, entries = results
-            
+            active_members, contracts, prospects, non_renewed, receivables, entries = (
+                results
+            )
+
             if active_members:
                 operating_data.active_members = [m.to_dict() for m in active_members]
-            
+
             if contracts:
                 operating_data.active_contracts = contracts
-            
+
             if prospects:
                 operating_data.prospects = [p.to_dict() for p in prospects]
-            
+
             if non_renewed:
                 operating_data.non_renewed_members = [m.to_dict() for m in non_renewed]
-            
+
             if receivables:
-                operating_data.receivables = [self._convert_receivable(r) for r in receivables]
-                operating_data.overdue_members = self._group_overdue_receivables([
-                    self._convert_receivable(r) for r in receivables 
-                    if r.status == ReceivableStatus.OVERDUE
-                ])
-            
+                operating_data.receivables = [
+                    self._convert_receivable(r) for r in receivables
+                ]
+                operating_data.overdue_members = self._group_overdue_receivables(
+                    [
+                        self._convert_receivable(r)
+                        for r in receivables
+                        if r.status == ReceivableStatus.OVERDUE
+                    ]
+                )
+
             if entries:
-                operating_data.recent_entries = [self._convert_entry(e) for e in entries]
-            
+                operating_data.recent_entries = [
+                    self._convert_entry(e) for e in entries
+                ]
+
             # Calculate metrics
-            mrr = Decimal('0.00')
+            mrr = Decimal("0.00")
             if contracts:
-                contract_mrr = sum((Decimal(str(contract.plan.price)) if hasattr(contract.plan, 'price') else Decimal('0.00')) 
-                                 for contract in contracts if contract.plan)
+                contract_mrr = sum(
+                    (
+                        Decimal(str(contract.plan.price))
+                        if hasattr(contract.plan, "price")
+                        else Decimal("0.00")
+                    )
+                    for contract in contracts
+                    if contract.plan
+                )
                 mrr = Decimal(str(contract_mrr))
 
             total_active = len(active_members) if active_members else 0
             total_churned = len(non_renewed) if non_renewed else 0
-            churn_rate = Decimal('0.00')
+            churn_rate = Decimal("0.00")
             if total_active > 0:
                 churn_rate = Decimal(str(total_churned / total_active * 100))
 
@@ -1504,8 +1727,8 @@ class GymApi:
             operating_data.churn_rate = churn_rate
             operating_data.total_active_members = total_active
             operating_data.total_churned_members = total_churned
-            
+
         except Exception as e:
             logger.error(f"Error aggregating operating data: {str(e)}")
-            
+
         return operating_data
