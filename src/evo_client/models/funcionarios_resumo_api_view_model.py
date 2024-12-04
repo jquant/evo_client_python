@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class FuncionariosResumoApiViewModel(BaseModel):
@@ -8,6 +8,7 @@ class FuncionariosResumoApiViewModel(BaseModel):
 
     Do not edit the class manually.
     """
+
     model_config = ConfigDict(populate_by_name=True)
 
     id_employee: Optional[int] = Field(default=None, alias="idEmployee")

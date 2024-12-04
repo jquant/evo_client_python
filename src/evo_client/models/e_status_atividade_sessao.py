@@ -4,7 +4,7 @@ from enum import Enum
 class EStatusAtividadeSessao(str, Enum):
     """Status for member/prospect attendance in an activity.
     Used in change_status() method.
-    
+
     Values:
     - _0: Attending
     - _1: Absent

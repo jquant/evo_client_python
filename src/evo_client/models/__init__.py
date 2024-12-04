@@ -193,29 +193,29 @@ from evo_client.models.w12_utils_webhook_view_model import W12UtilsWebhookViewMo
 from evo_client.models.year_discount_view_model import YearDiscountViewModel
 
 from .gym_model import (
-    PaymentMethod,
+    FAQ,
+    Activity,
     ActivityStatus,
-    MembershipStatus,
+    Address,
+    BranchConfig,
+    BusinessHours,
+    CardFlag,
     EntryStatus,
     EntryType,
-    BusinessHours,
-    Address,
-    Activity,
-    MembershipCategory,
-    MembershipService,
-    GymPlan,
-    FAQ,
-    PaymentPolicy,
-    CardFlag,
     GatewayConfig,
-    OccupationArea,
-    BranchConfig,
     GymEntry,
-    MembershipContract,
     GymKnowledgeBase,
-    Receivable,
+    GymPlan,
+    MembershipCategory,
+    MembershipContract,
+    MembershipService,
+    MembershipStatus,
+    OccupationArea,
     OverdueMember,
-    ReceivableStatus
+    PaymentMethod,
+    PaymentPolicy,
+    Receivable,
+    ReceivableStatus,
 )
 
 __all__ = [
@@ -241,5 +241,5 @@ __all__ = [
     "GymKnowledgeBase",
     "Receivable",
     "OverdueMember",
-    "ReceivableStatus"
+    "ReceivableStatus",
 ]
