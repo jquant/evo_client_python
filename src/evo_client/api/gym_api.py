@@ -1,85 +1,78 @@
 from __future__ import absolute_import
 
-from typing import (
-    List,
-    Optional,
-    Dict,
-    Any,
-    Union,
-    cast,
-    TypeVar,
-    Generic,
-    Literal,
-    overload,
-)
-from datetime import datetime, time, timedelta, date
-from multiprocessing.pool import AsyncResult, Pool
+from datetime import datetime, time, timedelta
 from decimal import Decimal
 from logging import getLogger
-
-from ..core.api_client import ApiClient
-from ..core.configuration import Configuration
-from ..exceptions.api_exceptions import ApiException
-
-# Models from gym_model
-from ..models.gym_model import (
-    # Core models
-    GymKnowledgeBase,
-    MembershipContract,
-    GymPlan,
-    Activity,
-    MembershipCategory,
-    MembershipService,
-    GymOperatingData,
-    GymEntry,
-    MembersFiles,
-    MemberProfile,
-    MemberEventType,
-    PaymentMethod,
-    MembershipStatus,
-    # Configuration models
-    BranchConfig,
-    Address,
-    BusinessHours,
-    PaymentPolicy,
-    GatewayConfig,
-    OccupationArea,
-    # Status enums
-    ActivityStatus,
-    EntryStatus,
-    EntryType,
-    # Receivables models
-    Receivable,
-    ReceivableStatus,
-    OverdueMember,
-    # Sales models
-    Sale,
-    NewSale,
+from multiprocessing.pool import AsyncResult, Pool
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
+    Literal,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+    overload,
 )
 
-# External API view models
-from ..models.sales_view_model import SalesViewModel
-from ..models.new_sale_view_model import NewSaleViewModel
-from ..models.card_data_view_model import CardDataViewModel
-from ..models.e_forma_pagamento_totem import EFormaPagamentoTotem
-from ..models.sales_item_view_model import SalesItemViewModel
+from ..api.activities_api import ActivitiesApi
 
 # API clients
 from ..api.configuration_api import ConfigurationApi
-from ..api.activities_api import ActivitiesApi
-from ..api.membership_api import MembershipApi
-from ..api.entries_api import EntriesApi
-from ..api.member_membership_api import MemberMembershipApi
-from ..api.workout_api import WorkoutApi
-from ..api.service_api import ServiceApi
 from ..api.employees_api import EmployeesApi
+from ..api.entries_api import EntriesApi
+from ..api.managment_api import ManagementApi
+from ..api.member_membership_api import MemberMembershipApi
+from ..api.members_api import MembersApi
+from ..api.membership_api import MembershipApi
+from ..api.prospects_api import ProspectsApi
 from ..api.receivables_api import ReceivablesApi
 from ..api.sales_api import SalesApi
-from ..api.managment_api import ManagementApi
-from ..api.members_api import MembersApi
-from ..api.prospects_api import ProspectsApi
+from ..api.service_api import ServiceApi
+from ..api.workout_api import WorkoutApi
+from ..core.api_client import ApiClient
+from ..core.configuration import Configuration
+from ..exceptions.api_exceptions import ApiException
+from ..models.card_data_view_model import CardDataViewModel
+from ..models.e_forma_pagamento_totem import EFormaPagamentoTotem
 
-from ..models.e_tipo_gateway import ETipoGateway
+# Models from gym_model
+from ..models.gym_model import (  # Core models; Configuration models; Status enums; Receivables models; Sales models
+    Activity,
+    ActivityStatus,
+    Address,
+    BranchConfig,
+    BusinessHours,
+    EntryStatus,
+    EntryType,
+    GatewayConfig,
+    GymEntry,
+    GymKnowledgeBase,
+    GymOperatingData,
+    GymPlan,
+    MemberEventType,
+    MemberProfile,
+    MembersFiles,
+    MembershipCategory,
+    MembershipContract,
+    MembershipService,
+    MembershipStatus,
+    NewSale,
+    OccupationArea,
+    OverdueMember,
+    PaymentMethod,
+    PaymentPolicy,
+    Receivable,
+    ReceivableStatus,
+    Sale,
+)
+from ..models.new_sale_view_model import NewSaleViewModel
+from ..models.sales_item_view_model import SalesItemViewModel
+
+# External API view models
+from ..models.sales_view_model import SalesViewModel
 
 T = TypeVar("T")
 
@@ -184,7 +177,8 @@ class GymApi:
         branch_id: Optional[int] = None,
         active_only: bool = True,
         async_req: Literal[False] = False,
-    ) -> List[MembershipContract]: ...
+    ) -> List[MembershipContract]:
+        ...
 
     @overload
     def get_contracts(
@@ -193,7 +187,8 @@ class GymApi:
         branch_id: Optional[int] = None,
         active_only: bool = True,
         async_req: Literal[True] = True,
-    ) -> TypedAsyncResult[List[MembershipContract]]: ...
+    ) -> TypedAsyncResult[List[MembershipContract]]:
+        ...
 
     def get_contracts(
         self,
@@ -1091,7 +1086,8 @@ class GymApi:
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> GymOperatingData: ...
+    ) -> GymOperatingData:
+        ...
 
     @overload
     def get_operating_data(
@@ -1100,7 +1096,8 @@ class GymApi:
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> TypedAsyncResult[GymOperatingData]: ...
+    ) -> TypedAsyncResult[GymOperatingData]:
+        ...
 
     def get_operating_data(
         self,
@@ -1256,7 +1253,8 @@ class GymApi:
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> MembersFiles: ...
+    ) -> MembersFiles:
+        ...
 
     @overload
     def get_members_files(
@@ -1265,7 +1263,8 @@ class GymApi:
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> TypedAsyncResult[MembersFiles]: ...
+    ) -> TypedAsyncResult[MembersFiles]:
+        ...
 
     def get_members_files(
         self,
@@ -1670,9 +1669,14 @@ class GymApi:
 
         try:
             # Unpack results in the same order they were requested
-            active_members, contracts, prospects, non_renewed, receivables, entries = (
-                results
-            )
+            (
+                active_members,
+                contracts,
+                prospects,
+                non_renewed,
+                receivables,
+                entries,
+            ) = results
 
             if active_members:
                 operating_data.active_members = [m.to_dict() for m in active_members]

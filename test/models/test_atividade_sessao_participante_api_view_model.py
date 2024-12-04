@@ -14,10 +14,10 @@ from __future__ import absolute_import
 
 import pytest
 
-from evo_client.models.e_status_atividade_sessao import EStatusAtividadeAgendamento
 from evo_client.models.atividade_sessao_participante_api_view_model import (
     AtividadeSessaoParticipanteApiViewModel,
 )
+from evo_client.models.e_status_atividade_sessao import EStatusAtividadeAgendamento
 
 
 @pytest.fixture
@@ -50,7 +50,8 @@ def test_atividade_sessao_participante_api_view_model_creation(
     assert atividade_sessao_participante_api_view_model.photo == "photo.jpg"
     assert atividade_sessao_participante_api_view_model.justified_absence is True
     assert (
-        atividade_sessao_participante_api_view_model.status == EStatusAtividadeAgendamento.LIVRE
+        atividade_sessao_participante_api_view_model.status
+        == EStatusAtividadeAgendamento.LIVRE
     )
 
 
