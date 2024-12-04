@@ -1,21 +1,16 @@
 [project]
 name = "evo_client"
-version = "1.0.0"
+version = "1.0.1"
 description = "ABC Evo SDK"
 authors = [
     {email = "support@evo.com"}
 ]
-dependencies = [
-    "urllib3>=1.15",
-    "six>=1.10", 
-    "certifi",
-    "python-dateutil",
-    "pydantic>=2.0.0",
-    "requests>=2.25.0"
-]
 keywords = ["Swagger", "EVO SDK"]
 readme = "README.md"
 requires-python = ">=3.8"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
 
 [project.urls]
 Documentation = "https://evo-integracao.w12app.com.br/swagger/v1/swagger.json"
