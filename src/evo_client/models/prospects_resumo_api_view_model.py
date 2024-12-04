@@ -13,7 +13,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from .prospect_responsavel_resumo_api_view_model import (
     ProspectResponsavelResumoApiViewModel,
@@ -25,6 +25,8 @@ class ProspectsResumoApiViewModel(BaseModel):
 
     Do not edit the class manually.
     """
+
+    model_config = ConfigDict(populate_by_name=True)
 
     id_prospect: Optional[int] = Field(default=None, alias="idProspect")
     id_branch: Optional[int] = Field(default=None, alias="idBranch")

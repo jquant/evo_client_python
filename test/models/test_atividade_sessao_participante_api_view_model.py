@@ -14,10 +14,10 @@ from __future__ import absolute_import
 
 import pytest
 
-from evo_client.models import EStatusAtividadeSessao
 from evo_client.models.atividade_sessao_participante_api_view_model import (
     AtividadeSessaoParticipanteApiViewModel,
 )
+from evo_client.models.e_status_atividade_sessao import EStatusAtividadeAgendamento
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def atividade_sessao_participante_api_view_model():
         name="John Doe",
         photo="photo.jpg",
         justifiedAbsence=True,
-        status=EStatusAtividadeSessao._0,
+        status=EStatusAtividadeAgendamento.LIVRE,
     )
 
 
@@ -50,7 +50,8 @@ def test_atividade_sessao_participante_api_view_model_creation(
     assert atividade_sessao_participante_api_view_model.photo == "photo.jpg"
     assert atividade_sessao_participante_api_view_model.justified_absence is True
     assert (
-        atividade_sessao_participante_api_view_model.status == EStatusAtividadeSessao._0
+        atividade_sessao_participante_api_view_model.status
+        == EStatusAtividadeAgendamento.LIVRE
     )
 
 
@@ -68,7 +69,7 @@ def test_atividade_sessao_participante_api_view_model_to_dict(
     assert model_dict["name"] == "John Doe"
     assert model_dict["photo"] == "photo.jpg"
     assert model_dict["justifiedAbsence"] is True
-    assert model_dict["status"] == EStatusAtividadeSessao._0.to_dict()
+    assert model_dict["status"] == EStatusAtividadeAgendamento.LIVRE.to_dict()
 
 
 def test_atividade_sessao_participante_api_view_model_equality(
@@ -83,7 +84,7 @@ def test_atividade_sessao_participante_api_view_model_equality(
         name="John Doe",
         photo="photo.jpg",
         justifiedAbsence=True,
-        status=EStatusAtividadeSessao._0,
+        status=EStatusAtividadeAgendamento.LIVRE,
     )
 
     different_model = AtividadeSessaoParticipanteApiViewModel(
@@ -94,7 +95,7 @@ def test_atividade_sessao_participante_api_view_model_equality(
         name="Jane Smith",
         photo="photo2.jpg",
         justifiedAbsence=False,
-        status=EStatusAtividadeSessao._1,
+        status=EStatusAtividadeAgendamento.CADASTRADO,
     )
 
     assert atividade_sessao_participante_api_view_model == same_model

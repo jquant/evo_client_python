@@ -98,7 +98,7 @@ def test_rest_response_deserialize_list(mock_urllib3_response_list):
     assert data == [SomeBaseModel(key="value"), SomeBaseModel(key="value")]
 
 
-class TestModel(BaseModel):
+class SampleModel(BaseModel):
     id: int
     name: str
 
@@ -114,8 +114,8 @@ def test_deserialize_single_model():
     rest_response = RESTResponse(mock_response)
 
     # Test single model deserialization
-    result = rest_response.deserialize(TestModel)
-    assert isinstance(result, TestModel)
+    result = rest_response.deserialize(SampleModel)
+    assert isinstance(result, SampleModel)
     assert result.id == 1
     assert result.name == "test"
 
@@ -134,10 +134,10 @@ def test_deserialize_list_of_models():
     rest_response = RESTResponse(mock_response)
 
     # Test list deserialization
-    result = rest_response.deserialize(List[TestModel])
+    result = rest_response.deserialize(List[SampleModel])
     assert isinstance(result, list)
     assert len(result) == 2
-    assert all(isinstance(item, TestModel) for item in result)
+    assert all(isinstance(item, SampleModel) for item in result)
     assert result[0].id == 1
     assert result[1].name == "test2"
 

@@ -20,26 +20,40 @@ class ConfigurationError(ApiClientError):
 
 
 class ApiException(Exception):
-    """Base exception for API errors."""
+    """
+    Generic API Exception
+    """
 
     def __init__(
         self,
+        message: Optional[str] = None,
         status: Optional[int] = None,
         reason: Optional[str] = None,
         http_resp: Optional[RESTResponse] = None,
     ):
-        self.status = http_resp.status if http_resp else status
-        self.reason = http_resp.reason if http_resp else reason
-        self.body = http_resp.data if http_resp else None
-        self.headers = http_resp.getheaders() if http_resp else None
+        self.status = status
+        self.reason = reason
+        self.http_resp = http_resp
 
-    def __str__(self) -> str:
-        """Format error message."""
-        parts = [f"({self.status})", f"Reason: {self.reason}"]
+        if http_resp:
+            self.status = http_resp.status
+            self.reason = http_resp.reason
+            message_parts = [
+                f"({self.status})",
+                f"Reason: {self.reason}",
+                f"HTTP response headers: {http_resp.getheaders()}",
+            ]
+            if http_resp.data:
+                message_parts.append(f"HTTP response body: {http_resp.data}")
+            self.message = "\n".join(message_parts)
+        elif status is not None and reason:
+            if "SSLError" in reason:
+                self.message = f"(0)\nReason: {reason}"
+            else:
+                self.message = f"({status})\nReason: {reason}"
+        elif message:
+            self.message = message
+        else:
+            self.message = "Unknown API error"
 
-        if self.headers:
-            parts.append(f"HTTP response headers: {self.headers}")
-        if self.body:
-            parts.append(f"HTTP response body: {self.body}")
-
-        return "\n".join(parts)
+        super().__init__(self.message)

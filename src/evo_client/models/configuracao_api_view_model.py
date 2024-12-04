@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from .business_hours_view_model import BusinessHoursViewModel
 
@@ -11,6 +11,8 @@ class ConfiguracaoApiViewModel(BaseModel):
 
     Do not edit the class manually.
     """
+
+    model_config = ConfigDict(populate_by_name=True)
 
     id_branch: Optional[int] = Field(default=None, alias="idBranch")
     name: Optional[str] = None
