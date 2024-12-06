@@ -50,7 +50,7 @@ def fetch_operating_data(
         operating_data = gym_api.get_operating_data(
             from_date=start_date,
             to_date=end_date,
-            branch_id=branch_id,
+            branch_ids=[str(branch_id)] if branch_id is not None else None,
             async_req=False
         )
         

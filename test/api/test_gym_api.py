@@ -254,6 +254,10 @@ def test_get_gym_knowledge_base(gym_api: GymApi, mock_configuration_api: Mock):
     type(mock_config).city = PropertyMock(return_value="Test City")
     type(mock_config).state = PropertyMock(return_value="TS")
     type(mock_config).zip_code = PropertyMock(return_value="12345")
+    type(mock_config).parent_branch_id = PropertyMock(return_value=None)
+    type(mock_config).child_branch_ids = PropertyMock(return_value=[])
+    type(mock_config).is_main_branch = PropertyMock(return_value=True)
+    type(mock_config).allowed_access_branch_ids = PropertyMock(return_value=[])
 
     # Mock business hours
     mock_business_hour = Mock()
@@ -280,7 +284,7 @@ def test_get_gym_knowledge_base(gym_api: GymApi, mock_configuration_api: Mock):
     mock_configuration_api.get_business_hours = Mock(return_value=[mock_business_hour])
 
     # Call API
-    result = gym_api.get_gym_knowledge_base(branch_id=1, async_req=False)
+    result = gym_api.get_gym_knowledge_base(branch_ids=["1"], async_req=False)
 
     # Verify response
     assert isinstance(result, GymKnowledgeBase)

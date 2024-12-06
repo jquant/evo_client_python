@@ -160,6 +160,9 @@ class GymPlan(BaseModel):
     cancellation_notice_days: int = Field(default=30)
     payment_methods: List[PaymentMethod]
     multi_unit_access: bool = Field(default=False, alias="accessBranches")
+    allowed_branch_ids: List[int] = Field(default_factory=list, alias="allowedBranchIds")
+    home_branch_required: bool = Field(default=True, alias="homeBranchRequired")
+    max_branch_visits_per_month: Optional[int] = Field(default=None, alias="maxBranchVisitsPerMonth")
     category: Optional[MembershipCategory] = None
     available_services: List[MembershipService] = Field(default_factory=list)
     max_installments: int = Field(default=1, alias="maxAmountInstallments")
@@ -234,6 +237,10 @@ class BranchConfig(BaseModel):
     gateway_config: Optional[GatewayConfig] = Field(None, alias="gatewayConfig")
     occupations: List[OccupationArea] = Field(default_factory=list)
     translations: Dict[str, str] = Field(default_factory=dict)
+    parent_branch_id: Optional[int] = Field(None, alias="parentBranchId")
+    child_branch_ids: List[int] = Field(default_factory=list, alias="childBranchIds")
+    is_main_branch: bool = Field(default=False, alias="isMainBranch")
+    allowed_access_branch_ids: List[int] = Field(default_factory=list, alias="allowedAccessBranchIds")
 
 
 class GymEntry(BaseModel):
@@ -438,6 +445,7 @@ class GymOperatingData(BaseModel):
     
     # Access control
     recent_entries: List[GymEntry] = Field(default_factory=list)
+    cross_branch_entries: List[GymEntry] = Field(default_factory=list)
     
     # Time filters
     data_from: Optional[datetime] = Field(default=None)
@@ -446,8 +454,10 @@ class GymOperatingData(BaseModel):
     # Financial metrics
     mrr: Decimal = Field(default=Decimal('0.00'), description="Monthly Recurring Revenue in the period")
     churn_rate: Decimal = Field(default=Decimal('0.00'), description="Churn Rate percentage in the period")
-    total_active_members: int = Field(default=0, description="Total number of active members in the period")
-    total_churned_members: int = Field(default=0, description="Total number of churned members in the period")
+    total_active_members: int = Field(default=0)
+    total_churned_members: int = Field(default=0)
+    cross_branch_revenue: Decimal = Field(default=Decimal('0.00'), description="Revenue from cross-branch visits")
+    multi_unit_member_percentage: Decimal = Field(default=Decimal('0.00'), description="Percentage of members with multi-unit access")
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert model to dictionary."""
