@@ -1,9 +1,11 @@
 from datetime import time, datetime
-from typing import List, Optional, Dict, Union, Any
+from typing import List, Optional, Dict, Union, Any, ClassVar
 from pydantic import BaseModel, Field
 from enum import Enum
 from decimal import Decimal
 from pydantic import ConfigDict
+from loguru import logger
+from datetime import timedelta
 
 
 class PaymentMethod(str, Enum):
@@ -422,69 +424,472 @@ class NewSale(BaseModel):
     card_data: Optional[CardData] = Field(None, alias="cardData")
 
 
-class GymOperatingData(BaseModel):
-    """Dynamic operational data for a gym branch.
-    
-    This model contains all the dynamic/operational data about members, entries,
-    receivables, etc. This is separate from GymKnowledgeBase which contains
-    static configuration data.
-    """
+class RevenueBreakdown(BaseModel):
+    """Detailed breakdown of revenue sources"""
     model_config = ConfigDict(populate_by_name=True)
     
-    # Active members data
-    active_members: List[Dict[str, Any]] = Field(default_factory=list)
-    active_contracts: List[MembershipContract] = Field(default_factory=list)
+    membership_revenue: Decimal = Field(default=Decimal('0.00'))
+    class_revenue: Decimal = Field(default=Decimal('0.00'))
+    additional_services: Decimal = Field(default=Decimal('0.00'))
+    guest_passes: Decimal = Field(default=Decimal('0.00'))
+    pt_sessions: Decimal = Field(default=Decimal('0.00'))
+    retail: Decimal = Field(default=Decimal('0.00'))
     
-    # Prospects and leads
+    @property
+    def total_revenue(self) -> Decimal:
+        """Calculate total revenue from all sources"""
+        return (
+            self.membership_revenue +
+            self.class_revenue +
+            self.additional_services +
+            self.guest_passes +
+            self.pt_sessions +
+            self.retail
+        )
+
+
+class CapacityMetrics(BaseModel):
+    """Facility utilization and capacity metrics"""
+    model_config = ConfigDict(populate_by_name=True)
+    
+    peak_hours_utilization: Decimal = Field(default=Decimal('0.00'))
+    off_peak_utilization: Decimal = Field(default=Decimal('0.00'))
+    class_fill_rate: Decimal = Field(default=Decimal('0.00'))
+    equipment_usage_rate: Optional[Decimal] = None
+    max_capacity: int = Field(default=0)
+    average_daily_visits: Decimal = Field(default=Decimal('0.00'))
+    busiest_day_visits: int = Field(default=0)
+    quietest_day_visits: int = Field(default=0)
+
+
+class MemberSegment(BaseModel):
+    """Member segment analytics"""
+    model_config = ConfigDict(populate_by_name=True)
+    
+    segment_name: str
+    member_count: int = Field(default=0)
+    average_revenue: Decimal = Field(default=Decimal('0.00'))
+    retention_rate: Decimal = Field(default=Decimal('0.00'))
+    visit_frequency: Decimal = Field(default=Decimal('0.00'))
+    average_membership_duration: Decimal = Field(default=Decimal('0.00'))
+    member_ids: List[int] = Field(default_factory=list)
+
+
+class GymOperatingData(BaseModel):
+    """Enhanced operational data metrics for a gym branch."""
+    
+    model_config = ConfigDict(populate_by_name=True)
+    logger: ClassVar = logger
+    
+    # Base Data Collections
+    active_members: List[Dict[str, Any]] = Field(default_factory=list)
+    active_contracts: List["MembershipContract"] = Field(default_factory=list)
     prospects: List[Dict[str, Any]] = Field(default_factory=list)
     non_renewed_members: List[Dict[str, Any]] = Field(default_factory=list)
+    receivables: List["Receivable"] = Field(default_factory=list)
+    overdue_members: List["OverdueMember"] = Field(default_factory=list)
+    recent_entries: List["GymEntry"] = Field(default_factory=list)
+    cross_branch_entries: List["GymEntry"] = Field(default_factory=list)
     
-    # Financial data
-    receivables: List[Receivable] = Field(default_factory=list)
-    overdue_members: List[OverdueMember] = Field(default_factory=list)
-    
-    # Access control
-    recent_entries: List[GymEntry] = Field(default_factory=list)
-    cross_branch_entries: List[GymEntry] = Field(default_factory=list)
-    
-    # Time filters
+    # Time Filters
     data_from: Optional[datetime] = Field(default=None)
     data_to: Optional[datetime] = Field(default=None)
     
-    # Financial metrics
-    mrr: Decimal = Field(default=Decimal('0.00'), description="Monthly Recurring Revenue in the period")
-    churn_rate: Decimal = Field(default=Decimal('0.00'), description="Churn Rate percentage in the period")
+    # Core Financial Metrics
+    mrr: Decimal = Field(
+        default=Decimal('0.00'), 
+        description="Monthly Recurring Revenue in the period"
+    )
+    arr: Decimal = Field(
+        default=Decimal('0.00'),
+        description="Annualized Recurring Revenue"
+    )
+    revenue_breakdown: RevenueBreakdown = Field(default_factory=RevenueBreakdown)
+    average_revenue_per_member: Decimal = Field(default=Decimal('0.00'))
+    lifetime_value: Decimal = Field(default=Decimal('0.00'))
+    
+    # Membership Metrics
     total_active_members: int = Field(default=0)
     total_churned_members: int = Field(default=0)
-    cross_branch_revenue: Decimal = Field(default=Decimal('0.00'), description="Revenue from cross-branch visits")
-    multi_unit_member_percentage: Decimal = Field(default=Decimal('0.00'), description="Percentage of members with multi-unit access")
+    churn_rate: Decimal = Field(default=Decimal('0.00'))
+    retention_rate: Decimal = Field(default=Decimal('0.00'))
+    membership_growth_rate: Decimal = Field(default=Decimal('0.00'))
+    member_segments: Dict[str, MemberSegment] = Field(default_factory=dict)
+    
+    # Multi-Unit Metrics
+    cross_branch_revenue: Decimal = Field(
+        default=Decimal('0.00'),
+        description="Revenue from cross-branch visits"
+    )
+    multi_unit_member_percentage: Decimal = Field(
+        default=Decimal('0.00'),
+        description="Percentage of members with multi-unit access"
+    )
+    
+    # Capacity and Utilization
+    capacity_metrics: CapacityMetrics = Field(default_factory=CapacityMetrics)
+    
+    # Member Engagement
+    class_attendance_rate: Decimal = Field(default=Decimal('0.00'))
+    member_satisfaction_score: Optional[Decimal] = None
+    average_visits_per_member: Decimal = Field(default=Decimal('0.00'))
+    
+    def __init__(self, **data):
+        """Initialize GymOperatingData with logging."""
+        self.logger.debug("Initializing GymOperatingData")
+        start_time = datetime.now()
+        super().__init__(**data)
+        self.logger.debug("GymOperatingData initialized in {}s", 
+                         (datetime.now() - start_time).total_seconds())
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert model to dictionary."""
-        return self.model_dump(by_alias=True)
-    
+        self.logger.debug("Converting GymOperatingData to dictionary")
+        start_time = datetime.now()
+        result = self.model_dump(by_alias=True)
+        self.logger.debug("Conversion completed in {}s", 
+                         (datetime.now() - start_time).total_seconds())
+        return result
+
+    def _segment_members(self) -> None:
+        """Segment members based on behavior and value."""
+        self.logger.debug("Segmenting members")
+        
+        segments = {
+            'premium': MemberSegment(segment_name='Premium'),
+            'regular': MemberSegment(segment_name='Regular'),
+            'at_risk': MemberSegment(segment_name='At Risk'),
+            'inactive': MemberSegment(segment_name='Inactive')
+        }
+        
+        for member in self.active_members:
+            member_id = member.get('id')
+            if not member_id:
+                continue
+                
+            # Calculate member metrics
+            visit_count = len([e for e in self.recent_entries 
+                             if e.member_id == member_id])
+            revenue = sum(r.amount for r in self.receivables 
+                        if r.member_id == member_id)
+            
+            # Determine segment
+            if visit_count == 0:
+                segment = segments['inactive']
+            elif visit_count < 4:
+                segment = segments['at_risk']
+            elif revenue > 1000:
+                segment = segments['premium']
+            else:
+                segment = segments['regular']
+            
+            # Update segment metrics
+            segment.member_count += 1
+            segment.member_ids.append(member_id)
+            if segment.member_count > 0:
+                segment.average_revenue = (
+                    (segment.average_revenue * (segment.member_count - 1) + revenue) 
+                    / segment.member_count
+                )
+        
+        self.member_segments = segments
+
+    def _analyze_capacity(self) -> None:
+        """Analyze facility capacity and utilization."""
+        self.logger.debug("Analyzing capacity metrics")
+        
+        if not self.recent_entries:
+            return
+            
+        # Group entries by day
+        daily_visits = {}
+        peak_hours_entries = []
+        off_peak_entries = []
+        
+        for entry in self.recent_entries:
+            # Daily grouping
+            entry_date = entry.register_date.date()
+            if entry_date not in daily_visits:
+                daily_visits[entry_date] = []
+            daily_visits[entry_date].append(entry)
+            
+            # Peak vs off-peak
+            hour = entry.register_date.hour
+            if 6 <= hour <= 9 or 17 <= hour <= 20:  # Peak hours
+                peak_hours_entries.append(entry)
+            else:
+                off_peak_entries.append(entry)
+        
+        # Calculate metrics
+        total_days = len(daily_visits)
+        if total_days > 0:
+            self.capacity_metrics.average_daily_visits = Decimal(
+                str(len(self.recent_entries) / total_days)
+            )
+            self.capacity_metrics.busiest_day_visits = max(
+                len(visits) for visits in daily_visits.values()
+            )
+            self.capacity_metrics.quietest_day_visits = min(
+                len(visits) for visits in daily_visits.values()
+            )
+            
+            # Utilization rates
+            if self.capacity_metrics.max_capacity > 0:
+                self.capacity_metrics.peak_hours_utilization = Decimal(
+                    str(len(peak_hours_entries) / 
+                        (self.capacity_metrics.max_capacity * total_days))
+                ) * Decimal('100')
+                self.capacity_metrics.off_peak_utilization = Decimal(
+                    str(len(off_peak_entries) / 
+                        (self.capacity_metrics.max_capacity * total_days))
+                ) * Decimal('100')
+
+    def _analyze_revenue(self) -> None:
+        """Analyze revenue streams."""
+        self.logger.debug("Analyzing revenue streams")
+        
+        # Reset revenue breakdown
+        self.revenue_breakdown = RevenueBreakdown()
+        
+        # Analyze receivables
+        for receivable in self.receivables:
+            if not receivable.amount:
+                continue
+                
+            # Categorize revenue based on description or other attributes
+            description = receivable.description.lower()
+            amount = receivable.amount
+            
+            if 'membership' in description:
+                self.revenue_breakdown.membership_revenue += amount
+            elif 'class' in description:
+                self.revenue_breakdown.class_revenue += amount
+            elif 'personal training' in description:
+                self.revenue_breakdown.pt_sessions += amount
+            elif 'guest' in description:
+                self.revenue_breakdown.guest_passes += amount
+            elif 'retail' in description:
+                self.revenue_breakdown.retail += amount
+            else:
+                self.revenue_breakdown.additional_services += amount
+
     def calculate_metrics(self) -> None:
-        """Calculate financial and operational metrics."""
+        """Calculate all financial and operational metrics."""
+        self.logger.info("Starting metrics calculation")
+        start_time = datetime.now()
+        
         # Calculate total active members
+        self.logger.debug("Calculating active members count")
         self.total_active_members = len(self.active_members)
+        self.logger.info("Total active members: {}", self.total_active_members)
         
         # Calculate MRR from active contracts
+        self.logger.debug("Calculating Monthly Recurring Revenue")
         total_mrr = Decimal('0.00')
+        contract_count = 0
         for contract in self.active_contracts:
             if contract.total_value:
                 # Convert annual/quarterly values to monthly
                 if contract.plan and contract.plan.minimum_commitment_months:
-                    monthly_value = Decimal(str(contract.total_value)) / Decimal(str(contract.plan.minimum_commitment_months))
+                    monthly_value = (
+                        Decimal(str(contract.total_value)) / 
+                        Decimal(str(contract.plan.minimum_commitment_months))
+                    )
                     total_mrr += monthly_value
-        self.mrr = total_mrr
+                    contract_count += 1
         
-        # Calculate churn rate
+        self.mrr = total_mrr
+        self.arr = self.mrr * Decimal('12')
+        
+        if self.total_active_members > 0:
+            self.average_revenue_per_member = (
+                self.mrr / Decimal(str(self.total_active_members))
+            )
+        
+        self.logger.info(
+            "Calculated MRR: ${:.2f} from {} contracts", 
+            self.mrr, 
+            contract_count
+        )
+        
+        # Calculate churn and retention
+        self.logger.debug("Calculating churn metrics")
         self.total_churned_members = len(self.non_renewed_members)
         if self.total_active_members > 0:
-            self.churn_rate = (Decimal(str(self.total_churned_members)) / Decimal(str(self.total_active_members))) * Decimal('100')
-        else:
-            self.churn_rate = Decimal('0.00')
-
+            self.churn_rate = (
+                Decimal(str(self.total_churned_members)) / 
+                Decimal(str(self.total_active_members))
+            ) * Decimal('100')
+            self.retention_rate = Decimal('100') - self.churn_rate
+        
+        self.logger.info(
+            "Churn rate: {:.2f}% ({} churned members)", 
+            self.churn_rate, 
+            self.total_churned_members
+        )
+        
+        # Calculate membership growth rate
+        if self.data_from:
+            initial_members = len([
+                m for m in self.active_members 
+                if m.get('join_date') and m['join_date'] <= self.data_from
+            ])
+            if initial_members > 0:
+                growth = self.total_active_members - initial_members
+                self.membership_growth_rate = (
+                    Decimal(str(growth)) / 
+                    Decimal(str(initial_members))
+                ) * Decimal('100')
+        
+        # Calculate multi-unit metrics
+        self.logger.debug("Calculating multi-unit metrics")
+        multi_unit_members = sum(
+            1 for m in self.active_members 
+            if m.get('access_branches', False)
+        )
+        if self.total_active_members > 0:
+            self.multi_unit_member_percentage = (
+                Decimal(str(multi_unit_members)) / 
+                Decimal(str(self.total_active_members))
+            ) * Decimal('100')
+        
+        self.logger.info(
+            "Multi-unit member percentage: {:.2f}%",
+            self.multi_unit_member_percentage
+        )
+        
+        # Calculate engagement metrics
+        if self.total_active_members > 0:
+            self.average_visits_per_member = Decimal(
+                str(len(self.recent_entries))
+            ) / Decimal(str(self.total_active_members))
+        
+        # Run detailed analysis
+        self._segment_members()
+        self._analyze_capacity()
+        self._analyze_revenue()
+        
+        # Calculate lifetime value
+        if self.total_active_members > 0 and self.retention_rate > 0:
+            avg_monthly_revenue = self.average_revenue_per_member
+            churn_rate_decimal = self.churn_rate / Decimal('100')
+            if churn_rate_decimal > 0:
+                self.lifetime_value = avg_monthly_revenue / churn_rate_decimal
+        
+        elapsed_time = (datetime.now() - start_time).total_seconds()
+        self.logger.info(
+            "Metrics calculation completed in {:.2f}s",
+            elapsed_time
+        )
+        
+    def get_membership_trends(self) -> Dict[str, Any]:
+        """Calculate membership trends over time."""
+        if not self.data_from or not self.data_to:
+            return {}
+            
+        trends = {
+            'new_members_by_month': {},
+            'churned_members_by_month': {},
+            'net_growth_by_month': {},
+            'mrr_by_month': {}
+        }
+        
+        current_date = self.data_from
+        while current_date <= self.data_to:
+            month_key = current_date.strftime('%Y-%m')
+            
+            # New members this month
+            new_members = len([
+                m for m in self.active_members
+                if m.get('join_date') and m['join_date'].strftime('%Y-%m') == month_key
+            ])
+            trends['new_members_by_month'][month_key] = new_members
+            
+            # Churned members this month
+            churned_members = len([
+                m for m in self.non_renewed_members
+                if m.get('cancellation_date') and 
+                m['cancellation_date'].strftime('%Y-%m') == month_key
+            ])
+            trends['churned_members_by_month'][month_key] = churned_members
+            
+            # Net growth
+            trends['net_growth_by_month'][month_key] = new_members - churned_members
+            
+            # MRR for the month
+            month_mrr = sum(
+                Decimal(str(c.total_value)) / Decimal(str(c.plan.minimum_commitment_months))
+                for c in self.active_contracts
+                if (c.start_date and c.start_date.strftime('%Y-%m') <= month_key and
+                    (not c.end_date or c.end_date.strftime('%Y-%m') > month_key))
+            )
+            trends['mrr_by_month'][month_key] = month_mrr
+            
+            # Move to next month
+            current_date = (current_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+            
+        return trends
+    
+    def get_revenue_summary(self) -> Dict[str, Decimal]:
+        """Get a summary of all revenue metrics."""
+        return {
+            'mrr': self.mrr,
+            'arr': self.arr,
+            'average_revenue_per_member': self.average_revenue_per_member,
+            'lifetime_value': self.lifetime_value,
+            'cross_branch_revenue': self.cross_branch_revenue,
+            'membership_revenue': self.revenue_breakdown.membership_revenue,
+            'class_revenue': self.revenue_breakdown.class_revenue,
+            'additional_services': self.revenue_breakdown.additional_services,
+            'pt_sessions': self.revenue_breakdown.pt_sessions,
+            'guest_passes': self.revenue_breakdown.guest_passes,
+            'retail': self.revenue_breakdown.retail,
+            'total_revenue': self.revenue_breakdown.total_revenue
+        }
+    
+    def get_membership_summary(self) -> Dict[str, Any]:
+        """Get a summary of all membership metrics."""
+        return {
+            'total_active_members': self.total_active_members,
+            'total_churned_members': self.total_churned_members,
+            'churn_rate': self.churn_rate,
+            'retention_rate': self.retention_rate,
+            'growth_rate': self.membership_growth_rate,
+            'multi_unit_percentage': self.multi_unit_member_percentage,
+            'average_visits_per_member': self.average_visits_per_member,
+            'segments': {
+                name: {
+                    'count': segment.member_count,
+                    'average_revenue': segment.average_revenue,
+                    'retention_rate': segment.retention_rate
+                }
+                for name, segment in self.member_segments.items()
+            }
+        }
+    
+    def get_capacity_summary(self) -> Dict[str, Any]:
+        """Get a summary of all capacity metrics."""
+        return {
+            'peak_hours_utilization': self.capacity_metrics.peak_hours_utilization,
+            'off_peak_utilization': self.capacity_metrics.off_peak_utilization,
+            'class_fill_rate': self.capacity_metrics.class_fill_rate,
+            'average_daily_visits': self.capacity_metrics.average_daily_visits,
+            'busiest_day_visits': self.capacity_metrics.busiest_day_visits,
+            'quietest_day_visits': self.capacity_metrics.quietest_day_visits
+        }
+    
+    def generate_report(self) -> Dict[str, Any]:
+        """Generate a comprehensive report of all metrics."""
+        return {
+            'time_period': {
+                'from': self.data_from.isoformat() if self.data_from else None,
+                'to': self.data_to.isoformat() if self.data_to else None
+            },
+            'revenue': self.get_revenue_summary(),
+            'membership': self.get_membership_summary(),
+            'capacity': self.get_capacity_summary(),
+            'trends': self.get_membership_trends()
+        }
 
 class MemberEventType(str, Enum):
     """Types of events in a member's timeline"""

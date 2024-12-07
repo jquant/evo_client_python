@@ -1,7 +1,8 @@
 from __future__ import absolute_import
 
-from typing import List, Optional, Dict, Any, Union, cast, TypeVar, Generic, Literal, overload
-from datetime import datetime, time, timedelta, date
+import asyncio
+from typing import List, Optional, Dict, Any, Union, cast, TypeVar, Generic, Literal, overload, Callable
+from datetime import datetime, time, timedelta
 from multiprocessing.pool import AsyncResult, Pool
 from decimal import Decimal
 from loguru import logger
@@ -71,8 +72,10 @@ from ..api.sales_api import SalesApi
 from ..api.managment_api import ManagementApi
 from ..api.members_api import MembersApi
 from ..api.prospects_api import ProspectsApi
-
-from ..models.e_tipo_gateway import ETipoGateway
+from ..api.webhook_api import WebhookApi
+from ..models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
+from ..models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
+from ..models.entradas_resumo_api_view_model import EntradasResumoApiViewModel as EntriesApiViewModel
 
 T = TypeVar('T')
 
@@ -131,15 +134,22 @@ class GymApi:
                 branch_config.username = cred['username']
                 branch_config.password = cred['password']
                 self.branch_api_clients[cred['branch_id']] = ApiClient(configuration=branch_config)
-        
-        # Set up default client
-        if api_client is None and not self.branch_api_clients:
-            configuration = Configuration()
-            api_client = ApiClient(configuration=configuration)
-        self.default_api_client = api_client
+            
+            # Use the first branch's credentials for the default client if no specific client is provided
+            if api_client is None and self.branch_api_clients:
+                first_branch_id = next(iter(self.branch_api_clients))
+                self.default_api_client = self.branch_api_clients[first_branch_id]
+            else:
+                self.default_api_client = api_client
+        else:
+            # Set up default client
+            if api_client is None:
+                configuration = Configuration()
+                api_client = ApiClient(configuration=configuration)
+            self.default_api_client = api_client
         
         # Initialize APIs with default client
-        self._init_apis(api_client)
+        self._init_apis(self.default_api_client)
         self._pool = Pool(processes=1)  # Single process pool for async operations
 
     def _init_apis(self, api_client: Optional[ApiClient]):
@@ -158,6 +168,7 @@ class GymApi:
             self.management_api = ManagementApi(api_client)
             self.members_api = MembersApi(api_client)
             self.prospects_api = ProspectsApi(api_client)
+            self.webhook_api = WebhookApi(api_client)
 
     def __del__(self):
         """Clean up resources."""
@@ -168,18 +179,18 @@ class GymApi:
     def _convert_receivable(self, receivable: Any) -> Receivable:
         """Convert API receivable model to internal model."""
         return Receivable(
-            id=receivable.idReceivable,
+            id=receivable.id_receivable,
             description=receivable.description,
             amount=Decimal(str(receivable.ammount)) if receivable.ammount is not None else Decimal('0.00'),
-            amount_paid=Decimal(str(receivable.ammountPaid)) if receivable.ammountPaid is not None else Decimal('0.00'),
-            due_date=receivable.dueDate,
-            receiving_date=receivable.receivingDate,
+            amount_paid=Decimal(str(receivable.ammount_paid)) if receivable.ammount_paid is not None else Decimal('0.00'),
+            due_date=receivable.due_date,
+            receiving_date=receivable.receiving_date,
             status=ReceivableStatus(receivable.status.value) if receivable.status else ReceivableStatus.PENDING,
-            member_id=receivable.idMemberPayer,
-            member_name=receivable.payerName,
-            branch_id=receivable.idBranchMember,
-            current_installment=receivable.currentInstallment,
-            total_installments=receivable.totalInstallments
+            member_id=receivable.id_member_payer,
+            member_name=receivable.payer_name,
+            branch_id=receivable.id_branch_member,
+            current_installment=receivable.current_installment,
+            total_installments=receivable.total_installments
         )
 
     @overload
@@ -213,11 +224,12 @@ class GymApi:
         try:
             # Get memberships from API
             memberships = self.membership_api.get_memberships(
-                id_membership=member_id,
-                id_branch=branch_id,
-                active=active_only,
+                membership_id=None,  # This should be None as we're filtering by member_id
+                name=None,
+                branch_id=branch_id,
                 take=50,  # Maximum allowed
                 skip=0,
+                active=active_only,
                 async_req=True if async_req else False  # type: ignore
             )
 
@@ -225,48 +237,52 @@ class GymApi:
             if isinstance(memberships, AsyncResult):
                 memberships = memberships.get()
 
+            # Filter by member_id if provided
+            if member_id is not None:
+                memberships = [m for m in memberships if m.id_member == member_id]
+
             # Convert to contracts
             contracts = []
             for membership in memberships:
                 plan = GymPlan(
                     nameMembership=membership.name_membership or "",
-                    value=Decimal(str(membership.value_next_month)) if membership.value_next_month is not None else Decimal('0.00'),
+                    value=Decimal(str(membership.value)) if membership.value is not None else Decimal('0.00'),
                     description=membership.description or "",
-                    features=membership.differentials or [],
+                    features=[d.title for d in membership.differentials] if membership.differentials else [],
                     duration=membership.duration or 12,
                     payment_methods=[PaymentMethod.CREDIT_CARD],
-                    accessBranches=membership.access_branches or False,
+                    accessBranches=bool(membership.access_branches),
                     maxAmountInstallments=membership.max_amount_installments or 1,
                     isActive=not membership.inactive,
                     enrollment_fee=None,
                     annual_fee=None,
-                    cancellation_notice_days=30,
+                    cancellation_notice_days=membership.min_period_stay_membership or 30,
                     category=None,
                     available_services=[]
                 )
 
                 category = MembershipCategory(
-                    id=membership.id_category_membership,
-                    name="",  # Not available in API response
-                    description="",  # Not available in API response
-                    isActive=True,  # Default value
+                    id=membership.id_membership or 0,
+                    name=membership.membership_type or "",
+                    description=membership.description or "",
+                    isActive=not membership.inactive,
                     features=[],  # Not available in API response
                     restrictions=None  # Not available in API response
                 )
 
                 contract = MembershipContract(
-                    idMemberMembership=membership.id_member_membership,
-                    idMember=membership.id_member,
+                    idMemberMembership=membership.id_membership or 0,
+                    idMember=member_id or 0,
                     plan=plan,
                     category=category,
-                    status=MembershipStatus.ACTIVE,  # Default value since we're filtering for active
-                    startDate=datetime.now(),  # Default value
+                    status=MembershipStatus.ACTIVE if not membership.inactive else MembershipStatus.INACTIVE,
+                    startDate=datetime.now(),  # Not available in API response
                     endDate=None,  # Not available in API response
                     lastRenewalDate=None,  # Not available in API response
                     nextRenewalDate=None,  # Not available in API response
                     paymentDay=1,  # Default value
-                    totalValue=Decimal(str(membership.value_next_month)) if membership.value_next_month is not None else Decimal('0.00'),
-                    idBranch=branch_id
+                    totalValue=Decimal(str(membership.value)) if membership.value is not None else Decimal('0.00'),
+                    idBranch=membership.id_branch
                 )
                 contracts.append(contract)
 
@@ -635,15 +651,14 @@ class GymApi:
                     value=Decimal(str(plan.value or 0)),
                     description=plan.description or "",
                     features=[d.title for d in (plan.differentials or []) if d.title],
-                    duration=plan.duration or 1,
+                    duration=plan.duration or 12,
+                    payment_methods=[PaymentMethod.CREDIT_CARD],
+                    accessBranches=bool(plan.access_branches),
+                    maxAmountInstallments=plan.max_amount_installments or 1,
+                    isActive=not plan.inactive,
                     enrollment_fee=None,
                     annual_fee=None,
                     cancellation_notice_days=plan.min_period_stay_membership or 30,
-                    payment_methods=[PaymentMethod.CREDIT_CARD],
-                    accessBranches=bool(plan.access_branches),
-                    allowedBranchIds=getattr(plan, 'allowed_branch_ids', []),
-                    homeBranchRequired=getattr(plan, 'home_branch_required', True),
-                    maxBranchVisitsPerMonth=getattr(plan, 'max_branch_visits_per_month', None),
                     category=category_map.get((plan.membership_type or "").lower()) if plan.membership_type else MembershipCategory(
                         id=0,
                         name="Standard",
@@ -652,9 +667,7 @@ class GymApi:
                         features=[],
                         restrictions=None
                     ),
-                    available_services=[],
-                    maxAmountInstallments=plan.max_amount_installments or 1,
-                    isActive=not plan.inactive
+                    available_services=[]
                 ) for plan in memberships
             ]
 
@@ -762,7 +775,7 @@ class GymApi:
                     account_status = "3"
 
             receivables_result = self.receivables_api.get_receivables(
-                memberId=member_id,
+                member_id=member_id,
                 due_date_start=start_date,
                 due_date_end=end_date,
                 account_status=account_status,
@@ -967,131 +980,420 @@ class GymApi:
     def get_operating_data(
         self,
         branch_ids: Optional[List[str]] = None,
+        days: Optional[int] = None,
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> GymOperatingData:
+    ) -> Union[GymOperatingData, List[GymOperatingData]]:
         ...
 
     @overload
     def get_operating_data(
         self,
         branch_ids: Optional[List[str]] = None,
+        days: Optional[int] = None,
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> TypedAsyncResult[GymOperatingData]:
+    ) -> TypedAsyncResult[Union[GymOperatingData, List[GymOperatingData]]]:
         ...
 
     def get_operating_data(
         self,
         branch_ids: Optional[List[str]] = None,
+        days: Optional[int] = None,
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> Union[List[GymOperatingData], GymOperatingData, TypedAsyncResult[List[GymOperatingData]], TypedAsyncResult[GymOperatingData]]:
+    ) -> Union[GymOperatingData, List[GymOperatingData], TypedAsyncResult[Union[GymOperatingData, List[GymOperatingData]]]]:
         """Get operating data for one or multiple branches."""
-        if not branch_ids and not self.branch_api_clients:
-            # Use default client implementation
+        # Calculate date range if not provided
+        if from_date is None or to_date is None:
+            to_date = datetime.now()
+            from_date = to_date - timedelta(days=days if days is not None else 30)
+        
+        # Helper function to safely execute API calls
+        def safe_api_call(func: Callable, *args, **kwargs) -> Any:
             try:
+                return func(*args, **kwargs)
+            except ApiException as e:
+                logger.warning(f"API call failed for {func.__name__}: {str(e)}")
+                return []
+            except Exception as e:
+                logger.error(f"Unexpected error in {func.__name__}: {str(e)}")
+                return []
+
+        if not branch_ids and not self.branch_api_clients:
+            try:
+                logger.debug("Starting API calls for operating data")
+                start_time = datetime.now()
+                
                 if async_req:
-                    # Start all async requests
-                    active_members_result = self.management_api.get_active_clients(async_req=True)
-                    active_contracts_result = self.get_contracts(active_only=True, async_req=True)
-                    prospects_result = self.prospects_api.get_prospects(
-                        register_date_start=from_date,
-                        register_date_end=to_date,
+                    # Async execution with error handling
+                    logger.debug("Fetching active clients...")
+                    active_members_result = safe_api_call(
+                        self.management_api.get_active_clients,
                         async_req=True
                     )
-                    non_renewed_result = self.management_api.get_non_renewed_clients(
-                        dt_start=from_date,
-                        dt_end=to_date,
+                    
+                    logger.debug("Fetching active contracts...")
+                    active_contracts_result = safe_api_call(
+                        self.get_contracts,
+                        active_only=True,
                         async_req=True
                     )
-                    receivables_result = self.receivables_api.get_receivables(
-                        registration_date_start=from_date,
-                        registration_date_end=to_date,
-                        async_req=True
-                    )
-                    entries_result = self.entries_api.get_entries(
+                    
+                    logger.debug("Fetching prospects...")
+                    prospects_result = safe_api_call(
+                        self.prospects_api.get_prospects,
                         register_date_start=from_date,
                         register_date_end=to_date,
                         async_req=True
                     )
                     
-                    # Create async result that will process all data
-                    async_result = create_async_result(
-                        pool=self._pool,
-                        callback=lambda _: self._aggregate_operating_data(
-                            [
-                                active_members_result.get(),
-                                active_contracts_result.get(),
-                                prospects_result.get(),
-                                non_renewed_result.get(),
-                                receivables_result.get(),
-                                entries_result.get()
-                            ],
-                            from_date,
-                            to_date
-                        ),
-                        error_callback=lambda e: GymOperatingData(data_from=from_date, data_to=to_date)
+                    logger.debug("Fetching non-renewed clients...")
+                    non_renewed_result = safe_api_call(
+                        self.management_api.get_non_renewed_clients,
+                        dt_start=from_date,
+                        dt_end=to_date,
+                        async_req=True
                     )
-                    return cast(TypedAsyncResult[GymOperatingData], async_result)
+                    
+                    logger.debug("Fetching receivables...")
+                    receivables_result = safe_api_call(
+                        self.receivables_api.get_receivables,
+                        registration_date_start=from_date,
+                        registration_date_end=to_date,
+                        async_req=True
+                    )
+                    
+                    logger.debug("Fetching entries...")
+                    entries_result = safe_api_call(
+                        self.entries_api.get_entries,
+                        register_date_start=from_date,
+                        register_date_end=to_date,
+                        async_req=True
+                    )
+                    
+                    logger.debug("Waiting for all API calls to complete...")
+                    
+                    # Safely get results
+                    def safe_get(result):
+                        try:
+                            if isinstance(result, AsyncResult):
+                                return result.get()
+                            return result
+                        except Exception:
+                            return []
+
+                    results = [
+                        safe_get(active_members_result),
+                        safe_get(active_contracts_result),
+                        safe_get(prospects_result),
+                        safe_get(non_renewed_result),
+                        safe_get(receivables_result),
+                        safe_get(entries_result)
+                    ]
+                    
+                else:
+                    # Synchronous execution with error handling
+                    logger.debug("Fetching active clients...")
+                    active_members = safe_api_call(
+                        self.management_api.get_active_clients,
+                        async_req=False
+                    )
+                    
+                    logger.debug("Fetching active contracts...")
+                    active_contracts = safe_api_call(
+                        self.get_contracts,
+                        active_only=True,
+                        async_req=False
+                    )
+                    
+                    logger.debug("Fetching prospects...")
+                    prospects = safe_api_call(
+                        self.prospects_api.get_prospects,
+                        register_date_start=from_date,
+                        register_date_end=to_date,
+                        async_req=False
+                    )
+                    
+                    logger.debug("Fetching non-renewed clients...")
+                    non_renewed = safe_api_call(
+                        self.management_api.get_non_renewed_clients,
+                        dt_start=from_date,
+                        dt_end=to_date,
+                        async_req=False
+                    )
+                    
+                    logger.debug("Fetching receivables...")
+                    receivables = safe_api_call(
+                        self.receivables_api.get_receivables,
+                        registration_date_start=from_date,
+                        registration_date_end=to_date,
+                        async_req=False
+                    )
+                    
+                    logger.debug("Fetching entries...")
+                    entries = safe_api_call(
+                        self.entries_api.get_entries,
+                        register_date_start=from_date,
+                        register_date_end=to_date,
+                        async_req=False
+                    )
+                    
+                    results = [active_members, active_contracts, prospects, non_renewed, receivables, entries]
                 
-                # Synchronous execution
-                return self._aggregate_operating_data(
-                    [
-                        self.management_api.get_active_clients(async_req=False),
-                        self.get_contracts(active_only=True, async_req=False),
-                        self.prospects_api.get_prospects(
-                            register_date_start=from_date,
-                            register_date_end=to_date,
-                            async_req=False
-                        ),
-                        self.management_api.get_non_renewed_clients(
-                            dt_start=from_date,
-                            dt_end=to_date,
-                            async_req=False
-                        ),
-                        self.receivables_api.get_receivables(
-                            registration_date_start=from_date,
-                            registration_date_end=to_date,
-                            async_req=False
-                        ),
-                        self.entries_api.get_entries(
-                            register_date_start=from_date,
-                            register_date_end=to_date,
-                            async_req=False
-                        )
-                    ],
-                    from_date,
-                    to_date
-                )
+                # Process results
+                data = self._aggregate_operating_data(results, from_date, to_date)
+                
+                elapsed_time = (datetime.now() - start_time).total_seconds()
+                logger.debug(f"All API calls completed in {elapsed_time:.2f}s")
+                return data
+
             except Exception as e:
                 logger.error(f"Error getting operating data: {str(e)}")
                 return GymOperatingData(data_from=from_date, data_to=to_date)
         
+        # Handle multi-branch requests
         branch_ids = branch_ids or list(self.branch_api_clients.keys())
         results = []
         
         for branch_id in branch_ids:
             if branch_id in self.branch_api_clients:
-                # Create temporary GymApi instance with branch client
-                branch_api = GymApi(api_client=self.branch_api_clients[branch_id])
-                result = branch_api.get_operating_data(
-                    from_date=from_date,
-                    to_date=to_date,
-                    async_req=True  # Always async for parallel processing
-                )
-                results.append(result)
+                try:
+                    branch_api = GymApi(api_client=self.branch_api_clients[branch_id])
+                    result = branch_api.get_operating_data(
+                        days=days,
+                        from_date=from_date,
+                        to_date=to_date,
+                        async_req=True
+                    )
+                    results.append(result)
+                except Exception as e:
+                    logger.error(f"Error getting data for branch {branch_id}: {str(e)}")
+                    results.append(GymOperatingData(data_from=from_date, data_to=to_date))
         
         if async_req:
             async_result = self._pool.map_async(lambda r: r.get() if isinstance(r, AsyncResult) else r, results)
-            return cast(TypedAsyncResult[List[GymOperatingData]], async_result)
+            return cast(TypedAsyncResult[Union[GymOperatingData, List[GymOperatingData]]], async_result)
         
-        # Wait for all results
         operating_data = [r.get() if isinstance(r, AsyncResult) else r for r in results]
         return operating_data if len(operating_data) > 1 else operating_data[0]
+
+    def _aggregate_operating_data(
+        self,
+        results: List[Any],
+        from_date: Optional[datetime] = None,
+        to_date: Optional[datetime] = None
+    ) -> GymOperatingData:
+        """Aggregate results from multiple API calls into GymOperatingData."""
+        logger.debug("Starting data aggregation")
+        start_time = datetime.now()
+        
+        try:
+            # Convert API results to appropriate formats
+            def to_dict(obj: Any) -> Dict[str, Any]:
+                """Convert API object to dictionary."""
+                if isinstance(obj, dict):
+                    return obj
+                return {k: getattr(obj, k, None) for k in dir(obj) 
+                    if not k.startswith('_') and not callable(getattr(obj, k))}
+
+            # Extract and convert results with debug logging
+            active_members = [m for m in (results[0] or []) if m is not None]
+            active_contracts = [c for c in (results[1] or []) if c is not None]
+            prospects = [to_dict(p) for p in (results[2] or []) if p is not None]
+            non_renewed = [to_dict(m) for m in (results[3] or []) if m is not None]
+            receivables = [r for r in (results[4] or []) if r is not None]
+            entries = [e for e in (results[5] or []) if e is not None]
+
+            logger.debug(f"Raw members: {len(active_members)}")
+            logger.debug(f"Raw contracts: {len(active_contracts)}")
+            logger.debug(f"Raw prospects: {len(prospects)}")
+            logger.debug(f"Raw non-renewed: {len(non_renewed)}")
+            logger.debug(f"Raw receivables: {len(receivables)}")
+            logger.debug(f"Raw entries: {len(entries)}")
+
+            # Convert entries to GymEntry objects
+            converted_entries = []
+            valid_entries = 0
+            for entry in entries:
+                try:
+                    entry_dict = to_dict(entry)
+                    entry_action = entry_dict.get('entry_action', '').lower()
+                    
+                    # Only count valid entries
+                    if entry_action == 'entry' and not entry_dict.get('block_reason'):
+                        valid_entries += 1
+                    
+                    converted_entry = GymEntry(
+                        idEntry=entry_dict.get('id', 0),
+                        idMember=entry_dict.get('id_member'),
+                        idProspect=entry_dict.get('id_prospect'),
+                        registerDate=entry_dict.get('date', datetime.now()),
+                        entryType=EntryType.REGULAR,
+                        status=EntryStatus.VALID if entry_action == 'entry' else EntryStatus.INVALID,
+                        idBranch=entry_dict.get('id_branch'),
+                        idActivity=None,
+                        idMembership=None,
+                        deviceId=entry_dict.get('device'),
+                        notes=entry_dict.get('block_reason', '')
+                    )
+                    converted_entries.append(converted_entry)
+                except Exception as e:
+                    logger.warning(f"Error converting entry: {str(e)}")
+                    continue
+
+            # Convert receivables to our model
+            converted_receivables = []
+            total_mrr = Decimal('0.00')
+            monthly_payments = set()  # Track unique monthly payments
+            
+            for receivable in receivables:
+                try:
+                    rec_dict = to_dict(receivable)
+                    status = ReceivableStatus.PENDING
+                    
+                    # Get status object
+                    status_obj = rec_dict.get('status', {})
+                    if isinstance(status_obj, dict):
+                        status_name = status_obj.get('name', '').lower()
+                    else:
+                        status_name = getattr(status_obj, 'name', '').lower()
+                    
+                    # Map status
+                    if status_name == 'received':
+                        status = ReceivableStatus.PAID
+                    elif status_name == 'expired':
+                        status = ReceivableStatus.OVERDUE
+                    elif status_name == 'canceled':
+                        status = ReceivableStatus.CANCELLED
+
+                    # Get amounts safely
+                    amount = Decimal(str(rec_dict.get('ammount', 0)))
+                    amount_paid = None
+                    if rec_dict.get('ammount_paid') is not None:
+                        amount_paid = Decimal(str(rec_dict['ammount_paid']))
+
+                    # Calculate MRR from unique monthly payments
+                    description = rec_dict.get('description', '').lower()
+                    member_id = rec_dict.get('id_member_payer')
+                    if (
+                        status == ReceivableStatus.PAID and
+                        ('mensalidade' in description or 'monthly' in description) and
+                        member_id and
+                        (member_id, amount) not in monthly_payments
+                    ):
+                        total_mrr += amount
+                        monthly_payments.add((member_id, amount))
+                        logger.debug(f"Added to MRR: ${amount} for member {member_id}")
+
+                    converted_receivable = Receivable(
+                        id=rec_dict.get('id_receivable', 0),
+                        description=rec_dict.get('description', ''),
+                        amount=amount,
+                        amount_paid=amount_paid,
+                        due_date=rec_dict.get('due_date') or datetime.now(),
+                        receiving_date=rec_dict.get('receiving_date'),
+                        status=status,
+                        member_id=member_id,
+                        member_name=rec_dict.get('payer_name'),
+                        branch_id=rec_dict.get('id_branch_member'),
+                        current_installment=rec_dict.get('current_installment'),
+                        total_installments=rec_dict.get('total_installments')
+                    )
+                    converted_receivables.append(converted_receivable)
+                except Exception as e:
+                    logger.warning(f"Error converting receivable: {str(e)}")
+                    continue
+
+            # Get unique active member count from contracts
+            unique_active_members = set()
+            for contract in active_contracts:
+                if contract and hasattr(contract, 'idMember'):
+                    unique_active_members.add(contract.idMember)
+            
+            active_member_count = len(unique_active_members)
+            logger.debug(f"Unique active members from contracts: {active_member_count}")
+
+            # Create and populate GymOperatingData
+            data = GymOperatingData(
+                active_members=list(dict.fromkeys(active_members)),  # Remove duplicates
+                active_contracts=active_contracts,
+                prospects=prospects,
+                non_renewed_members=non_renewed,
+                receivables=converted_receivables,
+                recent_entries=converted_entries,
+                data_from=from_date,
+                data_to=to_date
+            )
+
+            # Calculate metrics
+            data.total_active_members = active_member_count
+            data.total_churned_members = len(non_renewed)
+            data.mrr = total_mrr
+
+            # Calculate churn rate
+            if data.total_active_members > 0:
+                data.churn_rate = (Decimal(str(data.total_churned_members)) / 
+                                Decimal(str(data.total_active_members))) * Decimal('100')
+            
+            # Calculate cross-branch metrics
+            if data.total_active_members > 0:
+                member_home_branches = {}
+                cross_branch_entries = []
+                
+                # Get home branches from contracts
+                for contract in active_contracts:
+                    if hasattr(contract, 'idMember') and hasattr(contract, 'idBranch'):
+                        member_home_branches[contract.idMember] = contract.idBranch
+                
+                # Identify cross-branch entries
+                for entry in converted_entries:
+                    if (entry.member_id and entry.branch_id and 
+                        entry.member_id in member_home_branches and 
+                        entry.branch_id != member_home_branches[entry.member_id]):
+                        cross_branch_entries.append(entry)
+                
+                data.cross_branch_entries = cross_branch_entries
+                
+                # Calculate multi-unit percentage from contracts
+                multi_unit_members = sum(
+                    1 for c in active_contracts 
+                    if hasattr(c, 'plan') and 
+                    getattr(c.plan, 'access_branches', False)
+                )
+                
+                if data.total_active_members > 0:
+                    data.multi_unit_member_percentage = (
+                        Decimal(str(multi_unit_members)) / 
+                        Decimal(str(data.total_active_members))
+                    ) * Decimal('100')
+
+            logger.debug(f"Final metrics:")
+            logger.debug(f"Total active members: {data.total_active_members}")
+            logger.debug(f"Total churned members: {data.total_churned_members}")
+            logger.debug(f"MRR: ${data.mrr}")
+            logger.debug(f"Churn rate: {data.churn_rate}%")
+
+            elapsed_time = (datetime.now() - start_time).total_seconds()
+            logger.debug(f"Data aggregation completed in {elapsed_time:.2f}s")
+            return data
+            
+        except Exception as e:
+            logger.error(f"Error during data aggregation: {str(e)}")
+            logger.exception("Full traceback:")
+            return GymOperatingData(
+                active_members=[],
+                active_contracts=[],
+                prospects=[],
+                non_renewed_members=[],
+                receivables=[],
+                recent_entries=[],
+                data_from=from_date,
+                data_to=to_date
+            )
 
     @overload
     def get_members_files(
@@ -1413,81 +1715,230 @@ class GymApi:
                 notes=None
             )
 
-    def _aggregate_operating_data(
-        self,
-        results: List[Any],
-        from_date: Optional[datetime],
-        to_date: Optional[datetime]
-    ) -> GymOperatingData:
-        """Aggregate operating data from multiple API responses."""
-        operating_data = GymOperatingData(
-            data_from=from_date,
-            data_to=to_date
-        )
-        
-        try:
-            active_members, contracts, prospects, non_renewed, receivables, entries = results
-            
-            # Convert SDK models to dictionaries
-            if active_members:
-                operating_data.active_members = [member.to_dict() for member in active_members]
-            
-            if contracts:
-                operating_data.active_contracts = contracts
-            
-            if prospects:
-                operating_data.prospects = [prospect.to_dict() for prospect in prospects]
-            
-            if non_renewed:
-                operating_data.non_renewed_members = [member.to_dict() for member in non_renewed]
-            
-            if receivables:
-                operating_data.receivables = [self._convert_receivable(r) for r in receivables]
-                operating_data.overdue_members = self._group_overdue_receivables(
-                    [self._convert_receivable(r) for r in receivables if r.status == ReceivableStatus.OVERDUE]
-                )
-            
-            if entries:
-                operating_data.recent_entries = [self._convert_entry(e) for e in entries]
-                operating_data.cross_branch_entries = []  # Initialize empty list
+    async def _handle_rate_limit(self, delay: float = 1.5):
+        """Handle rate limiting with exponential backoff."""
+        await asyncio.sleep(delay)
+
+    async def _delete_webhook_with_retry(self, webhook_api: WebhookApi, webhook_id: int, max_retries: int = 3, base_delay: float = 1.5) -> bool:
+        """Delete webhook with retry logic."""
+        for attempt in range(max_retries):
+            try:
+                response = webhook_api.delete_webhook(webhook_id, async_req=False)
+                # If response is boolean, use it directly
+                if isinstance(response, bool):
+                    if response:
+                        logger.debug(f"Successfully deleted webhook {webhook_id}")
+                        await self._handle_rate_limit()
+                        return True
+                    else:
+                        logger.error(f"Failed to delete webhook {webhook_id}")
+                        return False
                 
-                # Track cross-branch entries
-                for entry in operating_data.recent_entries:
-                    member_contract = next(
-                        (c for c in operating_data.active_contracts if c.member_id == entry.member_id),
-                        None
-                    )
-                    if member_contract and member_contract.branch_id != entry.branch_id:
-                        operating_data.cross_branch_entries.append(entry)
+                # Otherwise try to get success from response data
+                success = getattr(response, 'data', None)
+                if success:
+                    logger.debug(f"Successfully deleted webhook {webhook_id}")
+                    await self._handle_rate_limit()
+                    return True
+                
+                logger.error(f"Failed to delete webhook {webhook_id}")
+                
+            except Exception as e:
+                if "429" in str(e):  # Rate limit error
+                    delay = base_delay * (2 ** attempt)  # Exponential backoff
+                    logger.warning(f"Rate limit hit, waiting {delay} seconds before retry")
+                    await asyncio.sleep(delay)
+                    continue
+                logger.error(f"Error deleting webhook {webhook_id}: {str(e)}")
             
-            # Calculate metrics
-            operating_data.total_active_members = len(operating_data.active_members)
-            operating_data.total_churned_members = len(operating_data.non_renewed_members)
-            
-            # Calculate MRR and other metrics
-            mrr = Decimal('0.00')
-            multi_unit_members = 0
-            
-            if operating_data.active_contracts:
-                for contract in operating_data.active_contracts:
-                    if contract.total_value:
-                        mrr += Decimal(str(contract.total_value))
-                    if contract.plan and contract.plan.multi_unit_access:
-                        multi_unit_members += 1
-            
-            operating_data.mrr = mrr
-            
-            # Calculate churn rate and multi-unit percentage
-            if operating_data.total_active_members > 0:
-                operating_data.churn_rate = Decimal(str(operating_data.total_churned_members / operating_data.total_active_members * 100))
-                operating_data.multi_unit_member_percentage = Decimal(str(multi_unit_members / operating_data.total_active_members * 100))
-            
-            # Calculate cross-branch revenue
-            if operating_data.cross_branch_entries and operating_data.total_active_members > 0:
-                avg_revenue_per_visit = mrr / Decimal(str(operating_data.total_active_members)) / Decimal('30')
-                operating_data.cross_branch_revenue = avg_revenue_per_visit * Decimal(str(len(operating_data.cross_branch_entries)))
-            
+            await self._handle_rate_limit()  # Wait between attempts
+        
+        return False
+
+    async def manage_webhooks(
+        self,
+        url_callback: str,
+        branch_ids: Optional[List[str]] = None,
+        event_types: Optional[List[str]] = None,
+        headers: Optional[List[Dict[str, str]]] = None,
+        filters: Optional[List[Dict[str, str]]] = None,
+        unsubscribe: bool = False,
+        async_req: bool = False,
+    ) -> Union[bool, TypedAsyncResult[bool]]:
+        """Manage webhook subscriptions."""
+        try:
+            logger.debug(f"Managing webhooks for URL: {url_callback}")
+            logger.debug(f"Branch IDs: {branch_ids}")
+            logger.debug(f"Event types: {event_types}")
+            logger.debug(f"Operation: {'unsubscribe' if unsubscribe else 'subscribe'}")
+
+            # Log available branch credentials
+            logger.debug("Available branch credentials:")
+            for branch_id, client in self.branch_api_clients.items():
+                if client and client.configuration:
+                    logger.debug(f"  Branch {branch_id}: {client.configuration.username}")
+
+            # Define all possible event types
+            all_event_types = [
+                "NewSale",
+                "CreateMember",
+                "AlterMember",
+                "EndedSessionActivity",
+                "ClearedDebt",
+                "AlterReceivables",
+                "Freeze",
+                "RecurrentSale",
+                "entries",
+                "ActivityEnroll",
+                "SalesItensUpdated",
+                "CreateMembership",
+                "AlterMembership",
+                "CreateService",
+                "AlterService",
+                "CreateProduct",
+                "AlterProduct"
+            ]
+            event_types = event_types or all_event_types
+            logger.debug(f"Using event types: {event_types}")
+
+            # Convert headers and filters to view models
+            webhook_headers = [
+                W12UtilsWebhookHeaderViewModel(nome=h["nome"], valor=h["valor"])
+                for h in (headers or [])
+            ] or [W12UtilsWebhookHeaderViewModel(nome="Content-Type", valor="application/json")]
+            logger.debug(f"Using headers: {webhook_headers}")
+
+            webhook_filters = [
+                W12UtilsWebhookFilterViewModel(filterType=f["filterType"], value=f["value"])
+                for f in (filters or [])
+            ] or [W12UtilsWebhookFilterViewModel(filterType="All", value="*")]
+            logger.debug(f"Using filters: {webhook_filters}")
+
+            # Handle unsubscribe
+            if unsubscribe:
+                logger.debug("Getting existing webhooks for unsubscribe")
+                if branch_ids:
+                    # Get webhooks for each branch
+                    for branch_id in branch_ids:
+                        if branch_id in self.branch_api_clients:
+                            logger.debug(f"Getting webhooks for branch {branch_id}")
+                            branch_webhook_api = WebhookApi(self.branch_api_clients[branch_id])
+                            existing_webhooks = branch_webhook_api.get_webhooks(async_req=False)
+                            logger.debug(f"Found webhooks for branch {branch_id}: {existing_webhooks}")
+                            await self._handle_rate_limit()
+                            
+                            for webhook in existing_webhooks:
+                                webhook_id = webhook.get('idWebhook')
+                                webhook_url = webhook.get('urlCallback')
+                                webhook_event = webhook.get('tipoEvento')
+                                webhook_branch = webhook.get('idFilial')
+                                
+                                logger.debug(f"Checking webhook: ID={webhook_id}, URL={webhook_url}, Event={webhook_event}, Branch={webhook_branch}")
+                                
+                                if webhook_id and (
+                                    webhook_url == url_callback and 
+                                    webhook_event in event_types and
+                                    str(webhook_branch) == branch_id
+                                ):
+                                    success = await self._delete_webhook_with_retry(branch_webhook_api, webhook_id)
+                                    if not success:
+                                        continue  # Try next webhook
+                else:
+                    # Get webhooks using default client
+                    if self.default_api_client:
+                        existing_webhooks = self.webhook_api.get_webhooks(async_req=False)
+                        logger.debug(f"Found webhooks: {existing_webhooks}")
+                        await self._handle_rate_limit()
+                        
+                        for webhook in existing_webhooks:
+                            webhook_id = webhook.get('idWebhook')
+                            webhook_url = webhook.get('urlCallback')
+                            webhook_event = webhook.get('tipoEvento')
+                            
+                            logger.debug(f"Checking webhook: ID={webhook_id}, URL={webhook_url}, Event={webhook_event}")
+                            
+                            if webhook_id and webhook_url == url_callback and webhook_event in event_types:
+                                success = await self._delete_webhook_with_retry(self.webhook_api, webhook_id)
+                                if not success:
+                                    continue  # Try next webhook
+                return True
+
+            # Handle subscribe
+            if branch_ids:
+                # Create webhooks for each branch and event type
+                for branch_id in branch_ids:
+                    logger.debug(f"Processing branch {branch_id}")
+                    # Get branch-specific API client
+                    if branch_id in self.branch_api_clients and self.branch_api_clients[branch_id]:
+                        client = self.branch_api_clients[branch_id]
+                        if client.configuration:
+                            logger.debug(f"Using branch-specific client for branch {branch_id}")
+                            logger.debug(f"Branch {branch_id} username: {client.configuration.username}")
+                            webhook_api = WebhookApi(client)
+                        else:
+                            logger.warning(f"No configuration for branch {branch_id}, using default client")
+                            webhook_api = WebhookApi(self.default_api_client) if self.default_api_client else None
+                    else:
+                        logger.warning(f"No credentials found for branch {branch_id}, using default client")
+                        webhook_api = WebhookApi(self.default_api_client) if self.default_api_client else None
+
+                    if webhook_api:
+                        for event_type in event_types:
+                            logger.debug(f"Creating webhook for branch {branch_id}, event {event_type}")
+                            try:
+                                success = webhook_api.create_webhook(
+                                    event_type=event_type,
+                                    url_callback=url_callback,
+                                    branch_id=int(branch_id),
+                                    headers=webhook_headers,
+                                    filters=webhook_filters if event_type == "NewSale" else None,
+                                    async_req=False
+                                )
+                                if not success:
+                                    logger.error(f"Failed to create webhook for branch {branch_id}, event {event_type}")
+                                    return False
+                                logger.debug(f"Successfully created webhook for branch {branch_id}, event {event_type}")
+                                await self._handle_rate_limit()
+                            except Exception as e:
+                                if "429" in str(e):  # Rate limit error
+                                    logger.warning("Rate limit hit, retrying with longer delay")
+                                    await self._handle_rate_limit(3.0)  # Longer delay on rate limit
+                                    continue
+                                logger.error(f"Error creating webhook: {str(e)}")
+                                return False
+            else:
+                # Create webhooks for each event type without branch ID
+                if self.default_api_client:
+                    logger.debug("Using default client for webhook creation")
+                    if self.default_api_client.configuration:
+                        logger.debug(f"Default client username: {self.default_api_client.configuration.username}")
+                    
+                    for event_type in event_types:
+                        logger.debug(f"Creating webhook for event {event_type}")
+                        try:
+                            success = self.webhook_api.create_webhook(
+                                event_type=event_type,
+                                url_callback=url_callback,
+                                headers=webhook_headers,
+                                filters=webhook_filters if event_type == "NewSale" else None,
+                                async_req=False
+                            )
+                            if not success:
+                                logger.error(f"Failed to create webhook for event {event_type}")
+                                return False
+                            logger.debug(f"Successfully created webhook for event {event_type}")
+                            await self._handle_rate_limit()
+                        except Exception as e:
+                            if "429" in str(e):  # Rate limit error
+                                logger.warning("Rate limit hit, retrying with longer delay")
+                                await self._handle_rate_limit(3.0)  # Longer delay on rate limit
+                                continue
+                            logger.error(f"Error creating webhook: {str(e)}")
+                            return False
+
+            return True
+
         except Exception as e:
-            logger.error(f"Error aggregating operating data: {str(e)}")
-            
-        return operating_data
+            logger.error(f"Error managing webhooks: {str(e)}")
+            logger.exception("Full traceback:")
+            return False

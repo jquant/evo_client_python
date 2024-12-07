@@ -16,6 +16,7 @@ import re  # noqa: F401
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
+from loguru import logger
 
 from evo_client.core.api_client import ApiClient
 
@@ -30,6 +31,7 @@ class EntriesApi:
     def __init__(self, api_client: Optional[ApiClient] = None):
         self.api_client = api_client or ApiClient()
         self.base_path = "/api/v1/entries"
+        self.logger = logger
 
     @overload
     def get_entries(
@@ -85,6 +87,12 @@ class EntriesApi:
         Raises:
             ValueError: If take > 1000
         """
+        self.logger.debug(
+            "Starting entries API call [start={}, end={}, take={}, skip={}, entry_id={}, member_id={}]",
+            register_date_start, register_date_end, take, skip, entry_id, member_id
+        )
+        start_time = datetime.now()
+
         if take and take > 1000:
             raise ValueError("Maximum number of records to return is 1000")
 
@@ -97,7 +105,7 @@ class EntriesApi:
             "idMember": member_id,
         }
 
-        return self.api_client.call_api(
+        result = self.api_client.call_api(
             resource_path=self.base_path,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
@@ -106,6 +114,10 @@ class EntriesApi:
             async_req=async_req,
             headers={"Accept": "application/json"},
         )
+        
+        elapsed_time = (datetime.now() - start_time).total_seconds()
+        self.logger.info("Entries API call completed in {:.2f}s", elapsed_time)
+        return result
 
     @overload
     def get_member_entries(

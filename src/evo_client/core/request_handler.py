@@ -66,7 +66,9 @@ class RequestHandler:
 
     def _prepare_headers(self, header_params: Optional[Dict] = None) -> Dict:
         """Prepare request headers with authentication."""
-        headers = header_params or {}
+        headers = self.configuration.default_headers.copy()
+        if header_params:
+            headers.update(header_params)
         return headers
 
     def _prepare_params(self, query_params: Optional[Dict] = None) -> Dict:
@@ -86,13 +88,19 @@ class RequestHandler:
         """Make the actual HTTP request."""
         method = kwargs.get("method", "GET")
         url = self.configuration.host + kwargs.get("resource_path", "")
+        
+        # Log the full URL and request details
+        logger.debug(f"Making {method} request to {url}")
+        logger.debug(f"Host: {self.configuration.host}")
+        logger.debug(f"Resource path: {kwargs.get('resource_path', '')}")
 
         # Prepare request parameters
         headers = self._prepare_headers(kwargs.get("header_params"))
         query_params = self._prepare_params(kwargs.get("query_params"))
         body = kwargs.get("body")
 
-        logger.debug(f"Making {method} request to {url}")
+        logger.debug(f"Request headers: {headers}")
+        logger.debug(f"Request body: {body}")
 
         request_options = self._get_request_options(kwargs)
         response = self.rest_client.request(
@@ -106,7 +114,47 @@ class RequestHandler:
             request_timeout=request_options["request_timeout"],
         )
 
-        logger.debug(f"Received response: {response.status}")
+        logger.debug(f"Response status: {response.status}")
+        logger.debug(f"Response headers: {response.getheaders()}")
+        logger.debug(f"Raw response data: {response.data}")
+
+        # Try to decode response data
+        decoded_data = None
+        if isinstance(response.data, bytes):
+            try:
+                decoded_data = response.data.decode('utf-8', errors='replace')
+                logger.debug(f"Decoded response: {decoded_data}")
+            except Exception as e:
+                logger.warning(f"Failed to decode response: {e}")
+
+        # If a specific response type is expected, try to deserialize
         if response_type:
-            return response.deserialize(response_type)
-        return response.json()
+            try:
+                return response.deserialize(response_type)
+            except Exception as e:
+                logger.warning(f"Failed to deserialize response: {e}")
+                if 200 <= response.status < 300:
+                    logger.debug(f"Request succeeded with status {response.status} despite deserialization failure")
+                    return True
+                raise
+
+        # Try to parse as JSON
+        try:
+            # Try to use the decoded data first if available
+            if decoded_data:
+                try:
+                    import json
+                    return json.loads(decoded_data)
+                except json.JSONDecodeError:
+                    pass
+
+            # Fall back to response's json method
+            return response.json()
+        except Exception as e:
+            logger.warning(f"Failed to parse response as JSON: {e}")
+            # Return True for successful status codes even if parsing fails
+            if 200 <= response.status < 300:
+                logger.debug(f"Request succeeded with status {response.status} despite parsing failure")
+                return True
+            logger.error(f"Request failed with status {response.status}")
+            raise ValueError(f"Failed to parse response: {str(e)}")

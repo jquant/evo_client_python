@@ -11,15 +11,32 @@ dependencies = [
     "certifi",
     "python-dateutil",
     "pydantic>=2.0.0",
-    "requests>=2.25.0"
+    "requests>=2.25.0",
+    "typer>=0.9.0",
+    "rich>=13.0.0"
 ]
 keywords = ["Swagger", "EVO SDK"]
 readme = "README.md"
 requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10"
+]
 
 [project.urls]
 Documentation = "https://evo-integracao.w12app.com.br/swagger/v1/swagger.json"
 
+[project.scripts]
+gym = "evo_client.cli:gym_cli"
+
 [build-system]
 requires = ["setuptools>=21.0.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

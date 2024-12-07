@@ -24,6 +24,8 @@ class Configuration(BaseModel):
     host: str = Field(
         default="https://evo-integracao-api.w12app.com.br", validate_default=True
     )
+    base_path: str = Field(default="/api/v1")
+    default_headers: Dict[str, str] = Field(default_factory=dict)
     temp_folder_path: Optional[str] = None
     timeout: float = Field(default=60.0, validate_default=True)
 
