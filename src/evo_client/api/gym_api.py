@@ -1332,6 +1332,12 @@ class GymApi:
             # Calculate metrics
             data.total_active_members = active_member_count
             data.total_churned_members = len(non_renewed)
+            
+            # Calculate MRR from active contracts
+            total_mrr = Decimal('0.00')
+            for contract in active_contracts:
+                if contract and hasattr(contract, 'plan') and contract.plan:
+                    total_mrr += contract.plan.value
             data.mrr = total_mrr
 
             # Calculate churn rate
