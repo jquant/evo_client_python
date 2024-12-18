@@ -5,6 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
+
 from evo_client.api.sales_api import SalesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.new_sale_view_model import NewSaleViewModel
@@ -30,7 +32,7 @@ def test_get_sale_by_id_basic(sales_api: SalesApi, mock_api_client: Mock):
     expected = SalesViewModel()
     mock_api_client.return_value = expected
 
-    result = sales_api.get_sale_by_id(sale_id=123, async_req=False)
+    await result = await sales_api.get_sale_by_id(sale_id=123, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -44,7 +46,7 @@ def test_get_sale_by_id_error(sales_api: SalesApi, mock_api_client: Mock):
     """Test error handling for getting sale by ID."""
 
     with pytest.raises(ValueError) as exc:
-        sales_api.get_sale_by_id(sale_id=None, async_req=False)  # type: ignore
+        await sales_api.get_sale_by_id(sale_id=None, async_req=False)  # type: ignore
 
 
 def test_create_sale(sales_api: SalesApi, mock_api_client: Mock):
@@ -53,7 +55,7 @@ def test_create_sale(sales_api: SalesApi, mock_api_client: Mock):
     mock_api_client.return_value = expected
     sale_data = NewSaleViewModel()
 
-    result = sales_api.create_sale(body=sale_data, async_req=False)
+    await result = await sales_api.create_sale(body=sale_data, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -94,7 +96,7 @@ def test_get_sales_items(sales_api: SalesApi, mock_api_client: Mock):
     expected = [SalesItemsViewModel()]
     mock_api_client.return_value = expected
 
-    result = sales_api.get_sales_items(branch_id=123, async_req=False)
+    await result = await sales_api.get_sales_items(branch_id=123, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -126,7 +128,7 @@ def test_error_handling(sales_api: SalesApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        sales_api.get_sale_by_id(sale_id=123, async_req=False)
+        await sales_api.get_sale_by_id(sale_id=123, async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

@@ -4,6 +4,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
+
 from evo_client.api.bank_accounts_api import BankAccountsApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.bank_accounts_view_model import BankAccountsViewModel
@@ -27,7 +29,7 @@ def test_get_accounts(bank_accounts_api: BankAccountsApi, mock_api_client: Mock)
     expected = BankAccountsViewModel()
     mock_api_client.return_value = expected
 
-    result = bank_accounts_api.get_accounts(async_req=False)
+    await result = await bank_accounts_api.get_accounts(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -46,7 +48,7 @@ def test_error_handling(bank_accounts_api: BankAccountsApi, mock_api_client: Moc
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        bank_accounts_api.get_accounts(async_req=False)
+        await bank_accounts_api.get_accounts(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

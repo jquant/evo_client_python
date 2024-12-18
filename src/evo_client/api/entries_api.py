@@ -15,7 +15,7 @@ from __future__ import absolute_import
 import re  # noqa: F401
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
-from typing import Any, List, Literal, Optional, Union, overload
+from typing import Any, List, Literal, Optional, Union, overload, cast
 from loguru import logger
 
 from evo_client.core.api_client import ApiClient
@@ -36,31 +36,34 @@ class EntriesApi:
     @overload
     def get_entries(
         self,
+        *,
+        async_req: Literal[False] = False,
         register_date_start: Optional[datetime] = None,
         register_date_end: Optional[datetime] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
-        async_req: Literal[False] = False,
     ) -> List[EntradasResumoApiViewModel]:
         ...
 
     @overload
     def get_entries(
         self,
+        *,
+        async_req: Literal[True],
         register_date_start: Optional[datetime] = None,
         register_date_end: Optional[datetime] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
-        async_req: Literal[True] = True,
     ) -> AsyncResult[Any]:
         ...
 
     def get_entries(
         self,
+        *,
         register_date_start: Optional[datetime] = None,
         register_date_end: Optional[datetime] = None,
         take: Optional[int] = None,
@@ -82,7 +85,7 @@ class EntriesApi:
             async_req: Execute request asynchronously
 
         Returns:
-            List of entries or AsyncResult[Any] if async
+            List of entries or AsyncResult if async
 
         Raises:
             ValueError: If take > 1000
@@ -123,9 +126,10 @@ class EntriesApi:
     def get_member_entries(
         self,
         member_id: int,
+        *,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
-        async_req: Literal[False] = False,
+        async_req: bool = False,
     ) -> List[EntradasResumoApiViewModel]:
         ...
 
@@ -133,15 +137,17 @@ class EntriesApi:
     def get_member_entries(
         self,
         member_id: int,
+        *,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
-        async_req: Literal[True] = True,
+        async_req: bool = False,
     ) -> AsyncResult[Any]:
         ...
 
     def get_member_entries(
         self,
         member_id: int,
+        *,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         async_req: bool = False,
@@ -156,27 +162,27 @@ class EntriesApi:
             async_req: Execute request asynchronously
 
         Returns:
-            List of entries or AsyncResult[Any] if async
+            List of entries or AsyncResult if async
         """
         if async_req:
             return self.get_entries(
+                member_id=member_id,
                 register_date_start=start_date,
                 register_date_end=end_date,
-                member_id=member_id,
                 async_req=True,
             )
-        else:
-            return self.get_entries(
-                register_date_start=start_date,
-                register_date_end=end_date,
-                member_id=member_id,
-                async_req=False,
-            )
+        return self.get_entries(
+            member_id=member_id,
+            register_date_start=start_date,
+            register_date_end=end_date,
+            async_req=False,
+        )
 
     @overload
     def get_entry_by_id(
         self,
         entry_id: int,
+        *,
         async_req: Literal[False] = False,
     ) -> Optional[EntradasResumoApiViewModel]:
         ...
@@ -185,13 +191,15 @@ class EntriesApi:
     def get_entry_by_id(
         self,
         entry_id: int,
-        async_req: Literal[True] = True,
+        *,
+        async_req: Literal[True],
     ) -> AsyncResult[Any]:
         ...
 
     def get_entry_by_id(
         self,
         entry_id: int,
+        *,
         async_req: bool = False,
     ) -> Union[Optional[EntradasResumoApiViewModel], AsyncResult[Any]]:
         """
@@ -202,10 +210,16 @@ class EntriesApi:
             async_req: Execute request asynchronously
 
         Returns:
-            Entry if found, None if not found, or AsyncResult[Any] if async
+            Entry if found, None if not found, or AsyncResult if async
         """
         if async_req:
-            return self.get_entries(entry_id=entry_id, async_req=True)
-        else:
-            result = self.get_entries(entry_id=entry_id, async_req=False)
-            return result[0] if result else None
+            result = self.get_entries(
+                entry_id=entry_id,
+                async_req=True,
+            )
+            return result
+        result = self.get_entries(
+            entry_id=entry_id,
+            async_req=False,
+        )
+        return result[0] if result else None    

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Dict, List, Optional, NamedTuple
+import asyncio
 
 from evo_client.api.gym_api import GymApi
 from evo_client.models.gym_model import (
@@ -239,14 +240,28 @@ def print_chain_summary(chain: ChainAnalytics, branch_ids: List[str]):
         for i, branch_idx in enumerate(ranks[:3], 1):
             print(f"{i}. Branch {branch_ids[branch_idx]}")
 
-def main():
+async def main():
     # Initialize GymApi with multiple branches
-    gym_api = GymApi(branch_credentials=[
-        {"username": "branch1_user", "password": "branch1_pass", "branch_id": "1"},
-        {"username": "branch2_user", "password": "branch2_pass", "branch_id": "2"},
-        {"username": "branch3_user", "password": "branch3_pass", "branch_id": "3"}
-    ])
-
+    branch_credentials = [
+        {
+            "username": "branch1_user",
+            "password": "branch1_pass",
+            "branch_id": "1"
+        },
+        {
+            "username": "branch2_user",
+            "password": "branch2_pass",
+            "branch_id": "2"
+        },
+        {
+            "username": "branch3_user",
+            "password": "branch3_pass",
+            "branch_id": "3"
+        }
+    ]
+    
+    gym_api = GymApi(branch_credentials=branch_credentials)
+    
     # Get current and previous month data
     end_date = datetime.now()
     start_date = end_date - timedelta(days=30)
@@ -254,13 +269,13 @@ def main():
     prev_start_date = prev_end_date - timedelta(days=30)
 
     # Get operating data for current month
-    current_data = gym_api.get_operating_data(
+    current_data = await gym_api.get_operating_data(
         from_date=start_date,
         to_date=end_date
     )
     
     # Get operating data for previous month
-    previous_data = gym_api.get_operating_data(
+    previous_data = await gym_api.get_operating_data(
         from_date=prev_start_date,
         to_date=prev_end_date
     )
@@ -268,9 +283,11 @@ def main():
     if isinstance(current_data, List) and isinstance(previous_data, List):
         branch_ids = ["1", "2", "3"]
         
-        # Create chain-wide analytics with historical comparison
-        chain_analytics = ChainAnalytics(current_data, previous_data)
-        print_chain_summary(chain_analytics, branch_ids)
+        # Create chain analytics instance
+        chain = ChainAnalytics(current_data, previous_data)
+        
+        # Print chain summary
+        print_chain_summary(chain, branch_ids)
 
 if __name__ == "__main__":
-    main() 
+    asyncio.run(main()) 

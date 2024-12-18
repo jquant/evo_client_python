@@ -77,6 +77,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
     ) -> Union[Any, AsyncResult[Any]]:
         ...
 
@@ -97,6 +98,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
     ) -> Union[T, AsyncResult[T]]:
         ...
 
@@ -117,6 +119,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
     ) -> Union[List[T], AsyncResult[List[T]]]:
         ...
 
@@ -137,6 +140,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
     ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]:
         ...
 
@@ -157,6 +161,7 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
     ) -> Union[T, List[T], Any]:
         ...
 
@@ -176,10 +181,19 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
     ) -> Union[T, List[T], Any, AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]:
         """
         Makes the HTTP request (synchronous or asynchronous) and returns deserialized data.
+        
+        Args:
+            ...
+            raw_response: If True, returns the raw response object (useful for binary data, Excel files, etc.)
         """
+        if raw_response:
+            _return_http_data_only = False
+            _preload_content = False
+        
         if async_req:
             return self.request_handler.execute_async(
                 response_type=response_type,

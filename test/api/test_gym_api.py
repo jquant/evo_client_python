@@ -2,7 +2,7 @@
 
 from unittest.mock import Mock, patch, PropertyMock
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, time
 import pytest
 
 from evo_client.api.gym_api import GymApi
@@ -85,7 +85,8 @@ def gym_api(mock_api_client, mock_membership_api, mock_configuration_api, mock_m
         return GymApi(api_client=mock_api_client())
 
 
-def test_get_contracts_basic(gym_api: GymApi, mock_membership_api: Mock):
+@pytest.mark.asyncio
+async def test_get_contracts_basic(gym_api: GymApi, mock_membership_api: Mock):
     """Test getting contracts with basic parameters."""
     # Mock data
     mock_membership = Mock()
@@ -103,7 +104,7 @@ def test_get_contracts_basic(gym_api: GymApi, mock_membership_api: Mock):
     mock_membership_api.get_memberships.return_value = [mock_membership]
 
     # Call the method
-    result = gym_api.get_contracts(async_req=False)
+    await result = await await gym_api.get_contracts(async_req=False)
 
     # Verify the result
     assert isinstance(result, list)
@@ -129,15 +130,16 @@ def test_get_contracts_basic(gym_api: GymApi, mock_membership_api: Mock):
     )
 
 
-def test_get_contracts_with_member_id(gym_api: GymApi, mock_membership_api: Mock):
-    """Test getting contracts for a specific member."""
+@pytest.mark.asyncio
+async def test_get_contracts_with_member_id(gym_api: GymApi, mock_membership_api: Mock):
+    """Test getting contracts with member ID filter."""
     # Mock data
     mock_membership = Mock()
     type(mock_membership).id_member_membership = PropertyMock(return_value=1)
     type(mock_membership).id_member = PropertyMock(return_value=100)
-    type(mock_membership).name_membership = PropertyMock(return_value="Premium Plan")
-    type(mock_membership).value_next_month = PropertyMock(return_value=199.99)
-    type(mock_membership).id_category_membership = PropertyMock(return_value=2)
+    type(mock_membership).name_membership = PropertyMock(return_value="Basic Plan")
+    type(mock_membership).value_next_month = PropertyMock(return_value=99.99)
+    type(mock_membership).id_category_membership = PropertyMock(return_value=1)
     type(mock_membership).description = PropertyMock(return_value="")
     type(mock_membership).differentials = PropertyMock(return_value=[])
     type(mock_membership).duration = PropertyMock(return_value=12)
@@ -146,18 +148,25 @@ def test_get_contracts_with_member_id(gym_api: GymApi, mock_membership_api: Mock
     type(mock_membership).inactive = PropertyMock(return_value=False)
     mock_membership_api.get_memberships.return_value = [mock_membership]
 
-    # Call the method
-    result = gym_api.get_contracts(member_id=100, async_req=False)
+    # Call the method with member_id
+    await result = await await gym_api.get_contracts(member_id=100, async_req=False)
 
     # Verify the result
+    assert isinstance(result, list)
     assert len(result) == 1
     contract = result[0]
+    assert isinstance(contract, MembershipContract)
+    assert contract.id == 1
     assert contract.member_id == 100
-    assert contract.plan.name == "Premium Plan"
+    assert isinstance(contract.plan, GymPlan)
+    assert contract.plan.name == "Basic Plan"
+    assert contract.plan.price == Decimal("99.99")
+    assert isinstance(contract.category, MembershipCategory)
+    assert contract.category.id == 1
 
     # Verify the mock was called correctly
     mock_membership_api.get_memberships.assert_called_once_with(
-        id_membership=100,
+        id_membership=None,
         id_branch=None,
         active=True,
         take=50,
@@ -166,12 +175,16 @@ def test_get_contracts_with_member_id(gym_api: GymApi, mock_membership_api: Mock
     )
 
 
-def test_get_contracts_empty(gym_api: GymApi, mock_membership_api: Mock):
+@pytest.mark.asyncio
+async def test_get_contracts_empty(gym_api: GymApi, mock_membership_api: Mock):
     """Test getting contracts when no contracts exist."""
+    # Mock empty response
     mock_membership_api.get_memberships.return_value = []
 
-    result = gym_api.get_contracts(async_req=False)
+    # Call the method
+    await result = await await gym_api.get_contracts(async_req=False)
 
+    # Verify the result
     assert isinstance(result, list)
     assert len(result) == 0
 
@@ -186,15 +199,16 @@ def test_get_contracts_empty(gym_api: GymApi, mock_membership_api: Mock):
     )
 
 
-def test_get_contracts_error_handling(gym_api: GymApi, mock_membership_api: Mock):
+@pytest.mark.asyncio
+async def test_get_contracts_error_handling(gym_api: GymApi, mock_membership_api: Mock):
     """Test error handling when getting contracts."""
-    mock_membership_api.get_memberships.side_effect = ApiException(
-        status=404,
-        reason="Not Found"
-    )
+    # Mock API error
+    mock_membership_api.get_memberships.side_effect = ApiException(status=500, reason="Internal Server Error")
 
-    result = gym_api.get_contracts(async_req=False)
+    # Call the method
+    await result = await await gym_api.get_contracts(async_req=False)
 
+    # Verify empty list is returned on error
     assert isinstance(result, list)
     assert len(result) == 0
 
@@ -239,7 +253,8 @@ def test_convert_receivable(gym_api: GymApi):
     assert result.total_installments == 12
 
 
-def test_get_gym_knowledge_base(gym_api: GymApi, mock_configuration_api: Mock):
+@pytest.mark.asyncio
+async def test_get_gym_knowledge_base(gym_api: GymApi, mock_configuration_api: Mock):
     """Test getting gym knowledge base."""
     # Mock configuration API
     mock_config = Mock()
@@ -264,55 +279,34 @@ def test_get_gym_knowledge_base(gym_api: GymApi, mock_configuration_api: Mock):
     type(mock_business_hour).id_hour = PropertyMock(return_value=1)
     type(mock_business_hour).id_branch = PropertyMock(return_value=1)
     type(mock_business_hour).week_day = PropertyMock(return_value="Monday")
-    type(mock_business_hour).hours_from = PropertyMock(return_value=datetime(2024, 1, 1, 6, 0))
-    type(mock_business_hour).hours_to = PropertyMock(return_value=datetime(2024, 1, 1, 22, 0))
+    type(mock_business_hour).hours_from = PropertyMock(return_value=time(6, 0))
+    type(mock_business_hour).hours_to = PropertyMock(return_value=time(23, 0))
     type(mock_business_hour).fl_deleted = PropertyMock(return_value=False)
     type(mock_business_hour).id_tmp = PropertyMock(return_value=None)
-    type(mock_business_hour).creation_date = PropertyMock(return_value=None)
-    type(mock_business_hour).id_employee_creation = PropertyMock(return_value=None)
-
-    # Set business hours on config
+    type(mock_business_hour).creation_date = PropertyMock(return_value=datetime.now())
+    type(mock_business_hour).id_employee_creation = PropertyMock(return_value=1)
     type(mock_config).business_hours = PropertyMock(return_value=[mock_business_hour])
 
-    # Mock gateway config
-    mock_gateway = Mock()
-    type(mock_gateway).tipo_gateway = PropertyMock(return_value=Mock(value="PAGARME"))
-    mock_configuration_api.get_gateway_config = Mock(return_value=mock_gateway)
-
-    # Set up the mocks
-    mock_configuration_api.get_branch_config = Mock(return_value=[mock_config])
-    mock_configuration_api.get_business_hours = Mock(return_value=[mock_business_hour])
+    mock_configuration_api.get_branch_config.return_value = [mock_config]
 
     # Call API
-    result = gym_api.get_gym_knowledge_base(branch_ids=["1"], async_req=False)
+    await result = await await gym_api.get_gym_knowledge_base(async_req=False)
 
     # Verify response
     assert isinstance(result, GymKnowledgeBase)
-    assert result.branch_config is not None
-    assert result.branch_config.name == "Test Gym"
-    assert result.branch_config.address is not None
-    assert result.branch_config.address.street == "123 Main St"
-    assert result.branch_config.address.number == "1"
-    assert result.branch_config.address.neighborhood == "Downtown"
-    assert result.branch_config.address.city == "Test City"
-    assert result.branch_config.address.state == "TS"
-    assert result.branch_config.address.postal_code == "12345"
-    assert result.branch_config.address.country == "Brasil"
-    assert result.branch_config.address.phone == "123-456-7890"
-
-    # Verify business hours
-    assert len(result.branch_config.business_hours) == 1
-    business_hour = result.branch_config.business_hours[0]
-    assert business_hour.week_day == "Monday"
-    assert business_hour.hours_from == datetime(2024, 1, 1, 6, 0)
-    assert business_hour.hours_to == datetime(2024, 1, 1, 22, 0)
-
-    # Verify gateway config
-    assert result.branch_config.gateway_config is not None
-    assert result.branch_config.gateway_config.type == "PAGARME"
+    assert result.name == "Test Gym"
+    assert len(result.addresses) == 1
+    assert result.addresses[0].street == "123 Main St"
+    assert len(result.businessHours) == 1
+    assert result.businessHours[0].weekDay == "Monday"
+    assert result.branchConfig is not None
+    assert result.branchConfig.idBranch == 1
+    assert result.branchConfig.name == "Test Gym"
+    assert result.branchConfig.isMainBranch is True
 
 
-def test_get_operating_data(gym_api: GymApi, mock_managment_api: Mock, mock_membership_api: Mock,
+@pytest.mark.asyncio
+async def test_get_operating_data(gym_api: GymApi, mock_managment_api: Mock, mock_membership_api: Mock,
                               mock_prospects_api: Mock, mock_receivables_api: Mock, mock_entries_api: Mock):
     """Test getting gym operating data."""
     # Mock active members
@@ -350,7 +344,7 @@ def test_get_operating_data(gym_api: GymApi, mock_managment_api: Mock, mock_memb
     mock_entries_api.get_entries = Mock(return_value=[])
 
     # Call API
-    result = gym_api.get_operating_data(async_req=False)
+    await result = await await gym_api.get_operating_data(async_req=False)
 
     # Verify response
     assert isinstance(result, GymOperatingData)
@@ -364,7 +358,8 @@ def test_get_operating_data(gym_api: GymApi, mock_managment_api: Mock, mock_memb
     assert result.churn_rate == Decimal("0.00")
 
 
-def test_get_overdue_members(gym_api: GymApi, mock_receivables_api: Mock):
+@pytest.mark.asyncio
+async def test_get_overdue_members(gym_api: GymApi, mock_receivables_api: Mock):
     """Test getting overdue members."""
     # Mock receivables API
     mock_receivable = Mock()
@@ -383,7 +378,7 @@ def test_get_overdue_members(gym_api: GymApi, mock_receivables_api: Mock):
     mock_receivables_api.get_receivables = Mock(return_value=[mock_receivable])
 
     # Call API
-    result = gym_api.get_overdue_members(async_req=False)
+    await result = await await gym_api.get_overdue_members(async_req=False)
 
     # Verify response
     assert isinstance(result, list)

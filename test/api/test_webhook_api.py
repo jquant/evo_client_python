@@ -28,11 +28,12 @@ def mock_api_client():
         yield mock
 
 
-def test_delete_webhook(webhook_api: WebhookApi, mock_api_client: Mock):
+@pytest.mark.asyncio
+async def test_delete_webhook(webhook_api: WebhookApi, mock_api_client: Mock):
     """Test deleting a webhook."""
     mock_api_client.return_value = None
 
-    webhook_api.delete_webhook(webhook_id=123, async_req=False)
+    await webhook_api.delete_webhook(webhook_id=123, async_req=False)
 
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
@@ -41,12 +42,13 @@ def test_delete_webhook(webhook_api: WebhookApi, mock_api_client: Mock):
     assert args["query_params"] == {"IdWebhook": 123}
 
 
-def test_get_webhooks(webhook_api: WebhookApi, mock_api_client: Mock):
+@pytest.mark.asyncio
+async def test_get_webhooks(webhook_api: WebhookApi, mock_api_client: Mock):
     """Test getting webhooks list."""
     expected = [{"id": 1, "eventType": "NewSale"}]
     mock_api_client.return_value = expected
 
-    result = webhook_api.get_webhooks(async_req=False)
+    result = await webhook_api.get_webhooks(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -55,13 +57,14 @@ def test_get_webhooks(webhook_api: WebhookApi, mock_api_client: Mock):
     assert args["resource_path"] == "/api/v1/webhook"
 
 
-def test_create_webhook(webhook_api: WebhookApi, mock_api_client: Mock):
+@pytest.mark.asyncio
+async def test_create_webhook(webhook_api: WebhookApi, mock_api_client: Mock):
     """Test creating a webhook."""
     mock_api_client.return_value = None
     headers = [W12UtilsWebhookHeaderViewModel()]
     filters = [W12UtilsWebhookFilterViewModel()]
 
-    webhook_api.create_webhook(
+    await webhook_api.create_webhook(
         event_type="NewSale",
         url_callback="https://example.com/webhook",
         branch_id=123,
@@ -80,12 +83,13 @@ def test_create_webhook(webhook_api: WebhookApi, mock_api_client: Mock):
     assert args["body"].id_branch == 123
 
 
-def test_error_handling(webhook_api: WebhookApi, mock_api_client: Mock):
+@pytest.mark.asyncio
+async def test_error_handling(webhook_api: WebhookApi, mock_api_client: Mock):
     """Test API error handling."""
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        webhook_api.get_webhooks(async_req=False)
+        await webhook_api.get_webhooks(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

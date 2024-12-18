@@ -12,7 +12,6 @@ print("\n=== Subscribing to All Events ===")
 try:
     result = gym_api.manage_webhooks(
         url_callback="https://example.com/webhook",
-        async_req=False
     )
     print(f"Subscription successful: {result}")
 except Exception as e:
@@ -27,8 +26,7 @@ try:
         headers=[
             {"nome": "X-API-Key", "valor": "your-api-key"},
             {"nome": "Content-Type", "valor": "application/json"}
-        ],
-        async_req=False
+        ]
     )
     print(f"Subscription successful: {result}")
 except Exception as e:
@@ -43,8 +41,7 @@ try:
         filters=[
             {"filterType": "SaleItemDescription", "value": "Premium Membership"},
             {"filterType": "SaleItemDescription", "value": "Personal Training"}
-        ],
-        async_req=False
+        ]
     )
     print(f"Subscription successful: {result}")
 except Exception as e:
@@ -57,8 +54,7 @@ try:
         url_callback="https://example.com/webhook/multi-branch",
         branch_ids=["1", "2", "3"],
         event_types=["NewSale", "CreateMember", "AlterMember"],
-        headers=[{"nome": "X-Branch-ID", "valor": "dynamic"}],
-        async_req=True  # Using async for multiple branches
+        headers=[{"nome": "X-Branch-ID", "valor": "dynamic"}]
     )
     
     if isinstance(result, AsyncResult):
@@ -73,8 +69,7 @@ try:
     result = gym_api.manage_webhooks(
         url_callback="https://example.com/webhook",
         event_types=["NewSale", "CreateMember"],
-        unsubscribe=True,
-        async_req=False
+        unsubscribe=True
     )
     print(f"Unsubscription successful: {result}")
 except Exception as e:
@@ -83,7 +78,7 @@ except Exception as e:
 # Example 6: List existing webhooks
 print("\n=== Listing Existing Webhooks ===")
 try:
-    webhooks = gym_api.webhook_api.get_webhooks(async_req=False)
+    webhooks = gym_api.webhook_api.get_webhooks()
     if isinstance(webhooks, AsyncResult):
         webhooks = cast(List[W12UtilsWebhookViewModel], webhooks.get())
     

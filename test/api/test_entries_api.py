@@ -5,6 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
+
 from evo_client.api.entries_api import EntriesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.entradas_resumo_api_view_model import EntradasResumoApiViewModel
@@ -28,7 +30,7 @@ def test_get_entries_basic(entries_api: EntriesApi, mock_api_client: Mock):
     expected = [EntradasResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    result = entries_api.get_entries(async_req=False)
+    await result = await entries_api.get_entries(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -70,7 +72,7 @@ def test_get_entries_with_filters(entries_api: EntriesApi, mock_api_client: Mock
 def test_get_entries_max_take(entries_api: EntriesApi, mock_api_client: Mock):
     """Test error when take parameter exceeds maximum."""
     with pytest.raises(ValueError) as exc:
-        entries_api.get_entries(take=1001, async_req=False)
+        await entries_api.get_entries(take=1001, async_req=False)
 
     assert str(exc.value) == "Maximum number of records to return is 1000"
     mock_api_client.assert_not_called()
@@ -102,7 +104,7 @@ def test_get_entry_by_id(entries_api: EntriesApi, mock_api_client: Mock):
     expected = [EntradasResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    result = entries_api.get_entry_by_id(entry_id=123, async_req=False)
+    await result = await entries_api.get_entry_by_id(entry_id=123, async_req=False)
 
     assert result == expected[0]
     mock_api_client.assert_called_once()
@@ -114,7 +116,7 @@ def test_get_entry_by_id_not_found(entries_api: EntriesApi, mock_api_client: Moc
     """Test getting a non-existent entry by ID."""
     mock_api_client.return_value = []
 
-    result = entries_api.get_entry_by_id(entry_id=123, async_req=False)
+    await result = await entries_api.get_entry_by_id(entry_id=123, async_req=False)
 
     assert result is None
 
@@ -124,7 +126,7 @@ def test_error_handling(entries_api: EntriesApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        entries_api.get_entries(async_req=False)
+        await entries_api.get_entries(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

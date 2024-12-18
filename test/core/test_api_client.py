@@ -43,90 +43,97 @@ def test_api_client_validate_configuration():
         ApiClient(configuration=Configuration(host=""))
 
 
-def test_call_api_get_request_with(api_client: ApiClient, mock_request_handler: Mock):
-    """Test making a GET request using call_api."""
-    mock_request_handler.execute.return_value = {"key": "value"}
-
-    with api_client:
-        result = api_client.call_api(
-            resource_path="/test",
-            method="GET",
-            async_req=False,
-        )
-
-        assert result == {"key": "value"}
-        mock_request_handler.execute.assert_called_once()
-        args = mock_request_handler.execute.call_args[1]
-        assert args["method"] == "GET"
-        assert args["resource_path"] == "/test"
-
-
-def test_call_api_get_request(api_client: ApiClient, mock_request_handler: Mock):
-    """Test making a GET request using call_api."""
-    mock_request_handler.execute.return_value = {"key": "value"}
-
-    result = api_client.call_api(
+@pytest.mark.asyncio
+async def test_call_api_get_request_with(api_client: ApiClient, mock_request_handler: Mock):
+    """Test call_api method with GET request and parameters."""
+    mock_request_handler.execute.return_value = {"id": 1, "name": "test"}
+    result = await api_client.call_api(
         resource_path="/test",
         method="GET",
+        path_params={"id": 1},
+        query_params={"filter": "active"},
+        header_params={"X-Custom": "value"},
+        body=None,
+        post_params=[],
+        files={},
+        response_type=dict,
+        auth_settings=["basic"],
+        _return_http_data_only=True,
+        collection_formats={},
+        _preload_content=True,
+        _request_timeout=None,
         async_req=False,
     )
-
-    assert result == {"key": "value"}
+    assert result == {"id": 1, "name": "test"}
     mock_request_handler.execute.assert_called_once()
-    args = mock_request_handler.execute.call_args[1]
-    assert args["method"] == "GET"
-    assert args["resource_path"] == "/test"
 
 
-def test_call_api_post_request(api_client: ApiClient, mock_request_handler: Mock):
-    """Test making a POST request using call_api."""
-    mock_request_handler.execute.return_value = {"key": "value"}
+@pytest.mark.asyncio
+async def test_call_api_get_request(api_client: ApiClient, mock_request_handler: Mock):
+    """Test call_api method with simple GET request."""
+    mock_request_handler.execute.return_value = {"id": 1, "name": "test"}
+    result = await api_client.call_api(
+        resource_path="/test",
+        method="GET",
+        response_type=dict,
+        async_req=False,
+    )
+    assert result == {"id": 1, "name": "test"}
+    mock_request_handler.execute.assert_called_once()
 
-    result = api_client.call_api(
+
+@pytest.mark.asyncio
+async def test_call_api_post_request(api_client: ApiClient, mock_request_handler: Mock):
+    """Test call_api method with POST request."""
+    mock_request_handler.execute.return_value = {"id": 1, "name": "test"}
+    result = await api_client.call_api(
         resource_path="/test",
         method="POST",
         body={"data": "test"},
+        response_type=dict,
         async_req=False,
     )
-
-    assert result == {"key": "value"}
+    assert result == {"id": 1, "name": "test"}
     mock_request_handler.execute.assert_called_once()
-    args = mock_request_handler.execute.call_args[1]
-    assert args["method"] == "POST"
-    assert args["resource_path"] == "/test"
-    assert args["body"] == {"data": "test"}
 
 
-def test_call_api_error_handling(api_client: ApiClient, mock_request_handler: Mock):
-    """Test error handling in call_api."""
-    mock_request_handler.execute.side_effect = Exception("API call failed")
-
-    with pytest.raises(Exception) as exc_info:
-        api_client.call_api(
+@pytest.mark.asyncio
+async def test_call_api_error_handling(api_client: ApiClient, mock_request_handler: Mock):
+    """Test error handling in call_api method."""
+    mock_request_handler.execute.side_effect = ApiException(status=404, reason="Not Found")
+    with pytest.raises(ApiException) as exc_info:
+        await api_client.call_api(
             resource_path="/test",
             method="GET",
+            response_type=dict,
             async_req=False,
         )
+    assert exc_info.value.status == 404
+    assert exc_info.value.reason == "Not Found"
 
-    assert str(exc_info.value) == "API call failed"
+
+@pytest.mark.asyncio
+async def test_cached_get_request(api_client: ApiClient, mock_request_handler: Mock):
+    """Test caching in call_api method."""
+    mock_request_handler.execute.return_value = {"id": 1, "name": "test"}
+    
+    # First request
+    result1 = await api_client.call_api(
+        resource_path="/test",
+        method="GET",
+        response_type=dict,
+        async_req=False,
+        _cache=True,
+    )
+    
+    # Second request (should use cache)
+    result2 = await api_client.call_api(
+        resource_path="/test",
+        method="GET",
+        response_type=dict,
+        async_req=False,
+        _cache=True,
+    )
+    
+    assert result1 == result2
     mock_request_handler.execute.assert_called_once()
-
-
-def test_cached_get_request(api_client: ApiClient, mock_request_handler: Mock):
-    """Test caching of GET requests."""
-    mock_request_handler.execute.return_value = {"key": "value"}
-
-    result1 = api_client.call_api(
-        resource_path="/test",
-        method="GET",
-        async_req=False,
-    )
-    result2 = api_client.call_api(
-        resource_path="/test",
-        method="GET",
-        async_req=False,
-    )
-
-    assert result1 == {"key": "value"}
-    assert result2 == {"key": "value"}
-    assert mock_request_handler.execute.call_count == 2

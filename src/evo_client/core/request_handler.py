@@ -88,6 +88,8 @@ class RequestHandler:
         """Make the actual HTTP request."""
         method = kwargs.get("method", "GET")
         url = self.configuration.host + kwargs.get("resource_path", "")
+        raw_response = kwargs.get("raw_response", False)
+        _return_http_data_only = kwargs.get("_return_http_data_only", True)
         
         # Log the full URL and request details
         logger.debug(f"Making {method} request to {url}")
@@ -118,6 +120,12 @@ class RequestHandler:
         logger.debug(f"Response headers: {response.getheaders()}")
         logger.debug(f"Raw response data: {response.data}")
 
+        # Return raw response if requested or if it's a non-JSON content type
+        content_type = response.getheaders().get('Content-Type', '')
+        if raw_response or not _return_http_data_only or 'application/json' not in content_type.lower():
+            logger.debug("Returning raw response")
+            return response
+
         # Try to decode response data
         decoded_data = None
         if isinstance(response.data, bytes):
@@ -135,7 +143,7 @@ class RequestHandler:
                 logger.warning(f"Failed to deserialize response: {e}")
                 if 200 <= response.status < 300:
                     logger.debug(f"Request succeeded with status {response.status} despite deserialization failure")
-                    return True
+                    return response
                 raise
 
         # Try to parse as JSON
@@ -152,9 +160,9 @@ class RequestHandler:
             return response.json()
         except Exception as e:
             logger.warning(f"Failed to parse response as JSON: {e}")
-            # Return True for successful status codes even if parsing fails
+            # Return response object for successful status codes even if parsing fails
             if 200 <= response.status < 300:
                 logger.debug(f"Request succeeded with status {response.status} despite parsing failure")
-                return True
+                return response
             logger.error(f"Request failed with status {response.status}")
             raise ValueError(f"Failed to parse response: {str(e)}")

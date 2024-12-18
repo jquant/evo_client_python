@@ -4,6 +4,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
+
 from evo_client.api.members_api import MembersApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.member_authenticate_view_model import MemberAuthenticateViewModel
@@ -74,7 +76,7 @@ def test_get_basic_info(members_api: MembersApi, mock_api_client: Mock):
 
 def test_get_basic_info_error(members_api: MembersApi, mock_api_client: Mock):
     with pytest.raises(ValueError) as exc:
-        members_api.get_basic_info(take=51, async_req=False)
+        await members_api.get_basic_info(take=51, async_req=False)
 
 
 def test_get_members(members_api: MembersApi, mock_api_client: Mock):
@@ -120,7 +122,7 @@ def test_get_member_profile(members_api: MembersApi, mock_api_client: Mock):
     expected = MemberDataViewModel()
     mock_api_client.return_value = expected
 
-    result = members_api.get_member_profile(id_member=123, async_req=False)
+    await result = await members_api.get_member_profile(id_member=123, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -151,7 +153,7 @@ def test_get_member_services(members_api: MembersApi, mock_api_client: Mock):
     expected = [MemberServiceViewModel()]
     mock_api_client.return_value = expected
 
-    result = members_api.get_member_services(id_member=123, async_req=False)
+    await result = await members_api.get_member_services(id_member=123, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -165,7 +167,7 @@ def test_transfer_member(members_api: MembersApi, mock_api_client: Mock):
     mock_api_client.return_value = None
     transfer_data = MemberTransferViewModel()
 
-    members_api.transfer_member(transfer_data=transfer_data, async_req=False)
+    await members_api.transfer_member(transfer_data=transfer_data, async_req=False)
 
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
@@ -196,7 +198,7 @@ def test_error_handling(members_api: MembersApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        members_api.get_members(async_req=False)
+        await members_api.get_members(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

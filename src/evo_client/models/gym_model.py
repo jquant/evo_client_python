@@ -1,5 +1,7 @@
+# /src/evo_client/models/gym_model.py
+
 from datetime import time, datetime
-from typing import List, Optional, Dict, Union, Any, ClassVar
+from typing import List, Optional, Dict, Union, Any, ClassVar, Tuple
 from pydantic import BaseModel, Field
 from enum import Enum
 from decimal import Decimal
@@ -7,6 +9,12 @@ from pydantic import ConfigDict
 from loguru import logger
 from datetime import timedelta
 
+from evo_client.models.configuracao_api_view_model import ConfiguracaoApiViewModel
+from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
+from evo_client.models.receivables_api_view_model import ReceivablesApiViewModel
+from evo_client.models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
+from evo_client.models.contratos_resumo_api_view_model import ContratosResumoApiViewModel
+from evo_client.models.w12_utils_category_membership_view_model import W12UtilsCategoryMembershipViewModel
 
 class PaymentMethod(str, Enum):
     """Payment method enumeration"""
@@ -61,40 +69,74 @@ class EntryType(str, Enum):
     EVENT = "event"
 
 
-class BusinessHours(BaseModel):
-    """Business hours for a branch"""
-    model_config = ConfigDict(populate_by_name=True)
-    
-    # API fields
-    id_hour: Optional[int] = Field(default=None, alias="idHour")
-    id_branch: Optional[int] = Field(default=None, alias="idBranch")
-    week_day: Optional[str] = Field(default=None, alias="weekDay")
-    hours_from: Optional[datetime] = Field(default=None, alias="hoursFrom")
-    hours_to: Optional[datetime] = Field(default=None, alias="hoursTo")
-    fl_deleted: Optional[bool] = Field(default=None, alias="flDeleted")
-    id_tmp: Optional[int] = Field(default=None, alias="idTmp")
-    creation_date: Optional[datetime] = Field(default=None, alias="creationDate")
-    id_employee_creation: Optional[int] = Field(default=None, alias="idEmployeeCreation")
-
-    # Internal fields for default hours
-    weekday_start: Optional[time] = Field(default=time(6, 0))  # 06:00
-    weekday_end: Optional[time] = Field(default=time(23, 0))   # 23:00
-    weekend_start: Optional[time] = Field(default=time(9, 0))   # 09:00
-    weekend_end: Optional[time] = Field(default=time(15, 0))    # 15:00
-
-
 class Address(BaseModel):
     """Physical address information"""
-    model_config = ConfigDict(populate_by_name=True)
-
     street: str
     number: str
     neighborhood: str
     city: str
     state: str
-    postal_code: str = Field(alias="postalCode")
-    country: str = Field(default="Brasil")
-    phone: str
+    postal_code: str
+    phone: Optional[str] = None
+
+
+class BusinessHours(BaseModel):
+    """Business hours information"""
+    weekDay: str
+    hoursFrom: str
+    hoursTo: str
+
+
+class GymUnitKnowledgeBase(BaseModel):
+    """Knowledge base for a specific gym unit"""
+    model_config = ConfigDict(populate_by_name=True)
+
+    unit_id: int = Field(description="Unit identifier")
+    name: str = Field(description="Name of the gym unit")
+    address: Address = Field(description="Physical location")
+    business_hours: List[BusinessHours] = Field(
+        alias="businessHours", 
+        description="Standard business hours"
+    )
+    activities: List[AtividadeListApiViewModel] = Field(
+        description="Available activities and classes"
+    )
+    available_services: List[ServicosResumoApiViewModel] = Field(
+        alias="availableServices",
+        description="Additional services that can be added to memberships"
+    )
+    plans: List[ContratosResumoApiViewModel] = Field(
+        description="Available membership plans"
+    )
+    payment_policy: Dict = Field(
+        default_factory=dict,
+        alias="paymentPolicy", 
+        description="Payment and billing policies"
+    )
+    membership_categories: List[W12UtilsCategoryMembershipViewModel] = Field(
+        default_factory=list,
+        alias="membershipCategories",
+        description="Available membership categories"
+    )
+    branch_config: ConfiguracaoApiViewModel = Field(
+        alias="branchConfig",
+        description="Branch-specific configuration"
+    )
+
+
+class GymKnowledgeBase(BaseModel):
+    """Complete knowledge base for the entire gym chain"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        title="Gym Knowledge Base",
+    )
+
+    name: str = Field(description="Name of the gym chain")
+    units: List[GymUnitKnowledgeBase] = Field(description="List of gym units")
+    faqs: List[Dict] = Field(
+        default_factory=list,
+        description="Frequently asked questions"
+    )
 
 
 class Activity(BaseModel):
@@ -282,61 +324,6 @@ class MembershipContract(BaseModel):
     branch_id: Optional[int] = Field(None, alias="idBranch")
 
 
-class GymKnowledgeBase(BaseModel):
-    """Complete knowledge base for a gym chain including locations, plans, and policies"""
-    model_config = ConfigDict(
-        populate_by_name=True,
-        title="Gym Knowledge Base",
-        json_schema_extra={
-            "examples": [{
-                "name": "C4 Gym",
-                "addresses": [{
-                    "street": "Avenida casa grande",
-                    "number": "1069",
-                    "neighborhood": "vila cunha bueno",
-                    "city": "São Paulo",
-                    "state": "SP",
-                    "postal_code": "03260-000",
-                    "phone": "+55 1195091-1252"
-                }],
-                "business_hours": {
-                    "weekday_start": "06:00",
-                    "weekday_end": "23:00",
-                    "weekend_start": "09:00",
-                    "weekend_end": "15:00"
-                }
-            }]
-        }
-    )
-
-    name: str = Field(description="Name of the gym")
-    addresses: List[Address] = Field(description="List of gym locations")
-    business_hours: List[BusinessHours] = Field(alias="businessHours", description="Standard business hours")
-    plans: List[GymPlan] = Field(description="Available membership plans")
-    activities: List[Activity] = Field(description="Available activities and classes")
-    faqs: List[FAQ] = Field(description="Frequently asked questions")
-    payment_policy: PaymentPolicy = Field(alias="paymentPolicy", description="Payment and billing policies")
-    branch_config: Optional[BranchConfig] = Field(
-        default=None,
-        alias="branchConfig",
-        description="Branch-specific configuration"
-    )
-    membership_categories: List[MembershipCategory] = Field(
-        default_factory=list,
-        alias="membershipCategories",
-        description="Available membership categories"
-    )
-    available_services: List[MembershipService] = Field(
-        default_factory=list,
-        alias="availableServices",
-        description="Additional services that can be added to memberships"
-    )
-    entries: List[GymEntry] = Field(
-        default_factory=list,
-        description="Record of gym entries"
-    )
-
-
 class ReceivableStatus(str, Enum):
     """Status of a receivable"""
     PENDING = "pending"
@@ -349,27 +336,66 @@ class Receivable(BaseModel):
     """Financial receivable record"""
     model_config = ConfigDict(populate_by_name=True)
 
+    # Core fields
     id: int
-    description: str
+    description: Optional[str] = None
     amount: Decimal
     amount_paid: Optional[Decimal] = None
-    due_date: datetime
-    receiving_date: Optional[datetime] = None
     status: ReceivableStatus = Field(default=ReceivableStatus.PENDING)
     payment_method: Optional[PaymentMethod] = None
+    payment_types: Optional[str] = None
+    account_status: Optional[str] = None
+
+    # Date fields
+    registration_date: Optional[datetime] = Field(default=None, alias="registrationDate")
+    due_date: Optional[datetime] = Field(default=None, alias="dueDate")
+    receiving_date: Optional[datetime] = Field(default=None, alias="receivingDate")
+    competence_date: Optional[datetime] = Field(default=None, alias="competenceDate")
+    cancellation_date: Optional[datetime] = Field(default=None, alias="cancellationDate")
+    charge_date: Optional[datetime] = Field(default=None, alias="chargeDate")
+    update_date: Optional[datetime] = Field(default=None, alias="updateDate")
+    invoice_date: Optional[datetime] = Field(default=None, alias="invoiceDate")
+    invoice_canceled_date: Optional[datetime] = Field(default=None, alias="invoiceCanceledDate")
+    sale_date: Optional[datetime] = Field(default=None, alias="saleDate")
     
-    # Member info
-    member_id: Optional[int] = None
-    member_name: Optional[str] = None
+    # Related IDs
+    member_id: Optional[int] = Field(default=None, alias="memberId")
+    member_name: Optional[str] = Field(default=None, alias="memberName")
+    employee_id: Optional[int] = Field(default=None, alias="employeeId")
+    employee_name: Optional[str] = Field(default=None, alias="employeeName")
+    branch_id: Optional[int] = Field(default=None, alias="branchId")
+    sale_id: Optional[int] = Field(default=None, alias="saleId")
+    receivable_id: Optional[int] = Field(default=None, alias="receivableId")
     
-    # Additional details
-    branch_id: Optional[int] = None
-    current_installment: Optional[int] = None
-    total_installments: Optional[int] = None
+    # Installment info
+    current_installment: Optional[int] = Field(default=None, alias="currentInstallment")
+    total_installments: Optional[int] = Field(default=None, alias="totalInstallments")
+
     
     def is_installment(self) -> bool:
         """Check if this receivable is part of an installment plan."""
         return self.total_installments is not None and self.total_installments > 1
+
+    @classmethod
+    def get_date_range_filters(cls) -> Dict[str, Tuple[str, str]]:
+        """Get mapping of date range filter fields."""
+        return {
+            "registration_date": ("registration_date_start", "registration_date_end"),
+            "due_date": ("due_date_start", "due_date_end"),
+            "receiving_date": ("receiving_date_start", "receiving_date_end"),
+            "competence_date": ("competence_date_start", "competence_date_end"),
+            "cancellation_date": ("cancellation_date_start", "cancellation_date_end"),
+            "charge_date": ("charge_date_start", "charge_date_end"),
+            "update_date": ("update_date_start", "update_date_end"),
+            "invoice_date": ("invoice_date_start", "invoice_date_end"),
+            "invoice_canceled_date": ("invoice_canceled_date_start", "invoice_canceled_date_end"),
+            "sale_date": ("sale_date_start", "sale_date_end")
+        }
+
+    @classmethod
+    def get_amount_range_filters(cls) -> Tuple[str, str]:
+        """Get amount range filter field names."""
+        return ("amount_start", "amount_end")
 
 
 class OverdueMember(BaseModel):
@@ -381,7 +407,7 @@ class OverdueMember(BaseModel):
     total_overdue: Decimal
     overdue_since: datetime
     last_payment_date: Optional[datetime] = None
-    overdue_receivables: List[Receivable] = Field(default_factory=list)
+    overdue_receivables: List[ReceivablesApiViewModel] = Field(default_factory=list)
 
 
 class CardData(BaseModel):
@@ -480,6 +506,10 @@ class GymOperatingData(BaseModel):
     
     model_config = ConfigDict(populate_by_name=True)
     logger: ClassVar = logger
+    
+    # Branch Information
+    branch_id: Optional[str] = Field(default=None, description="ID of the branch this data belongs to")
+    branch_name: Optional[str] = Field(default=None, description="Name of the branch")
     
     # Base Data Collections
     active_members: List[Dict[str, Any]] = Field(default_factory=list)
@@ -657,7 +687,7 @@ class GymOperatingData(BaseModel):
                 continue
                 
             # Categorize revenue based on description or other attributes
-            description = receivable.description.lower()
+            description = receivable.description.lower() if receivable.description else ''
             amount = receivable.amount
             
             if 'membership' in description:

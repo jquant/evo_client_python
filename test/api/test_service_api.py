@@ -4,6 +4,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
+
 from evo_client.api.service_api import ServiceApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
@@ -27,7 +29,7 @@ def test_get_services_basic(service_api: ServiceApi, mock_api_client: Mock):
     expected = [ServicosResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    result = service_api.get_services(async_req=False)
+    await result = await service_api.get_services(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -69,7 +71,7 @@ def test_error_handling(service_api: ServiceApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        service_api.get_services(async_req=False)
+        await service_api.get_services(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

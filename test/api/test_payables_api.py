@@ -5,6 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
+
 from evo_client.api.payables_api import PayablesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.cost_center_api_view_model import CostCenterApiViewModel
@@ -29,7 +31,7 @@ def test_get_cost_centers_basic(payables_api: PayablesApi, mock_api_client: Mock
     expected = CostCenterApiViewModel()
     mock_api_client.return_value = expected
 
-    result = payables_api.get_cost_centers(async_req=False)
+    await result = await payables_api.get_cost_centers(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -45,7 +47,7 @@ def test_get_cost_centers_with_pagination(
     expected = CostCenterApiViewModel()
     mock_api_client.return_value = expected
 
-    result = payables_api.get_cost_centers(take=10, skip=0, async_req=False)
+    await result = await payables_api.get_cost_centers(take=10, skip=0, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -58,7 +60,7 @@ def test_get_payables_basic(payables_api: PayablesApi, mock_api_client: Mock):
     expected = PayablesApiViewModel()
     mock_api_client.return_value = expected
 
-    result = payables_api.get_payables(async_req=False)
+    await result = await payables_api.get_payables(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -108,7 +110,7 @@ def test_error_handling(payables_api: PayablesApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        payables_api.get_payables(async_req=False)
+        await payables_api.get_payables(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

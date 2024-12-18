@@ -4,6 +4,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
+
 from evo_client.api.states_api import StatesApi
 from evo_client.exceptions.api_exceptions import ApiException
 
@@ -26,7 +28,7 @@ def test_get_states_basic(states_api: StatesApi, mock_api_client: Mock):
     expected = [{"id": 1, "name": "California", "abbreviation": "CA"}]
     mock_api_client.return_value = expected
 
-    result = states_api.get_states(async_req=False)
+    await result = await states_api.get_states(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -44,7 +46,7 @@ def test_error_handling(states_api: StatesApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        states_api.get_states(async_req=False)
+        await states_api.get_states(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"
