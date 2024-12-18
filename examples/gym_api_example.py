@@ -5,8 +5,14 @@ from typing import cast, List
 
 from evo_client.api.gym_api import GymApi
 from evo_client.models.gym_model import (
-    NewSale, PaymentMethod, CardData, GymKnowledgeBase,
-    Sale, OverdueMember, Receivable, PaymentPolicy
+    NewSale,
+    PaymentMethod,
+    CardData,
+    GymKnowledgeBase,
+    Sale,
+    OverdueMember,
+    Receivable,
+    PaymentPolicy,
 )
 
 # Initialize the API client
@@ -20,18 +26,22 @@ if isinstance(gym_kb_result, GymKnowledgeBase):  # Single result
 elif isinstance(gym_kb_result, AsyncResult):  # Async result
     gym_kb = cast(GymKnowledgeBase, gym_kb_result.get())
 else:  # List result
-    gym_kb = gym_kb_result[0] if gym_kb_result else GymKnowledgeBase(
-        name="",
-        addresses=[],
-        businessHours=[],
-        plans=[],
-        activities=[],
-        faqs=[],
-        paymentPolicy=PaymentPolicy(
-            acceptedPaymentMethods=[],
-            pixKey=None,
-            installmentAvailable=False,
-            cancellationFeePercentage=0
+    gym_kb = (
+        gym_kb_result[0]
+        if gym_kb_result
+        else GymKnowledgeBase(
+            name="",
+            addresses=[],
+            businessHours=[],
+            plans=[],
+            activities=[],
+            faqs=[],
+            paymentPolicy=PaymentPolicy(
+                acceptedPaymentMethods=[],
+                pixKey=None,
+                installmentAvailable=False,
+                cancellationFeePercentage=0,
+            ),
         )
     )
 
@@ -69,8 +79,8 @@ new_sale = NewSale(
         holderName="John Doe",
         expirationMonth=12,
         expirationYear=2025,
-        securityCode="123"
-    )
+        securityCode="123",
+    ),
 )
 
 try:
@@ -87,7 +97,7 @@ start_date = datetime.now() - timedelta(days=30)  # Last 30 days
 sales_result = gym_api.get_sales(
     date_sale_start=start_date,
     date_sale_end=datetime.now(),
-    take=5  # Limit to 5 results
+    take=5,  # Limit to 5 results
 )
 
 if isinstance(sales_result, AsyncResult):  # Async result
@@ -104,7 +114,9 @@ for sale in sales:
 
 # Example 6: Get overdue members
 print("\n=== Overdue Members ===")
-overdue_result = gym_api.get_overdue_members(min_days_overdue=30)  # More than 30 days overdue
+overdue_result = gym_api.get_overdue_members(
+    min_days_overdue=30
+)  # More than 30 days overdue
 
 if isinstance(overdue_result, AsyncResult):  # Async result
     overdue_members = cast(List[OverdueMember], overdue_result.get())
@@ -122,8 +134,7 @@ for member in overdue_members:
 # Example 7: Get receivables
 print("\n=== Recent Receivables ===")
 receivables_result = gym_api.get_receivables(
-    start_date=datetime.now() - timedelta(days=30),
-    end_date=datetime.now()
+    start_date=datetime.now() - timedelta(days=30), end_date=datetime.now()
 )
 
 if isinstance(receivables_result, AsyncResult):  # Async result
@@ -136,4 +147,4 @@ for receivable in receivables:
     print(f"Amount: ${receivable.amount}")
     print(f"Due Date: {receivable.due_date}")
     print(f"Status: {receivable.status}")
-    print("---") 
+    print("---")

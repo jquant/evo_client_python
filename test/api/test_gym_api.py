@@ -8,14 +8,14 @@ import pytest
 from evo_client.api.gym_api import GymApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.gym_model import (
-    MembershipContract,
     GymKnowledgeBase,
+    GymOperatingData,
     GymPlan,
     MembershipCategory,
-    ReceivableStatus,
+    MembershipContract,
+    OverdueMember,
     Receivable,
-    GymOperatingData,
-    OverdueMember
+    ReceivableStatus,
 )
 
 
@@ -73,15 +73,29 @@ def mock_entries_api():
 
 
 @pytest.fixture
-def gym_api(mock_api_client, mock_membership_api, mock_configuration_api, mock_managment_api, 
-            mock_prospects_api, mock_receivables_api, mock_entries_api):
+def gym_api(
+    mock_api_client,
+    mock_membership_api,
+    mock_configuration_api,
+    mock_managment_api,
+    mock_prospects_api,
+    mock_receivables_api,
+    mock_entries_api,
+):
     """Create a GymApi instance for testing with mocked dependencies."""
-    with patch("evo_client.api.gym_api.MembershipApi", return_value=mock_membership_api), \
-         patch("evo_client.api.gym_api.ConfigurationApi", return_value=mock_configuration_api), \
-         patch("evo_client.api.gym_api.ManagementApi", return_value=mock_managment_api), \
-         patch("evo_client.api.gym_api.ProspectsApi", return_value=mock_prospects_api), \
-         patch("evo_client.api.gym_api.ReceivablesApi", return_value=mock_receivables_api), \
-         patch("evo_client.api.gym_api.EntriesApi", return_value=mock_entries_api):
+    with (
+        patch("evo_client.api.gym_api.MembershipApi", return_value=mock_membership_api),
+        patch(
+            "evo_client.api.gym_api.ConfigurationApi",
+            return_value=mock_configuration_api,
+        ),
+        patch("evo_client.api.gym_api.ManagementApi", return_value=mock_managment_api),
+        patch("evo_client.api.gym_api.ProspectsApi", return_value=mock_prospects_api),
+        patch(
+            "evo_client.api.gym_api.ReceivablesApi", return_value=mock_receivables_api
+        ),
+        patch("evo_client.api.gym_api.EntriesApi", return_value=mock_entries_api),
+    ):
         return GymApi(api_client=mock_api_client())
 
 
@@ -104,7 +118,7 @@ async def test_get_contracts_basic(gym_api: GymApi, mock_membership_api: Mock):
     mock_membership_api.get_memberships.return_value = [mock_membership]
 
     # Call the method
-    await result = await await gym_api.get_contracts(async_req=False)
+    result = gym_api.get_contracts(async_req=False)
 
     # Verify the result
     assert isinstance(result, list)
@@ -126,7 +140,7 @@ async def test_get_contracts_basic(gym_api: GymApi, mock_membership_api: Mock):
         active=True,
         take=50,
         skip=0,
-        async_req=False
+        async_req=False,
     )
 
 
@@ -149,7 +163,7 @@ async def test_get_contracts_with_member_id(gym_api: GymApi, mock_membership_api
     mock_membership_api.get_memberships.return_value = [mock_membership]
 
     # Call the method with member_id
-    await result = await await gym_api.get_contracts(member_id=100, async_req=False)
+    result = gym_api.get_contracts(member_id=100, async_req=False)
 
     # Verify the result
     assert isinstance(result, list)
@@ -171,7 +185,7 @@ async def test_get_contracts_with_member_id(gym_api: GymApi, mock_membership_api
         active=True,
         take=50,
         skip=0,
-        async_req=False
+        async_req=False,
     )
 
 
@@ -182,7 +196,7 @@ async def test_get_contracts_empty(gym_api: GymApi, mock_membership_api: Mock):
     mock_membership_api.get_memberships.return_value = []
 
     # Call the method
-    await result = await await gym_api.get_contracts(async_req=False)
+    result = gym_api.get_contracts(async_req=False)
 
     # Verify the result
     assert isinstance(result, list)
@@ -195,7 +209,7 @@ async def test_get_contracts_empty(gym_api: GymApi, mock_membership_api: Mock):
         active=True,
         take=50,
         skip=0,
-        async_req=False
+        async_req=False,
     )
 
 
@@ -203,10 +217,12 @@ async def test_get_contracts_empty(gym_api: GymApi, mock_membership_api: Mock):
 async def test_get_contracts_error_handling(gym_api: GymApi, mock_membership_api: Mock):
     """Test error handling when getting contracts."""
     # Mock API error
-    mock_membership_api.get_memberships.side_effect = ApiException(status=500, reason="Internal Server Error")
+    mock_membership_api.get_memberships.side_effect = ApiException(
+        status=500, reason="Internal Server Error"
+    )
 
     # Call the method
-    await result = await await gym_api.get_contracts(async_req=False)
+    result = gym_api.get_contracts(async_req=False)
 
     # Verify empty list is returned on error
     assert isinstance(result, list)
@@ -219,7 +235,7 @@ async def test_get_contracts_error_handling(gym_api: GymApi, mock_membership_api
         active=True,
         take=50,
         skip=0,
-        async_req=False
+        async_req=False,
     )
 
 
@@ -232,7 +248,9 @@ def test_convert_receivable(gym_api: GymApi):
     type(mock_receivable).ammountPaid = PropertyMock(return_value=50.00)
     type(mock_receivable).dueDate = PropertyMock(return_value=datetime.now())
     type(mock_receivable).receivingDate = PropertyMock(return_value=None)
-    type(mock_receivable).status = PropertyMock(return_value=Mock(value=ReceivableStatus.PAID.value))
+    type(mock_receivable).status = PropertyMock(
+        return_value=Mock(value=ReceivableStatus.PAID.value)
+    )
     type(mock_receivable).idMemberPayer = PropertyMock(return_value=100)
     type(mock_receivable).payerName = PropertyMock(return_value="John Doe")
     type(mock_receivable).idBranchMember = PropertyMock(return_value=1)
@@ -290,7 +308,7 @@ async def test_get_gym_knowledge_base(gym_api: GymApi, mock_configuration_api: M
     mock_configuration_api.get_branch_config.return_value = [mock_config]
 
     # Call API
-    await result = await await gym_api.get_gym_knowledge_base(async_req=False)
+    result = gym_api.get_gym_knowledge_base(async_req=False)
 
     # Verify response
     assert isinstance(result, GymKnowledgeBase)
@@ -306,8 +324,14 @@ async def test_get_gym_knowledge_base(gym_api: GymApi, mock_configuration_api: M
 
 
 @pytest.mark.asyncio
-async def test_get_operating_data(gym_api: GymApi, mock_managment_api: Mock, mock_membership_api: Mock,
-                              mock_prospects_api: Mock, mock_receivables_api: Mock, mock_entries_api: Mock):
+async def test_get_operating_data(
+    gym_api: GymApi,
+    mock_managment_api: Mock,
+    mock_membership_api: Mock,
+    mock_prospects_api: Mock,
+    mock_receivables_api: Mock,
+    mock_entries_api: Mock,
+):
     """Test getting gym operating data."""
     # Mock active members
     mock_member = Mock()
@@ -344,7 +368,7 @@ async def test_get_operating_data(gym_api: GymApi, mock_managment_api: Mock, moc
     mock_entries_api.get_entries = Mock(return_value=[])
 
     # Call API
-    await result = await await gym_api.get_operating_data(async_req=False)
+    result = gym_api.get_operating_data(async_req=False)
 
     # Verify response
     assert isinstance(result, GymOperatingData)
@@ -369,7 +393,9 @@ async def test_get_overdue_members(gym_api: GymApi, mock_receivables_api: Mock):
     type(mock_receivable).ammountPaid = PropertyMock(return_value=0.00)
     type(mock_receivable).dueDate = PropertyMock(return_value=datetime(2024, 1, 1))
     type(mock_receivable).receivingDate = PropertyMock(return_value=None)
-    type(mock_receivable).status = PropertyMock(return_value=Mock(value=ReceivableStatus.OVERDUE.value))
+    type(mock_receivable).status = PropertyMock(
+        return_value=Mock(value=ReceivableStatus.OVERDUE.value)
+    )
     type(mock_receivable).idMemberPayer = PropertyMock(return_value=100)
     type(mock_receivable).payerName = PropertyMock(return_value="John Doe")
     type(mock_receivable).idBranchMember = PropertyMock(return_value=1)
@@ -378,7 +404,7 @@ async def test_get_overdue_members(gym_api: GymApi, mock_receivables_api: Mock):
     mock_receivables_api.get_receivables = Mock(return_value=[mock_receivable])
 
     # Call API
-    await result = await await gym_api.get_overdue_members(async_req=False)
+    result = gym_api.get_overdue_members(async_req=False)
 
     # Verify response
     assert isinstance(result, list)
@@ -389,4 +415,3 @@ async def test_get_overdue_members(gym_api: GymApi, mock_receivables_api: Mock):
     assert result[0].total_overdue == Decimal("199.99")
     assert result[0].overdue_since == datetime(2024, 1, 1)
     assert len(result[0].overdue_receivables) == 1
-  

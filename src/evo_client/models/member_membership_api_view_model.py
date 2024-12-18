@@ -13,7 +13,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from .bonus_session_view_model import BonusSessionViewModel
 from .freeze_view_model import FreezeViewModel
@@ -24,6 +24,7 @@ class MemberMembershipApiViewModel(BaseModel):
 
     Do not edit the class manually.
     """
+
     model_config = ConfigDict(populate_by_name=True)
 
     id_member: Optional[int] = Field(default=None, alias="idMember")

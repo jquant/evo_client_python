@@ -13,7 +13,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from .member_basic_responsible_view_model import MemberBasicResponsibleViewModel
 from .member_membership_api_view_model import MemberMembershipApiViewModel
@@ -25,6 +25,7 @@ class MembersBasicApiViewModel(BaseModel):
 
     Do not edit the class manually.
     """
+
     model_config = ConfigDict(populate_by_name=True)
 
     id_member: Optional[int] = Field(default=None, alias="idMember")

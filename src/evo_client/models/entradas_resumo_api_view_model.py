@@ -13,7 +13,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class EntradasResumoApiViewModel(BaseModel):
@@ -21,6 +21,7 @@ class EntradasResumoApiViewModel(BaseModel):
 
     Do not edit the class manually.
     """
+
     model_config = ConfigDict(populate_by_name=True)
 
     date: Optional[datetime] = Field(default=None, alias="date")
