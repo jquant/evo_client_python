@@ -1,10 +1,10 @@
-from typing import Any, Callable, Optional, TypeVar, Union
-import asyncio
+import time
 from functools import wraps
+from typing import Any, Callable, TypeVar
+
 from loguru import logger
 
 from ..exceptions.api_exceptions import ApiException
-from .async_utils import TypedAsyncResult
 
 T = TypeVar('T')
 
@@ -27,16 +27,12 @@ def with_retry(
     """
     def decorator(func: Callable[..., T]) -> Callable[..., T]:
         @wraps(func)
-        async def wrapper(*args: Any, **kwargs: Any) -> T:
+        def wrapper(*args: Any, **kwargs: Any) -> T:
             last_exception = None
             
             for attempt in range(max_retries):
                 try:
                     result = func(*args, **kwargs)
-                    
-                    # Handle async results
-                    if isinstance(result, TypedAsyncResult):
-                        return result
                     return result
                     
                 except Exception as e:
@@ -46,7 +42,7 @@ def with_retry(
                         if attempt < max_retries - 1:
                             delay = base_delay * (2 ** attempt)
                             logger.warning(f"Rate limit hit, waiting {delay}s before retry {attempt + 1}/{max_retries}")
-                            await asyncio.sleep(delay)
+                            time.sleep(delay)
                             continue
                     elif "404" in str(e):
                         logger.warning(f"Endpoint not found: {str(e)}")
@@ -57,16 +53,16 @@ def with_retry(
                         raise ApiException(f"{error_message}: {str(e)}")
                     
                     # Add delay between retries
-                    await asyncio.sleep(base_delay)
+                    time.sleep(base_delay)
             
             # If we get here, all retries failed
             raise last_exception or ApiException(f"{error_message}: Unknown error")
             
-        return wrapper  # Return the wrapper function
+        return wrapper
     return decorator
 
 
-async def retry_operation(
+def retry_operation(
     operation: Callable[..., T],
     max_retries: int = 3,
     base_delay: float = 1.5,
@@ -94,10 +90,6 @@ async def retry_operation(
     for attempt in range(max_retries):
         try:
             result = operation(**kwargs)
-            
-            # Handle async results
-            if isinstance(result, TypedAsyncResult):
-                return result
             return result
             
         except Exception as e:
@@ -107,7 +99,7 @@ async def retry_operation(
                 if attempt < max_retries - 1:
                     delay = base_delay * (2 ** attempt)
                     logger.warning(f"Rate limit hit, waiting {delay}s before retry {attempt + 1}/{max_retries}")
-                    await asyncio.sleep(delay)
+                    time.sleep(delay)
                     continue
             elif "404" in str(e):
                 logger.warning(f"Endpoint not found: {str(e)}")
@@ -118,7 +110,7 @@ async def retry_operation(
                 raise ApiException(f"{error_message}: {str(e)}")
             
             # Add delay between retries
-            await asyncio.sleep(base_delay)
+            time.sleep(base_delay)
     
     # If we get here, all retries failed
     raise last_exception or ApiException(f"{error_message}: Unknown error") 

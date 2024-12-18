@@ -12,6 +12,7 @@ from rich import box
 from loguru import logger
 import logging
 from decimal import Decimal
+from rich.tree import Tree
 
 from ..api.gym_api import GymApi
 from ..core.configuration import Configuration
@@ -19,6 +20,7 @@ from ..core.api_client import ApiClient
 from ..models.gym_model import (
     ReceivableStatus,
     OverdueMember,
+    GymKnowledgeBase,
 )
 from ..services.data_fetchers.activity_data_fetcher import ActivityDataFetcher
 from ..services.data_fetchers.configuration_data_fetcher import ConfigurationDataFetcher
@@ -52,9 +54,10 @@ MemberIdOption = Annotated[Optional[int], typer.Option(
     help="Filter by member ID"
 )]
 
-BranchIdOption = Annotated[Optional[int], typer.Option(
-    "--branch-id", "-b",
-    help="Branch ID to filter by"
+BranchOption = Annotated[Optional[List[int]], typer.Option(
+    "--branch-ids", "-b",
+    help="Branch IDs to filter by (comma-separated)",
+    callback=lambda x: [int(i.strip()) for i in x.split(',')] if x else None
 )]
 
 # Create Typer apps for command groups
@@ -69,6 +72,8 @@ contracts_app = typer.Typer(help="Contract management commands", rich_markup_mod
 finance_app = typer.Typer(help="Financial management commands", rich_markup_mode="rich")
 members_app = typer.Typer(help="Member management commands", rich_markup_mode="rich")
 webhooks_app = typer.Typer(help="Webhook management commands", rich_markup_mode="rich")
+kb_app = typer.Typer(help="Knowledge base commands", rich_markup_mode="rich")
+app.add_typer(kb_app, name="kb", help="Access gym knowledge base")
 
 # Add sub-commands to main app
 app.add_typer(auth_app, name="auth", help="Manage authentication and credentials")
@@ -76,6 +81,7 @@ app.add_typer(contracts_app, name="contracts", help="Manage gym contracts")
 app.add_typer(finance_app, name="finance", help="Manage financial operations")
 app.add_typer(members_app, name="members", help="Manage gym members")
 app.add_typer(webhooks_app, name="webhooks", help="Manage webhook subscriptions")
+app.add_typer(kb_app, name="kb", help="Access gym knowledge base")
 
 console = Console()
 
@@ -83,37 +89,57 @@ console = Console()
 class State:
     def __init__(self):
         self._api_client: Optional[GymApi] = None
-        self._data_fetchers = {}
         self.verbose: bool = False
+    
+    def _get_filtered_branch_clients(self, branch_ids: Optional[List[int]] = None) -> Dict[str, ApiClient]:
+        """Get branch API clients filtered by branch IDs."""
+        if not self._api_client or not self._api_client.branch_api_clients:
+            return {}
+            
+        if not branch_ids:
+            return self._api_client.branch_api_clients
+            
+        return {
+            str(bid): client 
+            for bid, client in self._api_client.branch_api_clients.items()
+            if int(bid) in branch_ids
+        }
+    
+    def get_data_fetcher(self, fetcher_name: str, branch_ids: Optional[List[int]] = None):
+        """Get a data fetcher instance for specific branches."""
+        if self._api_client is None:
+            self._api_client = get_api_client()
+            
+        # Return the appropriate data fetcher from GymApi
+        if fetcher_name == 'activity':
+            return self._api_client.activity_data_fetcher
+        elif fetcher_name == 'configuration':
+            return self._api_client.configuration_data_fetcher
+        elif fetcher_name == 'entries':
+            return self._api_client.entries_data_fetcher
+        elif fetcher_name == 'member':
+            return self._api_client.member_data_fetcher
+        elif fetcher_name == 'membership':
+            return self._api_client.membership_data_fetcher
+        elif fetcher_name == 'prospects':
+            return self._api_client.prospects_data_fetcher
+        elif fetcher_name == 'sales':
+            return self._api_client.sales_data_fetcher
+        elif fetcher_name == 'service':
+            return self._api_client.service_data_fetcher
+        elif fetcher_name == 'receivables':
+            return self._api_client.receivables_data_fetcher
+        elif fetcher_name == 'knowledge_base':
+            return self._api_client.knowledge_base_fetcher
+        
+        raise ValueError(f"Unknown fetcher: {fetcher_name}")
     
     @property
     def api_client(self) -> GymApi:
         """Get the API client, initializing it if necessary."""
         if self._api_client is None:
             self._api_client = get_api_client()
-            # Initialize data fetchers when API client is created
-            self._data_fetchers = {
-                'activity': ActivityDataFetcher(self._api_client.activities_api, self._api_client.branch_api_clients),
-                'configuration': ConfigurationDataFetcher(self._api_client.configuration_api, self._api_client.branch_api_clients),
-                'entries': EntriesDataFetcher(self._api_client.entries_api, self._api_client.branch_api_clients),
-                'member': MemberDataFetcher(self._api_client.members_api, self._api_client.branch_api_clients),
-                'membership': MembershipDataFetcher(self._api_client.membership_api, self._api_client.branch_api_clients),
-                'prospects': ProspectsDataFetcher(self._api_client.prospects_api, self._api_client.branch_api_clients),
-                'receivables': ReceivablesDataFetcher(
-                    self._api_client.receivables_api,
-                    self._api_client.branch_api_clients
-                ),
-                'sales': SalesDataFetcher(self._api_client.sales_api, self._api_client.branch_api_clients),
-                'service': ServiceDataFetcher(self._api_client.service_api, self._api_client.branch_api_clients)
-            }
         return self._api_client
-    
-    @property
-    def data_fetchers(self):
-        """Get data fetchers, ensuring API client is initialized."""
-        if not self._data_fetchers:
-            _ = self.api_client  # This will initialize data fetchers
-        return self._data_fetchers
     
     @api_client.setter
     def api_client(self, value: Optional[GymApi]):
@@ -147,85 +173,92 @@ def requires_auth(f):
 
 def get_api_client() -> GymApi:
     """Get API client with credentials."""
-    config_file = Path.home() / ".config" / "evo-client" / "credentials.json"
+    config_dir = Path(".config")
+    config_dir.mkdir(exist_ok=True)
+    logger.debug(f"Using config directory: {config_dir.absolute()}")
     
+    # Find credential files
+    cred_files = list(config_dir.glob("credentials.*.json"))
+    logger.debug(f"Found credential files: {[f.name for f in cred_files]}")
+    
+    if not cred_files:
+        console.print("[red]No credentials found. Please run 'gym auth login' first.[/red]")
+        raise typer.Exit(1)
+    
+    # Use the most recently modified credential file
+    latest_cred_file = max(cred_files, key=lambda f: f.stat().st_mtime)
+    gym_name = latest_cred_file.stem.split('.')[1]
+    config_file = config_dir / f"branch_configs.{gym_name}.json"
+    
+    logger.debug(f"Processing gym {gym_name}, config will be saved to: {config_file.absolute()}")
+    
+    # Read credentials
+    with open(latest_cred_file) as f:
+        creds = json.load(f)
+        logger.debug(f"Loaded credentials for {len(creds)} branches")
+    
+    if not creds:
+        logger.warning(f"Empty credentials file for {gym_name}")
+        raise typer.Exit(1)
+    
+    # Initialize branch API clients
+    branch_api_clients = {}
+    for branch_id, branch_creds in creds.items():
+        config = Configuration()
+        config.username = branch_creds["username"]
+        config.password = branch_creds["password"]
+        branch_api_clients[str(branch_id)] = ApiClient(configuration=config)
+    
+    # Create API client with first available client as default
+    default_api_client = next(iter(branch_api_clients.values()))
+    api_client = GymApi(
+        api_client=default_api_client,
+        branch_api_clients=branch_api_clients
+    )
+    
+    # Only validate/fetch configurations if cache doesn't exist
     if not config_file.exists():
-        console.print("[red]No credentials found. Please run 'auth login' first.[/red]")
-        raise typer.Exit(1)
-    
-    with open(config_file) as f:
-        config = json.load(f)
-    
-    if not config:
-        console.print("[red]Credentials file is empty or invalid.[/red]")
-        raise typer.Exit(1)
-    
-    # Multi-branch setup
-    if any(k != "default" for k in config.keys()):
-        logger.debug("Using multi-branch configuration")
-        branch_api_clients = {}
-        configured_branches = set()
-        
-        for branch_id, creds in config.items():
-            if branch_id == "default":
-                continue
-            try:
-                branch_id_int = int(branch_id)
-                configured_branches.add(branch_id_int)
-                logger.debug(f"Adding credentials for branch {branch_id}")
-                
-                branch_config = Configuration()
-                branch_config.username = creds["username"]
-                branch_config.password = creds["password"]
-                
-                branch_api_clients[str(branch_id)] = ApiClient(configuration=branch_config)
-            except (ValueError, KeyError):
-                logger.warning(f"Invalid or incomplete branch credentials in {branch_id}")
-        
-        default_api_client = next(iter(branch_api_clients.values())) if branch_api_clients else None
-        api_client = GymApi(
-            api_client=default_api_client,
-            branch_api_clients=branch_api_clients
-        )
-        
-        # Validate branch IDs (synchronously)
+        logger.debug("No cached configurations found, fetching from API...")
         try:
-            logger.debug("Fetching branch configurations for validation...")
-            branch_configs = api_client.configuration_data_fetcher.fetch_branch_configurations()
-            logger.debug(f"Raw branch configs: {branch_configs}")
-
-            flattened_configs = []
-            for c in branch_configs:
-                if isinstance(c, list):
-                    logger.debug(f"Found list of configs: {c}")
-                    flattened_configs.extend(c)
-                else:
-                    logger.debug(f"Found single config: {c}")
-                    flattened_configs.append(c)
+            configs = api_client.configuration_data_fetcher.validate_and_cache_configurations()
+            logger.debug(f"Retrieved {len(configs)} configurations from API")
             
-            if flattened_configs:
-                valid_branches = {str(b.id_branch) for b in flattened_configs if b.id_branch}
-                invalid_branches = configured_branches - {int(b) for b in valid_branches}
-                if invalid_branches:
-                    logger.warning(f"Invalid branch IDs found in credentials: {invalid_branches}")
-                    logger.warning(f"Valid branch IDs: {valid_branches}")
+            # Save configurations using same naming pattern as credentials
+            for cred_file in cred_files:
+                gym_name = cred_file.stem.split('.')[1]
+                config_file = config_dir / f"branch_configs.{gym_name}.json"
+                
+                # Convert configurations to JSON-serializable format
+                serializable_configs = []
+                for config in configs:
+                    config_dict = config.model_dump()
+                    # Convert any datetime objects to ISO format strings
+                    for key, value in config_dict.items():
+                        if isinstance(value, datetime):
+                            config_dict[key] = value.isoformat()
+                    serializable_configs.append(config_dict)
+                
+                cache_data = {
+                    "last_updated": datetime.now().isoformat(),
+                    "configurations": serializable_configs
+                }
+                
+                with open(config_file, "w") as f:
+                    json.dump(cache_data, f, indent=2)
+                logger.debug(f"Saved configuration to: {config_file.absolute()}")
+                
+                # Verify file exists and has content
+                if config_file.exists():
+                    logger.debug(f"Configuration file size: {config_file.stat().st_size} bytes")
+                else:
+                    logger.error(f"Configuration file was not created: {config_file}")
+            
         except Exception as e:
-            logger.warning(f"Failed to validate branch IDs: {e}")
-        
-        return api_client
+            logger.error(f"Failed to validate configurations: {str(e)}")
+            console.print("[red]Error validating branch configurations. Please check credentials.[/red]")
+            raise typer.Exit(1)
     
-    # Single branch setup
-    default_creds = config.get("default")
-    if not default_creds:
-        console.print("[red]Default credentials not found. Please run 'auth login' first.[/red]")
-        raise typer.Exit(1)
-    
-    configuration = Configuration()
-    configuration.username = default_creds["username"]
-    configuration.password = default_creds["password"]
-    
-    single_api_client = ApiClient(configuration=configuration)
-    return GymApi(api_client=single_api_client, branch_api_clients={})
+    return api_client
 
 # Common option types
 DaysOption = Annotated[int, typer.Option(
@@ -234,9 +267,10 @@ DaysOption = Annotated[int, typer.Option(
     min=1, max=365, show_default=True
 )]
 
-BranchOption = Annotated[Optional[int], typer.Option(
-    "--branch-id", "-b",
-    help="Branch ID to filter by"
+BranchOption = Annotated[Optional[List[int]], typer.Option(
+    "--branch-ids", "-b",
+    help="Branch IDs to filter by (comma-separated)",
+    callback=lambda x: [int(i.strip()) for i in x.split(',')] if x else None
 )]
 
 BranchesOption = Annotated[Optional[List[str]], typer.Option(
@@ -255,6 +289,11 @@ def auth_login(
         hide_input=True,
         confirmation_prompt=True
     )],
+    gym_name: Annotated[str, typer.Option(
+        "--gym-name", "-g",
+        help="Gym name for configuration",
+        prompt=True
+    )],
     branch_id: Annotated[Optional[str], typer.Option(
         "--branch-id", "-b",
         help="Branch ID for multi-branch setup"
@@ -262,7 +301,7 @@ def auth_login(
 ):
     """Login with username and password."""
     config_dir = Path.home() / ".config" / "evo-client"
-    config_file = config_dir / "credentials.json"
+    config_file = config_dir / f"credentials.{gym_name}.json"
     
     config_dir.mkdir(parents=True, exist_ok=True)
     
@@ -273,10 +312,10 @@ def auth_login(
     
     if branch_id:
         config[branch_id] = {"username": username, "password": password}
-        rich_print(f"[green]✓[/green] Credentials saved for branch {branch_id}")
+        rich_print(f"[green]✓[/green] Credentials saved for {gym_name} branch {branch_id}")
     else:
         config["default"] = {"username": username, "password": password}
-        rich_print("[green]✓[/green] Default credentials saved")
+        rich_print(f"[green]✓[/green] Default credentials saved for {gym_name}")
     
     with open(config_file, "w") as f:
         json.dump(config, f, indent=2)
@@ -291,43 +330,80 @@ def auth_login_file(
         resolve_path=True
     )]
 ):
-    """Login using a JSON configuration file."""
+    """Login using a JSON config file and fetch branch configurations."""
     try:
+        # Read credentials file
+        logger.debug(f"Reading credentials from: {config_path.absolute()}")
         with open(config_path) as f:
-            source_config = json.load(f)
+            creds = json.load(f)
         
-        config_dir = Path.home() / ".config" / "evo-client"
-        config_file = config_dir / "credentials.json"
+        # Extract gym name from filename
+        gym_name = config_path.stem.split('.')[1]
+        logger.debug(f"Using gym name: {gym_name}")
+        
+        # Create .config directory in project root
+        config_dir = Path(".config")
         config_dir.mkdir(parents=True, exist_ok=True)
         
-        # Determine if it's a single branch or multi-branch config
-        if isinstance(source_config, dict) and all(isinstance(v, str) for v in source_config.values()):
-            # Single branch config
-            target_config = {"default": source_config}
-            rich_print("[green]✓[/green] Loaded default credentials")
-        else:
-            # Multi-branch config
-            target_config = source_config
-            rich_print(f"[green]✓[/green] Loaded credentials for {len(target_config)} branches")
+        # Save credentials
+        cred_file = config_dir / f"credentials.{gym_name}.json"
+        with open(cred_file, "w") as f:
+            json.dump(creds, f, indent=2)
+        cred_file.chmod(0o600)
+        rich_print(f"[green]✓[/green] Saved credentials for {len(creds)} branches")
+        
+        # Initialize API client and fetch configurations
+        branch_api_clients = {}
+        for branch_id, branch_creds in creds.items():
+            config = Configuration()
+            config.username = branch_creds["username"]
+            config.password = branch_creds["password"]
+            branch_api_clients[str(branch_id)] = ApiClient(configuration=config)
+        
+        # Create GymApi instance
+        default_api_client = next(iter(branch_api_clients.values()))
+        api_client = GymApi(
+            api_client=default_api_client,
+            branch_api_clients=branch_api_clients
+        )
+        
+        # Fetch and save branch configurations
+        logger.debug("Fetching branch configurations...")
+        configs = api_client.configuration_data_fetcher.validate_and_cache_configurations()
+        
+        # Convert configurations to JSON-serializable format
+        serializable_configs = []
+        for config in configs:
+            config_dict = config.model_dump()
+            # Convert any datetime objects to ISO format strings
+            for key, value in config_dict.items():
+                if isinstance(value, datetime):
+                    config_dict[key] = value.isoformat()
+            serializable_configs.append(config_dict)
+        
+        # Save configurations
+        config_file = config_dir / f"branch_configs.{gym_name}.json"
+        cache_data = {
+            "last_updated": datetime.now().isoformat(),
+            "configurations": serializable_configs
+        }
         
         with open(config_file, "w") as f:
-            json.dump(target_config, f, indent=2)
-        config_file.chmod(0o600)
+            json.dump(cache_data, f, indent=2)
         
-        rich_print("[green]✓[/green] Configuration saved successfully")
+        rich_print(f"[green]✓[/green] Fetched and saved configurations for {len(configs)} branches")
         
-    except json.JSONDecodeError:
-        rich_print("[red]Error:[/red] Invalid JSON file format")
-        raise typer.Exit(1)
-    except KeyError as e:
-        rich_print(f"[red]Error:[/red] Missing required field: {e}")
-        raise typer.Exit(1)
     except Exception as e:
+        logger.error(f"Error during login: {str(e)}")
         rich_print(f"[red]Error:[/red] {str(e)}")
         raise typer.Exit(1)
 
 @auth_app.command("logout")
 def auth_logout(
+    gym_name: Annotated[Optional[str], typer.Option(
+        "--gym-name", "-g",
+        help="Gym name to remove credentials for"
+    )] = None,
     branch_id: Annotated[Optional[str], typer.Option(
         "--branch-id", "-b",
         help="Branch ID to remove credentials for"
@@ -339,15 +415,24 @@ def auth_logout(
     )] = False,
 ):
     """Remove saved credentials."""
-    config_file = Path.home() / ".config" / "evo-client" / "credentials.json"
-    
-    if not config_file.exists():
-        rich_print("[yellow]No credentials found[/yellow]")
-        return
+    config_dir = Path.home() / ".config" / "evo-client"
     
     if all:
-        config_file.unlink()
-        rich_print("[green]✓[/green] All credentials removed")
+        # Remove all credential files
+        for cred_file in config_dir.glob("credentials.*.json"):
+            cred_file.unlink()
+            rich_print(f"[green]✓[/green] Removed credentials for {cred_file.stem.split('.')[1]}")
+        return
+    
+    if not gym_name:
+        rich_print("[yellow]Please specify a gym name or use --all[/yellow]")
+        return
+        
+    config_file = config_dir / f"credentials.{gym_name}.json"
+    config_cache = config_dir / f"branch_configs.{gym_name}.json"
+    
+    if not config_file.exists():
+        rich_print(f"[yellow]No credentials found for {gym_name}[/yellow]")
         return
     
     with open(config_file) as f:
@@ -356,365 +441,112 @@ def auth_logout(
     if branch_id:
         if branch_id in config:
             del config[branch_id]
-            rich_print(f"[green]✓[/green] Credentials removed for branch {branch_id}")
+            rich_print(f"[green]✓[/green] Credentials removed for {gym_name} branch {branch_id}")
         else:
             rich_print(f"[yellow]No credentials found for branch {branch_id}[/yellow]")
     else:
-        if "default" in config:
-            del config["default"]
-            rich_print("[green]✓[/green] Default credentials removed")
-        else:
-            rich_print("[yellow]No default credentials found[/yellow]")
+        config_file.unlink()
+        if config_cache.exists():
+            config_cache.unlink()
+        rich_print(f"[green]✓[/green] All credentials removed for {gym_name}")
+        return
     
     if config:
         with open(config_file, "w") as f:
             json.dump(config, f, indent=2)
     else:
         config_file.unlink()
+        if config_cache.exists():
+            config_cache.unlink()
 
 @auth_app.command("list")
 def auth_list():
     """List configured credentials."""
-    config_file = Path.home() / ".config" / "evo-client" / "credentials.json"
+    config_dir = Path.home() / ".config" / "evo-client"
+    cred_files = list(config_dir.glob("credentials.*.json"))
     
-    if not config_file.exists():
+    if not cred_files:
         rich_print("[yellow]No credentials configured[/yellow]")
         return
     
-    with open(config_file) as f:
-        config = json.load(f)
-    
     table = Table(title="Configured Credentials")
+    table.add_column("Gym", style="magenta")
     table.add_column("Branch ID", style="cyan")
     table.add_column("Username", style="green")
     table.add_column("Type", style="blue")
     
-    for branch_id, creds in config.items():
+    for cred_file in cred_files:
+        gym_name = cred_file.stem.split('.')[1]
+        with open(cred_file) as f:
+            config = json.load(f)
+            
+        for branch_id, creds in config.items():
+            table.add_row(
+                gym_name,
+                branch_id,
+                creds["username"],
+                "Default" if branch_id == "default" else "Branch"
+            )
+    
+    console.print(table)
+
+
+@kb_app.command("info")
+@handle_api_errors
+def show_knowledge_base(
+    format: Annotated[str, typer.Option(
+        "--format", "-f",
+        help="Output format (tree/table)",
+        show_default=True
+    )] = "tree",
+):
+    """Display gym knowledge base information."""
+    try:
+        kb = state.api_client.knowledge_base_fetcher.build_knowledge_base()
+        
+        if format == "table":
+            _display_kb_table(kb)
+        else:
+            _display_kb_tree(kb)
+            
+    except Exception as e:
+        logger.error(f"Error displaying knowledge base: {str(e)}")
+        raise typer.Exit(1)
+
+def _display_kb_table(kb: GymKnowledgeBase):
+    """Display knowledge base in table format."""
+    table = Table(title=f"{kb.name} Gym Network")
+    table.add_column("Branch ID", justify="right")
+    table.add_column("Name")
+    table.add_column("Location")
+    table.add_column("Activities", justify="right")
+    table.add_column("Services", justify="right")
+    table.add_column("Plans", justify="right")
+    
+    for unit in kb.units:
         table.add_row(
-            branch_id,
-            creds["username"],
-            "Default" if branch_id == "default" else "Branch"
+            str(unit.unit_id),
+            unit.name,
+            f"{unit.address.city}, {unit.address.state}",
+            str(len(unit.activities)),
+            str(len(unit.available_services)),
+            str(len(unit.plans))
         )
     
     console.print(table)
 
-# Contract commands
-@contracts_app.command("list")
-@handle_api_errors
-def list_plans():
-    """List available membership contracts."""
-    try:
-        api_client = get_api_client()
-        
-        # Get contracts synchronously
-        logger.debug("Fetching contracts...")
-        contracts = api_client.membership_data_fetcher.fetch_memberships(
-            active=True
-        )
-        
-        # Process contracts
-        active_contracts = []
-        
-        if isinstance(contracts, dict):
-            contract_list = contracts.values()
-        else:
-            contract_list = contracts
-            
-        flattened_contracts = []
-        for item in contract_list:
-            if isinstance(item, list):
-                flattened_contracts.extend(item)
-            else:
-                flattened_contracts.append(item)
-        
-        for contract in flattened_contracts:
-            logger.debug(f"Found individual plan: {contract.name_membership} (Branch: {contract.id_branch})")
-            
-            # Skip inactive
-            if contract.inactive:
-                logger.debug(f"Plan {contract.name_membership} (ID: {contract.id_membership}, Branch: {contract.id_branch}): inactive=True")
-                continue
-            
-            if contract.access_branches:
-                logger.debug(f"  Branches: {[(b.id_branch, b.name) for b in contract.access_branches]}")
-            
-            active_contracts.append(contract)
-        
-        logger.debug(f"Found {len(active_contracts)} active plans")
-        
-        # Create and display table
-        table = Table(title="Membership Contracts")
-        table.add_column("ID", justify="right")
-        table.add_column("Plan")
-        table.add_column("Value", justify="right")
-        table.add_column("Duration", justify="right")
-        table.add_column("Multi", justify="center")
-        table.add_column("Branch ID", justify="right", style="yellow")
-        table.add_column("Branches")
-        
-        active_contracts.sort(key=lambda x: x.name_membership)
-        
-        for contract in active_contracts:
-            if contract.duration_type == "Days":
-                duration = f"{contract.duration}d"
-            elif contract.duration_type == "Months":
-                duration = f"{contract.duration}m"
-            else:
-                duration = "N/A"
-            
-            value = f"${contract.value:.2f}" if contract.value is not None else "N/A"
-            
-            branch_ids = []
-            branch_names = []
-            if contract.access_branches:
-                for branch in contract.access_branches:
-                    if branch.id_branch:
-                        branch_ids.append(str(branch.id_branch))
-                        branch_names.append(branch.name)
-            
-            branch_id_str = ", ".join(branch_ids) if branch_ids else "N/A"
-            branch_names_str = ", ".join(branch_names) if branch_names else "N/A"
-            
-            is_multi = "Yes" if len(branch_ids) > 1 else "No"
-            
-            table.add_row(
-                str(contract.id_membership),
-                contract.name_membership,
-                value,
-                duration,
-                is_multi,
-                branch_id_str,
-                branch_names_str
-            )
-        
-        console.print(table)
-        
-    except Exception as e:
-        logger.error(f"Error listing contracts: {str(e)}")
-        console.print(Panel(f"Error listing contracts: {str(e)}", style="red"))
-
-@finance_app.command("receivables")
-@requires_auth
-def list_receivables(
-    member_id: MemberIdOption = None,
-    branch_id: BranchIdOption = None,
-    status: Optional[str] = typer.Option(
-        None,
-        "--status", "-s",
-        help="Filter by status (PAID, PENDING, OVERDUE)"
-    ),
-    days: Optional[int] = 30
-):
-    """List payment receivables."""
-    try:
-        logger.info("Fetching receivables [member_id={}, branch_id={}, status={}, days={}]",
-                    member_id, branch_id, status, days)
-        days_value = days if days else 30
-        from_date = datetime.now() - timedelta(days=days_value)
-        to_date = datetime.now()
-        
-        account_status = None
-        if status:
-            try:
-                status_enum = ReceivableStatus(status.lower())
-                status_map = {
-                    ReceivableStatus.PENDING: "1",
-                    ReceivableStatus.PAID: "2",
-                    ReceivableStatus.CANCELLED: "3",
-                    ReceivableStatus.OVERDUE: "4",
-                }
-                account_status = status_map.get(status_enum)
-            except ValueError:
-                typer.echo(f"Invalid status: {status}. Must be one of: PAID, PENDING, OVERDUE", err=True)
-                raise typer.Exit(1)
-        
-        logger.debug("Requesting receivables from API...")
-        receivables_data = state.data_fetchers['receivables'].fetch_receivables(
-            registration_date_start=from_date,
-            registration_date_end=to_date,
-            account_status=account_status,
-            member_id=member_id
-        )
-        
-        receivables = []
-        for r in receivables_data:
-            try:
-                status_id = str(r.status.id) if r.status and r.status.id else "1"
-                status_map = {
-                    "1": ReceivableStatus.PENDING,
-                    "2": ReceivableStatus.PAID,
-                    "3": ReceivableStatus.CANCELLED,
-                    "4": ReceivableStatus.OVERDUE,
-                }
-                receivable_status = status_map.get(status_id, ReceivableStatus.PENDING)
-                
-                # If you need to filter by branch and the receivable object has a branch attribute:
-                # if branch_id and r.id_branch != branch_id:
-                #     continue
-                
-                receivables.append({
-                    'id': r.id_receivable,
-                    'member_id': r.id_member_payer,
-                    'member_name': r.payer_name,
-                    'description': r.description,
-                    'amount': r.ammount,
-                    'amount_paid': r.ammount_paid,
-                    'due_date': r.due_date,
-                    'status': receivable_status,
-                    'status_name': r.status.name if r.status else None
-                })
-            except AttributeError as e:
-                logger.warning("Skipping malformed receivable: %s", str(e))
-                continue
-        
-        if not receivables:
-            logger.info("No receivables found matching the given criteria.")
-            typer.echo("No receivables found for the given criteria.")
-            return
-        
-        table = Table(show_header=True, box=box.ROUNDED)
-        table.add_column("ID", style="cyan", justify="right")
-        table.add_column("Member", style="blue")
-        table.add_column("Description", style="green")
-        table.add_column("Amount", style="magenta", justify="right")
-        table.add_column("Paid", style="green", justify="right")
-        table.add_column("Due Date", style="yellow")
-        table.add_column("Status", style="bold")
-        
-        for receivable in receivables:
-            status_style_map = {
-                ReceivableStatus.PAID: "green",
-                ReceivableStatus.PENDING: "yellow",
-                ReceivableStatus.OVERDUE: "red",
-                ReceivableStatus.CANCELLED: "dim"
-            }
-            amount_paid_str = f"${receivable['amount_paid']:.2f}" if receivable['amount_paid'] else "N/A"
-            due_date_str = receivable['due_date'].strftime("%Y-%m-%d") if receivable['due_date'] else "N/A"
-            status_style = status_style_map.get(receivable['status'], "white")
-            
-            table.add_row(
-                str(receivable['id']),
-                receivable['member_name'] or "N/A",
-                receivable['description'] or "N/A",
-                f"${receivable['amount']:.2f}",
-                amount_paid_str,
-                due_date_str,
-                f"[{status_style}]{receivable['status'].value.upper()}[/]"
-            )
-        
-        console.print(Panel(table, title=f"Receivables (Last {days} days)"))
-        
-    except Exception as e:
-        logger.error("Error fetching receivables: {}", str(e))
-        typer.echo(f"Error fetching receivables: {str(e)}", err=True)
-        if state.verbose:
-            import traceback
-            console.print("[red]Traceback:[/red]")
-            console.print(traceback.format_exc())
-        raise typer.Exit(1)
-
-@finance_app.command("overdue")
-@requires_auth
-def list_overdue_members(
-    branch_id: BranchOption = None,
-    min_days: Annotated[int, typer.Option(
-        "--min-days", "-d",
-        help="Minimum days overdue",
-        min=1,
-        show_default=True
-    )] = 1,
-):
-    """List members with overdue payments."""
-    try:
-        # Get overdue members for specific branch or all branches
-        overdue = state.data_fetchers['receivables'].fetch_receivables(
-            due_date_start=datetime.now() - timedelta(days=min_days),
-            due_date_end=datetime.now(),
-            payment_types="0"
-        )
-        
-        # Filter by branch_id if specified
-        if branch_id is not None:
-            overdue = [r for r in overdue if 
-                      (hasattr(r, 'id_branch') and r.id_branch == branch_id) or
-                      (hasattr(r, 'branch') and r.branch and getattr(r.branch, 'id', None) == branch_id)]
-            if not overdue:
-                rich_print(f"[yellow]No overdue members found for branch {branch_id}[/yellow]")
-                return
-        
-        if not overdue:
-            rich_print("[yellow]No overdue members found[/yellow]")
-            return
-        
-        table = Table(title=f"Overdue Members (Min {min_days} days)")
-        table.add_column("Member ID", style="cyan")
-        table.add_column("Name", style="green")
-        table.add_column("Total Overdue", style="red")
-        table.add_column("Overdue Since", style="yellow")
-        table.add_column("# of Receivables", style="magenta")
-        
-        # Group receivables by member
-        member_receivables = {}
-        processed_receivables = set()  # Track processed receivable IDs
-
-        for r in overdue:
-            # Skip if no member ID or if receivable was already processed
-            if not r.id_member_payer or r.id_receivable in processed_receivables:
-                continue
-            
-            processed_receivables.add(r.id_receivable)
-            
-            if r.id_member_payer not in member_receivables:
-                member_receivables[r.id_member_payer] = {
-                    'member_id': r.id_member_payer,
-                    'name': r.payer_name,
-                    'total_overdue': Decimal('0'),
-                    'overdue_since': None,
-                    'receivables': set()  # Store unique receivable IDs
-                }
-            
-            # Calculate remaining amount for this receivable
-            amount = Decimal(str(r.ammount)) if r.ammount else Decimal('0')
-            amount_paid = Decimal(str(r.ammount_paid)) if r.ammount_paid else Decimal('0')
-            remaining_amount = amount - amount_paid
-            
-            # Only count if there's still an amount remaining
-            if remaining_amount > Decimal('0'):
-                member_receivables[r.id_member_payer]['total_overdue'] += remaining_amount
-                member_receivables[r.id_member_payer]['receivables'].add(r.id_receivable)
-                
-                due_date = r.due_date
-                if due_date and (not member_receivables[r.id_member_payer]['overdue_since'] or 
-                               due_date < member_receivables[r.id_member_payer]['overdue_since']):
-                    member_receivables[r.id_member_payer]['overdue_since'] = due_date
-
-        # Add rows to table
-        for member_data in member_receivables.values():
-            if member_data['total_overdue'] > Decimal('0'):  # Only show members with actual overdue amounts
-                table.add_row(
-                    str(member_data['member_id']),
-                    member_data['name'] or 'N/A',
-                    f"${member_data['total_overdue']:.2f}",
-                    member_data['overdue_since'].strftime("%Y-%m-%d") if member_data['overdue_since'] else 'N/A',
-                    str(len(member_data['receivables']))
-                )
-        
-        console.print(table)
-        
-        total_overdue = sum(m['total_overdue'] for m in member_receivables.values())
-        console.print(f"\nTotal overdue amount: [red]${total_overdue:.2f}[/red]")
-        console.print(f"Total members overdue: [yellow]{len(member_receivables)}[/yellow]")
-
-    except Exception as e:
-        logger.error("Error listing overdue members: {}", str(e))
-        console.print(Panel.fit(
-            f"[red]Error listing overdue members: {str(e)}[/]",
-            border_style="red"
-        ))
-        if state.verbose:
-            import traceback
-            console.print("[red]Traceback:[/red]")
-            console.print(traceback.format_exc())
+def _display_kb_tree(kb: GymKnowledgeBase):
+    """Display knowledge base in tree format."""
+    tree = Tree(f"[bold magenta]{kb.name} Gym Network[/]")
+    
+    for unit in kb.units:
+        unit_tree = tree.add(f"[bold cyan]Branch {unit.unit_id}: {unit.name}[/]")
+        unit_tree.add(f"📍 {unit.address.city}, {unit.address.state}")
+        unit_tree.add(f"🏃 Activities: {len(unit.activities)}")
+        unit_tree.add(f"🛍️ Services: {len(unit.available_services)}")
+        unit_tree.add(f"📋 Plans: {len(unit.plans)}")
+    
+    console.print(tree)
 
 @app.callback()
 def main(

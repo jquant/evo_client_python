@@ -52,8 +52,7 @@ def fetch_members_files(
         members_files = gym_api.get_members_files(
             member_ids=member_ids,
             from_date=start_date,
-            to_date=end_date,
-            async_req=False
+            to_date=end_date
         )
         
         # Print summary

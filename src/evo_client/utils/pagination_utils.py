@@ -154,7 +154,6 @@ def paginated_api_call(
     max_retries: int = 5,
     base_delay: float = 1.5,
     parallel_units: Optional[List[int]] = None,
-    max_concurrent_requests: int = 3,
     branch_api_clients: Optional[Dict[str, Any]] = None,
     supports_pagination: bool = True,
     pagination_type: str = "skip_take",

@@ -7,12 +7,18 @@ from evo_client.models.atividade_sessao_participante_api_view_model import Ativi
 from evo_client.utils.pagination_utils import paginated_api_call
 from evo_client.core.api_client import ApiClient
 from evo_client.services.data_fetchers.__init__ import BaseDataFetcher
-
+from loguru import logger
 
 class ActivityDataFetcher(BaseDataFetcher):
     """Handles fetching and processing activity-related data."""
     
     def __init__(self, activities_api: ActivitiesApi, branch_api_clients: Optional[Dict[str, ApiClient]] = None):
+        """Initialize the activity data fetcher.
+        
+        Args:
+            activities_api: The activities API instance
+            branch_api_clients: Optional dictionary mapping branch IDs to their API clients
+        """
         super().__init__(activities_api, branch_api_clients)
 
     def fetch_activities_with_schedule(
@@ -49,22 +55,35 @@ class ActivityDataFetcher(BaseDataFetcher):
                 'activities': List[AtividadeListApiViewModel] - List of activities
                 'schedules': List[AtividadeSessaoParticipanteApiViewModel] - List of scheduled activities
         """
-        # Fetch activities and their schedules concurrently
+        # Use available branch IDs from base class
+        branch_ids = self.get_available_branch_ids()
+
+        # Fetch activities and their schedules using only available branch clients
         activities = paginated_api_call(
             api_func=self.api.get_activities,
-            parallel_units=self.branch_ids,
+            parallel_units=branch_ids,  # Use only the branch IDs we have clients for
             search=search,
+            supports_pagination=False,
         )
 
-        schedules = paginated_api_call(
-            api_func=self.api.get_schedule,
-            parallel_units=self.branch_ids,
-            show_full_week=True,
-            date=activity_date,
-            member_id=id_member,
-        )
+        # For each branch, get its specific schedule
+        schedules = []
+        for branch_id in branch_ids:
+            branch_api = self.get_branch_api(branch_id, ActivitiesApi)
+            if branch_api:
+                try:
+                    branch_schedules = branch_api.get_schedule(
+                        show_full_week=True,
+                        date=activity_date,
+                        member_id=id_member,
+                    )
+                    if branch_schedules:
+                        schedules.extend(branch_schedules)
+                except Exception as e:
+                    logger.warning(f"Failed to fetch schedules for branch {branch_id}: {e}")
 
+        # Convert raw data to dictionaries first, then to models
         return {
-            'activities': [AtividadeListApiViewModel(**activity) for activity in activities],
-            'schedules': [AtividadeSessaoParticipanteApiViewModel(**schedule) for schedule in schedules]
+            'activities': [AtividadeListApiViewModel(**activity.model_dump()) for activity in activities],
+            'schedules': [AtividadeSessaoParticipanteApiViewModel(**schedule.model_dump()) for schedule in schedules]
         }

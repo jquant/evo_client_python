@@ -50,6 +50,9 @@ class Configuration(BaseModel):
     proxy: Optional[str] = None
     safe_chars_for_path_param: str = ""
 
+    # Branch configurations
+    branch_configs: list = []
+
     @field_validator("host")
     @classmethod
     def validate_host_format(cls, v: str) -> str:

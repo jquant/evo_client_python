@@ -22,6 +22,7 @@ from ..services.data_fetchers.membership_data_fetcher import MembershipDataFetch
 from ..services.data_fetchers.prospects_data_fetcher import ProspectsDataFetcher
 from ..services.data_fetchers.receivables_data_fetcher import ReceivablesDataFetcher
 from ..services.data_fetchers.service_data_fetcher import ServiceDataFetcher
+from ..services.data_fetchers.sales_data_fetcher import SalesDataFetcher
 from ..services.gym_knowledge_base.gym_kb_data_fetcher import GymKnowledgeBaseService
 
 # Models from gym_model
@@ -95,7 +96,7 @@ class GymApi:
         # Store branch IDs as integers
         self.branch_ids = [int(bid) for bid in self.branch_api_clients.keys()] if branch_api_clients else []
         
-        # Initialize API instances
+        # Initialize API instances with branch awareness
         self.configuration_api = ConfigurationApi(api_client=api_client)
         self.activities_api = ActivitiesApi(api_client=api_client)
         self.membership_api = MembershipApi(api_client=api_client)
@@ -111,7 +112,7 @@ class GymApi:
         self.prospects_api = ProspectsApi(api_client=api_client)
         self.webhook_api = WebhookApi(api_client=api_client)
         
-        # Initialize data fetchers with integer branch IDs
+        # Initialize data fetchers with branch awareness
         self.configuration_data_fetcher = ConfigurationDataFetcher(
             configuration_api=self.configuration_api,
             branch_api_clients=self.branch_api_clients
@@ -124,16 +125,36 @@ class GymApi:
             receivables_api=self.receivables_api,
             branch_api_clients=self.branch_api_clients
         )
-        self.entries_data_fetcher = EntriesDataFetcher(self.entries_api, self.branch_api_clients)
-        self.prospects_data_fetcher = ProspectsDataFetcher(self.prospects_api, self.branch_api_clients)
-        self.activity_data_fetcher = ActivityDataFetcher(self.activities_api, self.branch_api_clients)
-        self.service_data_fetcher = ServiceDataFetcher(self.service_api, self.branch_api_clients)
-        self.membership_data_fetcher = MembershipDataFetcher(self.membership_api, self.branch_api_clients)
-        self.knowledge_base_data_fetcher = GymKnowledgeBaseService(
+        self.entries_data_fetcher = EntriesDataFetcher(
+            self.entries_api, 
+            self.branch_api_clients
+        )
+        self.prospects_data_fetcher = ProspectsDataFetcher(
+            self.prospects_api, 
+            self.branch_api_clients
+        )
+        self.activity_data_fetcher = ActivityDataFetcher(
+            self.activities_api, 
+            self.branch_api_clients
+        )
+        self.service_data_fetcher = ServiceDataFetcher(
+            self.service_api, 
+            self.branch_api_clients
+        )
+        self.membership_data_fetcher = MembershipDataFetcher(
+            self.membership_api, 
+            self.branch_api_clients
+        )
+        self.sales_data_fetcher = SalesDataFetcher(
+            self.sales_api, 
+            self.branch_api_clients
+        )
+        self.knowledge_base_fetcher = GymKnowledgeBaseService(
             configuration_fetcher=self.configuration_data_fetcher,
             activity_fetcher=self.activity_data_fetcher,
             service_fetcher=self.service_data_fetcher,
-            membership_fetcher=self.membership_data_fetcher
+            membership_fetcher=self.membership_data_fetcher,
+            branch_api_clients=self.branch_api_clients
         )
 
     def __del__(self):
@@ -142,18 +163,16 @@ class GymApi:
             self._pool.close()
             self._pool.join()
 
-    def build_knowledge_base(self) -> GymKnowledgeBase:
-        """Build the knowledge base."""
-        return self.knowledge_base_data_fetcher.build_knowledge_base()
-
     def get_overdue_members(
         self,
         min_days_overdue: int = 1,
+        branch_ids: Optional[List[int]] = None
     ) -> List[OverdueMember]:
         """Get members with overdue payments.
 
         Args:
             min_days_overdue: Minimum days overdue (default: 1)
+            branch_ids: Optional list of branch IDs to filter by
 
         Returns:
             List of overdue members
@@ -167,7 +186,7 @@ class GymApi:
             due_date_start=from_date,
             due_date_end=current_date,
             payment_types="0",  # em atraso
-            account_status="1"  # 1 para cliente ativo (opened) e 4 para cliente inativo catraca bloqueada (overdue)
+            account_status="1",  # 1 para cliente ativo (opened) e 4 para cliente inativo catraca bloqueada (overdue)
         )
 
         # Process the receivables
@@ -175,7 +194,9 @@ class GymApi:
 
         def process_receivable(item: Any) -> None:
             if isinstance(item, ReceivablesApiViewModel):
-                receivables.append(item)
+                # Filter by branch if needed
+                if not branch_ids or (item.id_branch_member in branch_ids):
+                    receivables.append(item)
             elif isinstance(item, list):
                 for sub_item in item:
                     process_receivable(sub_item)
