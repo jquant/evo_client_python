@@ -4,28 +4,29 @@ from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 from loguru import logger
 
+from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 from ..models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ..models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
 
 
-class WebhookApi:
+class WebhookApi(BaseApi):
     """Webhook API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/webhook"
 
     @overload
-    def delete_webhook(self, webhook_id: int, async_req: Literal[False] = False) -> Any:
-        ...
+    def delete_webhook(
+        self, webhook_id: int, async_req: Literal[False] = False
+    ) -> Any: ...
 
     @overload
     def delete_webhook(
         self, webhook_id: int, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def delete_webhook(
         self, webhook_id: int, async_req: bool = False
@@ -48,7 +49,7 @@ class WebhookApi:
                 auth_settings=["Basic"],
                 async_req=async_req,
                 _return_http_data_only=True,  # Get just the data
-                _preload_content=True  # Parse the response
+                _preload_content=True,  # Parse the response
             )
 
             # Handle async response
@@ -65,7 +66,7 @@ class WebhookApi:
                 return response
 
             # If response has status code, use it
-            status = getattr(response, 'status', None)
+            status = getattr(response, "status", None)
             if status is not None:
                 return 200 <= status < 300
 
@@ -78,12 +79,10 @@ class WebhookApi:
             return False
 
     @overload
-    def get_webhooks(self, async_req: Literal[False] = False) -> Any:
-        ...
+    def get_webhooks(self, async_req: Literal[False] = False) -> Any: ...
 
     @overload
-    def get_webhooks(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
-        ...
+    def get_webhooks(self, async_req: Literal[True] = True) -> AsyncResult[Any]: ...
 
     def get_webhooks(self, async_req: bool = False) -> Union[Any, AsyncResult[Any]]:
         """
@@ -97,22 +96,22 @@ class WebhookApi:
         """
         try:
             logger.debug("Getting webhooks")
-            
+
             # Extract branch ID from configuration if available
             branch_id = None
-            if hasattr(self.api_client, 'configuration'):
-                if hasattr(self.api_client.configuration, 'username'):
+            if hasattr(self.api_client, "configuration"):
+                if hasattr(self.api_client.configuration, "username"):
                     # Try to extract branch ID from username if it's in the format branch_name:branch_id
                     username = self.api_client.configuration.username
-                    if ':' in username:
-                        _, branch_id = username.split(':', 1)
-            
+                    if ":" in username:
+                        _, branch_id = username.split(":", 1)
+
             # Add branch ID to query parameters if available
             query_params = {}
             if branch_id:
-                query_params['idFilial'] = branch_id
+                query_params["idFilial"] = branch_id
                 logger.debug(f"Using branch ID in query params: {branch_id}")
-            
+
             response = self.api_client.call_api(
                 resource_path=self.base_path,
                 method="GET",
@@ -120,7 +119,7 @@ class WebhookApi:
                 auth_settings=["Basic"],
                 async_req=async_req,
                 _return_http_data_only=True,  # Get just the data
-                _preload_content=True  # Parse the response
+                _preload_content=True,  # Parse the response
             )
 
             # Handle async response
@@ -139,15 +138,16 @@ class WebhookApi:
 
             # Otherwise try to get data from response
             try:
-                if hasattr(response, 'data'):
+                if hasattr(response, "data"):
                     raw_data = response.data
                     logger.debug(f"Raw response data: {raw_data}")
                     if isinstance(raw_data, bytes):
                         try:
-                            decoded = raw_data.decode('utf-8', errors='replace')
+                            decoded = raw_data.decode("utf-8", errors="replace")
                             logger.debug(f"Decoded response: {decoded}")
                             try:
                                 import json
+
                                 data = json.loads(decoded)
                                 logger.debug(f"Parsed JSON data: {data}")
                                 return data
@@ -160,6 +160,7 @@ class WebhookApi:
                     elif isinstance(raw_data, str):
                         try:
                             import json
+
                             data = json.loads(raw_data)
                             logger.debug(f"Parsed JSON data: {data}")
                             return data
@@ -188,8 +189,7 @@ class WebhookApi:
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
         async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def create_webhook(
@@ -200,8 +200,7 @@ class WebhookApi:
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def create_webhook(
         self,
@@ -218,8 +217,14 @@ class WebhookApi:
                 idBranch=branch_id,
                 eventType=event_type,
                 urlCallback=url_callback,
-                headers=headers or [W12UtilsWebhookHeaderViewModel(nome="Content-Type", valor="application/json")],
-                filters=filters or [W12UtilsWebhookFilterViewModel(filterType="All", value="*")]
+                headers=headers
+                or [
+                    W12UtilsWebhookHeaderViewModel(
+                        nome="Content-Type", valor="application/json"
+                    )
+                ],
+                filters=filters
+                or [W12UtilsWebhookFilterViewModel(filterType="All", value="*")],
             ).model_dump(by_alias=True, exclude_none=True)
 
             logger.debug(f"Creating webhook with data: {webhook_data}")
@@ -232,7 +237,7 @@ class WebhookApi:
                 auth_settings=["Basic"],
                 _return_http_data_only=True,
                 _preload_content=True,
-                async_req=async_req
+                async_req=async_req,
             )
 
             # Handle async response
@@ -249,7 +254,7 @@ class WebhookApi:
                 return response
 
             # If response has status code, use it
-            status = getattr(response, 'status', None)
+            status = getattr(response, "status", None)
             if status is not None:
                 return 200 <= status < 300
 

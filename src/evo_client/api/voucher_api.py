@@ -1,15 +1,16 @@
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 
+from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.vouchers_resumo_api_view_model import VouchersResumoApiViewModel
 
 
-class VoucherApi:
+class VoucherApi(BaseApi):
     """Voucher API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/voucher"
 
     @overload
@@ -23,8 +24,7 @@ class VoucherApi:
         valid: Optional[bool] = None,
         voucher_type: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> List[VouchersResumoApiViewModel]:
-        ...
+    ) -> List[VouchersResumoApiViewModel]: ...
 
     @overload
     def get_vouchers(
@@ -37,8 +37,7 @@ class VoucherApi:
         valid: Optional[bool] = None,
         voucher_type: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_vouchers(
         self,
@@ -97,16 +96,14 @@ class VoucherApi:
         self,
         voucher_id: int,
         async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def get_voucher_details(
         self,
         voucher_id: int,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_voucher_details(
         self,
@@ -147,8 +144,7 @@ class VoucherApi:
         usage_limit: Optional[int] = None,
         min_value: Optional[float] = None,
         async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def create_voucher(
@@ -162,8 +158,7 @@ class VoucherApi:
         usage_limit: Optional[int] = None,
         min_value: Optional[float] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def create_voucher(
         self,

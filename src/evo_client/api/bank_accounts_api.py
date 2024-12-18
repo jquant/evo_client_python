@@ -1,11 +1,12 @@
 from multiprocessing.pool import AsyncResult
 from typing import Any, Literal, Optional, Union, overload
 
+from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.bank_accounts_view_model import BankAccountsViewModel
 
 
-class BankAccountsApi:
+class BankAccountsApi(BaseApi):
     """
     Bank Accounts API client for EVO API.
 
@@ -19,16 +20,16 @@ class BankAccountsApi:
         Args:
             api_client: Optional API client instance. If not provided, creates a new one.
         """
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/bank-accounts"
 
     @overload
-    def get_accounts(self, async_req: Literal[False] = False) -> AsyncResult[Any]:
-        ...
+    def get_accounts(self, async_req: Literal[False] = False) -> AsyncResult[Any]: ...
 
     @overload
-    def get_accounts(self, async_req: Literal[True] = True) -> BankAccountsViewModel:
-        ...
+    def get_accounts(
+        self, async_req: Literal[True] = True
+    ) -> BankAccountsViewModel: ...
 
     def get_accounts(
         self, async_req: bool = False

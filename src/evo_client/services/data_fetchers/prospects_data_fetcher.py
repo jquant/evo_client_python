@@ -4,25 +4,31 @@ import logging
 
 from evo_client.api.prospects_api import ProspectsApi
 from evo_client.core.api_client import ApiClient
-from evo_client.models.prospects_resumo_api_view_model import ProspectsResumoApiViewModel
+from evo_client.models.prospects_resumo_api_view_model import (
+    ProspectsResumoApiViewModel,
+)
 from evo_client.utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 
 logger = logging.getLogger(__name__)
 
 
-class ProspectsDataFetcher(BaseDataFetcher):
+class ProspectsDataFetcher(BaseDataFetcher[ProspectsApi]):
     """Handles fetching and processing prospect-related data."""
-    
-    def __init__(self, prospects_api: ProspectsApi, branch_api_clients: Optional[Dict[str, ApiClient]] = None):
+
+    def __init__(
+        self,
+        prospects_api: ProspectsApi,
+        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
+    ):
         """Initialize the prospects data fetcher.
-        
+
         Args:
             prospects_api: The prospects API instance
             branch_api_clients: Optional dictionary mapping branch IDs to their API clients
         """
         super().__init__(prospects_api, branch_api_clients)
-    
+
     def fetch_prospects(
         self,
         id_prospect: Optional[int] = None,
@@ -37,7 +43,7 @@ class ProspectsDataFetcher(BaseDataFetcher):
         gympass_id: Optional[str] = None,
     ) -> List[ProspectsResumoApiViewModel]:
         """Fetch prospects with various filters.
-        
+
         Args:
             id_prospect: Filter by prospect ID
             name: Filter by prospect name
@@ -69,9 +75,9 @@ class ProspectsDataFetcher(BaseDataFetcher):
                 conversion_date_end=conversion_date_end,
                 gympass_id=gympass_id,
             )
-            
+
             return result or []
-            
+
         except Exception as e:
             logger.error(f"Error fetching prospects: {str(e)}")
             raise

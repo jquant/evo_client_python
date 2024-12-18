@@ -1,23 +1,22 @@
 from multiprocessing.pool import AsyncResult
 from typing import Any, Literal, Optional, Union, overload
 
+from .base import BaseApi
 from ..core.api_client import ApiClient
 
 
-class StatesApi:
+class StatesApi(BaseApi):
     """States API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/states"
 
     @overload
-    def get_states(self, async_req: Literal[False] = False) -> Any:
-        ...
+    def get_states(self, async_req: Literal[False] = False) -> Any: ...
 
     @overload
-    def get_states(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
-        ...
+    def get_states(self, async_req: Literal[True] = True) -> AsyncResult[Any]: ...
 
     def get_states(self, async_req: bool = False) -> Union[Any, AsyncResult[Any]]:
         """

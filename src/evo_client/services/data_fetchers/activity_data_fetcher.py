@@ -3,18 +3,25 @@ from datetime import datetime
 
 from evo_client.api.activities_api import ActivitiesApi
 from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
-from evo_client.models.atividade_sessao_participante_api_view_model import AtividadeSessaoParticipanteApiViewModel
+from evo_client.models.atividade_sessao_participante_api_view_model import (
+    AtividadeSessaoParticipanteApiViewModel,
+)
 from evo_client.utils.pagination_utils import paginated_api_call
 from evo_client.core.api_client import ApiClient
 from evo_client.services.data_fetchers.__init__ import BaseDataFetcher
 from loguru import logger
 
-class ActivityDataFetcher(BaseDataFetcher):
+
+class ActivityDataFetcher(BaseDataFetcher[ActivitiesApi]):
     """Handles fetching and processing activity-related data."""
-    
-    def __init__(self, activities_api: ActivitiesApi, branch_api_clients: Optional[Dict[str, ApiClient]] = None):
+
+    def __init__(
+        self,
+        activities_api: ActivitiesApi,
+        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
+    ):
         """Initialize the activity data fetcher.
-        
+
         Args:
             activities_api: The activities API instance
             branch_api_clients: Optional dictionary mapping branch IDs to their API clients
@@ -80,10 +87,18 @@ class ActivityDataFetcher(BaseDataFetcher):
                     if branch_schedules:
                         schedules.extend(branch_schedules)
                 except Exception as e:
-                    logger.warning(f"Failed to fetch schedules for branch {branch_id}: {e}")
+                    logger.warning(
+                        f"Failed to fetch schedules for branch {branch_id}: {e}"
+                    )
 
         # Convert raw data to dictionaries first, then to models
         return {
-            'activities': [AtividadeListApiViewModel(**activity.model_dump()) for activity in activities],
-            'schedules': [AtividadeSessaoParticipanteApiViewModel(**schedule.model_dump()) for schedule in schedules]
+            "activities": [
+                AtividadeListApiViewModel(**activity.model_dump())
+                for activity in activities
+            ],
+            "schedules": [
+                AtividadeSessaoParticipanteApiViewModel(**schedule.model_dump())
+                for schedule in schedules
+            ],
         }

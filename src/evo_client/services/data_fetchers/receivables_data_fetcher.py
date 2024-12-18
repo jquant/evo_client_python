@@ -11,18 +11,22 @@ from . import BaseDataFetcher
 logger = logging.getLogger(__name__)
 
 
-class ReceivablesDataFetcher(BaseDataFetcher):
+class ReceivablesDataFetcher(BaseDataFetcher[ReceivablesApi]):
     """Handles fetching and processing receivables-related data."""
-    
-    def __init__(self, receivables_api: ReceivablesApi, branch_api_clients: Optional[Dict[str, ApiClient]] = None):
+
+    def __init__(
+        self,
+        receivables_api: ReceivablesApi,
+        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
+    ):
         """Initialize the receivables data fetcher.
-        
+
         Args:
             receivables_api: The receivables API instance
             branch_api_clients: Optional dictionary mapping branch IDs to their API clients
         """
         super().__init__(receivables_api, branch_api_clients)
-    
+
     def fetch_receivables(
         self,
         registration_date_start: Optional[datetime] = None,
@@ -55,7 +59,7 @@ class ReceivablesDataFetcher(BaseDataFetcher):
         receivable_id: Optional[int] = None,
     ) -> List[ReceivablesApiViewModel]:
         """Fetch receivables with various filters.
-        
+
         Args:
             registration_date_start: Filter by registration start date
             registration_date_end: Filter by registration end date
@@ -122,9 +126,9 @@ class ReceivablesDataFetcher(BaseDataFetcher):
                 sale_id=sale_id,
                 receivable_id=receivable_id,
             )
-            
+
             return result or []
-            
+
         except Exception as e:
             logger.error(f"Error fetching receivables: {str(e)}")
             raise

@@ -4,6 +4,7 @@ import logging
 
 from evo_client.models.members_api_view_model import MembersApiViewModel
 from evo_client.api.members_api import MembersApi
+from evo_client.models.member_data_view_model import MemberDataViewModel
 from evo_client.core.api_client import ApiClient
 from evo_client.utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
@@ -11,21 +12,25 @@ from . import BaseDataFetcher
 logger = logging.getLogger(__name__)
 
 
-class MemberDataFetcher(BaseDataFetcher):
+class MemberDataFetcher(BaseDataFetcher[MembersApi]):
     """Handles fetching and processing member-related data."""
-    
-    def __init__(self, members_api: MembersApi, branch_api_clients: Optional[Dict[str, ApiClient]] = None):
+
+    def __init__(
+        self,
+        members_api: MembersApi,
+        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
+    ):
         """Initialize the member data fetcher.
-        
+
         Args:
             members_api: The members API instance
             branch_api_clients: Optional dictionary mapping branch IDs to their API clients
         """
         super().__init__(members_api, branch_api_clients)
-    
-    def fetch_member_by_id(self, member_id: str) -> Optional[MembersApiViewModel]:
+
+    def fetch_member_by_id(self, member_id: str) -> Optional[MemberDataViewModel]:
         """Fetch a specific member by their ID.
-        
+
         Args:
             member_id: The ID of the member to fetch
 
@@ -37,7 +42,7 @@ class MemberDataFetcher(BaseDataFetcher):
             result = self.api.get_member_profile(id_member=int(member_id))
             if result:
                 return result
-                
+
             # If not found, try branch clients
             for branch_id in self.get_available_branch_ids():
                 branch_api = self.get_branch_api(branch_id, MembersApi)
@@ -47,14 +52,16 @@ class MemberDataFetcher(BaseDataFetcher):
                         if result:
                             return result
                     except Exception as e:
-                        logger.warning(f"Failed to fetch member {member_id} from branch {branch_id}: {e}")
-            
+                        logger.warning(
+                            f"Failed to fetch member {member_id} from branch {branch_id}: {e}"
+                        )
+
             return None
-            
+
         except Exception as e:
             logger.error(f"Error fetching member {member_id}: {str(e)}")
             raise
-    
+
     def fetch_members(
         self,
         name: Optional[str] = None,
@@ -74,10 +81,10 @@ class MemberDataFetcher(BaseDataFetcher):
         ids_members: Optional[str] = None,
         only_personal: bool = False,
         personal_type: Optional[int] = None,
-        show_activity_data: bool = False
+        show_activity_data: bool = False,
     ) -> List[MembersApiViewModel]:
         """Fetch members with various filters.
-        
+
         Args:
             name: Filter by member name
             email: Filter by email
@@ -103,7 +110,7 @@ class MemberDataFetcher(BaseDataFetcher):
         """
         try:
             members = []
-            
+
             # Get members from default client
             result = paginated_api_call(
                 api_func=self.api.get_members,
@@ -129,10 +136,9 @@ class MemberDataFetcher(BaseDataFetcher):
             )
             if result:
                 members.extend(result)
-            
+
             return members
-            
+
         except Exception as e:
             logger.error(f"Error fetching members: {str(e)}")
             raise
-    

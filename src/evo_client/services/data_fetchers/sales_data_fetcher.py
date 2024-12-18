@@ -11,18 +11,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class SalesDataFetcher(BaseDataFetcher):
+class SalesDataFetcher(BaseDataFetcher[SalesApi]):
     """Handles fetching and processing sales-related data."""
-    
-    def __init__(self, sales_api: SalesApi, branch_api_clients: Optional[Dict[str, ApiClient]] = None):
+
+    def __init__(
+        self,
+        sales_api: SalesApi,
+        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
+    ):
         """Initialize the sales data fetcher.
-        
+
         Args:
             sales_api: The sales API instance
             branch_api_clients: Optional dictionary mapping branch IDs to their API clients
         """
         super().__init__(sales_api, branch_api_clients)
-    
+
     def fetch_sales(
         self,
         member_id: Optional[int] = None,
@@ -41,7 +45,7 @@ class SalesDataFetcher(BaseDataFetcher):
         only_total_pass: Optional[bool] = None,
     ) -> List[SalesViewModel]:
         """Fetch sales with various filters.
-        
+
         Args:
             member_id: Filter by member ID
             date_sale_start: Filter by sale start date
@@ -80,9 +84,9 @@ class SalesDataFetcher(BaseDataFetcher):
                 show_allow_locker=show_allow_locker,
                 only_total_pass=only_total_pass,
             )
-            
+
             return result or []
-            
+
         except Exception as e:
             logger.error(f"Error fetching sales: {str(e)}")
             raise

@@ -1,20 +1,29 @@
 from typing import List, Optional, Dict
 from evo_client.api.membership_api import MembershipApi
 from evo_client.core.api_client import ApiClient
-from evo_client.models.contratos_resumo_api_view_model import ContratosResumoApiViewModel
+from evo_client.models.contratos_resumo_api_view_model import (
+    ContratosResumoApiViewModel,
+)
 from evo_client.utils.pagination_utils import paginated_api_call
-from evo_client.models.w12_utils_category_membership_view_model import W12UtilsCategoryMembershipViewModel
+from evo_client.models.w12_utils_category_membership_view_model import (
+    W12UtilsCategoryMembershipViewModel,
+)
 from . import BaseDataFetcher
 import logging
 
 logger = logging.getLogger(__name__)
 
-class MembershipDataFetcher(BaseDataFetcher):
+
+class MembershipDataFetcher(BaseDataFetcher[MembershipApi]):
     """Handles fetching and processing membership-related data."""
-    
-    def __init__(self, membership_api: MembershipApi, branch_api_clients: Optional[Dict[str, ApiClient]] = None):
+
+    def __init__(
+        self,
+        membership_api: MembershipApi,
+        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
+    ):
         """Initialize the membership data fetcher.
-        
+
         Args:
             membership_api: The membership API instance
             branch_api_clients: Optional dictionary mapping branch IDs to their API clients
@@ -39,7 +48,7 @@ class MembershipDataFetcher(BaseDataFetcher):
         """
         try:
             memberships = []
-            
+
             # Get memberships from default client
             result = paginated_api_call(
                 api_func=self.api.get_memberships,
@@ -47,17 +56,17 @@ class MembershipDataFetcher(BaseDataFetcher):
                 membership_id=membership_id,
                 name=name,
                 active=active,
-                pagination_type="skip_take"
+                pagination_type="skip_take",
             )
             if result:
                 memberships.extend(result)
-            
+
             return memberships
-            
+
         except Exception as e:
             logger.error(f"Error fetching memberships: {str(e)}")
             raise
-    
+
     def fetch_membership_categories(self) -> List[W12UtilsCategoryMembershipViewModel]:
         """Fetch membership categories.
 
@@ -66,12 +75,12 @@ class MembershipDataFetcher(BaseDataFetcher):
         """
         try:
             categories = []
-            
+
             # Get categories from default client
             result = self.api.get_categories()
             if result:
                 categories.extend(result)
-            
+
             # Get categories from branch clients
             for branch_id in self.get_available_branch_ids():
                 branch_api = self.get_branch_api(branch_id, MembershipApi)
@@ -81,8 +90,10 @@ class MembershipDataFetcher(BaseDataFetcher):
                         if branch_result:
                             categories.extend(branch_result)
                     except Exception as e:
-                        logger.warning(f"Failed to fetch categories for branch {branch_id}: {e}")
-            
+                        logger.warning(
+                            f"Failed to fetch categories for branch {branch_id}: {e}"
+                        )
+
             # Remove duplicates (if any)
             seen_categories = set()
             unique_categories = []
@@ -90,9 +101,9 @@ class MembershipDataFetcher(BaseDataFetcher):
                 if category.id not in seen_categories:
                     seen_categories.add(category.id)
                     unique_categories.append(category)
-            
+
             return unique_categories
-            
+
         except Exception as e:
             logger.error(f"Error fetching membership categories: {str(e)}")
             raise

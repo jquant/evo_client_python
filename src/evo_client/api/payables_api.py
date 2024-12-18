@@ -2,16 +2,17 @@ from datetime import datetime
 from multiprocessing.pool import AsyncResult
 from typing import Any, Literal, Optional, Union, overload
 
+from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.cost_center_api_view_model import CostCenterApiViewModel
 from ..models.payables_api_view_model import PayablesApiViewModel
 
 
-class PayablesApi:
+class PayablesApi(BaseApi):
     """Payables API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1"
 
     @overload
@@ -20,8 +21,7 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> CostCenterApiViewModel:
-        ...
+    ) -> CostCenterApiViewModel: ...
 
     @overload
     def get_cost_centers(
@@ -29,8 +29,7 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_cost_centers(
         self,
@@ -79,8 +78,7 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> PayablesApiViewModel:
-        ...
+    ) -> PayablesApiViewModel: ...
 
     @overload
     def get_payables(
@@ -101,8 +99,7 @@ class PayablesApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_payables(
         self,

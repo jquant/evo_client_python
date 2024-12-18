@@ -10,18 +10,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class ServiceDataFetcher(BaseDataFetcher):
+class ServiceDataFetcher(BaseDataFetcher[ServiceApi]):
     """Handles fetching and processing service-related data."""
-    
-    def __init__(self, service_api: ServiceApi, branch_api_clients: Optional[Dict[str, ApiClient]] = None):
+
+    def __init__(
+        self,
+        service_api: ServiceApi,
+        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
+    ):
         """Initialize the service data fetcher.
-        
+
         Args:
             service_api: The service API instance
             branch_api_clients: Optional dictionary mapping branch IDs to their API clients
         """
         super().__init__(service_api, branch_api_clients)
-    
+
     def fetch_services(
         self,
         id_service: Optional[int] = None,
@@ -37,9 +41,9 @@ class ServiceDataFetcher(BaseDataFetcher):
                 name=name,
                 active=active,
             )
-            
+
             return result or []
-            
+
         except Exception as e:
             logger.error(f"Error fetching services: {str(e)}")
             raise
