@@ -1,15 +1,12 @@
 from typing import List, Optional, Dict
 from datetime import datetime
-import logging
+from loguru import logger
 
-from evo_client.models.members_api_view_model import MembersApiViewModel
-from evo_client.api.members_api import MembersApi
-from evo_client.models.member_data_view_model import MemberDataViewModel
-from evo_client.core.api_client import ApiClient
-from evo_client.utils.pagination_utils import paginated_api_call
+from ...api.members_api import MembersApi
+from ...models.member_data_view_model import MemberDataViewModel
+from ...core.api_client import ApiClient
+from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
-
-logger = logging.getLogger(__name__)
 
 
 class MemberDataFetcher(BaseDataFetcher[MembersApi]):
@@ -83,7 +80,7 @@ class MemberDataFetcher(BaseDataFetcher[MembersApi]):
         personal_type: Optional[int] = None,
         show_activity_data: bool = False,
         default_client: bool = True,
-    ) -> List[MembersApiViewModel]:
+    ) -> List[MemberDataViewModel]:
         """Fetch members with various filters.
 
         Args:

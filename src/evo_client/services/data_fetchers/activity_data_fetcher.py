@@ -1,14 +1,14 @@
 from typing import List, Optional, Dict
 from datetime import datetime
 
-from evo_client.api.activities_api import ActivitiesApi
-from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
-from evo_client.models.atividade_sessao_participante_api_view_model import (
+from ...api.activities_api import ActivitiesApi
+from ...models.atividade_list_api_view_model import AtividadeListApiViewModel
+from ...models.atividade_sessao_participante_api_view_model import (
     AtividadeSessaoParticipanteApiViewModel,
 )
-from evo_client.utils.pagination_utils import paginated_api_call
-from evo_client.core.api_client import ApiClient
-from evo_client.services.data_fetchers.__init__ import BaseDataFetcher
+from ...utils.pagination_utils import paginated_api_call
+from ...core.api_client import ApiClient
+from . import BaseDataFetcher
 from loguru import logger
 
 
@@ -115,11 +115,11 @@ class ActivityDataFetcher(BaseDataFetcher[ActivitiesApi]):
         # Convert raw data to dictionaries first, then to models
         return {
             "activities": [
-                AtividadeListApiViewModel(**activity.model_dump())
+                AtividadeListApiViewModel(**activity.to_dict())
                 for activity in activities
             ],
             "schedules": [
-                AtividadeSessaoParticipanteApiViewModel(**schedule.model_dump())
+                AtividadeSessaoParticipanteApiViewModel(**schedule.to_dict())
                 for schedule in schedules
             ],
         }

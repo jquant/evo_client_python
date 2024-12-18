@@ -95,7 +95,7 @@ class SalesApi(BaseApi):
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: Literal[False] = False,
-    ) -> SalesViewModel: ...
+    ) -> List[SalesViewModel]: ...
 
     @overload
     def get_sales(
@@ -138,7 +138,7 @@ class SalesApi(BaseApi):
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: bool = False,
-    ) -> Union[SalesViewModel, AsyncResult[Any]]:
+    ) -> Union[List[SalesViewModel], AsyncResult[Any]]:
         """
         Get sales with various filtering options.
 
@@ -183,7 +183,7 @@ class SalesApi(BaseApi):
             resource_path="/api/v2/sales",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
-            response_type=SalesViewModel,
+            response_type=List[SalesViewModel],
             auth_settings=["Basic"],
             async_req=async_req,
         )

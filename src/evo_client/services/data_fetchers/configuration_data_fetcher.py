@@ -1,14 +1,12 @@
 # /src/evo_client/services/data_fetchers/configuration_data_fetcher.py
 from typing import List, Dict, Optional
-import logging
+from loguru import logger
 
-from evo_client.api.configuration_api import ConfigurationApi
-from evo_client.core.api_client import ApiClient
-from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.configuracao_api_view_model import ConfiguracaoApiViewModel
+from ...api.configuration_api import ConfigurationApi
+from ...core.api_client import ApiClient
+from ...exceptions.api_exceptions import ApiException
+from ...models.configuracao_api_view_model import ConfiguracaoApiViewModel
 from . import BaseDataFetcher
-
-logger = logging.getLogger(__name__)
 
 
 class ConfigurationDataFetcher(BaseDataFetcher[ConfigurationApi]):

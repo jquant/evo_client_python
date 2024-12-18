@@ -1,4 +1,4 @@
-import logging
+from loguru import logger
 from multiprocessing.pool import AsyncResult, ThreadPool
 from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union, overload
 
@@ -7,7 +7,6 @@ from pydantic import BaseModel
 from .configuration import Configuration
 from .rest import RESTClient
 
-logger = logging.getLogger(__name__)
 T = TypeVar("T", bound=BaseModel)
 
 

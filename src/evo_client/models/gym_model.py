@@ -9,14 +9,14 @@ from pydantic import ConfigDict
 from loguru import logger
 from datetime import timedelta
 
-from evo_client.models.configuracao_api_view_model import ConfiguracaoApiViewModel
-from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
-from evo_client.models.receivables_api_view_model import ReceivablesApiViewModel
-from evo_client.models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
-from evo_client.models.contratos_resumo_api_view_model import (
+from .configuracao_api_view_model import ConfiguracaoApiViewModel
+from .atividade_list_api_view_model import AtividadeListApiViewModel
+from .receivables_api_view_model import ReceivablesApiViewModel
+from .servicos_resumo_api_view_model import ServicosResumoApiViewModel
+from .contratos_resumo_api_view_model import (
     ContratosResumoApiViewModel,
 )
-from evo_client.models.w12_utils_category_membership_view_model import (
+from .w12_utils_category_membership_view_model import (
     W12UtilsCategoryMembershipViewModel,
 )
 

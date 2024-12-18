@@ -1,17 +1,15 @@
 from typing import List, Optional, Dict
-from evo_client.api.membership_api import MembershipApi
-from evo_client.core.api_client import ApiClient
-from evo_client.models.contratos_resumo_api_view_model import (
+from ...api.membership_api import MembershipApi
+from ...core.api_client import ApiClient
+from ...models.contratos_resumo_api_view_model import (
     ContratosResumoApiViewModel,
 )
-from evo_client.utils.pagination_utils import paginated_api_call
-from evo_client.models.w12_utils_category_membership_view_model import (
+from ...utils.pagination_utils import paginated_api_call
+from ...models.w12_utils_category_membership_view_model import (
     W12UtilsCategoryMembershipViewModel,
 )
 from . import BaseDataFetcher
-import logging
-
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 
 class MembershipDataFetcher(BaseDataFetcher[MembershipApi]):

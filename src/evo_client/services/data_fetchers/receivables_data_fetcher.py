@@ -1,14 +1,12 @@
 from typing import List, Optional, Dict
 from datetime import datetime
-import logging
+from loguru import logger
 
-from evo_client.api.receivables_api import ReceivablesApi
-from evo_client.core.api_client import ApiClient
-from evo_client.models.receivables_api_view_model import ReceivablesApiViewModel
-from evo_client.utils.pagination_utils import paginated_api_call
+from ...api.receivables_api import ReceivablesApi
+from ...core.api_client import ApiClient
+from ...models.receivables_api_view_model import ReceivablesApiViewModel
+from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
-
-logger = logging.getLogger(__name__)
 
 
 class ReceivablesDataFetcher(BaseDataFetcher[ReceivablesApi]):

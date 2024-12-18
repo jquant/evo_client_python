@@ -1,9 +1,11 @@
-from typing import List, Any, Callable, Dict
+from typing import List, Any, Callable, Dict, TypeVar
 from loguru import logger
 import time
 from threading import Lock as ThreadLock
 
 from ..exceptions.api_exceptions import ApiException
+
+T = TypeVar("T")
 
 
 class RateLimiter:
@@ -77,18 +79,18 @@ def compute_backoff_delay(
 
 def fetch_for_unit(
     unit_id: str,
-    api_func: Callable,
+    api_func: Callable[..., List[T]],
     kwargs: Dict,
     page_size: int,
     max_retries: int,
     base_delay: float,
     supports_pagination: bool,
     pagination_type: str,
-) -> List[Any]:
+) -> List[T]:
     """Fetch all pages of data for a single unit, handling pagination and retries."""
     # Create rate limiter inside the process
     rate_limiter = RateLimiter(max_requests=5, time_window=1)
-    unit_results: List[Any] = []
+    unit_results: List[T] = []
     page = 0
 
     while True:
@@ -102,6 +104,7 @@ def fetch_for_unit(
             rate_limiter.acquire()
             try:
                 result = api_func(**call_kwargs)
+                time.sleep(1)
 
                 if not result:
                     return unit_results
@@ -137,7 +140,7 @@ def fetch_for_unit(
 
 
 def paginated_api_call(
-    api_func: Callable,
+    api_func: Callable[..., List[T]],
     unit_id: str,
     page_size: int = 50,
     max_retries: int = 5,
@@ -145,21 +148,22 @@ def paginated_api_call(
     supports_pagination: bool = True,
     pagination_type: str = "skip_take",
     **kwargs,
-) -> List[Any]:
+) -> List[T]:
     """Execute paginated API calls with retry logic."""
     if pagination_type not in ("skip_take", "page_page_size"):
         raise ValueError(
             "Unsupported pagination_type. Use 'skip_take' or 'page_page_size'."
         )
 
-    logger.info(
-        f"Starting paginated API calls for {api_func.__name__ if hasattr(api_func, '__name__') else 'anonymous function'}."
+    func_name = (
+        api_func.__name__ if hasattr(api_func, "__name__") else "anonymous function"
     )
+    logger.info(f"Starting paginated API calls for {func_name} with unit_id {unit_id}.")
 
     flat_results: List[Any] = []
     try:
         result = fetch_for_unit(
-            unit_id="",
+            unit_id=unit_id,
             api_func=api_func,
             kwargs=kwargs,
             page_size=page_size,

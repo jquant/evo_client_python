@@ -9,6 +9,7 @@ from pathlib import Path
 from functools import wraps
 from loguru import logger
 from rich.tree import Tree
+import sys
 
 from ..api.gym_api import GymApi
 from ..core.configuration import Configuration
@@ -19,13 +20,17 @@ from ..models.gym_model import (
 from ..utils.decorators import handle_api_errors
 
 # Configure loguru logger
+logger.remove()  # Remove default handler
+# Add file handler
 logger.add(
     "logs/evo_client.log",
     rotation="1 day",
     retention="7 days",
-    level="INFO",
+    level="INFO",  # Default level is INFO
     format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
 )
+# Add terminal handler
+logger.add(sys.stderr, level="INFO")
 
 # Common option types
 DaysOption = Annotated[
@@ -621,12 +626,29 @@ def main(
             "--verbose", "-v", help="Enable verbose output", callback=verbose_callback
         ),
     ] = False,
+    debug: Annotated[
+        bool,
+        typer.Option(
+            "--debug",
+            help="Enable debug logging",
+        ),
+    ] = False,
 ):
     """
     Gym Management CLI - A command-line interface for managing gym operations.
 
     Run 'gym auth login' to set up authentication before using other commands.
     """
+    # Set logging level based on debug flag
+    if debug:
+        logger.remove()
+        logger.add(
+            "logs/evo_client.log",
+            rotation="1 day",
+            retention="7 days",
+            level="DEBUG",
+            format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
+        )
     pass
 
 

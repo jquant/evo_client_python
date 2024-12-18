@@ -1,14 +1,12 @@
 from typing import List, Optional, Dict
 from datetime import datetime
-import logging
+from loguru import logger
 
-from evo_client.api.entries_api import EntriesApi
-from evo_client.models.gym_model import GymEntry
-from evo_client.core.api_client import ApiClient
-from evo_client.utils.pagination_utils import paginated_api_call
+from ...api.entries_api import EntriesApi
+from ...models.gym_model import GymEntry
+from ...core.api_client import ApiClient
+from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
-
-logger = logging.getLogger(__name__)
 
 
 class EntriesDataFetcher(BaseDataFetcher[EntriesApi]):

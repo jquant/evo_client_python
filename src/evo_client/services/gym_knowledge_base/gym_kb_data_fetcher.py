@@ -1,27 +1,25 @@
 from typing import List, Optional, Dict
-from evo_client.models.gym_model import (
+from ...models.gym_model import (
     GymKnowledgeBase,
     GymUnitKnowledgeBase,
     Address,
     BusinessHours,
 )
-from evo_client.services.data_fetchers.configuration_data_fetcher import (
+from ..data_fetchers.configuration_data_fetcher import (
     ConfigurationDataFetcher,
 )
-from evo_client.services.data_fetchers.activity_data_fetcher import ActivityDataFetcher
-from evo_client.services.data_fetchers.service_data_fetcher import ServiceDataFetcher
-from evo_client.services.data_fetchers.membership_data_fetcher import (
+from ..data_fetchers.activity_data_fetcher import ActivityDataFetcher
+from ..data_fetchers.service_data_fetcher import ServiceDataFetcher
+from ..data_fetchers.membership_data_fetcher import (
     MembershipDataFetcher,
 )
-from evo_client.core.api_client import ApiClient
-from evo_client.services.data_fetchers import BaseDataFetcher
-from evo_client.api.configuration_api import ConfiguracaoApiViewModel
+from ...core.api_client import ApiClient
+from ..data_fetchers import BaseDataFetcher
+from ...api.configuration_api import ConfiguracaoApiViewModel
 
-import logging
+from loguru import logger
 from pathlib import Path
 import json
-
-logger = logging.getLogger(__name__)
 
 
 class GymKnowledgeBaseService(BaseDataFetcher):
