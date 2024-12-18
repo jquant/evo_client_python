@@ -158,7 +158,9 @@ def paginated_api_call(
     func_name = (
         api_func.__name__ if hasattr(api_func, "__name__") else "anonymous function"
     )
-    logger.info(f"Starting paginated API calls for {func_name} with unit_id {unit_id}.")
+    logger.debug(
+        f"Starting paginated API calls for {func_name} with unit_id {unit_id}."
+    )
 
     flat_results: List[Any] = []
     try:
