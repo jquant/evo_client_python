@@ -46,7 +46,7 @@ try:
     from ..models.gym_model import OverdueMember
 except ImportError as e:
     logger.error(f"Error importing gym_model: {str(e)}")
-    raise
+    raise ValueError(f"Error importing gym_model: {str(e)}")
 
 
 class GymApi:

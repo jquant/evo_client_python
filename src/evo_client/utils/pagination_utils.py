@@ -1,38 +1,41 @@
-from multiprocessing import Pool, Lock
-from typing import List, Any, Callable, Optional, Dict
+from typing import List, Any, Callable, Dict
 from loguru import logger
 import time
 from threading import Lock as ThreadLock
-from functools import partial
 
 from ..exceptions.api_exceptions import ApiException
 
 
 class RateLimiter:
     """Global rate limiter to ensure we don't exceed API limits."""
+
     def __init__(self, max_requests: int = 35, time_window: int = 60):
         self.max_requests = max_requests
         self.time_window = time_window
         self.requests: List[float] = []
         self._lock = ThreadLock()
-    
+
     def acquire(self):
         """Wait until a request can be made, respecting rate limits."""
         with self._lock:
             now = time.time()
             # Remove old requests
             self.requests = [t for t in self.requests if now - t < self.time_window]
-            
+
             if len(self.requests) >= self.max_requests:
                 # Calculate sleep time until we can make another request
                 sleep_time = self.requests[0] + self.time_window - now
                 if sleep_time > 0:
-                    logger.warning(f"Rate limit reached, waiting {sleep_time:.2f}s before next request.")
+                    logger.warning(
+                        f"Rate limit reached, waiting {sleep_time:.2f}s before next request."
+                    )
                     time.sleep(sleep_time)
                     # After sleeping, clean old requests again
                     now = time.time()
-                    self.requests = [t for t in self.requests if now - t < self.time_window]
-            
+                    self.requests = [
+                        t for t in self.requests if now - t < self.time_window
+                    ]
+
             self.requests.append(now)
 
 
@@ -58,7 +61,9 @@ def extract_retry_after(error_message: str) -> float:
     return retry_after
 
 
-def compute_backoff_delay(base_delay: float, attempt: int, exception: Exception) -> float:
+def compute_backoff_delay(
+    base_delay: float, attempt: int, exception: Exception
+) -> float:
     """
     Compute a backoff delay based on the attempt count and presence of rate limit hints.
     Uses exponential backoff and checks for 429 'Too Many Requests' errors.
@@ -70,34 +75,13 @@ def compute_backoff_delay(base_delay: float, attempt: int, exception: Exception)
     return delay
 
 
-def get_branch_api_function(api_func: Callable, branch_api_clients: Optional[Dict[str, Any]], unit_id: Optional[int]) -> Callable:
-    """
-    Given a base api_func and a dictionary of branch_api_clients, return the appropriate 
-    branch-specific function if available. Otherwise, return the base api_func.
-    """
-    if unit_id is not None and branch_api_clients:
-        branch_str = str(unit_id)
-        if branch_str in branch_api_clients:
-            branch_client = branch_api_clients[branch_str]
-            method_name = getattr(api_func, "__name__", None)
-            if method_name and hasattr(branch_client, method_name):
-                logger.debug(f"Using branch-specific client for branch {unit_id}, method {method_name}")
-                return getattr(branch_client, method_name)
-            else:
-                logger.warning(f"Branch {unit_id} client does not have method {method_name}, using default api_func.")
-        else:
-            logger.warning(f"No branch client for branch {unit_id}, using default api_func.")
-    return api_func
-
-
 def fetch_for_unit(
-    unit_id: Optional[int],
+    unit_id: str,
     api_func: Callable,
     kwargs: Dict,
     page_size: int,
     max_retries: int,
     base_delay: float,
-    branch_api_clients: Optional[Dict[str, Any]],
     supports_pagination: bool,
     pagination_type: str,
 ) -> List[Any]:
@@ -114,12 +98,10 @@ def fetch_for_unit(
         else:  # "page_page_size"
             call_kwargs.update({"page": page, "page_size": page_size})
 
-        current_api_func = get_branch_api_function(api_func, branch_api_clients, unit_id)
-
         for attempt in range(1, max_retries + 1):
             rate_limiter.acquire()
             try:
-                result = current_api_func(**call_kwargs)
+                result = api_func(**call_kwargs)
 
                 if not result:
                     return unit_results
@@ -137,10 +119,16 @@ def fetch_for_unit(
                 break
 
             except (ApiException, Exception) as e:
-                logger.warning(f"Exception for unit {unit_id}, page {page}, attempt {attempt}/{max_retries}: {e}")
+                logger.warning(
+                    f"Exception for unit {unit_id}, page {page}, attempt {attempt}/{max_retries}: {e}"
+                )
                 if attempt == max_retries:
-                    logger.error(f"Max retries reached for unit {unit_id}, page {page}.")
-                    raise
+                    logger.error(
+                        f"Max retries reached for unit {unit_id}, page {page}."
+                    )
+                    raise ValueError(
+                        f"Max retries reached for unit {unit_id}, page {page}: {e}"
+                    )
                 delay = compute_backoff_delay(base_delay, attempt, e)
                 logger.info(f"Retrying unit {unit_id}, page {page} in {delay:.2f}s...")
                 time.sleep(delay)
@@ -150,42 +138,41 @@ def fetch_for_unit(
 
 def paginated_api_call(
     api_func: Callable,
+    unit_id: str,
     page_size: int = 50,
     max_retries: int = 5,
     base_delay: float = 1.5,
-    parallel_units: Optional[List[int]] = None,
-    branch_api_clients: Optional[Dict[str, Any]] = None,
     supports_pagination: bool = True,
     pagination_type: str = "skip_take",
-    **kwargs
+    **kwargs,
 ) -> List[Any]:
     """Execute paginated API calls with retry logic."""
     if pagination_type not in ("skip_take", "page_page_size"):
-        raise ValueError("Unsupported pagination_type. Use 'skip_take' or 'page_page_size'.")
-    
-    logger.info(f"Starting paginated API calls for {api_func.__name__ if hasattr(api_func, '__name__') else 'anonymous function'}.")
-    if parallel_units:
-        logger.info(f"Processing units: {parallel_units}")
+        raise ValueError(
+            "Unsupported pagination_type. Use 'skip_take' or 'page_page_size'."
+        )
+
+    logger.info(
+        f"Starting paginated API calls for {api_func.__name__ if hasattr(api_func, '__name__') else 'anonymous function'}."
+    )
 
     flat_results: List[Any] = []
-    for unit_id in (parallel_units or [None]):
-        try:
-            result = fetch_for_unit(
-                unit_id,
-                api_func,
-                kwargs,
-                page_size,
-                max_retries,
-                base_delay,
-                branch_api_clients,
-                supports_pagination,
-                pagination_type,
-            )
-            if isinstance(result, list):
-                flat_results.extend(result)
-            else:
-                flat_results.append(result)
-        except Exception as e:
-            logger.error(f"Error fetching for unit {unit_id}: {e}")
-    
+    try:
+        result = fetch_for_unit(
+            unit_id="",
+            api_func=api_func,
+            kwargs=kwargs,
+            page_size=page_size,
+            max_retries=max_retries,
+            base_delay=base_delay,
+            supports_pagination=supports_pagination,
+            pagination_type=pagination_type,
+        )
+        if isinstance(result, list):
+            flat_results.extend(result)
+        else:
+            flat_results.append(result)
+    except Exception as e:
+        logger.error(f"Error fetching for unit {unit_id}: {e}")
+
     return flat_results

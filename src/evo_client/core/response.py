@@ -46,15 +46,13 @@ class RESTResponse(io.IOBase):
             if content_type and "application/json" not in content_type:
                 raise ValueError("Response content is not in JSON format")
             # Otherwise, re-raise the original error
-            raise
+            raise e
 
     @overload
-    def deserialize(self, response_type: Type[T]) -> T:
-        ...
+    def deserialize(self, response_type: Type[T]) -> T: ...
 
     @overload
-    def deserialize(self, response_type: Type[Iterable[T]]) -> List[T]:
-        ...
+    def deserialize(self, response_type: Type[Iterable[T]]) -> List[T]: ...
 
     def deserialize(self, response_type: Type[T] | Type[Iterable[T]]) -> T | List[T]:
         """Deserialize response data into the specified type."""

@@ -51,6 +51,7 @@ class EntriesDataFetcher(BaseDataFetcher[EntriesApi]):
             # Get entries from default client
             result = paginated_api_call(
                 api_func=self.api.get_entries,
+                unit_id="default",
                 register_date_start=register_date_start,
                 register_date_end=register_date_end,
                 id_entry=id_entry,
@@ -66,6 +67,7 @@ class EntriesDataFetcher(BaseDataFetcher[EntriesApi]):
                     try:
                         branch_result = paginated_api_call(
                             api_func=branch_api.get_entries,
+                            unit_id=str(branch_id),
                             register_date_start=register_date_start,
                             register_date_end=register_date_end,
                             id_entry=id_entry,
@@ -82,4 +84,4 @@ class EntriesDataFetcher(BaseDataFetcher[EntriesApi]):
 
         except Exception as e:
             logger.error(f"Error fetching entries: {str(e)}")
-            raise
+            raise ValueError(f"Error fetching entries: {str(e)}")

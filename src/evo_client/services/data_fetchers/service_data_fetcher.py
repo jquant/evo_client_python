@@ -31,19 +31,35 @@ class ServiceDataFetcher(BaseDataFetcher[ServiceApi]):
         id_service: Optional[int] = None,
         name: Optional[str] = None,
         active: Optional[bool] = None,
+        default_client: bool = True,
     ) -> List[ServicosResumoApiViewModel]:
         """Fetch services with various filters."""
         try:
-            result = paginated_api_call(
-                api_func=self.api.get_services,
-                parallel_units=self.get_available_branch_ids(),
-                service_id=id_service,
-                name=name,
-                active=active,
-            )
+            if default_client:
+                services = paginated_api_call(
+                    api_func=self.api.get_services,
+                    unit_id="default",
+                    service_id=id_service,
+                    name=name,
+                    active=active,
+                )
+            else:
+                services = []
+                for branch_id in self.get_available_branch_ids():
+                    branch_api = self.get_branch_api(branch_id, ServiceApi)
+                    if branch_api:
+                        services.extend(
+                            paginated_api_call(
+                                api_func=branch_api.get_services,
+                                unit_id=str(branch_id),
+                                service_id=id_service,
+                                name=name,
+                                active=active,
+                            )
+                        )
 
-            return result or []
+            return services or []
 
         except Exception as e:
             logger.error(f"Error fetching services: {str(e)}")
-            raise
+            raise ValueError(f"Error fetching services: {str(e)}")

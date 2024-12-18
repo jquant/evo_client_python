@@ -35,6 +35,7 @@ class ActivityDataFetcher(BaseDataFetcher[ActivitiesApi]):
         # Schedule filters
         activity_date: Optional[datetime] = None,
         id_member: Optional[int] = None,
+        default_client: bool = True,
     ) -> Dict[str, List]:
         """Fetch activities and their schedules with various filters.
 
@@ -65,18 +66,38 @@ class ActivityDataFetcher(BaseDataFetcher[ActivitiesApi]):
         # Use available branch IDs from base class
         branch_ids = self.get_available_branch_ids()
 
-        # Fetch activities and their schedules using only available branch clients
-        activities = paginated_api_call(
-            api_func=self.api.get_activities,
-            parallel_units=branch_ids,  # Use only the branch IDs we have clients for
-            search=search,
-            supports_pagination=False,
-        )
+        if default_client:
+            activities = paginated_api_call(
+                api_func=self.api.get_activities,
+                unit_id="default",
+                search=search,
+                supports_pagination=False,
+            )
+        else:
+            activities = []
+            for branch_id in branch_ids:
+                branch_api = self.get_branch_api(branch_id, ActivitiesApi)
+                if branch_api:
+                    result = paginated_api_call(
+                        api_func=branch_api.get_activities,
+                        unit_id=str(branch_id),
+                        search=search,
+                        supports_pagination=False,
+                    )
+                    activities.extend(result)
 
         # For each branch, get its specific schedule
-        schedules = []
-        for branch_id in branch_ids:
-            branch_api = self.get_branch_api(branch_id, ActivitiesApi)
+        if default_client:
+            schedules = self.api.get_schedule(
+                show_full_week=True,
+                date=activity_date,
+                member_id=id_member,
+            )
+
+        else:
+            schedules = []
+            for branch_id in branch_ids:
+                branch_api = self.get_branch_api(branch_id, ActivitiesApi)
             if branch_api:
                 try:
                     branch_schedules = branch_api.get_schedule(

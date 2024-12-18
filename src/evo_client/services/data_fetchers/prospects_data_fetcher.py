@@ -41,6 +41,7 @@ class ProspectsDataFetcher(BaseDataFetcher[ProspectsApi]):
         conversion_date_start: Optional[datetime] = None,
         conversion_date_end: Optional[datetime] = None,
         gympass_id: Optional[str] = None,
+        default_client: bool = True,
     ) -> List[ProspectsResumoApiViewModel]:
         """Fetch prospects with various filters.
 
@@ -61,23 +62,45 @@ class ProspectsDataFetcher(BaseDataFetcher[ProspectsApi]):
         """
         try:
             # Get prospects using paginated call with available branch IDs
-            result = paginated_api_call(
-                api_func=self.api.get_prospects,
-                parallel_units=self.get_available_branch_ids(),
-                id_prospect=id_prospect,
-                name=name,
-                document=document,
-                email=email,
-                phone=phone,
-                register_date_start=register_date_start,
-                register_date_end=register_date_end,
-                conversion_date_start=conversion_date_start,
-                conversion_date_end=conversion_date_end,
-                gympass_id=gympass_id,
-            )
+            if default_client:
+                result = paginated_api_call(
+                    api_func=self.api.get_prospects,
+                    unit_id="default",
+                    id_prospect=id_prospect,
+                    name=name,
+                    document=document,
+                    email=email,
+                    phone=phone,
+                    register_date_start=register_date_start,
+                    register_date_end=register_date_end,
+                    conversion_date_start=conversion_date_start,
+                    conversion_date_end=conversion_date_end,
+                    gympass_id=gympass_id,
+                )
+            else:
+                result = []
+                for branch_id in self.get_available_branch_ids():
+                    branch_api = self.get_branch_api(branch_id, ProspectsApi)
+                    if branch_api:
+                        result.extend(
+                            paginated_api_call(
+                                api_func=branch_api.get_prospects,
+                                unit_id=str(branch_id),
+                                id_prospect=id_prospect,
+                                name=name,
+                                document=document,
+                                email=email,
+                                phone=phone,
+                                register_date_start=register_date_start,
+                                register_date_end=register_date_end,
+                                conversion_date_start=conversion_date_start,
+                                conversion_date_end=conversion_date_end,
+                                gympass_id=gympass_id,
+                            )
+                        )
 
             return result or []
 
         except Exception as e:
             logger.error(f"Error fetching prospects: {str(e)}")
-            raise
+            raise ValueError(f"Error fetching prospects: {str(e)}")

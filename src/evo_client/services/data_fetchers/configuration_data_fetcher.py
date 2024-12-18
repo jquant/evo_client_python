@@ -34,7 +34,7 @@ class ConfigurationDataFetcher(BaseDataFetcher[ConfigurationApi]):
             List[ConfiguracaoApiViewModel]: List of branch configurations
         """
         try:
-            configs = []
+            configs: List[ConfiguracaoApiViewModel] = []
 
             # Get configurations from default client
             result: List[ConfiguracaoApiViewModel] = self.api.get_branch_config()
@@ -56,10 +56,7 @@ class ConfigurationDataFetcher(BaseDataFetcher[ConfigurationApi]):
                     try:
                         branch_result = branch_api.get_branch_config()
                         if branch_result:
-                            if isinstance(branch_result, list):
-                                configs.extend(branch_result)
-                            else:
-                                configs.append(branch_result)
+                            configs.extend(branch_result)
                     except Exception as e:
                         logger.warning(
                             f"Failed to fetch config for branch {branch_id}: {e}"
@@ -77,7 +74,7 @@ class ConfigurationDataFetcher(BaseDataFetcher[ConfigurationApi]):
 
         except Exception as e:
             logger.error(f"Error fetching branch configurations: {str(e)}")
-            raise
+            raise ValueError(f"Error fetching branch configurations: {str(e)}")
 
     def validate_and_cache_configurations(self) -> List[ConfiguracaoApiViewModel]:
         """Validate credentials and cache branch configurations.
@@ -114,4 +111,4 @@ class ConfigurationDataFetcher(BaseDataFetcher[ConfigurationApi]):
         except ApiException as e:
             if e.status == 401:
                 raise ValueError("Invalid credentials") from e
-            raise
+            raise ValueError(f"Error validating and caching configurations: {str(e)}")

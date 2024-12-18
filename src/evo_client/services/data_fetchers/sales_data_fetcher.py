@@ -89,4 +89,4 @@ class SalesDataFetcher(BaseDataFetcher[SalesApi]):
 
         except Exception as e:
             logger.error(f"Error fetching sales: {str(e)}")
-            raise
+            raise ValueError(f"Error fetching sales: {str(e)}")

@@ -35,6 +35,7 @@ class MembershipDataFetcher(BaseDataFetcher[MembershipApi]):
         membership_id: Optional[int] = None,
         name: Optional[str] = None,
         active: Optional[bool] = None,
+        default_client: bool = True,
     ) -> List[ContratosResumoApiViewModel]:
         """Fetch membership plans with optional filtering.
 
@@ -47,25 +48,37 @@ class MembershipDataFetcher(BaseDataFetcher[MembershipApi]):
             List[ContratosResumoApiViewModel]: List of membership plans matching the filters
         """
         try:
-            memberships = []
-
             # Get memberships from default client
-            result = paginated_api_call(
-                api_func=self.api.get_memberships,
-                parallel_units=self.get_available_branch_ids(),
-                membership_id=membership_id,
-                name=name,
-                active=active,
-                pagination_type="skip_take",
-            )
-            if result:
-                memberships.extend(result)
+            if default_client:
+                memberships = paginated_api_call(
+                    api_func=self.api.get_memberships,
+                    unit_id="default",
+                    membership_id=membership_id,
+                    name=name,
+                    active=active,
+                    pagination_type="skip_take",
+                )
+            else:
+                memberships = []
+                for branch_id in self.get_available_branch_ids():
+                    branch_api = self.get_branch_api(branch_id, MembershipApi)
+                    if branch_api:
+                        result = paginated_api_call(
+                            api_func=branch_api.get_memberships,
+                            unit_id=str(branch_id),
+                            membership_id=membership_id,
+                            name=name,
+                            active=active,
+                            pagination_type="skip_take",
+                        )
+                        if result:
+                            memberships.extend(result)
 
             return memberships
 
         except Exception as e:
             logger.error(f"Error fetching memberships: {str(e)}")
-            raise
+            raise ValueError(f"Error fetching memberships: {str(e)}")
 
     def fetch_membership_categories(self) -> List[W12UtilsCategoryMembershipViewModel]:
         """Fetch membership categories.
@@ -106,4 +119,4 @@ class MembershipDataFetcher(BaseDataFetcher[MembershipApi]):
 
         except Exception as e:
             logger.error(f"Error fetching membership categories: {str(e)}")
-            raise
+            raise ValueError(f"Error fetching membership categories: {str(e)}")

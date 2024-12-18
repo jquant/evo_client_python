@@ -25,16 +25,13 @@ class RequestHandler:
         self.pool.join()
 
     @overload
-    def execute(self, response_type: None, **kwargs) -> Any:
-        ...
+    def execute(self, response_type: None, **kwargs) -> Any: ...
 
     @overload
-    def execute(self, response_type: Type[T], **kwargs) -> T:
-        ...
+    def execute(self, response_type: Type[T], **kwargs) -> T: ...
 
     @overload
-    def execute(self, response_type: Type[Iterable[T]], **kwargs) -> List[T]:
-        ...
+    def execute(self, response_type: Type[Iterable[T]], **kwargs) -> List[T]: ...
 
     def execute(
         self, response_type: Optional[Type[T] | Type[Iterable[T]]] = None, **kwargs
@@ -43,18 +40,15 @@ class RequestHandler:
         return self._make_request(response_type, **kwargs)
 
     @overload
-    def execute_async(self, response_type: None, **kwargs) -> AsyncResult[Any]:
-        ...
+    def execute_async(self, response_type: None, **kwargs) -> AsyncResult[Any]: ...
 
     @overload
-    def execute_async(self, response_type: Type[T], **kwargs) -> AsyncResult[T]:
-        ...
+    def execute_async(self, response_type: Type[T], **kwargs) -> AsyncResult[T]: ...
 
     @overload
     def execute_async(
         self, response_type: Type[Iterable[T]], **kwargs
-    ) -> AsyncResult[List[T]]:
-        ...
+    ) -> AsyncResult[List[T]]: ...
 
     def execute_async(
         self, response_type: Optional[Type[T] | Type[Iterable[T]]] = None, **kwargs
@@ -90,7 +84,7 @@ class RequestHandler:
         url = self.configuration.host + kwargs.get("resource_path", "")
         raw_response = kwargs.get("raw_response", False)
         _return_http_data_only = kwargs.get("_return_http_data_only", True)
-        
+
         # Log the full URL and request details
         logger.debug(f"Making {method} request to {url}")
         logger.debug(f"Host: {self.configuration.host}")
@@ -121,8 +115,12 @@ class RequestHandler:
         logger.debug(f"Raw response data: {response.data}")
 
         # Return raw response if requested or if it's a non-JSON content type
-        content_type = response.getheaders().get('Content-Type', '')
-        if raw_response or not _return_http_data_only or 'application/json' not in content_type.lower():
+        content_type = response.getheaders().get("Content-Type", "")
+        if (
+            raw_response
+            or not _return_http_data_only
+            or "application/json" not in content_type.lower()
+        ):
             logger.debug("Returning raw response")
             return response
 
@@ -130,7 +128,7 @@ class RequestHandler:
         decoded_data = None
         if isinstance(response.data, bytes):
             try:
-                decoded_data = response.data.decode('utf-8', errors='replace')
+                decoded_data = response.data.decode("utf-8", errors="replace")
                 logger.debug(f"Decoded response: {decoded_data}")
             except Exception as e:
                 logger.warning(f"Failed to decode response: {e}")
@@ -142,9 +140,11 @@ class RequestHandler:
             except Exception as e:
                 logger.warning(f"Failed to deserialize response: {e}")
                 if 200 <= response.status < 300:
-                    logger.debug(f"Request succeeded with status {response.status} despite deserialization failure")
+                    logger.debug(
+                        f"Request succeeded with status {response.status} despite deserialization failure"
+                    )
                     return response
-                raise
+                raise ValueError(f"Failed to deserialize response: {str(e)}")
 
         # Try to parse as JSON
         try:
@@ -152,6 +152,7 @@ class RequestHandler:
             if decoded_data:
                 try:
                     import json
+
                     return json.loads(decoded_data)
                 except json.JSONDecodeError:
                     pass
@@ -162,7 +163,9 @@ class RequestHandler:
             logger.warning(f"Failed to parse response as JSON: {e}")
             # Return response object for successful status codes even if parsing fails
             if 200 <= response.status < 300:
-                logger.debug(f"Request succeeded with status {response.status} despite parsing failure")
+                logger.debug(
+                    f"Request succeeded with status {response.status} despite parsing failure"
+                )
                 return response
             logger.error(f"Request failed with status {response.status}")
             raise ValueError(f"Failed to parse response: {str(e)}")

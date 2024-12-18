@@ -60,7 +60,7 @@ class MemberDataFetcher(BaseDataFetcher[MembersApi]):
 
         except Exception as e:
             logger.error(f"Error fetching member {member_id}: {str(e)}")
-            raise
+            raise ValueError(f"Error fetching member {member_id}: {str(e)}")
 
     def fetch_members(
         self,
@@ -82,6 +82,7 @@ class MemberDataFetcher(BaseDataFetcher[MembersApi]):
         only_personal: bool = False,
         personal_type: Optional[int] = None,
         show_activity_data: bool = False,
+        default_client: bool = True,
     ) -> List[MembersApiViewModel]:
         """Fetch members with various filters.
 
@@ -109,36 +110,62 @@ class MemberDataFetcher(BaseDataFetcher[MembersApi]):
             List[MembersApiViewModel]: List of members matching the filters
         """
         try:
-            members = []
-
             # Get members from default client
-            result = paginated_api_call(
-                api_func=self.api.get_members,
-                parallel_units=self.get_available_branch_ids(),
-                name=name,
-                email=email,
-                document=document,
-                phone=phone,
-                conversion_date_start=conversion_date_start,
-                conversion_date_end=conversion_date_end,
-                register_date_start=register_date_start,
-                register_date_end=register_date_end,
-                membership_start_date_start=membership_start_date_start,
-                membership_start_date_end=membership_start_date_end,
-                membership_cancel_date_start=membership_cancel_date_start,
-                membership_cancel_date_end=membership_cancel_date_end,
-                status=status,
-                token_gympass=token_gympass,
-                ids_members=ids_members,
-                only_personal=only_personal,
-                personal_type=personal_type,
-                show_activity_data=show_activity_data,
-            )
-            if result:
-                members.extend(result)
+            if default_client:
+                members = paginated_api_call(
+                    api_func=self.api.get_members,
+                    unit_id="default",
+                    name=name,
+                    email=email,
+                    document=document,
+                    phone=phone,
+                    conversion_date_start=conversion_date_start,
+                    conversion_date_end=conversion_date_end,
+                    register_date_start=register_date_start,
+                    register_date_end=register_date_end,
+                    membership_start_date_start=membership_start_date_start,
+                    membership_start_date_end=membership_start_date_end,
+                    membership_cancel_date_start=membership_cancel_date_start,
+                    membership_cancel_date_end=membership_cancel_date_end,
+                    status=status,
+                    token_gympass=token_gympass,
+                    ids_members=ids_members,
+                    only_personal=only_personal,
+                    personal_type=personal_type,
+                    show_activity_data=show_activity_data,
+                )
+            else:
+                members = []
+                for branch_id in self.get_available_branch_ids():
+                    branch_api = self.get_branch_api(branch_id, MembersApi)
+                    if branch_api:
+                        members.extend(
+                            paginated_api_call(
+                                api_func=branch_api.get_members,
+                                unit_id=str(branch_id),
+                                name=name,
+                                email=email,
+                                document=document,
+                                phone=phone,
+                                conversion_date_start=conversion_date_start,
+                                conversion_date_end=conversion_date_end,
+                                register_date_start=register_date_start,
+                                register_date_end=register_date_end,
+                                membership_start_date_start=membership_start_date_start,
+                                membership_start_date_end=membership_start_date_end,
+                                membership_cancel_date_start=membership_cancel_date_start,
+                                membership_cancel_date_end=membership_cancel_date_end,
+                                status=status,
+                                token_gympass=token_gympass,
+                                ids_members=ids_members,
+                                only_personal=only_personal,
+                                personal_type=personal_type,
+                                show_activity_data=show_activity_data,
+                            )
+                        )
 
             return members
 
         except Exception as e:
             logger.error(f"Error fetching members: {str(e)}")
-            raise
+            raise ValueError(f"Error fetching members: {str(e)}")
