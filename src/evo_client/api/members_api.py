@@ -4,8 +4,12 @@ from typing import Any, List, Literal, Optional, Union, overload
 
 from .base import BaseApi
 from ..core.api_client import ApiClient
+from ..models.cliente_detalhes_basicos_api_view_model import (
+    ClienteDetalhesBasicosApiViewModel,
+)
 from ..models.member_authenticate_view_model import MemberAuthenticateViewModel
 from ..models.member_data_view_model import MemberDataViewModel
+from ..models.members_api_view_model import MembersApiViewModel
 from ..models.member_service_view_model import MemberServiceViewModel
 from ..models.member_transfer_view_model import MemberTransferViewModel
 from ..models.members_basic_api_view_model import MembersBasicApiViewModel
@@ -230,7 +234,7 @@ class MembersApi(BaseApi):
         personal_type: Optional[int] = None,
         show_activity_data: bool = False,
         async_req: Literal[False] = False,
-    ) -> List[MemberDataViewModel]: ...
+    ) -> List[MembersApiViewModel]: ...
 
     @overload
     def get_members(
@@ -281,7 +285,7 @@ class MembersApi(BaseApi):
         personal_type: Optional[int] = None,
         show_activity_data: bool = False,
         async_req: bool = False,
-    ) -> Union[List[MemberDataViewModel], AsyncResult[Any]]:
+    ) -> Union[List[MembersApiViewModel], AsyncResult[Any]]:
         """
         Get members.
 
@@ -318,7 +322,7 @@ class MembersApi(BaseApi):
             resource_path=f"{self.base_path}",
             method="GET",
             query_params=query_params,
-            response_type=List[MemberDataViewModel],
+            response_type=List[MembersApiViewModel],
             auth_settings=["Basic"],
             async_req=async_req,
             headers={"Accept": "application/json"},
@@ -366,7 +370,7 @@ class MembersApi(BaseApi):
     @overload
     def get_member_profile(
         self, id_member: int, async_req: Literal[False] = False
-    ) -> MemberDataViewModel: ...
+    ) -> ClienteDetalhesBasicosApiViewModel: ...
 
     @overload
     def get_member_profile(
@@ -375,7 +379,7 @@ class MembersApi(BaseApi):
 
     def get_member_profile(
         self, id_member: int, async_req: bool = False
-    ) -> Union[MemberDataViewModel, AsyncResult[Any]]:
+    ) -> Union[ClienteDetalhesBasicosApiViewModel, AsyncResult[Any]]:
         """
         Get member profile.
 

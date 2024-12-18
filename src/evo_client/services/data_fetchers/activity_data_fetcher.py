@@ -88,29 +88,35 @@ class ActivityDataFetcher(BaseDataFetcher[ActivitiesApi]):
 
         # For each branch, get its specific schedule
         if default_client:
-            schedules = self.api.get_schedule(
+            schedules = paginated_api_call(
+                api_func=self.api.get_schedule,
+                unit_id="default",
                 show_full_week=True,
                 date=activity_date,
                 member_id=id_member,
+                supports_pagination=False,
             )
 
         else:
             schedules = []
             for branch_id in branch_ids:
                 branch_api = self.get_branch_api(branch_id, ActivitiesApi)
-            if branch_api:
-                try:
-                    branch_schedules = branch_api.get_schedule(
-                        show_full_week=True,
-                        date=activity_date,
-                        member_id=id_member,
-                    )
-                    if branch_schedules:
-                        schedules.extend(branch_schedules)
-                except Exception as e:
-                    logger.warning(
-                        f"Failed to fetch schedules for branch {branch_id}: {e}"
-                    )
+                if branch_api:
+                    try:
+                        branch_schedules = paginated_api_call(
+                            api_func=branch_api.get_schedule,
+                            unit_id=str(branch_id),
+                            show_full_week=True,
+                            date=activity_date,
+                            member_id=id_member,
+                            supports_pagination=False,
+                        )
+                        if branch_schedules:
+                            schedules.extend(branch_schedules)
+                    except Exception as e:
+                        logger.warning(
+                            f"Failed to fetch schedules for branch {branch_id}: {e}"
+                        )
 
         # Convert raw data to dictionaries first, then to models
         return {

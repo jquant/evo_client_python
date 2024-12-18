@@ -1,24 +1,56 @@
-    @overload
-    def get_members_files(
-        self,
-        member_ids: List[int],
-        branch_ids: Optional[List[str]] = None,
-        from_date: Optional[datetime] = None,
-        to_date: Optional[datetime] = None,
-        async_req: Literal[False] = False,
-    ) -> MembersFiles:
-        ...
+from datetime import datetime
+from decimal import Decimal
+from typing import Dict, List, Optional, Union, Tuple
+from loguru import logger
 
-    @overload
-    def get_members_files(
+from ...api.members_api import MembersApi
+from ...api.entries_api import EntriesApi
+from ...api.receivables_api import ReceivablesApi
+from ...api.activities_api import ActivitiesApi
+from ...core.api_client import ApiClient
+from ...models.cliente_detalhes_basicos_api_view_model import (
+    ClienteDetalhesBasicosApiViewModel,
+)
+from ...models.receivables_api_view_model import ReceivablesApiViewModel
+from ...models.entradas_resumo_api_view_model import EntradasResumoApiViewModel
+from ...models.atividade_agenda_api_view_model import AtividadeAgendaApiViewModel
+from ...models.gym_model import (
+    MembersFiles,
+    MemberProfile,
+    GymEntry,
+    EntryType,
+    EntryStatus,
+    MemberEventType,
+    ReceivableStatus,
+    Receivable,
+)
+from ..data_fetchers import BaseDataFetcher
+
+
+class MemberFilesDataFetcher(BaseDataFetcher[MembersApi]):
+    """Handles fetching and processing comprehensive member files data."""
+
+    def __init__(
         self,
-        member_ids: List[int],
-        branch_ids: Optional[List[str]] = None,
-        from_date: Optional[datetime] = None,
-        to_date: Optional[datetime] = None,
-        async_req: Literal[True] = True,
-    ) -> TypedAsyncResult[MembersFiles]:
-        ...
+        members_api: MembersApi,
+        entries_api: EntriesApi,
+        receivables_api: ReceivablesApi,
+        activities_api: ActivitiesApi,
+        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
+    ):
+        """Initialize the member files data fetcher.
+
+        Args:
+            members_api: The members API instance
+            entries_api: The entries API instance
+            receivables_api: The receivables API instance
+            activities_api: The activities API instance
+            branch_api_clients: Optional dictionary mapping branch IDs to their API clients
+        """
+        super().__init__(members_api, branch_api_clients)
+        self.entries_api = entries_api
+        self.receivables_api = receivables_api
+        self.activities_api = activities_api
 
     def get_members_files(
         self,
@@ -26,118 +58,109 @@
         branch_ids: Optional[List[str]] = None,
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
-        async_req: bool = False,
-    ) -> Union[List[MembersFiles], MembersFiles, TypedAsyncResult[List[MembersFiles]], TypedAsyncResult[MembersFiles]]:
-        """Get members files from one or multiple branches."""
-        if not branch_ids and not self.branch_api_clients:
-            # Use default client implementation
+    ) -> Union[List[MembersFiles], MembersFiles]:
+        """Get comprehensive member files data from one or multiple branches.
+
+        Args:
+            member_ids: List of member IDs to fetch data for
+            branch_ids: Optional list of branch IDs to fetch from
+            from_date: Optional start date for data range
+            to_date: Optional end date for data range
+            async_req: Whether to execute requests asynchronously
+
+        Returns:
+            Member files data either synchronously or as an async result
+        """
+        try:
+            # Initialize members files container
             members_files = MembersFiles(
-                member_ids=member_ids,
-                data_from=from_date,
-                data_to=to_date
+                member_ids=member_ids, data_from=from_date, data_to=to_date
             )
-            
-            try:
-                if async_req:
-                    # Start all async requests for each member
-                    async_results = []
-                    for member_id in member_ids:
-                        async_results.extend([
-                            self.members_api.get_member_profile(id_member=member_id, async_req=True),
-                            self.get_contracts(member_id=member_id, active_only=False, async_req=True),
-                            self.entries_api.get_entries(
-                                register_date_start=from_date,
-                                register_date_end=to_date,
-                                member_id=member_id,
-                                async_req=True
-                            ),
-                            self.receivables_api.get_receivables(
-                                member_id=member_id,
-                                registration_date_start=from_date,
-                                registration_date_end=to_date,
-                                async_req=True
-                            ),
-                            self.activities_api.get_schedule(
-                                member_id=member_id,
-                                date=from_date,
-                                show_full_week=True,
-                                async_req=True
-                            )
-                        ])
-                    
-                    # Create async result that will process all data
-                    async_result = create_async_result(
-                        pool=self._pool,
-                        callback=lambda _: self._process_members_files(
-                            [r.get() for r in async_results],
-                            member_ids,
-                            members_files
-                        ),
-                        error_callback=lambda e: members_files
-                    )
-                    return cast(TypedAsyncResult[MembersFiles], async_result)
-                
-                # Synchronous execution
-                all_results = []
-                for member_id in member_ids:
-                    all_results.extend([
-                        self.members_api.get_member_profile(id_member=member_id, async_req=False),
-                        self.get_contracts(member_id=member_id, active_only=False, async_req=False),
+
+            # Synchronous execution
+            all_results: List[
+                Tuple[
+                    ClienteDetalhesBasicosApiViewModel,
+                    List[EntradasResumoApiViewModel],
+                    List[ReceivablesApiViewModel],
+                    List[AtividadeAgendaApiViewModel],
+                ]
+            ] = []
+            for member_id in member_ids:
+                all_results.append(
+                    (
+                        self.api.get_member_profile(id_member=member_id),
                         self.entries_api.get_entries(
                             register_date_start=from_date,
                             register_date_end=to_date,
                             member_id=member_id,
-                            async_req=False
                         ),
                         self.receivables_api.get_receivables(
                             member_id=member_id,
                             registration_date_start=from_date,
                             registration_date_end=to_date,
-                            async_req=False
                         ),
                         self.activities_api.get_schedule(
-                            member_id=member_id,
-                            date=from_date,
-                            show_full_week=True,
-                            async_req=False
-                        )
-                    ])
-                return self._process_members_files(all_results, member_ids, members_files)
-            except Exception as e:
-                logger.error(f"Error fetching members files: {str(e)}")
-                return members_files
-        
-        branch_ids = branch_ids or list(self.branch_api_clients.keys())
-        results = []
-        
-        for branch_id in branch_ids:
-            if branch_id in self.branch_api_clients:
-                # Create temporary GymApi instance with branch client
-                branch_api = GymApi(api_client=self.branch_api_clients[branch_id])
-                result = branch_api.get_members_files(
-                    member_ids=member_ids,
-                    from_date=from_date,
-                    to_date=to_date,
-                    async_req=True  # Always async for parallel processing
+                            member_id=member_id, date=from_date, show_full_week=True
+                        ),
+                    )
                 )
-                results.append(result)
-        
-        if async_req:
-            async_result = self._pool.map_async(lambda r: r.get() if isinstance(r, AsyncResult) else r, results)
-            return cast(TypedAsyncResult[List[MembersFiles]], async_result)
-        
-        # Wait for all results
-        members_files = [r.get() if isinstance(r, AsyncResult) else r for r in results]
-        return members_files if len(members_files) > 1 else members_files[0]
 
-    def _create_member_profile(self, member: Any) -> MemberProfile:
+            return self._process_members_files(all_results, member_ids, members_files)
+
+        except Exception as e:
+            logger.error(f"Error fetching members files: {str(e)}")
+            raise ValueError(f"Error fetching members files: {str(e)}")
+
+    def _process_members_files(
+        self,
+        results: List[
+            Tuple[
+                ClienteDetalhesBasicosApiViewModel,
+                List[EntradasResumoApiViewModel],
+                List[ReceivablesApiViewModel],
+                List[AtividadeAgendaApiViewModel],
+            ]
+        ],
+        member_ids: List[int],
+        members_files: MembersFiles,
+    ) -> MembersFiles:
+        """Process API results into MembersFiles object.
+
+        Args:
+            results: List of API results
+            member_ids: List of member IDs
+            members_files: MembersFiles object to populate
+
+        Returns:
+            Populated MembersFiles object
+        """
+        try:
+            # Results come in groups of 4 per member (profile, entries, receivables, activities)
+            for i, member_id in enumerate(member_ids):
+                member_data = results[i]
+
+                if member_data[0]:  # If member profile exists
+                    profile = self._create_member_profile(member_data[0])
+                    self._process_member_data(profile, member_data[2])
+                    members_files.add_member(profile)
+
+            return members_files
+
+        except Exception as e:
+            logger.error(f"Error processing members files: {str(e)}")
+            return members_files
+
+    def _create_member_profile(
+        self, member: ClienteDetalhesBasicosApiViewModel
+    ) -> MemberProfile:
         """Create a member profile from API member data."""
         return MemberProfile(
             member_id=member.id_member,
-            name=member.name or "",
+            name=f"{member.first_name} {member.last_name}".strip() or "",
             email=member.email,
-            phone=member.phone,
-            photo_url=member.photo_url
+            phone=member.number,
+            photo_url=member.photo,
         )
 
     def _build_member_timeline(self, profile: MemberProfile) -> None:
@@ -150,9 +173,9 @@
                 description=f"Gym entry - {entry.entry_type.value}",
                 related_id=entry.id,
                 branch_id=entry.branch_id,
-                status=entry.status.value
+                status=entry.status.value,
             )
-            
+
         # Add financial transactions
         for receivable in profile.receivables:
             # Payment made
@@ -164,9 +187,13 @@
                     related_id=receivable.id,
                     amount=receivable.amount_paid,
                     transaction_type="payment",
-                    payment_method=receivable.payment_method if hasattr(receivable, 'payment_method') else None
+                    payment_method=(
+                        receivable.payment_method
+                        if hasattr(receivable, "payment_method")
+                        else None
+                    ),
                 )
-            
+
             # Payment due
             if receivable.status == ReceivableStatus.OVERDUE:
                 profile.add_timeline_event(
@@ -176,100 +203,29 @@
                     related_id=receivable.id,
                     amount=receivable.amount,
                     transaction_type="overdue",
-                    status="overdue"
+                    status="overdue",
                 )
-            
+
         # Sort all events by timestamp
         profile.timeline.sort(key=lambda x: x.timestamp)
 
-    def _process_members_files(
+    def _process_member_data(
         self,
-        results: List[Any],
-        member_ids: List[int],
-        members_files: MembersFiles
-    ) -> MembersFiles:
-        """Process async results into MembersFiles object."""
-        try:
-            # Results come in groups of 5 per member (member, contracts, entries, receivables, sessions)
-            results_per_member = 5
-            for i, member_id in enumerate(member_ids):
-                base_idx = i * results_per_member
-                member = results[base_idx]
-                
-                if member:
-                    profile = self._create_member_profile(member)
-                    
-                    # Process contracts
-                    contracts = results[base_idx + 1]
-                    if contracts:
-                        profile.contracts_history = contracts
-                        active_contracts = [c for c in contracts if c.status == MembershipStatus.ACTIVE]
-                        if active_contracts:
-                            profile.current_contract = active_contracts[0]
-                            profile.is_active = True
-                    
-                    # Process entries
-                    entries = results[base_idx + 2]
-                    if entries:
-                        profile.entries_history = [self._convert_entry(e) for e in entries]
-                        profile.total_entries = len(profile.entries_history)
-                        if profile.entries_history:
-                            profile.last_entry = profile.entries_history[-1]
-                    
-                    # Process receivables
-                    receivables = results[base_idx + 3]
-                    if receivables:
-                        profile.receivables = [self._convert_receivable(r) for r in receivables]
-                        # Calculate financial summaries
-                        for receivable in profile.receivables:
-                            if receivable.status == ReceivableStatus.PAID:
-                                profile.total_paid += receivable.amount or Decimal('0.00')
-                            elif receivable.status == ReceivableStatus.PENDING:
-                                profile.pending_payments += receivable.amount or Decimal('0.00')
-                            elif receivable.status == ReceivableStatus.OVERDUE:
-                                profile.overdue_payments += receivable.amount or Decimal('0.00')
-                    
-                    # Process activity sessions
-                    sessions = results[base_idx + 4]
-                    if sessions:
-                        profile.total_classes_attended = len(sessions)
-                        activity_counts: Dict[str, int] = {}
-                        for session in sessions:
-                            activity_name = getattr(session, 'activity_name', None)
-                            if activity_name:
-                                activity_counts[activity_name] = activity_counts.get(activity_name, 0) + 1
-                        profile.favorite_activities = sorted(
-                            activity_counts.keys(),
-                            key=lambda x: activity_counts[x],
-                            reverse=True
-                        )[:5]
-                    
-                    # Build timeline
-                    self._build_member_timeline(profile)
-                    
-                    # Add profile to collection
-                    members_files.add_member(profile)
-            
-        except Exception as e:
-            logger.error(f"Error processing members files: {str(e)}")
-            
-        return members_files
-
-    def _process_member_data(self, profile: MemberProfile, results: List[Any]) -> None:
+        profile: MemberProfile,
+        receivables: List[ReceivablesApiViewModel],
+    ) -> None:
         """Process member data from API results."""
         try:
-            # Process receivables
-            receivables = results[3] if len(results) > 3 else None
-            if receivables:
-                profile.receivables = [self._convert_receivable(r) for r in receivables]
-                # Calculate financial summaries
-                for receivable in profile.receivables:
-                    if receivable.status == ReceivableStatus.PAID:
-                        profile.total_paid += receivable.amount or Decimal('0.00')
-                    elif receivable.status == ReceivableStatus.PENDING:
-                        profile.pending_payments += receivable.amount or Decimal('0.00')
-                    elif receivable.status == ReceivableStatus.OVERDUE:
-                        profile.overdue_payments += receivable.amount or Decimal('0.00')
+            # this line is probably wrong, but when we eventually run, we'll see
+            profile.receivables = [Receivable(**r.model_dump()) for r in receivables]
+            # Calculate financial summaries
+            for receivable in profile.receivables:
+                if receivable.status == ReceivableStatus.PAID:
+                    profile.total_paid += receivable.amount or Decimal("0.00")
+                elif receivable.status == ReceivableStatus.PENDING:
+                    profile.pending_payments += receivable.amount or Decimal("0.00")
+                elif receivable.status == ReceivableStatus.OVERDUE:
+                    profile.overdue_payments += receivable.amount or Decimal("0.00")
 
             # Build timeline after all data is processed
             self._build_member_timeline(profile)
@@ -277,7 +233,7 @@
             logger.error(f"Error processing member data: {str(e)}")
             raise
 
-    def _convert_entry(self, entry: Any) -> GymEntry:
+    def _convert_entry(self, entry: EntradasResumoApiViewModel) -> GymEntry:
         """Convert SDK entry model to our GymEntry model."""
         try:
             entry_type = EntryType.REGULAR
@@ -290,7 +246,7 @@
                     entry_type = EntryType.EVENT
 
             return GymEntry(
-                idEntry=entry.id or 0,
+                idEntry=entry.id_member or 0,
                 idMember=entry.id_member,
                 idProspect=entry.id_prospect,
                 registerDate=entry.date or datetime.now(),
@@ -300,7 +256,7 @@
                 idActivity=None,  # API doesn't provide activity info
                 idMembership=None,  # API doesn't provide membership info
                 deviceId=entry.device,
-                notes=entry.block_reason
+                notes=entry.block_reason,
             )
         except Exception as e:
             logger.error(f"Error converting entry: {str(e)}")
@@ -315,5 +271,5 @@
                 idActivity=None,
                 idMembership=None,
                 deviceId=None,
-                notes=None
+                notes=None,
             )

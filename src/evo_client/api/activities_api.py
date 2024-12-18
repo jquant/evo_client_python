@@ -6,9 +6,7 @@ from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.atividade_basico_api_view_model import AtividadeBasicoApiViewModel
 from ..models.atividade_list_api_view_model import AtividadeListApiViewModel
-from ..models.atividade_sessao_participante_api_view_model import (
-    AtividadeSessaoParticipanteApiViewModel,
-)
+from ..models.atividade_agenda_api_view_model import AtividadeAgendaApiViewModel
 from ..models.e_origem_agendamento import EOrigemAgendamento
 from ..models.e_status_atividade_sessao import EStatusAtividadeSessao
 
@@ -203,7 +201,7 @@ class ActivitiesApi(BaseApi):
         show_full_week: bool = False,
         branch_token: Optional[str] = None,
         async_req: Literal[False] = False,
-    ) -> List[AtividadeSessaoParticipanteApiViewModel]: ...
+    ) -> List[AtividadeAgendaApiViewModel]: ...
 
     @overload
     def get_schedule(
@@ -232,7 +230,7 @@ class ActivitiesApi(BaseApi):
         show_full_week: bool = False,
         branch_token: Optional[str] = None,
         async_req: bool = False,
-    ) -> Union[List[AtividadeSessaoParticipanteApiViewModel], AsyncResult[Any]]:
+    ) -> Union[List[AtividadeAgendaApiViewModel], AsyncResult[Any]]:
         """
         Get activities schedule with various filtering options.
 
@@ -267,7 +265,7 @@ class ActivitiesApi(BaseApi):
             resource_path=f"{self.base_path}/schedule",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
-            response_type=List[AtividadeSessaoParticipanteApiViewModel],
+            response_type=List[AtividadeAgendaApiViewModel],
             auth_settings=["Basic"],
             async_req=async_req,
         )

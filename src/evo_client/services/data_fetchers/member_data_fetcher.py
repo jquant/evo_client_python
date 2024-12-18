@@ -3,7 +3,10 @@ from datetime import datetime
 from loguru import logger
 
 from ...api.members_api import MembersApi
-from ...models.member_data_view_model import MemberDataViewModel
+from ...models.cliente_detalhes_basicos_api_view_model import (
+    ClienteDetalhesBasicosApiViewModel,
+)
+from ...models.members_api_view_model import MembersApiViewModel
 from ...core.api_client import ApiClient
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
@@ -25,7 +28,9 @@ class MemberDataFetcher(BaseDataFetcher[MembersApi]):
         """
         super().__init__(members_api, branch_api_clients)
 
-    def fetch_member_by_id(self, member_id: str) -> Optional[MemberDataViewModel]:
+    def fetch_member_by_id(
+        self, member_id: str
+    ) -> Optional[ClienteDetalhesBasicosApiViewModel]:
         """Fetch a specific member by their ID.
 
         Args:
@@ -80,7 +85,7 @@ class MemberDataFetcher(BaseDataFetcher[MembersApi]):
         personal_type: Optional[int] = None,
         show_activity_data: bool = False,
         default_client: bool = True,
-    ) -> List[MemberDataViewModel]:
+    ) -> List[MembersApiViewModel]:
         """Fetch members with various filters.
 
         Args:

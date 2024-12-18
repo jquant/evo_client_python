@@ -2,6 +2,11 @@ from typing import List, Dict, Any, Optional
 from decimal import Decimal
 from datetime import datetime
 
+from ...models.gym_model import MembershipContract
+from ...models.gym_model import Receivable
+from ...models.gym_model import GymEntry
+from ...models.gym_model import GymOperatingData, ReceivableStatus
+
 
 class OperatingDataComputer:
     def compute_metrics(
@@ -17,7 +22,7 @@ class OperatingDataComputer:
     ) -> GymOperatingData:
         """
         Compute operating metrics from raw data.
-        
+
         Args:
             active_members: List of active member data
             active_contracts: List of active contracts
@@ -27,77 +32,85 @@ class OperatingDataComputer:
             entries: List of entries
             from_date: Start date for metrics calculation
             to_date: End date for metrics calculation
-            
+
         Returns:
             GymOperatingData with computed metrics
         """
         # Calculate MRR from active contracts
-        total_mrr = Decimal('0.00')
-        processed_members = set()
-        
+        total_mrr = Decimal("0.00")
+
         for contract in active_contracts:
-            if (hasattr(contract, 'total_value') and contract.total_value and
-                hasattr(contract, 'plan') and contract.plan and
-                hasattr(contract.plan, 'minimum_commitment_months') and 
-                contract.plan.minimum_commitment_months):
+            if (
+                hasattr(contract, "total_value")
+                and contract.total_value
+                and hasattr(contract, "plan")
+                and contract.plan
+                and hasattr(contract.plan, "minimum_commitment_months")
+                and contract.plan.minimum_commitment_months
+            ):
                 # Convert contract value to monthly value
-                monthly_value = Decimal(str(contract.total_value)) / Decimal(str(contract.plan.minimum_commitment_months))
+                monthly_value = Decimal(str(contract.total_value)) / Decimal(
+                    str(contract.plan.minimum_commitment_months)
+                )
                 total_mrr += monthly_value
-        
+
         # Calculate receivables metrics
-        total_paid = Decimal('0.00')
-        total_pending = Decimal('0.00')
-        total_overdue = Decimal('0.00')
-        
+        total_paid = Decimal("0.00")
+        total_pending = Decimal("0.00")
+        total_overdue = Decimal("0.00")
+
         for receivable in receivables:
             if receivable.status == ReceivableStatus.PAID:
-                total_paid += receivable.amount or Decimal('0.00')
+                total_paid += receivable.amount or Decimal("0.00")
             elif receivable.status == ReceivableStatus.PENDING:
-                total_pending += receivable.amount or Decimal('0.00')
+                total_pending += receivable.amount or Decimal("0.00")
             elif receivable.status == ReceivableStatus.OVERDUE:
-                total_overdue += receivable.amount or Decimal('0.00')
-        
+                total_overdue += receivable.amount or Decimal("0.00")
+
         # Calculate member metrics
         total_active = len(active_members)
         total_churned = len(non_renewed)
         total_prospects = len(prospects)
-        
+
         # Calculate churn rate
-        churn_rate = Decimal('0.00')
+        churn_rate = Decimal("0.00")
         if total_active > 0:
             churned = Decimal(str(total_churned))
             active = Decimal(str(total_active))
-            churn_rate = (churned / active) * Decimal('100')
-        
+            churn_rate = (churned / active) * Decimal("100")
+
         # Calculate cross-branch metrics
         member_home_branches = {}
         cross_branch_entries = []
-        
+
         # Get home branches from contracts
         for contract in active_contracts:
-            if hasattr(contract, 'idMember') and hasattr(contract, 'idBranch'):
-                member_home_branches[contract.idMember] = contract.idBranch
-        
+            if hasattr(contract, "member_id") and hasattr(contract, "branch_id"):
+                member_home_branches[contract.member_id] = contract.branch_id
+
         # Identify cross-branch entries
         for entry in entries:
-            if (entry.idMember and entry.idBranch and 
-                entry.idMember in member_home_branches and 
-                entry.idBranch != member_home_branches[entry.idMember]):
+            if (
+                entry.member_id
+                and entry.branch_id
+                and entry.member_id in member_home_branches
+                and entry.branch_id != member_home_branches[entry.member_id]
+            ):
                 cross_branch_entries.append(entry)
-        
+
         # Calculate multi-unit percentage
         multi_unit_members = sum(
-            1 for c in active_contracts 
-            if hasattr(c, 'plan') and 
-            getattr(c.plan, 'access_branches', False)
+            1
+            for c in active_contracts
+            if hasattr(c, "plan") and getattr(c.plan, "access_branches", False)
         )
-        
-        multi_unit_percentage = Decimal('0.00')
+
+        multi_unit_percentage = Decimal("0.00")
         if total_active > 0:
             multi = Decimal(str(multi_unit_members))
             total = Decimal(str(total_active))
-            multi_unit_percentage = (multi / total) * Decimal('100')
-        
+            multi_unit_percentage = (multi / total) * Decimal("100")
+
         return GymOperatingData(
             active_members=active_members,
             active_contracts=active_contracts,
@@ -116,5 +129,5 @@ class OperatingDataComputer:
             total_pending=total_pending,
             total_overdue=total_overdue,
             cross_branch_entries=cross_branch_entries,
-            multi_unit_member_percentage=multi_unit_percentage
-        ) 
+            multi_unit_member_percentage=multi_unit_percentage,
+        )

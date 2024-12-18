@@ -95,10 +95,11 @@ def fetch_for_unit(
 
     while True:
         call_kwargs = {**kwargs, "async_req": False}
-        if pagination_type == "skip_take":
-            call_kwargs.update({"take": page_size, "skip": page * page_size})
-        else:  # "page_page_size"
-            call_kwargs.update({"page": page, "page_size": page_size})
+        if supports_pagination:
+            if pagination_type == "skip_take":
+                call_kwargs.update({"take": page_size, "skip": page * page_size})
+            else:  # "page_page_size"
+                call_kwargs.update({"page": page, "page_size": page_size})
 
         for attempt in range(1, max_retries + 1):
             rate_limiter.acquire()
