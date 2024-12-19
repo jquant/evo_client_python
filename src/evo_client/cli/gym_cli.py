@@ -1,4 +1,4 @@
-from typing import Optional, List, Annotated, Dict
+from typing import Optional, List, Annotated
 import typer
 from datetime import datetime
 from rich.console import Console
@@ -17,6 +17,7 @@ from ..core.api_client import ApiClient
 from ..models.gym_model import (
     GymKnowledgeBase,
 )
+from ..services.data_fetchers import BranchApiClientManager
 from ..utils.decorators import handle_api_errors
 
 # Configure loguru logger
@@ -94,22 +95,6 @@ class State:
     def __init__(self):
         self._gym_api: Optional[GymApi] = None
         self.verbose: bool = False
-
-    def _get_filtered_branch_clients(
-        self, branch_ids: Optional[List[int]] = None
-    ) -> Dict[str, ApiClient]:
-        """Get branch API clients filtered by branch IDs."""
-        if not self._gym_api or not self._gym_api.branch_api_clients:
-            return {}
-
-        if not branch_ids:
-            return self._gym_api.branch_api_clients
-
-        return {
-            str(bid): client
-            for bid, client in self._gym_api.branch_api_clients.items()
-            if int(bid) in branch_ids
-        }
 
     def get_data_fetcher(
         self, fetcher_name: str, branch_ids: Optional[List[int]] = None
@@ -229,10 +214,9 @@ def get_gym_api() -> GymApi:
         config.password = branch_creds["password"]
         branch_api_clients[str(branch_id)] = ApiClient(configuration=config)
 
-    # Create API client with first available client as default
-    default_api_client = next(iter(branch_api_clients.values()))
+    client_manager = BranchApiClientManager(branch_api_clients=branch_api_clients)
     gym_api = GymApi(
-        api_client=default_api_client, branch_api_clients=branch_api_clients
+        client_manager=client_manager,
     )
 
     # Only validate/fetch configurations if cache doesn't exist
@@ -410,11 +394,8 @@ def auth_login_file(
             config.password = branch_creds["password"]
             branch_api_clients[str(branch_id)] = ApiClient(configuration=config)
 
-        # Create GymApi instance
-        default_api_client = next(iter(branch_api_clients.values()))
-        api_client = GymApi(
-            api_client=default_api_client, branch_api_clients=branch_api_clients
-        )
+        client_manager = BranchApiClientManager(branch_api_clients=branch_api_clients)
+        api_client = GymApi(client_manager=client_manager)
 
         # Fetch and save branch configurations
         logger.debug("Fetching branch configurations...")

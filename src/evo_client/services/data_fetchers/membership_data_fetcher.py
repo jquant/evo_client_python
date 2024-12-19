@@ -1,6 +1,5 @@
-from typing import List, Optional, Dict
+from typing import List, Optional
 from ...api.membership_api import MembershipApi
-from ...core.api_client import ApiClient
 from ...models.contratos_resumo_api_view_model import (
     ContratosResumoApiViewModel,
 )
@@ -12,28 +11,14 @@ from . import BaseDataFetcher
 from loguru import logger
 
 
-class MembershipDataFetcher(BaseDataFetcher[MembershipApi]):
+class MembershipDataFetcher(BaseDataFetcher):
     """Handles fetching and processing membership-related data."""
-
-    def __init__(
-        self,
-        membership_api: MembershipApi,
-        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
-    ):
-        """Initialize the membership data fetcher.
-
-        Args:
-            membership_api: The membership API instance
-            branch_api_clients: Optional dictionary mapping branch IDs to their API clients
-        """
-        super().__init__(membership_api, branch_api_clients)
 
     def fetch_memberships(
         self,
         membership_id: Optional[int] = None,
         name: Optional[str] = None,
         active: Optional[bool] = None,
-        default_client: bool = True,
     ) -> List[ContratosResumoApiViewModel]:
         """Fetch membership plans with optional filtering.
 
@@ -46,31 +31,20 @@ class MembershipDataFetcher(BaseDataFetcher[MembershipApi]):
             List[ContratosResumoApiViewModel]: List of membership plans matching the filters
         """
         try:
-            # Get memberships from default client
-            if default_client:
-                memberships = paginated_api_call(
-                    api_func=self.api.get_memberships,
-                    unit_id="default",
-                    membership_id=membership_id,
-                    name=name,
-                    active=active,
-                    pagination_type="skip_take",
-                )
-            else:
-                memberships = []
-                for branch_id in self.get_available_branch_ids():
-                    branch_api = self.get_branch_api(branch_id, MembershipApi)
-                    if branch_api:
-                        result = paginated_api_call(
-                            api_func=branch_api.get_memberships,
-                            unit_id=str(branch_id),
-                            membership_id=membership_id,
-                            name=name,
-                            active=active,
-                            pagination_type="skip_take",
-                        )
-                        if result:
-                            memberships.extend(result)
+            memberships = []
+            for branch_id in self.get_available_branch_ids():
+                branch_api = MembershipApi(api_client=self.get_branch_api(branch_id))
+                if branch_api:
+                    result = paginated_api_call(
+                        api_func=branch_api.get_memberships,
+                        unit_id=str(branch_id),
+                        membership_id=membership_id,
+                        name=name,
+                        active=active,
+                        pagination_type="skip_take",
+                    )
+                    if result:
+                        memberships.extend(result)
 
             return memberships
 
@@ -86,15 +60,8 @@ class MembershipDataFetcher(BaseDataFetcher[MembershipApi]):
         """
         try:
             categories = []
-
-            # Get categories from default client
-            result = self.api.get_categories()
-            if result:
-                categories.extend(result)
-
-            # Get categories from branch clients
             for branch_id in self.get_available_branch_ids():
-                branch_api = self.get_branch_api(branch_id, MembershipApi)
+                branch_api = MembershipApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     try:
                         branch_result = branch_api.get_categories()

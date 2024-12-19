@@ -1,29 +1,15 @@
-from typing import List, Optional, Dict
+from typing import List, Optional
 from datetime import datetime
 from loguru import logger
 
 from ...api.entries_api import EntriesApi
 from ...models.gym_model import GymEntry
-from ...core.api_client import ApiClient
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 
 
-class EntriesDataFetcher(BaseDataFetcher[EntriesApi]):
+class EntriesDataFetcher(BaseDataFetcher):
     """Handles fetching and processing entry-related data."""
-
-    def __init__(
-        self,
-        entries_api: EntriesApi,
-        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
-    ):
-        """Initialize the entries data fetcher.
-
-        Args:
-            entries_api: The entries API instance
-            branch_api_clients: Optional dictionary mapping branch IDs to their API clients
-        """
-        super().__init__(entries_api, branch_api_clients)
 
     def fetch_entries(
         self,
@@ -45,22 +31,9 @@ class EntriesDataFetcher(BaseDataFetcher[EntriesApi]):
         """
         try:
             entries = []
-
-            # Get entries from default client
-            result = paginated_api_call(
-                api_func=self.api.get_entries,
-                unit_id="default",
-                register_date_start=register_date_start,
-                register_date_end=register_date_end,
-                id_entry=id_entry,
-                id_member=id_member,
-            )
-            if result:
-                entries.extend(result)
-
             # Get entries from branch clients
             for branch_id in self.get_available_branch_ids():
-                branch_api = self.get_branch_api(branch_id, EntriesApi)
+                branch_api = EntriesApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     try:
                         branch_result = paginated_api_call(

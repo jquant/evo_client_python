@@ -1,27 +1,20 @@
 """Data fetchers for retrieving data from various API endpoints."""
 
-from typing import Dict, Optional, List, Type, TypeVar, Generic
+import abc
+from typing import Dict, Optional, List
 from evo_client.core.api_client import ApiClient
-from evo_client.api.base import BaseApi
-
-T = TypeVar("T")
-ClassType = TypeVar("ClassType", bound=BaseApi)
 
 
-class BaseDataFetcher(Generic[T]):
-    """Base class for all data fetchers."""
+class BranchApiClientManager:
+    """Manager for branch API clients."""
 
-    def __init__(
-        self, api: T, branch_api_clients: Optional[Dict[str, ApiClient]] = None
-    ):
+    def __init__(self, branch_api_clients: Dict[str, ApiClient]):
         """Initialize the data fetcher.
 
         Args:
-            api: The default API instance
             branch_api_clients: Optional dictionary mapping branch IDs to their API clients.
                               Only the provided branch clients will be used for fetching data.
         """
-        self.api = api
         self.branch_api_clients = branch_api_clients or {}
         # Store branch IDs as integers for easier access
         self.branch_ids = (
@@ -30,22 +23,29 @@ class BaseDataFetcher(Generic[T]):
             else []
         )
 
-    def get_branch_api(
-        self, branch_id: int, api_class: Type[ClassType]
-    ) -> Optional[ClassType]:
+
+class BaseDataFetcher(abc.ABC):
+    """Base class for all data fetchers."""
+
+    def __init__(self, client_manager: BranchApiClientManager):
+        """Initialize the data fetcher.
+
+        Args:
+            client_manager: The client manager instance
+        """
+        self.client_manager = client_manager
+
+    def get_branch_api(self, branch_id: int) -> Optional[ApiClient]:
         """Get a branch-specific API instance.
 
         Args:
             branch_id: The branch ID
-            api_class: The API class to instantiate
 
         Returns:
             Branch-specific API instance or None if not found
         """
-        branch_client = self.branch_api_clients.get(str(branch_id))
-        if branch_client:
-            return api_class(api_client=branch_client)
-        return None
+        branch_client = self.client_manager.branch_api_clients.get(str(branch_id))
+        return branch_client
 
     def get_available_branch_ids(self) -> List[int]:
         """Get list of branch IDs for which we have API clients.
@@ -53,7 +53,7 @@ class BaseDataFetcher(Generic[T]):
         Returns:
             List of branch IDs
         """
-        return self.branch_ids
+        return self.client_manager.branch_ids
 
 
 __all__ = [

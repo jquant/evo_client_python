@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List, Optional
 from datetime import datetime
 from loguru import logger
 
@@ -7,29 +7,15 @@ from ...models.cliente_detalhes_basicos_api_view_model import (
     ClienteDetalhesBasicosApiViewModel,
 )
 from ...models.members_api_view_model import MembersApiViewModel
-from ...core.api_client import ApiClient
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 
 
-class MemberDataFetcher(BaseDataFetcher[MembersApi]):
+class MemberDataFetcher(BaseDataFetcher):
     """Handles fetching and processing member-related data."""
 
-    def __init__(
-        self,
-        members_api: MembersApi,
-        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
-    ):
-        """Initialize the member data fetcher.
-
-        Args:
-            members_api: The members API instance
-            branch_api_clients: Optional dictionary mapping branch IDs to their API clients
-        """
-        super().__init__(members_api, branch_api_clients)
-
     def fetch_member_by_id(
-        self, member_id: str
+        self, member_id: str, branch_id: Optional[int] = None
     ) -> Optional[ClienteDetalhesBasicosApiViewModel]:
         """Fetch a specific member by their ID.
 
@@ -40,14 +26,16 @@ class MemberDataFetcher(BaseDataFetcher[MembersApi]):
             Optional[MembersApiViewModel]: The member data if found, None otherwise
         """
         try:
-            # Try with default client first
-            result = self.api.get_member_profile(id_member=int(member_id))
-            if result:
-                return result
+            if branch_id and branch_id in self.get_available_branch_ids():
+                branch_api = MembersApi(api_client=self.get_branch_api(branch_id))
+                if branch_api:
+                    result = branch_api.get_member_profile(id_member=int(member_id))
+                    if result:
+                        return result
 
             # If not found, try branch clients
             for branch_id in self.get_available_branch_ids():
-                branch_api = self.get_branch_api(branch_id, MembersApi)
+                branch_api = MembersApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     try:
                         result = branch_api.get_member_profile(id_member=int(member_id))
@@ -84,7 +72,6 @@ class MemberDataFetcher(BaseDataFetcher[MembersApi]):
         only_personal: bool = False,
         personal_type: Optional[int] = None,
         show_activity_data: bool = False,
-        default_client: bool = True,
     ) -> List[MembersApiViewModel]:
         """Fetch members with various filters.
 
@@ -112,59 +99,34 @@ class MemberDataFetcher(BaseDataFetcher[MembersApi]):
             List[MembersApiViewModel]: List of members matching the filters
         """
         try:
-            # Get members from default client
-            if default_client:
-                members = paginated_api_call(
-                    api_func=self.api.get_members,
-                    unit_id="default",
-                    name=name,
-                    email=email,
-                    document=document,
-                    phone=phone,
-                    conversion_date_start=conversion_date_start,
-                    conversion_date_end=conversion_date_end,
-                    register_date_start=register_date_start,
-                    register_date_end=register_date_end,
-                    membership_start_date_start=membership_start_date_start,
-                    membership_start_date_end=membership_start_date_end,
-                    membership_cancel_date_start=membership_cancel_date_start,
-                    membership_cancel_date_end=membership_cancel_date_end,
-                    status=status,
-                    token_gympass=token_gympass,
-                    ids_members=ids_members,
-                    only_personal=only_personal,
-                    personal_type=personal_type,
-                    show_activity_data=show_activity_data,
-                )
-            else:
-                members = []
-                for branch_id in self.get_available_branch_ids():
-                    branch_api = self.get_branch_api(branch_id, MembersApi)
-                    if branch_api:
-                        members.extend(
-                            paginated_api_call(
-                                api_func=branch_api.get_members,
-                                unit_id=str(branch_id),
-                                name=name,
-                                email=email,
-                                document=document,
-                                phone=phone,
-                                conversion_date_start=conversion_date_start,
-                                conversion_date_end=conversion_date_end,
-                                register_date_start=register_date_start,
-                                register_date_end=register_date_end,
-                                membership_start_date_start=membership_start_date_start,
-                                membership_start_date_end=membership_start_date_end,
-                                membership_cancel_date_start=membership_cancel_date_start,
-                                membership_cancel_date_end=membership_cancel_date_end,
-                                status=status,
-                                token_gympass=token_gympass,
-                                ids_members=ids_members,
-                                only_personal=only_personal,
-                                personal_type=personal_type,
-                                show_activity_data=show_activity_data,
-                            )
+            members = []
+            for branch_id in self.get_available_branch_ids():
+                branch_api = MembersApi(api_client=self.get_branch_api(branch_id))
+                if branch_api:
+                    members.extend(
+                        paginated_api_call(
+                            api_func=branch_api.get_members,
+                            unit_id=str(branch_id),
+                            name=name,
+                            email=email,
+                            document=document,
+                            phone=phone,
+                            conversion_date_start=conversion_date_start,
+                            conversion_date_end=conversion_date_end,
+                            register_date_start=register_date_start,
+                            register_date_end=register_date_end,
+                            membership_start_date_start=membership_start_date_start,
+                            membership_start_date_end=membership_start_date_end,
+                            membership_cancel_date_start=membership_cancel_date_start,
+                            membership_cancel_date_end=membership_cancel_date_end,
+                            status=status,
+                            token_gympass=token_gympass,
+                            ids_members=ids_members,
+                            only_personal=only_personal,
+                            personal_type=personal_type,
+                            show_activity_data=show_activity_data,
                         )
+                    )
 
             return members
 

@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List
 from ...models.gym_model import (
     GymKnowledgeBase,
     GymUnitKnowledgeBase,
@@ -13,8 +13,7 @@ from ..data_fetchers.service_data_fetcher import ServiceDataFetcher
 from ..data_fetchers.membership_data_fetcher import (
     MembershipDataFetcher,
 )
-from ...core.api_client import ApiClient
-from ..data_fetchers import BaseDataFetcher
+from ..data_fetchers import BranchApiClientManager
 from ...api.configuration_api import ConfiguracaoApiViewModel
 
 from loguru import logger
@@ -22,31 +21,20 @@ from pathlib import Path
 import json
 
 
-class GymKnowledgeBaseService(BaseDataFetcher):
+class GymKnowledgeBaseService:
     """Service for building and maintaining the gym knowledge base."""
 
-    def __init__(
-        self,
-        configuration_fetcher: ConfigurationDataFetcher,
-        activity_fetcher: ActivityDataFetcher,
-        service_fetcher: ServiceDataFetcher,
-        membership_fetcher: MembershipDataFetcher,
-        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
-    ):
+    def __init__(self, client_manager: BranchApiClientManager):
         """Initialize the knowledge base service.
 
         Args:
-            configuration_fetcher: The configuration data fetcher
-            activity_fetcher: The activity data fetcher
-            service_fetcher: The service data fetcher
-            membership_fetcher: The membership data fetcher
-            branch_api_clients: Optional dictionary mapping branch IDs to their API clients
+            client_manager: The client manager instance
         """
-        super().__init__(None, branch_api_clients)  # No direct API needed
-        self.configuration_fetcher = configuration_fetcher
-        self.activity_fetcher = activity_fetcher
-        self.service_fetcher = service_fetcher
-        self.membership_fetcher = membership_fetcher
+        self.client_manager = client_manager
+        self.configuration_fetcher = ConfigurationDataFetcher(client_manager)
+        self.activity_fetcher = ActivityDataFetcher(client_manager)
+        self.service_fetcher = ServiceDataFetcher(client_manager)
+        self.membership_fetcher = MembershipDataFetcher(client_manager)
 
     def build_knowledge_base(self) -> GymKnowledgeBase:
         """Build a complete knowledge base for the gym chain."""
@@ -80,9 +68,7 @@ class GymKnowledgeBaseService(BaseDataFetcher):
 
             # Fetch all data with retry logic
             logger.info("Fetching activities data...")
-            activities_data = self.activity_fetcher.fetch_activities_with_schedule(
-                default_client=False
-            )
+            activities_data = self.activity_fetcher.fetch_activities_with_schedule()
             logger.info(
                 f"Fetched {len(activities_data['activities'])} activities across all branches"
             )
@@ -91,25 +77,17 @@ class GymKnowledgeBaseService(BaseDataFetcher):
             )
 
             logger.info("Fetching services data...")
-            services = (
-                self.service_fetcher.fetch_services(active=True, default_client=False)
-                or []
-            )
+            services = self.service_fetcher.fetch_services(active=True) or []
             logger.info(f"Fetched {len(services)} services across all branches")
 
             logger.info("Fetching membership plans...")
-            plans = (
-                self.membership_fetcher.fetch_memberships(
-                    active=True, default_client=False
-                )
-                or []
-            )
+            plans = self.membership_fetcher.fetch_memberships(active=True) or []
             if isinstance(plans, List):
                 logger.info(f"Fetched {len(plans)} plans across all branches")
 
             # Build knowledge base for each unit
             units = []
-            branch_ids = self.get_available_branch_ids()
+            branch_ids = self.configuration_fetcher.get_available_branch_ids()
 
             for config in branch_configs:
                 branch_id = config.id_branch

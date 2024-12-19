@@ -1,29 +1,15 @@
-from typing import List, Optional, Dict
+from typing import List, Optional
 from datetime import datetime
 from loguru import logger
 
 from ...api.receivables_api import ReceivablesApi
-from ...core.api_client import ApiClient
 from ...models.receivables_api_view_model import ReceivablesApiViewModel
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 
 
-class ReceivablesDataFetcher(BaseDataFetcher[ReceivablesApi]):
+class ReceivablesDataFetcher(BaseDataFetcher):
     """Handles fetching and processing receivables-related data."""
-
-    def __init__(
-        self,
-        receivables_api: ReceivablesApi,
-        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
-    ):
-        """Initialize the receivables data fetcher.
-
-        Args:
-            receivables_api: The receivables API instance
-            branch_api_clients: Optional dictionary mapping branch IDs to their API clients
-        """
-        super().__init__(receivables_api, branch_api_clients)
 
     def fetch_receivables(
         self,
@@ -55,7 +41,6 @@ class ReceivablesDataFetcher(BaseDataFetcher[ReceivablesApi]):
         member_id: Optional[int] = None,
         sale_id: Optional[int] = None,
         receivable_id: Optional[int] = None,
-        default_client: bool = True,
     ) -> List[ReceivablesApiViewModel]:
         """Fetch receivables with various filters.
 
@@ -93,78 +78,44 @@ class ReceivablesDataFetcher(BaseDataFetcher[ReceivablesApi]):
             List[ReceivablesApiViewModel]: List of receivables matching the filters
         """
         try:
-            if default_client:
-                result = paginated_api_call(
-                    api_func=self.api.get_receivables,
-                    unit_id="defaut",
-                    registration_date_start=registration_date_start,
-                    registration_date_end=registration_date_end,
-                    due_date_start=due_date_start,
-                    due_date_end=due_date_end,
-                    receiving_date_start=receiving_date_start,
-                    receiving_date_end=receiving_date_end,
-                    competence_date_start=competence_date_start,
-                    competence_date_end=competence_date_end,
-                    cancellation_date_start=cancellation_date_start,
-                    cancellation_date_end=cancellation_date_end,
-                    charge_date_start=charge_date_start,
-                    charge_date_end=charge_date_end,
-                    update_date_start=update_date_start,
-                    update_date_end=update_date_end,
-                    invoice_date_start=invoice_date_start,
-                    invoice_date_end=invoice_date_end,
-                    invoice_canceled_date_start=invoice_canceled_date_start,
-                    invoice_canceled_date_end=invoice_canceled_date_end,
-                    sale_date_start=sale_date_start,
-                    sale_date_end=sale_date_end,
-                    description=description,
-                    amount_start=amount_start,
-                    amount_end=amount_end,
-                    payment_types=payment_types,
-                    account_status=account_status,
-                    member_id=member_id,
-                    sale_id=sale_id,
-                    receivable_id=receivable_id,
-                )
-            else:
-                result = []
-                for branch_id in self.get_available_branch_ids():
-                    branch_api = self.get_branch_api(branch_id, ReceivablesApi)
-                    if branch_api:
-                        result.extend(
-                            paginated_api_call(
-                                api_func=branch_api.get_receivables,
-                                unit_id=str(branch_id),
-                                registration_date_start=registration_date_start,
-                                registration_date_end=registration_date_end,
-                                due_date_start=due_date_start,
-                                due_date_end=due_date_end,
-                                receiving_date_start=receiving_date_start,
-                                receiving_date_end=receiving_date_end,
-                                competence_date_start=competence_date_start,
-                                competence_date_end=competence_date_end,
-                                cancellation_date_start=cancellation_date_start,
-                                cancellation_date_end=cancellation_date_end,
-                                charge_date_start=charge_date_start,
-                                charge_date_end=charge_date_end,
-                                update_date_start=update_date_start,
-                                update_date_end=update_date_end,
-                                invoice_date_start=invoice_date_start,
-                                invoice_date_end=invoice_date_end,
-                                invoice_canceled_date_start=invoice_canceled_date_start,
-                                invoice_canceled_date_end=invoice_canceled_date_end,
-                                sale_date_start=sale_date_start,
-                                sale_date_end=sale_date_end,
-                                description=description,
-                                amount_start=amount_start,
-                                amount_end=amount_end,
-                                payment_types=payment_types,
-                                account_status=account_status,
-                                member_id=member_id,
-                                sale_id=sale_id,
-                                receivable_id=receivable_id,
-                            )
+            result = []
+            for branch_id in self.get_available_branch_ids():
+                branch_api = ReceivablesApi(api_client=self.get_branch_api(branch_id))
+                if branch_api:
+                    result.extend(
+                        paginated_api_call(
+                            api_func=branch_api.get_receivables,
+                            unit_id=str(branch_id),
+                            registration_date_start=registration_date_start,
+                            registration_date_end=registration_date_end,
+                            due_date_start=due_date_start,
+                            due_date_end=due_date_end,
+                            receiving_date_start=receiving_date_start,
+                            receiving_date_end=receiving_date_end,
+                            competence_date_start=competence_date_start,
+                            competence_date_end=competence_date_end,
+                            cancellation_date_start=cancellation_date_start,
+                            cancellation_date_end=cancellation_date_end,
+                            charge_date_start=charge_date_start,
+                            charge_date_end=charge_date_end,
+                            update_date_start=update_date_start,
+                            update_date_end=update_date_end,
+                            invoice_date_start=invoice_date_start,
+                            invoice_date_end=invoice_date_end,
+                            invoice_canceled_date_start=invoice_canceled_date_start,
+                            invoice_canceled_date_end=invoice_canceled_date_end,
+                            sale_date_start=sale_date_start,
+                            sale_date_end=sale_date_end,
+                            description=description,
+                            amount_start=amount_start,
+                            amount_end=amount_end,
+                            payment_types=payment_types,
+                            account_status=account_status,
+                            member_id=member_id,
+                            sale_id=sale_id,
+                            receivable_id=receivable_id,
                         )
+                    )
 
             return result or []
 

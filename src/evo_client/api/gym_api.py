@@ -9,24 +9,7 @@ from typing import Any, Dict, List, Optional
 
 from loguru import logger
 
-# API clients
-from ..api.activities_api import ActivitiesApi
-from ..api.configuration_api import ConfigurationApi
-from ..api.employees_api import EmployeesApi
-from ..api.entries_api import EntriesApi
-from ..api.managment_api import ManagementApi
-from ..api.member_membership_api import MemberMembershipApi
-from ..api.members_api import MembersApi
-from ..api.membership_api import MembershipApi
-from ..api.prospects_api import ProspectsApi
-from ..api.receivables_api import ReceivablesApi
-from ..api.sales_api import SalesApi
-from ..api.service_api import ServiceApi
-from ..api.webhook_api import WebhookApi
-from ..api.workout_api import WorkoutApi
-
-from ..core.api_client import ApiClient
-from ..core.configuration import Configuration
+from ..services.data_fetchers import BranchApiClientManager
 from ..models.receivables_api_view_model import ReceivablesApiViewModel
 from ..services.data_fetchers.activity_data_fetcher import ActivityDataFetcher
 from ..services.data_fetchers.configuration_data_fetcher import ConfigurationDataFetcher
@@ -57,97 +40,43 @@ class GymApi:
 
     def __init__(
         self,
-        api_client: Optional[ApiClient] = None,
-        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
-        branch_credentials: Optional[List[Dict[str, str]]] = None,
+        client_manager: BranchApiClientManager,
     ):
         """Initialize the gym API.
 
         Args:
-            api_client: The default API client
-            branch_api_clients: Optional dictionary mapping branch IDs to their API clients
-            branch_credentials: Optional list of branch credentials (deprecated, use branch_api_clients)
+            client_manager: The client manager instance
         """
-        if branch_credentials:
-            # Convert branch_credentials to branch_api_clients
-            branch_api_clients = {}
-            for cred in branch_credentials:
-                config = Configuration()
-                config.username = cred["username"]
-                config.password = cred["password"]
-                branch_api_clients[cred["branch_id"]] = ApiClient(configuration=config)
-
-            # Use first branch client as default if none provided
-            if api_client is None and branch_api_clients:
-                api_client = next(iter(branch_api_clients.values()))
-
-        if api_client is None:
-            config = Configuration()
-            api_client = ApiClient(configuration=config)
-
-        self.api_client = api_client
-        self.branch_api_clients = branch_api_clients or {}
-        self._pool = Pool(processes=1)  # Single process pool for async operations
-
-        # Store branch IDs as integers
-        self.branch_ids = (
-            [int(bid) for bid in self.branch_api_clients.keys()]
-            if branch_api_clients
-            else []
-        )
-
-        # Initialize API instances with branch awareness
-        self.configuration_api = ConfigurationApi(api_client=api_client)
-        self.activities_api = ActivitiesApi(api_client=api_client)
-        self.membership_api = MembershipApi(api_client=api_client)
-        self.entries_api = EntriesApi(api_client=api_client)
-        self.member_membership_api = MemberMembershipApi(api_client=api_client)
-        self.workout_api = WorkoutApi(api_client=api_client)
-        self.service_api = ServiceApi(api_client=api_client)
-        self.employees_api = EmployeesApi(api_client=api_client)
-        self.receivables_api = ReceivablesApi(api_client=api_client)
-        self.sales_api = SalesApi(api_client=api_client)
-        self.management_api = ManagementApi(api_client=api_client)
-        self.members_api = MembersApi(api_client=api_client)
-        self.prospects_api = ProspectsApi(api_client=api_client)
-        self.webhook_api = WebhookApi(api_client=api_client)
-
         # Initialize data fetchers with branch awareness
         self.configuration_data_fetcher = ConfigurationDataFetcher(
-            configuration_api=self.configuration_api,
-            branch_api_clients=self.branch_api_clients,
+            client_manager=client_manager
         )
         self.member_data_fetcher = MemberDataFetcher(
-            members_api=self.members_api, branch_api_clients=self.branch_api_clients
+            client_manager=client_manager,
         )
         self.receivables_data_fetcher = ReceivablesDataFetcher(
-            receivables_api=self.receivables_api,
-            branch_api_clients=self.branch_api_clients,
+            client_manager=client_manager,
         )
         self.entries_data_fetcher = EntriesDataFetcher(
-            self.entries_api, self.branch_api_clients
+            client_manager=client_manager,
         )
         self.prospects_data_fetcher = ProspectsDataFetcher(
-            self.prospects_api, self.branch_api_clients
+            client_manager=client_manager,
         )
         self.activity_data_fetcher = ActivityDataFetcher(
-            self.activities_api, self.branch_api_clients
+            client_manager=client_manager,
         )
         self.service_data_fetcher = ServiceDataFetcher(
-            self.service_api, self.branch_api_clients
+            client_manager=client_manager,
         )
         self.membership_data_fetcher = MembershipDataFetcher(
-            self.membership_api, self.branch_api_clients
+            client_manager=client_manager,
         )
         self.sales_data_fetcher = SalesDataFetcher(
-            self.sales_api, self.branch_api_clients
+            client_manager=client_manager,
         )
         self.knowledge_base_fetcher = GymKnowledgeBaseService(
-            configuration_fetcher=self.configuration_data_fetcher,
-            activity_fetcher=self.activity_data_fetcher,
-            service_fetcher=self.service_data_fetcher,
-            membership_fetcher=self.membership_data_fetcher,
-            branch_api_clients=self.branch_api_clients,
+            client_manager=client_manager,
         )
 
     def __del__(self):

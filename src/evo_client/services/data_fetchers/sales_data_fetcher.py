@@ -1,29 +1,15 @@
-from typing import List, Optional, Dict
+from typing import List, Optional
 from datetime import datetime
 
 from ...api.sales_api import SalesApi
-from ...core.api_client import ApiClient
 from ...models.sales_view_model import SalesViewModel
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 from loguru import logger
 
 
-class SalesDataFetcher(BaseDataFetcher[SalesApi]):
+class SalesDataFetcher(BaseDataFetcher):
     """Handles fetching and processing sales-related data."""
-
-    def __init__(
-        self,
-        sales_api: SalesApi,
-        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
-    ):
-        """Initialize the sales data fetcher.
-
-        Args:
-            sales_api: The sales API instance
-            branch_api_clients: Optional dictionary mapping branch IDs to their API clients
-        """
-        super().__init__(sales_api, branch_api_clients)
 
     def fetch_sales(
         self,
@@ -65,50 +51,30 @@ class SalesDataFetcher(BaseDataFetcher[SalesApi]):
             List[SalesViewModel]: List of sales matching the filters
         """
         try:
-            if default_client:
-                result = paginated_api_call(
-                    api_func=self.api.get_sales,
-                    unit_id="default",
-                    member_id=member_id,
-                    date_sale_start=date_sale_start,
-                    date_sale_end=date_sale_end,
-                    removal_date_start=removal_date_start,
-                    removal_date_end=removal_date_end,
-                    receivables_registration_date_start=receivables_registration_date_start,
-                    receivables_registration_date_end=receivables_registration_date_end,
-                    show_receivables=show_receivables,
-                    only_membership=only_membership,
-                    at_least_monthly=at_least_monthly,
-                    fl_swimming=fl_swimming,
-                    show_only_active_memberships=show_only_active_memberships,
-                    show_allow_locker=show_allow_locker,
-                    only_total_pass=only_total_pass,
-                )
-            else:
-                result = []
-                for unit_id in self.get_available_branch_ids():
-                    branch_api = self.get_branch_api(unit_id, SalesApi)
-                    if branch_api:
-                        result.extend(
-                            paginated_api_call(
-                                api_func=branch_api.get_sales,
-                                unit_id=str(unit_id),
-                                member_id=member_id,
-                                date_sale_start=date_sale_start,
-                                date_sale_end=date_sale_end,
-                                removal_date_start=removal_date_start,
-                                removal_date_end=removal_date_end,
-                                receivables_registration_date_start=receivables_registration_date_start,
-                                receivables_registration_date_end=receivables_registration_date_end,
-                                show_receivables=show_receivables,
-                                only_membership=only_membership,
-                                at_least_monthly=at_least_monthly,
-                                fl_swimming=fl_swimming,
-                                show_only_active_memberships=show_only_active_memberships,
-                                show_allow_locker=show_allow_locker,
-                                only_total_pass=only_total_pass,
-                            )
+            result = []
+            for unit_id in self.get_available_branch_ids():
+                branch_api = SalesApi(api_client=self.get_branch_api(unit_id))
+                if branch_api:
+                    result.extend(
+                        paginated_api_call(
+                            api_func=branch_api.get_sales,
+                            unit_id=str(unit_id),
+                            member_id=member_id,
+                            date_sale_start=date_sale_start,
+                            date_sale_end=date_sale_end,
+                            removal_date_start=removal_date_start,
+                            removal_date_end=removal_date_end,
+                            receivables_registration_date_start=receivables_registration_date_start,
+                            receivables_registration_date_end=receivables_registration_date_end,
+                            show_receivables=show_receivables,
+                            only_membership=only_membership,
+                            at_least_monthly=at_least_monthly,
+                            fl_swimming=fl_swimming,
+                            show_only_active_memberships=show_only_active_memberships,
+                            show_allow_locker=show_allow_locker,
+                            only_total_pass=only_total_pass,
                         )
+                    )
 
             return result or []
 

@@ -1,29 +1,15 @@
 # /src/evo_client/services/data_fetchers/configuration_data_fetcher.py
-from typing import List, Dict, Optional
+from typing import List
 from loguru import logger
 
 from ...api.configuration_api import ConfigurationApi
-from ...core.api_client import ApiClient
 from ...exceptions.api_exceptions import ApiException
 from ...models.configuracao_api_view_model import ConfiguracaoApiViewModel
 from . import BaseDataFetcher
 
 
-class ConfigurationDataFetcher(BaseDataFetcher[ConfigurationApi]):
+class ConfigurationDataFetcher(BaseDataFetcher):
     """Handles fetching and processing branch configuration-related data."""
-
-    def __init__(
-        self,
-        configuration_api: ConfigurationApi,
-        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
-    ):
-        """Initialize the configuration data fetcher.
-
-        Args:
-            configuration_api: The configuration API instance
-            branch_api_clients: Optional dictionary mapping branch IDs to their API clients
-        """
-        super().__init__(configuration_api, branch_api_clients)
 
     def fetch_branch_configurations(self) -> List[ConfiguracaoApiViewModel]:
         """Fetch branch configurations.
@@ -33,23 +19,9 @@ class ConfigurationDataFetcher(BaseDataFetcher[ConfigurationApi]):
         """
         try:
             configs: List[ConfiguracaoApiViewModel] = []
-
-            # Get configurations from default client
-            result: List[ConfiguracaoApiViewModel] = self.api.get_branch_config()
-            if result:
-                # Only include configs for branches we have clients for
-                branch_ids = self.get_available_branch_ids()
-                configs.extend(
-                    [
-                        config
-                        for config in result
-                        if not branch_ids or (config.id_branch in branch_ids)
-                    ]
-                )
-
             # Get configurations from branch clients
             for branch_id in self.get_available_branch_ids():
-                branch_api = self.get_branch_api(branch_id, ConfigurationApi)
+                branch_api = ConfigurationApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     try:
                         branch_result = branch_api.get_branch_config()
@@ -75,7 +47,7 @@ class ConfigurationDataFetcher(BaseDataFetcher[ConfigurationApi]):
             raise ValueError(f"Error fetching branch configurations: {str(e)}")
 
     def validate_and_cache_configurations(self) -> List[ConfiguracaoApiViewModel]:
-        """Validate credentials and cache branch configurations.
+        """Validate credentials and cache branch configurations.w
 
         Returns:
             List[ConfiguracaoApiViewModel]: List of validated branch configurations
@@ -90,10 +62,6 @@ class ConfigurationDataFetcher(BaseDataFetcher[ConfigurationApi]):
 
             if not configs:
                 raise ValueError("No branch configurations found - check credentials")
-
-            # Cache configurations in API client
-            if hasattr(self.api.api_client, "configuration"):
-                self.api.api_client.configuration.branch_configs = configs
 
             # Log successful validation
             branch_summary = [

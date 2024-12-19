@@ -1,13 +1,12 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Dict, List, Optional, Union, Tuple
+from typing import List, Optional, Union, Tuple
 from loguru import logger
 
 from ...api.members_api import MembersApi
 from ...api.entries_api import EntriesApi
 from ...api.receivables_api import ReceivablesApi
 from ...api.activities_api import ActivitiesApi
-from ...core.api_client import ApiClient
 from ...models.cliente_detalhes_basicos_api_view_model import (
     ClienteDetalhesBasicosApiViewModel,
 )
@@ -27,35 +26,13 @@ from ...models.gym_model import (
 from ..data_fetchers import BaseDataFetcher
 
 
-class MemberFilesDataFetcher(BaseDataFetcher[MembersApi]):
+class MemberFilesDataFetcher(BaseDataFetcher):
     """Handles fetching and processing comprehensive member files data."""
-
-    def __init__(
-        self,
-        members_api: MembersApi,
-        entries_api: EntriesApi,
-        receivables_api: ReceivablesApi,
-        activities_api: ActivitiesApi,
-        branch_api_clients: Optional[Dict[str, ApiClient]] = None,
-    ):
-        """Initialize the member files data fetcher.
-
-        Args:
-            members_api: The members API instance
-            entries_api: The entries API instance
-            receivables_api: The receivables API instance
-            activities_api: The activities API instance
-            branch_api_clients: Optional dictionary mapping branch IDs to their API clients
-        """
-        super().__init__(members_api, branch_api_clients)
-        self.entries_api = entries_api
-        self.receivables_api = receivables_api
-        self.activities_api = activities_api
 
     def get_members_files(
         self,
         member_ids: List[int],
-        branch_ids: Optional[List[str]] = None,
+        branch_ids: Optional[List[int]] = None,
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
     ) -> Union[List[MembersFiles], MembersFiles]:
@@ -76,8 +53,6 @@ class MemberFilesDataFetcher(BaseDataFetcher[MembersApi]):
             members_files = MembersFiles(
                 member_ids=member_ids, data_from=from_date, data_to=to_date
             )
-
-            # Synchronous execution
             all_results: List[
                 Tuple[
                     ClienteDetalhesBasicosApiViewModel,
@@ -86,25 +61,41 @@ class MemberFilesDataFetcher(BaseDataFetcher[MembersApi]):
                     List[AtividadeAgendaApiViewModel],
                 ]
             ] = []
-            for member_id in member_ids:
-                all_results.append(
-                    (
-                        self.api.get_member_profile(id_member=member_id),
-                        self.entries_api.get_entries(
-                            register_date_start=from_date,
-                            register_date_end=to_date,
-                            member_id=member_id,
-                        ),
-                        self.receivables_api.get_receivables(
-                            member_id=member_id,
-                            registration_date_start=from_date,
-                            registration_date_end=to_date,
-                        ),
-                        self.activities_api.get_schedule(
-                            member_id=member_id, date=from_date, show_full_week=True
-                        ),
+            if branch_ids is None:
+                branch_ids = self.get_available_branch_ids()
+
+            for branch_id in branch_ids:
+                if branch_id not in self.get_available_branch_ids():
+                    logger.warning(f"Branch {branch_id} not found")
+                    continue
+
+                api = self.get_branch_api(branch_id)
+                if not api:
+                    continue
+                members_api = MembersApi(api_client=api)
+                entries_api = EntriesApi(api_client=api)
+                receivables_api = ReceivablesApi(api_client=api)
+                activities_api = ActivitiesApi(api_client=api)
+
+                for member_id in member_ids:
+                    all_results.append(
+                        (
+                            members_api.get_member_profile(id_member=member_id),
+                            entries_api.get_entries(
+                                register_date_start=from_date,
+                                register_date_end=to_date,
+                                member_id=member_id,
+                            ),
+                            receivables_api.get_receivables(
+                                member_id=member_id,
+                                registration_date_start=from_date,
+                                registration_date_end=to_date,
+                            ),
+                            activities_api.get_schedule(
+                                member_id=member_id, date=from_date, show_full_week=True
+                            ),
+                        )
                     )
-                )
 
             return self._process_members_files(all_results, member_ids, members_files)
 
