@@ -553,6 +553,49 @@ def show_knowledge_base(
         raise typer.Exit(1)
 
 
+@members_app.command("list")
+def members_list():
+    """List members."""
+    members = state.gym_api.member_data_fetcher.fetch_members()
+    console.print(members)
+
+
+@members_app.command("member")
+def members_files(
+    member_id: Annotated[str, typer.Argument(help="Member ID")],
+    branch_id: Annotated[
+        Optional[int],
+        typer.Option("--branch-id", "-b", help="Branch ID to filter by"),
+    ] = None,
+):
+    """List members files."""
+    members_files = state.gym_api.member_data_fetcher.fetch_member_by_id(
+        member_id=member_id, branch_id=branch_id
+    )
+    console.print(members_files)
+
+
+@contracts_app.command("list")
+def contracts_list():
+    """List contracts."""
+    contracts = state.gym_api.membership_data_fetcher.fetch_memberships()
+    console.print(contracts)
+
+
+@contracts_app.command("categories")
+def contracts_categories():
+    """List contracts."""
+    contracts = state.gym_api.membership_data_fetcher.fetch_membership_categories()
+    console.print(contracts)
+
+
+@finance_app.command("list")
+def finance_list():
+    """List receivables."""
+    receivables = state.gym_api.receivables_data_fetcher.fetch_receivables()
+    console.print(receivables)
+
+
 def _display_kb_table(kb: GymKnowledgeBase):
     """Display knowledge base in table format."""
     table = Table(title=f"{kb.name} Gym Network")
