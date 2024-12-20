@@ -104,7 +104,7 @@ class GymUnitKnowledgeBase(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
-    unit_id: int = Field(description="Unit identifier")
+    branch_id: int = Field(description="Unit identifier")
     name: str = Field(description="Name of the gym unit")
     address: Address = Field(description="Physical location")
     business_hours: List[BusinessHours] = Field(

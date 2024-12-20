@@ -38,7 +38,7 @@ class EntriesDataFetcher(BaseDataFetcher):
                     try:
                         branch_result = paginated_api_call(
                             api_func=branch_api.get_entries,
-                            unit_id=str(branch_id),
+                            branch_id=str(branch_id),
                             register_date_start=register_date_start,
                             register_date_end=register_date_end,
                             id_entry=id_entry,

@@ -57,7 +57,7 @@ class ActivityDataFetcher(BaseDataFetcher):
             if branch_api:
                 result = paginated_api_call(
                     api_func=branch_api.get_activities,
-                    unit_id=str(branch_id),
+                    branch_id=str(branch_id),
                     search=search,
                     supports_pagination=False,
                 )
@@ -65,7 +65,7 @@ class ActivityDataFetcher(BaseDataFetcher):
 
                 branch_schedules = paginated_api_call(
                     api_func=branch_api.get_schedule,
-                    unit_id=str(branch_id),
+                    branch_id=str(branch_id),
                     show_full_week=True,
                     date=activity_date,
                     member_id=id_member,

@@ -106,7 +106,7 @@ class MemberDataFetcher(BaseDataFetcher):
                     members.extend(
                         paginated_api_call(
                             api_func=branch_api.get_members,
-                            unit_id=str(branch_id),
+                            branch_id=str(branch_id),
                             name=name,
                             email=email,
                             document=document,

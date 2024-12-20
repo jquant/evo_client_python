@@ -608,7 +608,7 @@ def _display_kb_table(kb: GymKnowledgeBase):
 
     for unit in kb.units:
         table.add_row(
-            str(unit.unit_id),
+            str(unit.branch_id),
             unit.name,
             f"{unit.address.city}, {unit.address.state}",
             str(len(unit.activities)),
@@ -624,7 +624,7 @@ def _display_kb_tree(kb: GymKnowledgeBase):
     tree = Tree(f"[bold magenta]{kb.name} Gym Network[/]")
 
     for unit in kb.units:
-        unit_tree = tree.add(f"[bold cyan]Branch {unit.unit_id}: {unit.name}[/]")
+        unit_tree = tree.add(f"[bold cyan]Branch {unit.branch_id}: {unit.name}[/]")
         unit_tree.add(f"📍 {unit.address.city}, {unit.address.state}")
         unit_tree.add(f"🏃 Activities: {len(unit.activities)}")
         unit_tree.add(f"🛍️ Services: {len(unit.available_services)}")

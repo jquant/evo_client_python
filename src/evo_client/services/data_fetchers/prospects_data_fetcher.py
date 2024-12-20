@@ -51,7 +51,7 @@ class ProspectsDataFetcher(BaseDataFetcher):
                     result.extend(
                         paginated_api_call(
                             api_func=branch_api.get_prospects,
-                            unit_id=str(branch_id),
+                            branch_id=str(branch_id),
                             id_prospect=id_prospect,
                             name=name,
                             document=document,

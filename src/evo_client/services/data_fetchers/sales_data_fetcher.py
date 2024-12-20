@@ -52,13 +52,13 @@ class SalesDataFetcher(BaseDataFetcher):
         """
         try:
             result = []
-            for unit_id in self.get_available_branch_ids():
-                branch_api = SalesApi(api_client=self.get_branch_api(unit_id))
+            for branch_id in self.get_available_branch_ids():
+                branch_api = SalesApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     result.extend(
                         paginated_api_call(
                             api_func=branch_api.get_sales,
-                            unit_id=str(unit_id),
+                            branch_id=str(branch_id),
                             member_id=member_id,
                             date_sale_start=date_sale_start,
                             date_sale_end=date_sale_end,

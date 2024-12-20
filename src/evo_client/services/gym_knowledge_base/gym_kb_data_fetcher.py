@@ -95,7 +95,7 @@ class GymKnowledgeBaseService:
                     continue
 
                 unit_kb = GymUnitKnowledgeBase(
-                    unit_id=branch_id,
+                    branch_id=branch_id,
                     name=config.name or "",
                     address=Address(
                         street=config.address or "",

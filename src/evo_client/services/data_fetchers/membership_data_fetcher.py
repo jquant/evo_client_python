@@ -37,7 +37,7 @@ class MembershipDataFetcher(BaseDataFetcher):
                 if branch_api:
                     result = paginated_api_call(
                         api_func=branch_api.get_memberships,
-                        unit_id=str(branch_id),
+                        branch_id=str(branch_id),
                         membership_id=membership_id,
                         name=name,
                         active=active,

@@ -85,7 +85,7 @@ class ReceivablesDataFetcher(BaseDataFetcher):
                     result.extend(
                         paginated_api_call(
                             api_func=branch_api.get_receivables,
-                            unit_id=str(branch_id),
+                            branch_id=str(branch_id),
                             registration_date_start=registration_date_start,
                             registration_date_end=registration_date_end,
                             due_date_start=due_date_start,

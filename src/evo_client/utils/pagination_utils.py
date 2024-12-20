@@ -78,7 +78,7 @@ def compute_backoff_delay(
 
 
 def fetch_for_unit(
-    unit_id: str,
+    branch_id: str,
     api_func: Callable[..., List[T]],
     kwargs: Dict,
     page_size: int,
@@ -124,17 +124,19 @@ def fetch_for_unit(
 
             except (ApiException, Exception) as e:
                 logger.warning(
-                    f"Exception for unit {unit_id}, page {page}, attempt {attempt}/{max_retries}: {e}"
+                    f"Exception for unit {branch_id}, page {page}, attempt {attempt}/{max_retries}: {e}"
                 )
                 if attempt == max_retries:
                     logger.error(
-                        f"Max retries reached for unit {unit_id}, page {page}."
+                        f"Max retries reached for unit {branch_id}, page {page}."
                     )
                     raise ValueError(
-                        f"Max retries reached for unit {unit_id}, page {page}: {e}"
+                        f"Max retries reached for unit {branch_id}, page {page}: {e}"
                     )
                 delay = compute_backoff_delay(base_delay, attempt, e)
-                logger.info(f"Retrying unit {unit_id}, page {page} in {delay:.2f}s...")
+                logger.info(
+                    f"Retrying unit {branch_id}, page {page} in {delay:.2f}s..."
+                )
                 time.sleep(delay)
 
     return unit_results
@@ -142,7 +144,7 @@ def fetch_for_unit(
 
 def paginated_api_call(
     api_func: Callable[..., List[T]],
-    unit_id: str,
+    branch_id: str,
     page_size: int = 50,
     max_retries: int = 5,
     base_delay: float = 1.5,
@@ -160,13 +162,13 @@ def paginated_api_call(
         api_func.__name__ if hasattr(api_func, "__name__") else "anonymous function"
     )
     logger.debug(
-        f"Starting paginated API calls for {func_name} with unit_id {unit_id}."
+        f"Starting paginated API calls for {func_name} with branch_id {branch_id}."
     )
 
     flat_results: List[Any] = []
     try:
         result = fetch_for_unit(
-            unit_id=unit_id,
+            branch_id=branch_id,
             api_func=api_func,
             kwargs=kwargs,
             page_size=page_size,
@@ -180,6 +182,6 @@ def paginated_api_call(
         else:
             flat_results.append(result)
     except Exception as e:
-        logger.error(f"Error fetching for unit {unit_id}: {e}")
+        logger.error(f"Error fetching for unit {branch_id}: {e}")
 
     return flat_results
