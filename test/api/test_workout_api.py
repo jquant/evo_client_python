@@ -135,7 +135,7 @@ def test_error_handling(workout_api: WorkoutApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await workout_api.get_default_workouts(async_req=False)
+        workout_api.get_default_workouts(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"
