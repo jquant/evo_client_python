@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.membership_api import MembershipApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.contratos_resumo_api_view_model import (
@@ -34,7 +33,7 @@ def test_get_categories(membership_api: MembershipApi, mock_api_client: Mock):
     expected = [W12UtilsCategoryMembershipViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await membership_api.get_categories(async_req=False)
+    result = membership_api.get_categories(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -48,7 +47,7 @@ def test_get_memberships_basic(membership_api: MembershipApi, mock_api_client: M
     expected = [ContratosResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await membership_api.get_memberships(async_req=False)
+    result = membership_api.get_memberships(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()

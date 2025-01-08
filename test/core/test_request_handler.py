@@ -65,7 +65,9 @@ def mock_response():
 async def test_execute(request_handler: RequestHandler, mock_response: Mock):
     """Test execute method of RequestHandler."""
     request_handler.rest_client.request = Mock(return_value=mock_response)
-    result = await request_handler.execute(SampleModel, method="GET", resource_path="/test")
+    result = await request_handler.execute(
+        SampleModel, method="GET", resource_path="/test"
+    )
     assert isinstance(result, SampleModel)
     assert result.id == 1
     assert result.name == "test"
@@ -109,7 +111,7 @@ def test_get_request_options(request_handler: RequestHandler):
     """Test _get_request_options method of RequestHandler."""
     options = request_handler._get_request_options({"timeout": 10, "verify": False})
     assert options["request_timeout"] == 10
-    assert options["verify_ssl"] == False
+    assert options["verify_ssl"] is False
 
 
 @pytest.mark.asyncio

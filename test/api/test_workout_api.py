@@ -6,7 +6,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.workout_api import WorkoutApi
 from evo_client.exceptions.api_exceptions import ApiException
 
@@ -123,7 +122,7 @@ def test_link_workout_to_client_error(workout_api: WorkoutApi, mock_api_client: 
     """Test error handling for linking workout to client."""
     mock_api_client.side_effect = ValueError("source_workout_id is required")
 
-    with pytest.raises(ValueError) as exc:
+    with pytest.raises(ValueError):
         workout_api.link_workout_to_client(
             source_workout_id=None,  # type: ignore
             prescription_employee_id=456,

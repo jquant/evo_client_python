@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.voucher_api import VoucherApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.vouchers_resumo_api_view_model import VouchersResumoApiViewModel
@@ -29,7 +28,7 @@ def test_get_vouchers_basic(voucher_api: VoucherApi, mock_api_client: Mock):
     expected = [VouchersResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await voucher_api.get_vouchers(async_req=False)
+    result = voucher_api.get_vouchers(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -73,7 +72,7 @@ def test_get_voucher_details(voucher_api: VoucherApi, mock_api_client: Mock):
     expected = {"id": 123, "name": "SALE10"}
     mock_api_client.return_value = expected
 
-    await result = await voucher_api.get_voucher_details(voucher_id=123, async_req=False)
+    result = voucher_api.get_voucher_details(voucher_id=123, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()

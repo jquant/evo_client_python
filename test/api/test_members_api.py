@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.members_api import MembersApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.member_authenticate_view_model import MemberAuthenticateViewModel
@@ -75,7 +74,7 @@ def test_get_basic_info(members_api: MembersApi, mock_api_client: Mock):
 
 
 def test_get_basic_info_error(members_api: MembersApi, mock_api_client: Mock):
-    with pytest.raises(ValueError) as exc:
+    with pytest.raises(ValueError):
         await members_api.get_basic_info(take=51, async_req=False)
 
 
@@ -122,7 +121,7 @@ def test_get_member_profile(members_api: MembersApi, mock_api_client: Mock):
     expected = MemberDataViewModel()
     mock_api_client.return_value = expected
 
-    await result = await members_api.get_member_profile(id_member=123, async_req=False)
+    result = members_api.get_member_profile(id_member=123, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -153,7 +152,7 @@ def test_get_member_services(members_api: MembersApi, mock_api_client: Mock):
     expected = [MemberServiceViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await members_api.get_member_services(id_member=123, async_req=False)
+    result = members_api.get_member_services(id_member=123, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()

@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.bank_accounts_api import BankAccountsApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.bank_accounts_view_model import BankAccountsViewModel
@@ -29,7 +28,7 @@ def test_get_accounts(bank_accounts_api: BankAccountsApi, mock_api_client: Mock)
     expected = BankAccountsViewModel()
     mock_api_client.return_value = expected
 
-    await result = await bank_accounts_api.get_accounts(async_req=False)
+    result = bank_accounts_api.get_accounts(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()

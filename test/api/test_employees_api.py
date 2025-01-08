@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.employees_api import EmployeesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.employee_api_integracao_atualizacao_view_model import (
@@ -37,7 +36,7 @@ def test_get_employees_basic(employees_api: EmployeesApi, mock_api_client: Mock)
     expected = [FuncionariosResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await employees_api.get_employees(async_req=False)
+    result = employees_api.get_employees(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()

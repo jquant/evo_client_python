@@ -6,7 +6,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.entries_api import EntriesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.entradas_resumo_api_view_model import EntradasResumoApiViewModel
@@ -30,7 +29,7 @@ def test_get_entries_basic(entries_api: EntriesApi, mock_api_client: Mock):
     expected = [EntradasResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await entries_api.get_entries(async_req=False)
+    result = entries_api.get_entries(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -104,7 +103,7 @@ def test_get_entry_by_id(entries_api: EntriesApi, mock_api_client: Mock):
     expected = [EntradasResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await entries_api.get_entry_by_id(entry_id=123, async_req=False)
+    result = entries_api.get_entry_by_id(entry_id=123, async_req=False)
 
     assert result == expected[0]
     mock_api_client.assert_called_once()
@@ -116,7 +115,7 @@ def test_get_entry_by_id_not_found(entries_api: EntriesApi, mock_api_client: Moc
     """Test getting a non-existent entry by ID."""
     mock_api_client.return_value = []
 
-    await result = await entries_api.get_entry_by_id(entry_id=123, async_req=False)
+    result = entries_api.get_entry_by_id(entry_id=123, async_req=False)
 
     assert result is None
 

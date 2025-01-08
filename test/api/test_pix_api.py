@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.pix_api import PixApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.pix_payment_details_view_model import PixPaymentDetailsViewModel
@@ -29,7 +28,7 @@ def test_get_qr_code_basic(pix_api: PixApi, mock_api_client: Mock):
     expected = PixPaymentDetailsViewModel()
     mock_api_client.return_value = expected
 
-    await result = await pix_api.get_qr_code(async_req=False)
+    result = pix_api.get_qr_code(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -44,7 +43,7 @@ def test_get_qr_code_with_receipt_id(pix_api: PixApi, mock_api_client: Mock):
     expected = PixPaymentDetailsViewModel()
     mock_api_client.return_value = expected
 
-    await result = await pix_api.get_qr_code(pix_receipt_id=123, async_req=False)
+    result = pix_api.get_qr_code(pix_receipt_id=123, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()

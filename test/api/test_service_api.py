@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.service_api import ServiceApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
@@ -29,7 +28,7 @@ def test_get_services_basic(service_api: ServiceApi, mock_api_client: Mock):
     expected = [ServicosResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await service_api.get_services(async_req=False)
+    result = service_api.get_services(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()

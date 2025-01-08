@@ -31,12 +31,14 @@ def mock_api_client():
 
 
 @pytest.mark.asyncio
-async def test_get_active_clients_basic(management_api: ManagementApi, mock_api_client: Mock):
+async def test_get_active_clients_basic(
+    management_api: ManagementApi, mock_api_client: Mock
+):
     """Test getting active clients list."""
     expected = [ClientesAtivosViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await await management_api.get_active_clients(async_req=False)
+    result = await management_api.get_active_clients(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -67,7 +69,9 @@ async def test_get_prospects(management_api: ManagementApi, mock_api_client: Moc
 
 
 @pytest.mark.asyncio
-async def test_get_non_renewed_clients(management_api: ManagementApi, mock_api_client: Mock):
+async def test_get_non_renewed_clients(
+    management_api: ManagementApi, mock_api_client: Mock
+):
     """Test getting non-renewed clients with date filters."""
     expected = [ContratoNaoRenovadosViewModel()]
     mock_api_client.return_value = expected
@@ -92,7 +96,7 @@ async def test_error_handling(management_api: ManagementApi, mock_api_client: Mo
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await await management_api.get_active_clients(async_req=False)
+        await management_api.get_active_clients(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

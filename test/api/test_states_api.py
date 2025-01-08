@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.states_api import StatesApi
 from evo_client.exceptions.api_exceptions import ApiException
 
@@ -28,7 +27,7 @@ def test_get_states_basic(states_api: StatesApi, mock_api_client: Mock):
     expected = [{"id": 1, "name": "California", "abbreviation": "CA"}]
     mock_api_client.return_value = expected
 
-    await result = await states_api.get_states(async_req=False)
+    result = states_api.get_states(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()

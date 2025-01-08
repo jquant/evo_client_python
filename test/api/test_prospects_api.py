@@ -6,7 +6,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.prospects_api import ProspectsApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.member_service_view_model import MemberServiceViewModel
@@ -43,7 +42,7 @@ def test_get_prospects_basic(prospects_api: ProspectsApi, mock_api_client: Mock)
     expected = [ProspectsResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await prospects_api.get_prospects(async_req=False)
+    result = prospects_api.get_prospects(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -92,7 +91,7 @@ def test_create_prospect(prospects_api: ProspectsApi, mock_api_client: Mock):
     mock_api_client.return_value = expected
     prospect_data = ProspectApiIntegracaoViewModel()
 
-    await result = await prospects_api.create_prospect(prospect=prospect_data, async_req=False)
+    result = prospects_api.create_prospect(prospect=prospect_data, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -108,7 +107,7 @@ def test_update_prospect(prospects_api: ProspectsApi, mock_api_client: Mock):
     mock_api_client.return_value = expected
     prospect_data = ProspectApiIntegracaoAtualizacaoViewModel()
 
-    await result = await prospects_api.update_prospect(prospect=prospect_data, async_req=False)
+    result = prospects_api.update_prospect(prospect=prospect_data, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -123,7 +122,7 @@ def test_get_services(prospects_api: ProspectsApi, mock_api_client: Mock):
     expected = [MemberServiceViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await prospects_api.get_services(prospect_id=123, async_req=False)
+    result = prospects_api.get_services(prospect_id=123, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()

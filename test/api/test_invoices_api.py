@@ -6,7 +6,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.invoices_api import InvoicesApi, InvoiceStatus, InvoiceType
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.enotas_retorno import EnotasRetorno
@@ -30,7 +29,7 @@ def test_get_invoices_basic(invoices_api: InvoicesApi, mock_api_client: Mock):
     expected = EnotasRetorno()
     mock_api_client.return_value = expected
 
-    await result = await invoices_api.get_invoices(async_req=False)
+    result = invoices_api.get_invoices(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()

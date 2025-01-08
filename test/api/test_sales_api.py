@@ -6,7 +6,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.sales_api import SalesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.new_sale_view_model import NewSaleViewModel
@@ -32,7 +31,7 @@ def test_get_sale_by_id_basic(sales_api: SalesApi, mock_api_client: Mock):
     expected = SalesViewModel()
     mock_api_client.return_value = expected
 
-    await result = await sales_api.get_sale_by_id(sale_id=123, async_req=False)
+    result = sales_api.get_sale_by_id(sale_id=123, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -45,7 +44,7 @@ def test_get_sale_by_id_basic(sales_api: SalesApi, mock_api_client: Mock):
 def test_get_sale_by_id_error(sales_api: SalesApi, mock_api_client: Mock):
     """Test error handling for getting sale by ID."""
 
-    with pytest.raises(ValueError) as exc:
+    with pytest.raises(ValueError):
         await sales_api.get_sale_by_id(sale_id=None, async_req=False)  # type: ignore
 
 
@@ -55,7 +54,7 @@ def test_create_sale(sales_api: SalesApi, mock_api_client: Mock):
     mock_api_client.return_value = expected
     sale_data = NewSaleViewModel()
 
-    await result = await sales_api.create_sale(body=sale_data, async_req=False)
+    result = sales_api.create_sale(body=sale_data, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -96,7 +95,7 @@ def test_get_sales_items(sales_api: SalesApi, mock_api_client: Mock):
     expected = [SalesItemsViewModel()]
     mock_api_client.return_value = expected
 
-    await result = await sales_api.get_sales_items(branch_id=123, async_req=False)
+    result = sales_api.get_sales_items(branch_id=123, async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
