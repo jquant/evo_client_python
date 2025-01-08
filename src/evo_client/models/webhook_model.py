@@ -2,9 +2,9 @@ from enum import Enum
 from typing import Optional, Dict, List
 from pydantic import AnyHttpUrl
 
-from .w12_utils_webhook_view_model import W12UtilsWebhookViewModel
-from .w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from .w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
+from .w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
+from .w12_utils_webhook_view_model import W12UtilsWebhookViewModel
 
 
 class WebhookEventType(str, Enum):
@@ -12,13 +12,6 @@ class WebhookEventType(str, Enum):
 
     # Core events
     ENTRIES = "entries"
-    MEMBERS = "members"
-    CONTRACTS = "contracts"
-    PAYMENTS = "payments"
-    ACTIVITIES = "activities"
-    PROSPECTS = "prospects"
-    RECEIVABLES = "receivables"
-    INVOICES = "invoices"
 
 
 class WebhookHeader(W12UtilsWebhookHeaderViewModel):
@@ -48,9 +41,9 @@ class WebhookFilter(W12UtilsWebhookFilterViewModel):
             branch_id: The branch ID to filter
 
         Returns:
-            WebhookFilter: A filter configured for the branch
+            WebhookFilter: A filter configured for the sale item
         """
-        return cls(filterType="branch", value=str(branch_id))
+        return cls(filterType="SaleItemDescription", value=branch_id)
 
 
 class Webhook(W12UtilsWebhookViewModel):
@@ -60,23 +53,26 @@ class Webhook(W12UtilsWebhookViewModel):
         {
             "idBranch": 1,
             "eventType": "entries",
-            "urlCallback": "https://my-webhook-handler.com/evo-events",
-            "headers": [
-                {"nome": "chave", "valor": "my-secret-key"}
-            ],
-            "filters": [
-                {"filterType": "branch", "value": "1"}
-            ]
+            "urlCallback": "https://...",
+            ...
+        }
+        
+    Response format:
+        {
+            "idWebhook": 123,
+            "idFilial": 1,
+            "tipoEvento": "entries",
+            "urlCallback": "https://...",
+            ...
         }
     """
-
     def __init__(self, **data):
-        """Initialize webhook with enhanced validation."""
-        # Convert string URL to AnyHttpUrl for validation
-        if "urlCallback" in data and isinstance(data["urlCallback"], str):
-            data["urlCallback"] = AnyHttpUrl(data["urlCallback"])
+        # Handle response format conversion
+        if "idFilial" in data:
+            data["idBranch"] = data.pop("idFilial")
+        if "tipoEvento" in data:
+            data["eventType"] = data.pop("tipoEvento")
         super().__init__(**data)
-
     @classmethod
     def create(
         cls,
@@ -142,7 +138,7 @@ class Webhook(W12UtilsWebhookViewModel):
             bool: True if the request is valid, False otherwise
         """
         # Validate event type
-        if event_type != self.event_type:
+        if event_type != self.eventType:
             return False
 
         # Validate secret key if configured

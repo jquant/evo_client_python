@@ -51,7 +51,26 @@ class WebhookManagement(BaseDataFetcher):
         # Wait between attempts
         return False
 
-    async def manage_webhooks(
+from ..data_fetchers.webhook_data_fetcher import WebhookDataFetcher
+from ..data_fetchers import BranchApiClientManager
+from ...models.webhook_model import WebhookEventType
+from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
+from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
+
+
+class WebhookManagementService:
+    """Service for managing webhook subscriptions."""
+
+    def __init__(self, client_manager: BranchApiClientManager):
+        """Initialize the webhook management service.
+
+        Args:
+            client_manager: The client manager instance
+        """
+        self.client_manager = client_manager
+        self.webhook_fetcher = WebhookDataFetcher(client_manager)
+
+    def manage_webhooks(
         self,
         url_callback: str,
         branch_ids: Optional[List[int]] = None,
@@ -62,10 +81,8 @@ class WebhookManagement(BaseDataFetcher):
     ) -> bool:
         """Manage webhook subscriptions."""
         try:
-            logger.debug(f"Managing webhooks for URL: {url_callback}")
-            logger.debug(f"Branch IDs: {branch_ids}")
-            logger.debug(f"Event types: {event_types}")
-            logger.debug(f"Operation: {'unsubscribe' if unsubscribe else 'subscribe'}")
+            logger.info(f"Managing webhooks for URL: {url_callback}")
+            logger.info(f"Operation: {'unsubscribe' if unsubscribe else 'subscribe'}")
 
             # Define all possible event types
             all_event_types = [
@@ -88,7 +105,7 @@ class WebhookManagement(BaseDataFetcher):
                 "AlterProduct",
             ]
             event_types = event_types or all_event_types
-            logger.debug(f"Using event types: {event_types}")
+            logger.info(f"Using event types: {event_types}")
 
             # Convert headers and filters to view models
             webhook_headers = [
@@ -110,16 +127,16 @@ class WebhookManagement(BaseDataFetcher):
             logger.debug(f"Using filters: {webhook_filters}")
 
             if not branch_ids:
-                branch_ids = self.get_available_branch_ids()
+                branch_ids = self.webhook_fetcher.get_available_branch_ids()
 
             # Handle unsubscribe
             if unsubscribe:
                 logger.debug("Getting existing webhooks for unsubscribe")
                 # Get webhooks for each branch
                 for branch_id in branch_ids:
-                    if branch_id in self.get_available_branch_ids():
+                    if branch_id in self.webhook_fetcher.get_available_branch_ids():
                         logger.debug(f"Getting webhooks for branch {branch_id}")
-                        branch_webhook_api = WebhookApi(self.get_branch_api(branch_id))
+                        branch_webhook_api = WebhookApi(self.webhook_fetcher.get_branch_api(branch_id))
                         existing_webhooks = paginated_api_call(
                             api_func=branch_webhook_api.get_webhooks,
                             branch_id=str(branch_id),
@@ -157,11 +174,11 @@ class WebhookManagement(BaseDataFetcher):
             for branch_id in branch_ids:
                 logger.debug(f"Processing branch {branch_id}")
                 # Get branch-specific API client
-                if branch_id not in self.get_available_branch_ids():
+                if branch_id not in self.webhook_fetcher.get_available_branch_ids():
                     logger.warning(f"Branch {branch_id} not found, skipping")
                     continue
 
-                client = self.get_branch_api(branch_id)
+                client = self.webhook_fetcher.get_branch_api(branch_id)
                 if client:
                     logger.debug(f"Using branch-specific client for branch {branch_id}")
                     logger.debug(

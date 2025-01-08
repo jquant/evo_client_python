@@ -595,6 +595,8 @@ class GymOperatingData(BaseModel):
     revenue_breakdown: RevenueBreakdown = Field(default_factory=RevenueBreakdown)
     average_revenue_per_member: Decimal = Field(default=Decimal("0.00"))
     lifetime_value: Decimal = Field(default=Decimal("0.00"))
+    grr: Decimal = Field(default=Decimal("0.00"), description="Gross Revenue Retention")
+    nrr: Decimal = Field(default=Decimal("0.00"), description="Net Revenue Retention")
 
     # Membership Metrics
     total_active_members: int = Field(default=0)
@@ -620,6 +622,10 @@ class GymOperatingData(BaseModel):
     class_attendance_rate: Decimal = Field(default=Decimal("0.00"))
     member_satisfaction_score: Optional[Decimal] = None
     average_visits_per_member: Decimal = Field(default=Decimal("0.00"))
+
+    # Campaign and Discount Metrics
+    discount_effectiveness: Optional[str] = Field(default=None, description="Impact of discount campaigns on ARPU")
+    campaign_effectiveness: Optional[str] = Field(default=None, description="Impact of marketing campaigns on member reactivation")
 
     def __init__(self, **data):
         """Initialize GymOperatingData with logging."""

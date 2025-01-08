@@ -40,7 +40,9 @@ class WebhookApi(BaseApi):
         """
         try:
             logger.debug(f"Deleting webhook {webhook_id}")
-            params = {"IdWebhook": webhook_id}
+            
+            # Pass webhook ID as a string in query parameters
+            params = {"IdWebhook": str(webhook_id)}
 
             response = self.api_client.call_api(
                 resource_path=self.base_path,
@@ -188,7 +190,7 @@ class WebhookApi(BaseApi):
         branch_id: Optional[int] = None,
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
-        async_req: Literal[False] = False,
+        async_req: bool = False,
     ) -> Any: ...
 
     @overload
@@ -199,7 +201,7 @@ class WebhookApi(BaseApi):
         branch_id: Optional[int] = None,
         headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = None,
         filters: Optional[List[W12UtilsWebhookFilterViewModel]] = None,
-        async_req: Literal[True] = True,
+        async_req: bool = False,
     ) -> AsyncResult[Any]: ...
 
     def create_webhook(
@@ -214,17 +216,11 @@ class WebhookApi(BaseApi):
         """Add new webhook configuration."""
         try:
             webhook_data = W12UtilsWebhookViewModel(
-                idBranch=branch_id,
+                IdBranch=branch_id or None,
                 eventType=event_type,
                 urlCallback=url_callback,
-                headers=headers
-                or [
-                    W12UtilsWebhookHeaderViewModel(
-                        nome="Content-Type", valor="application/json"
-                    )
-                ],
-                filters=filters
-                or [W12UtilsWebhookFilterViewModel(filterType="All", value="*")],
+                headers=headers or None,
+                filters=filters or None
             ).model_dump(by_alias=True, exclude_none=True)
 
             logger.debug(f"Creating webhook with data: {webhook_data}")

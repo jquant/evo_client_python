@@ -1,10 +1,11 @@
 """Services layer for business logic and data processing."""
 
-from .operating_data.operating_data_aggregator import GymOperatingData, OperatingDataAggregator
+from .operating_data.operating_data_computer import OperatingDataComputer
+from .operating_data import GymOperatingData
 from .data_fetchers.member_data_fetcher import MemberDataFetcher
 
 __all__ = [
     'GymOperatingData',
-    'OperatingDataAggregator',
+    'OperatingDataComputer',
     'MemberDataFetcher',
 ] 
