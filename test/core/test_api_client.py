@@ -6,6 +6,7 @@ import pytest
 
 from evo_client.core.api_client import ApiClient
 from evo_client.core.configuration import Configuration
+from evo_client.exceptions import ApiException
 
 
 @pytest.fixture
@@ -44,7 +45,9 @@ def test_api_client_validate_configuration():
 
 
 @pytest.mark.asyncio
-async def test_call_api_get_request_with(api_client: ApiClient, mock_request_handler: Mock):
+async def test_call_api_get_request_with(
+    api_client: ApiClient, mock_request_handler: Mock
+):
     """Test call_api method with GET request and parameters."""
     mock_request_handler.execute.return_value = {"id": 1, "name": "test"}
     result = await api_client.call_api(
@@ -98,9 +101,13 @@ async def test_call_api_post_request(api_client: ApiClient, mock_request_handler
 
 
 @pytest.mark.asyncio
-async def test_call_api_error_handling(api_client: ApiClient, mock_request_handler: Mock):
+async def test_call_api_error_handling(
+    api_client: ApiClient, mock_request_handler: Mock
+):
     """Test error handling in call_api method."""
-    mock_request_handler.execute.side_effect = ApiException(status=404, reason="Not Found")
+    mock_request_handler.execute.side_effect = ApiException(
+        status=404, reason="Not Found"
+    )
     with pytest.raises(ApiException) as exc_info:
         await api_client.call_api(
             resource_path="/test",
@@ -116,7 +123,7 @@ async def test_call_api_error_handling(api_client: ApiClient, mock_request_handl
 async def test_cached_get_request(api_client: ApiClient, mock_request_handler: Mock):
     """Test caching in call_api method."""
     mock_request_handler.execute.return_value = {"id": 1, "name": "test"}
-    
+
     # First request
     result1 = await api_client.call_api(
         resource_path="/test",
@@ -125,7 +132,7 @@ async def test_cached_get_request(api_client: ApiClient, mock_request_handler: M
         async_req=False,
         _cache=True,
     )
-    
+
     # Second request (should use cache)
     result2 = await api_client.call_api(
         resource_path="/test",
@@ -134,6 +141,6 @@ async def test_cached_get_request(api_client: ApiClient, mock_request_handler: M
         async_req=False,
         _cache=True,
     )
-    
+
     assert result1 == result2
     mock_request_handler.execute.assert_called_once()
