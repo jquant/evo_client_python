@@ -1,22 +1,21 @@
-from typing import Optional, List, Annotated
-import typer
+import json
+import sys
 from datetime import datetime
+from functools import wraps
+from pathlib import Path
+from typing import Annotated, List, Optional
+
+import typer
+from loguru import logger
+from rich import print as rich_print
 from rich.console import Console
 from rich.table import Table
-from rich import print as rich_print
-import json
-from pathlib import Path
-from functools import wraps
-from loguru import logger
 from rich.tree import Tree
-import sys
 
 from ..api.gym_api import GymApi
-from ..core.configuration import Configuration
 from ..core.api_client import ApiClient
-from ..models.gym_model import (
-    GymKnowledgeBase,
-)
+from ..core.configuration import Configuration
+from ..models.gym_model import GymKnowledgeBase
 from ..services.data_fetchers import BranchApiClientManager
 from ..utils.decorators import handle_api_errors
 
@@ -673,7 +672,6 @@ def main(
             level="DEBUG",
             format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
         )
-    pass
 
 
 if __name__ == "__main__":

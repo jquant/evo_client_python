@@ -16,11 +16,12 @@ import re  # noqa: F401
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
+
 from loguru import logger
 
-from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.entradas_resumo_api_view_model import EntradasResumoApiViewModel
+from .base import BaseApi
 
 # python 2 and python 3 compatibility library
 
@@ -44,7 +45,8 @@ class EntriesApi(BaseApi):
         skip: Optional[int] = None,
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
-    ) -> List[EntradasResumoApiViewModel]: ...
+    ) -> List[EntradasResumoApiViewModel]:
+        ...
 
     @overload
     def get_entries(
@@ -57,7 +59,8 @@ class EntriesApi(BaseApi):
         skip: Optional[int] = None,
         entry_id: Optional[int] = None,
         member_id: Optional[int] = None,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_entries(
         self,
@@ -133,7 +136,8 @@ class EntriesApi(BaseApi):
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> List[EntradasResumoApiViewModel]: ...
+    ) -> List[EntradasResumoApiViewModel]:
+        ...
 
     @overload
     def get_member_entries(
@@ -143,7 +147,8 @@ class EntriesApi(BaseApi):
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         async_req: bool = False,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_member_entries(
         self,
@@ -185,7 +190,8 @@ class EntriesApi(BaseApi):
         entry_id: int,
         *,
         async_req: Literal[False] = False,
-    ) -> Optional[EntradasResumoApiViewModel]: ...
+    ) -> Optional[EntradasResumoApiViewModel]:
+        ...
 
     @overload
     def get_entry_by_id(
@@ -193,7 +199,8 @@ class EntriesApi(BaseApi):
         entry_id: int,
         *,
         async_req: Literal[True],
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_entry_by_id(
         self,

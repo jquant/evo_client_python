@@ -1,24 +1,21 @@
+import json
+from pathlib import Path
 from typing import List
-from ...models.gym_model import (
-    GymKnowledgeBase,
-    GymUnitKnowledgeBase,
-    Address,
-    BusinessHours,
-)
-from ..data_fetchers.configuration_data_fetcher import (
-    ConfigurationDataFetcher,
-)
-from ..data_fetchers.activity_data_fetcher import ActivityDataFetcher
-from ..data_fetchers.service_data_fetcher import ServiceDataFetcher
-from ..data_fetchers.membership_data_fetcher import (
-    MembershipDataFetcher,
-)
-from ..data_fetchers import BranchApiClientManager
-from ...api.configuration_api import ConfiguracaoApiViewModel
 
 from loguru import logger
-from pathlib import Path
-import json
+
+from ...api.configuration_api import ConfiguracaoApiViewModel
+from ...models.gym_model import (
+    Address,
+    BusinessHours,
+    GymKnowledgeBase,
+    GymUnitKnowledgeBase,
+)
+from ..data_fetchers import BranchApiClientManager
+from ..data_fetchers.activity_data_fetcher import ActivityDataFetcher
+from ..data_fetchers.configuration_data_fetcher import ConfigurationDataFetcher
+from ..data_fetchers.membership_data_fetcher import MembershipDataFetcher
+from ..data_fetchers.service_data_fetcher import ServiceDataFetcher
 
 
 class GymKnowledgeBaseService:

@@ -1,9 +1,9 @@
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 
-from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
+from .base import BaseApi
 
 
 class ServiceApi(BaseApi):
@@ -23,7 +23,8 @@ class ServiceApi(BaseApi):
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[False] = False,
-    ) -> List[ServicosResumoApiViewModel]: ...
+    ) -> List[ServicosResumoApiViewModel]:
+        ...
 
     @overload
     def get_services(
@@ -35,7 +36,8 @@ class ServiceApi(BaseApi):
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_services(
         self,

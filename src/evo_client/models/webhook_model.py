@@ -1,10 +1,11 @@
 from enum import Enum
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
+
 from pydantic import AnyHttpUrl
 
-from .w12_utils_webhook_view_model import W12UtilsWebhookViewModel
-from .w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from .w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
+from .w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
+from .w12_utils_webhook_view_model import W12UtilsWebhookViewModel
 
 
 class WebhookEventType(str, Enum):

@@ -3,6 +3,6 @@
 from .operating_data_aggregator import GymOperatingData, OperatingDataAggregator
 
 __all__ = [
-    'GymOperatingData',
-    'OperatingDataAggregator',
-] 
+    "GymOperatingData",
+    "OperatingDataAggregator",
+]

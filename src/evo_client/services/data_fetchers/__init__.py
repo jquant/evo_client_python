@@ -1,7 +1,8 @@
 """Data fetchers for retrieving data from various API endpoints."""
 
 import abc
-from typing import Dict, Optional, List
+from typing import Dict, List, Optional
+
 from evo_client.core.api_client import ApiClient
 
 

@@ -9,8 +9,8 @@ from typing import Any, Dict, List, Optional
 
 from loguru import logger
 
-from ..services.data_fetchers import BranchApiClientManager
 from ..models.receivables_api_view_model import ReceivablesApiViewModel
+from ..services.data_fetchers import BranchApiClientManager
 from ..services.data_fetchers.activity_data_fetcher import ActivityDataFetcher
 from ..services.data_fetchers.configuration_data_fetcher import ConfigurationDataFetcher
 from ..services.data_fetchers.entries_data_fetcher import EntriesDataFetcher
@@ -20,8 +20,8 @@ from ..services.data_fetchers.member_data_fetcher import MemberDataFetcher
 from ..services.data_fetchers.membership_data_fetcher import MembershipDataFetcher
 from ..services.data_fetchers.prospects_data_fetcher import ProspectsDataFetcher
 from ..services.data_fetchers.receivables_data_fetcher import ReceivablesDataFetcher
-from ..services.data_fetchers.service_data_fetcher import ServiceDataFetcher
 from ..services.data_fetchers.sales_data_fetcher import SalesDataFetcher
+from ..services.data_fetchers.service_data_fetcher import ServiceDataFetcher
 from ..services.gym_knowledge_base.gym_kb_data_fetcher import GymKnowledgeBaseService
 
 # Models from gym_model
