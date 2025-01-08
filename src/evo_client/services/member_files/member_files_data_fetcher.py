@@ -1,28 +1,29 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional, Union, Tuple
+from typing import List, Optional, Tuple, Union
+
 from loguru import logger
 
-from ...api.members_api import MembersApi
-from ...api.entries_api import EntriesApi
-from ...api.receivables_api import ReceivablesApi
 from ...api.activities_api import ActivitiesApi
+from ...api.entries_api import EntriesApi
+from ...api.members_api import MembersApi
+from ...api.receivables_api import ReceivablesApi
+from ...models.atividade_agenda_api_view_model import AtividadeAgendaApiViewModel
 from ...models.cliente_detalhes_basicos_api_view_model import (
     ClienteDetalhesBasicosApiViewModel,
 )
-from ...models.receivables_api_view_model import ReceivablesApiViewModel
 from ...models.entradas_resumo_api_view_model import EntradasResumoApiViewModel
-from ...models.atividade_agenda_api_view_model import AtividadeAgendaApiViewModel
 from ...models.gym_model import (
-    MembersFiles,
-    MemberProfile,
-    GymEntry,
-    EntryType,
     EntryStatus,
+    EntryType,
+    GymEntry,
     MemberEventType,
-    ReceivableStatus,
+    MemberProfile,
+    MembersFiles,
     Receivable,
+    ReceivableStatus,
 )
+from ...models.receivables_api_view_model import ReceivablesApiViewModel
 from ..data_fetchers import BaseDataFetcher
 
 

@@ -1,8 +1,9 @@
 """Tests for the GymApi class."""
 
-from unittest.mock import Mock, patch, PropertyMock
-from decimal import Decimal
 from datetime import datetime, time
+from decimal import Decimal
+from unittest.mock import Mock, PropertyMock, patch
+
 import pytest
 
 from evo_client.api.gym_api import GymApi

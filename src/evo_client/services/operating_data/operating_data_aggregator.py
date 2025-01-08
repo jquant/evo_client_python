@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from typing import List, Dict
 from datetime import datetime
+from typing import Dict, List
 
 from ...models.members_api_view_model import MembersApiViewModel
 

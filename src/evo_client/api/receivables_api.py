@@ -2,13 +2,13 @@ from datetime import datetime
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 
-from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.receivables_api_view_model import ReceivablesApiViewModel
 from ..models.receivables_mask_received_view_model import (
     ReceivablesMaskReceivedViewModel,
 )
 from ..models.revenue_center_api_view_model import RevenueCenterApiViewModel
+from .base import BaseApi
 
 
 class ReceivablesApi(BaseApi):
@@ -52,7 +52,8 @@ class ReceivablesApi(BaseApi):
         sale_date_start: Optional[datetime] = None,
         sale_date_end: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> List[ReceivablesApiViewModel]: ...
+    ) -> List[ReceivablesApiViewModel]:
+        ...
 
     @overload
     def get_receivables(
@@ -88,7 +89,8 @@ class ReceivablesApi(BaseApi):
         sale_date_start: Optional[datetime] = None,
         sale_date_end: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_receivables(
         self,
@@ -212,7 +214,8 @@ class ReceivablesApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> RevenueCenterApiViewModel: ...
+    ) -> RevenueCenterApiViewModel:
+        ...
 
     @overload
     def get_revenue_centers(
@@ -220,7 +223,8 @@ class ReceivablesApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_revenue_centers(
         self,
@@ -255,14 +259,16 @@ class ReceivablesApi(BaseApi):
         self,
         receivables: ReceivablesMaskReceivedViewModel,
         async_req: Literal[False] = False,
-    ) -> Any: ...
+    ) -> Any:
+        ...
 
     @overload
     def mark_received(
         self,
         receivables: ReceivablesMaskReceivedViewModel,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def mark_received(
         self, receivables: ReceivablesMaskReceivedViewModel, async_req: bool = False

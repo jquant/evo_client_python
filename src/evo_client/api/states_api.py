@@ -1,8 +1,8 @@
 from multiprocessing.pool import AsyncResult
 from typing import Any, Literal, Optional, Union, overload
 
-from .base import BaseApi
 from ..core.api_client import ApiClient
+from .base import BaseApi
 
 
 class StatesApi(BaseApi):
@@ -13,10 +13,12 @@ class StatesApi(BaseApi):
         self.base_path = "/api/v1/states"
 
     @overload
-    def get_states(self, async_req: Literal[False] = False) -> Any: ...
+    def get_states(self, async_req: Literal[False] = False) -> Any:
+        ...
 
     @overload
-    def get_states(self, async_req: Literal[True] = True) -> AsyncResult[Any]: ...
+    def get_states(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
+        ...
 
     def get_states(self, async_req: bool = False) -> Union[Any, AsyncResult[Any]]:
         """

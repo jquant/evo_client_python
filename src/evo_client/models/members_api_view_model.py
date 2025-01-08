@@ -15,9 +15,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from .member_membership_api_view_model import (
-    MemberMembershipApiViewModel,
-)
+from .member_membership_api_view_model import MemberMembershipApiViewModel
 from .member_responsible_view_model import MemberResponsibleViewModel
 from .telefone_api_view_model import TelefoneApiViewModel
 

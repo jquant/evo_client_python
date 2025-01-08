@@ -19,7 +19,6 @@ from pydantic import BaseModel
 from .configuration import Configuration
 from .request_handler import RequestHandler
 
-
 T = TypeVar("T", bound=BaseModel)
 
 
@@ -76,7 +75,8 @@ class ApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Union[Any, AsyncResult[Any]]: ...
+    ) -> Union[Any, AsyncResult[Any]]:
+        ...
 
     @overload
     def call_api(
@@ -96,7 +96,8 @@ class ApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Union[T, AsyncResult[T]]: ...
+    ) -> Union[T, AsyncResult[T]]:
+        ...
 
     @overload
     def call_api(
@@ -116,7 +117,8 @@ class ApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Union[List[T], AsyncResult[List[T]]]: ...
+    ) -> Union[List[T], AsyncResult[List[T]]]:
+        ...
 
     @overload
     def call_api(
@@ -136,7 +138,8 @@ class ApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]: ...
+    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]:
+        ...
 
     @overload
     def call_api(
@@ -156,7 +159,8 @@ class ApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Union[T, List[T], Any]: ...
+    ) -> Union[T, List[T], Any]:
+        ...
 
     def call_api(
         self,
