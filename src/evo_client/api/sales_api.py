@@ -3,7 +3,7 @@ from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
-from ..models.new_sale_view_model import NewSaleViewModel
+from ..models.new_sale_view_model import NewSaleResponse, NewSaleViewModel
 from ..models.sales_items_view_model import SalesItemsViewModel
 from ..models.sales_view_model import SalesViewModel
 
@@ -45,7 +45,7 @@ class SalesApi:
     @overload
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: Literal[False] = False
-    ) -> NewSaleViewModel:
+    ) -> NewSaleResponse:
         ...
 
     @overload
@@ -56,7 +56,7 @@ class SalesApi:
 
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: bool = False
-    ) -> Union[NewSaleViewModel, AsyncResult[Any]]:
+    ) -> Union[NewSaleResponse, AsyncResult[Any]]:
         """
         Create a new sale.
 
@@ -73,7 +73,7 @@ class SalesApi:
             resource_path=self.base_path,
             method="POST",
             body=body,
-            response_type=NewSaleViewModel,
+            response_type=NewSaleResponse,
             auth_settings=["Basic"],
             async_req=async_req,
         )
