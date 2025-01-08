@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
 from evo_client.api.payables_api import PayablesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.cost_center_api_view_model import CostCenterApiViewModel
@@ -108,7 +109,7 @@ def test_error_handling(payables_api: PayablesApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        payables_api.get_payables(async_req=False)
+        await payables_api.get_payables(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

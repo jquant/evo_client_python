@@ -1,28 +1,27 @@
 from multiprocessing.pool import AsyncResult
 from typing import Any, Literal, Optional, Union, overload
 
+from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.notification_api_view_model import NotificationApiViewModel
 
 
-class NotificationsApi:
+class NotificationsApi(BaseApi):
     """Notifications API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/notifications"
 
     @overload
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: Literal[False] = False
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: bool = False

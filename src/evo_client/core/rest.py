@@ -1,4 +1,3 @@
-import logging
 from typing import Any, Dict, Optional, TypeVar, Union
 
 import requests
@@ -11,7 +10,6 @@ from ..core.configuration import Configuration
 from ..exceptions.api_exceptions import ApiException
 from .response import RESTResponse
 
-logger = logging.getLogger(__name__)
 T = TypeVar("T", bound=BaseModel)
 
 
@@ -93,7 +91,7 @@ class RESTClient:
 
     @staticmethod
     def _get_timeout(
-        timeout_value: Optional[Union[float, tuple]]
+        timeout_value: Optional[Union[float, tuple]],
     ) -> Optional[Union[float, tuple]]:
         """Process timeout value."""
         if timeout_value is None:

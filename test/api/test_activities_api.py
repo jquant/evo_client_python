@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
 from evo_client.api.activities_api import ActivitiesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.atividade_basico_api_view_model import (
@@ -88,7 +89,7 @@ def test_get_schedule_detail_error(
 ):
     """Test error handling when neither session_id nor both config_id and date are provided."""
     with pytest.raises(ValueError) as exc_info:
-        activities_api.get_schedule_detail(async_req=False)
+        await activities_api.get_schedule_detail(async_req=False)
 
     assert (
         str(exc_info.value)
@@ -230,7 +231,7 @@ def test_error_handling(activities_api: ActivitiesApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        activities_api.get_activities(async_req=False)
+        await activities_api.get_activities(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

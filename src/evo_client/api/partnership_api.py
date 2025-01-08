@@ -2,15 +2,16 @@ from datetime import datetime
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 
+from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.convenios_api_view_model import ConveniosApiViewModel
 
 
-class PartnershipApi:
+class PartnershipApi(BaseApi):
     """Partnership API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/partnership"
 
     @overload
@@ -20,8 +21,7 @@ class PartnershipApi:
         description: Optional[str] = None,
         dt_created: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> List[ConveniosApiViewModel]:
-        ...
+    ) -> List[ConveniosApiViewModel]: ...
 
     @overload
     def get_partnerships(
@@ -30,8 +30,7 @@ class PartnershipApi:
         description: Optional[str] = None,
         dt_created: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_partnerships(
         self,

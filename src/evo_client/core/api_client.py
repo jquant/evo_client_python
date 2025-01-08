@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from multiprocessing.pool import AsyncResult
 from typing import (
     Any,
@@ -20,7 +19,6 @@ from pydantic import BaseModel
 from .configuration import Configuration
 from .request_handler import RequestHandler
 
-logger = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -77,8 +75,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[Any, AsyncResult[Any]]:
-        ...
+        raw_response: bool = False,
+    ) -> Union[Any, AsyncResult[Any]]: ...
 
     @overload
     def call_api(
@@ -97,8 +95,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[T, AsyncResult[T]]:
-        ...
+        raw_response: bool = False,
+    ) -> Union[T, AsyncResult[T]]: ...
 
     @overload
     def call_api(
@@ -117,8 +115,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[List[T], AsyncResult[List[T]]]:
-        ...
+        raw_response: bool = False,
+    ) -> Union[List[T], AsyncResult[List[T]]]: ...
 
     @overload
     def call_api(
@@ -137,8 +135,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]:
-        ...
+        raw_response: bool = False,
+    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]: ...
 
     @overload
     def call_api(
@@ -157,8 +155,8 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
-    ) -> Union[T, List[T], Any]:
-        ...
+        raw_response: bool = False,
+    ) -> Union[T, List[T], Any]: ...
 
     def call_api(
         self,
@@ -176,10 +174,19 @@ class ApiClient:
         _return_http_data_only: bool = True,
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
     ) -> Union[T, List[T], Any, AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]:
         """
         Makes the HTTP request (synchronous or asynchronous) and returns deserialized data.
+
+        Args:
+            ...
+            raw_response: If True, returns the raw response object (useful for binary data, Excel files, etc.)
         """
+        if raw_response:
+            _return_http_data_only = False
+            _preload_content = False
+
         if async_req:
             return self.request_handler.execute_async(
                 response_type=response_type,

@@ -30,12 +30,15 @@ def mock_api_client():
         yield mock
 
 
-def test_get_active_clients_basic(management_api: ManagementApi, mock_api_client: Mock):
+@pytest.mark.asyncio
+async def test_get_active_clients_basic(
+    management_api: ManagementApi, mock_api_client: Mock
+):
     """Test getting active clients list."""
     expected = [ClientesAtivosViewModel()]
     mock_api_client.return_value = expected
 
-    result = management_api.get_active_clients(async_req=False)
+    result = await management_api.get_active_clients(async_req=False)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -45,14 +48,15 @@ def test_get_active_clients_basic(management_api: ManagementApi, mock_api_client
     assert args["response_type"] == List[ClientesAtivosViewModel]
 
 
-def test_get_prospects(management_api: ManagementApi, mock_api_client: Mock):
+@pytest.mark.asyncio
+async def test_get_prospects(management_api: ManagementApi, mock_api_client: Mock):
     """Test getting prospects with date filters."""
     expected = [SpsRelProspectsCadastradosConvertidos()]
     mock_api_client.return_value = expected
     start_date = datetime(2023, 1, 1)
     end_date = datetime(2023, 1, 2)
 
-    result = management_api.get_prospects(
+    result = await management_api.get_prospects(
         dt_start=start_date, dt_end=end_date, async_req=False
     )
 
@@ -64,14 +68,17 @@ def test_get_prospects(management_api: ManagementApi, mock_api_client: Mock):
     assert args["query_params"] == {"dtStart": start_date, "dtEnd": end_date}
 
 
-def test_get_non_renewed_clients(management_api: ManagementApi, mock_api_client: Mock):
+@pytest.mark.asyncio
+async def test_get_non_renewed_clients(
+    management_api: ManagementApi, mock_api_client: Mock
+):
     """Test getting non-renewed clients with date filters."""
     expected = [ContratoNaoRenovadosViewModel()]
     mock_api_client.return_value = expected
     start_date = datetime(2023, 1, 1)
     end_date = datetime(2023, 1, 2)
 
-    result = management_api.get_non_renewed_clients(
+    result = await management_api.get_non_renewed_clients(
         dt_start=start_date, dt_end=end_date, async_req=False
     )
 
@@ -83,12 +90,13 @@ def test_get_non_renewed_clients(management_api: ManagementApi, mock_api_client:
     assert args["query_params"] == {"dtStart": start_date, "dtEnd": end_date}
 
 
-def test_error_handling(management_api: ManagementApi, mock_api_client: Mock):
+@pytest.mark.asyncio
+async def test_error_handling(management_api: ManagementApi, mock_api_client: Mock):
     """Test API error handling."""
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        management_api.get_active_clients(async_req=False)
+        await management_api.get_active_clients(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

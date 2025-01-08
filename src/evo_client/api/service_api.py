@@ -1,15 +1,16 @@
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 
+from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
 
 
-class ServiceApi:
+class ServiceApi(BaseApi):
     """Service API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/service"
 
     @overload
@@ -22,8 +23,7 @@ class ServiceApi:
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[False] = False,
-    ) -> List[ServicosResumoApiViewModel]:
-        ...
+    ) -> List[ServicosResumoApiViewModel]: ...
 
     @overload
     def get_services(
@@ -35,8 +35,7 @@ class ServiceApi:
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_services(
         self,

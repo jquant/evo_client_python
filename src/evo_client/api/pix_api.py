@@ -1,15 +1,16 @@
 from multiprocessing.pool import AsyncResult
 from typing import Any, Literal, Optional, Union, overload
 
+from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.pix_payment_details_view_model import PixPaymentDetailsViewModel
 
 
-class PixApi:
+class PixApi(BaseApi):
     """PIX API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/pix"
 
     @overload
@@ -17,14 +18,12 @@ class PixApi:
         self,
         pix_receipt_id: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> PixPaymentDetailsViewModel:
-        ...
+    ) -> PixPaymentDetailsViewModel: ...
 
     @overload
     def get_qr_code(
         self, pix_receipt_id: Optional[int] = None, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_qr_code(
         self, pix_receipt_id: Optional[int] = None, async_req: bool = False

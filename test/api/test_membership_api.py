@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
 from evo_client.api.membership_api import MembershipApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.contratos_resumo_api_view_model import (
@@ -90,7 +91,7 @@ def test_error_handling(membership_api: MembershipApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        membership_api.get_memberships(async_req=False)
+        await membership_api.get_memberships(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

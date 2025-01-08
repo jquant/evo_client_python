@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
 from evo_client.api.configuration_api import ConfigurationApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.bandeiras_basico_view_model import BandeirasBasicoViewModel
@@ -109,7 +110,7 @@ def test_error_handling(configuration_api: ConfigurationApi, mock_api_client: Mo
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        configuration_api.get_gateway_config(async_req=False)
+        await configuration_api.get_gateway_config(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

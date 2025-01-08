@@ -48,7 +48,8 @@ def test_create_session_with_cert_file():
     assert rest_client.session.cert == ("cert.pem", "key.pem")
 
 
-def test_request_get(rest_client: Tuple[RESTClient, Mock]):
+@pytest.mark.asyncio
+async def test_request_get(rest_client: Tuple[RESTClient, Mock]):
     """Test making a GET request using request method."""
     mock_session = rest_client[1]()
     mock_response = Mock(spec=requests.Response)
@@ -58,7 +59,7 @@ def test_request_get(rest_client: Tuple[RESTClient, Mock]):
     mock_response.headers = {"Content-Type": "application/json"}
     mock_session.request.return_value = mock_response
 
-    response = rest_client[0].request(
+    response = await rest_client[0].request(
         method="GET",
         url="http://example.com/api",
         preload_content=False,
@@ -79,7 +80,8 @@ def test_request_get(rest_client: Tuple[RESTClient, Mock]):
     )
 
 
-def test_request_post(rest_client: Tuple[RESTClient, Mock]):
+@pytest.mark.asyncio
+async def test_request_post(rest_client: Tuple[RESTClient, Mock]):
     """Test making a POST request using request method."""
     mock_session = rest_client[1]()
     mock_response = Mock(spec=requests.Response)
@@ -89,7 +91,7 @@ def test_request_post(rest_client: Tuple[RESTClient, Mock]):
     mock_response.headers = {"Content-Type": "application/json"}
     mock_session.request.return_value = mock_response
 
-    response = rest_client[0].request(
+    response = await rest_client[0].request(
         method="POST",
         url="http://example.com/api",
         body={"data": "test"},
@@ -111,7 +113,8 @@ def test_request_post(rest_client: Tuple[RESTClient, Mock]):
     )
 
 
-def test_request_error_handling_bad_request(rest_client: Tuple[RESTClient, Mock]):
+@pytest.mark.asyncio
+async def test_request_error_handling_bad_request(rest_client: Tuple[RESTClient, Mock]):
     """Test error handling in request method."""
     mock_session = rest_client[1]()
     mock_response = Mock(
@@ -123,7 +126,7 @@ def test_request_error_handling_bad_request(rest_client: Tuple[RESTClient, Mock]
     mock_session.request.return_value = mock_response
 
     with pytest.raises(ApiException) as exc_info:
-        rest_client[0].request(
+        await rest_client[0].request(
             method="GET",
             url="http://example.com/api",
         )
@@ -134,13 +137,14 @@ def test_request_error_handling_bad_request(rest_client: Tuple[RESTClient, Mock]
     )
 
 
-def test_request_error_handling_ssl_error(rest_client: Tuple[RESTClient, Mock]):
+@pytest.mark.asyncio
+async def test_request_error_handling_ssl_error(rest_client: Tuple[RESTClient, Mock]):
     """Test error handling in request method."""
     mock_session = rest_client[1]()
     mock_session.request.side_effect = requests.exceptions.SSLError("Error message")
 
     with pytest.raises(ApiException) as exc_info:
-        rest_client[0].request(
+        await rest_client[0].request(
             method="GET",
             url="http://example.com/api",
         )

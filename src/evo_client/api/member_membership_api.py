@@ -2,6 +2,7 @@ from datetime import datetime
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 
+from .base import BaseApi
 from ..core.api_client import ApiClient
 from ..models.contratos_cancelados_resumo_api_view_model import (
     ContratosCanceladosResumoApiViewModel,
@@ -9,11 +10,11 @@ from ..models.contratos_cancelados_resumo_api_view_model import (
 from ..models.member_membership_api_view_model import MemberMembershipApiViewModel
 
 
-class MemberMembershipApi:
+class MemberMembershipApi(BaseApi):
     """Member Membership API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/membermembership"
 
     @overload
@@ -32,8 +33,7 @@ class MemberMembershipApi:
         add_fine: bool = False,
         value_fine: Optional[float] = None,
         async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def cancel_membership(
@@ -51,8 +51,7 @@ class MemberMembershipApi:
         add_fine: bool = False,
         value_fine: Optional[float] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def cancel_membership(
         self,
@@ -115,14 +114,12 @@ class MemberMembershipApi:
     @overload
     def get_membership(
         self, id_member_membership: int, async_req: Literal[False] = False
-    ) -> MemberMembershipApiViewModel:
-        ...
+    ) -> MemberMembershipApiViewModel: ...
 
     @overload
     def get_membership(
         self, id_member_membership: int, async_req: Literal[True] = True
-    ) -> MemberMembershipApiViewModel:
-        ...
+    ) -> MemberMembershipApiViewModel: ...
 
     def get_membership(
         self, id_member_membership: int, async_req: bool = False
@@ -160,8 +157,7 @@ class MemberMembershipApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> List[ContratosCanceladosResumoApiViewModel]:
-        ...
+    ) -> List[ContratosCanceladosResumoApiViewModel]: ...
 
     @overload
     def get_canceled_memberships(
@@ -180,8 +176,7 @@ class MemberMembershipApi:
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> List[ContratosCanceladosResumoApiViewModel]:
-        ...
+    ) -> List[ContratosCanceladosResumoApiViewModel]: ...
 
     def get_canceled_memberships(
         self,

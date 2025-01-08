@@ -12,6 +12,7 @@ from evo_client.models.gym_model import (
     Sale,
     OverdueMember,
     Receivable,
+    PaymentPolicy,
 )
 
 # Initialize the API client
@@ -20,10 +21,29 @@ gym_api = GymApi()
 # Example 1: Get gym knowledge base
 print("\n=== Getting Gym Knowledge Base ===")
 gym_kb_result = gym_api.get_gym_knowledge_base()
-if isinstance(gym_kb_result, GymKnowledgeBase):  # Synchronous result
+if isinstance(gym_kb_result, GymKnowledgeBase):  # Single result
     gym_kb = gym_kb_result
-else:  # Async result
+elif isinstance(gym_kb_result, AsyncResult):  # Async result
     gym_kb = cast(GymKnowledgeBase, gym_kb_result.get())
+else:  # List result
+    gym_kb = (
+        gym_kb_result[0]
+        if gym_kb_result
+        else GymKnowledgeBase(
+            name="",
+            addresses=[],
+            businessHours=[],
+            plans=[],
+            activities=[],
+            faqs=[],
+            paymentPolicy=PaymentPolicy(
+                acceptedPaymentMethods=[],
+                pixKey=None,
+                installmentAvailable=False,
+                cancellationFeePercentage=0,
+            ),
+        )
+    )
 
 print(f"Gym Name: {gym_kb.name}")
 print(f"Number of Plans: {len(gym_kb.plans)}")

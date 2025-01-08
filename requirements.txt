@@ -1,7 +1,10 @@
 certifi >= 14.05.14
-six >= 1.10
-python_dateutil >= 2.5.3
-setuptools >= 21.0.0
-urllib3 >= 1.15.1
+loguru >= 0.7.3
+pandas >=2.2.3
 pydantic >= 2.10.1
+python_dateutil >= 2.5.3
 requests >= 2.32.3
+setuptools >= 21.0.0
+six >= 1.10
+urllib3 >= 1.15.1
+typer>=0.15.1

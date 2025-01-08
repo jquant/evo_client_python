@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+
 from evo_client.api.prospects_api import ProspectsApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.member_service_view_model import MemberServiceViewModel
@@ -136,7 +137,7 @@ def test_transfer_prospect(prospects_api: ProspectsApi, mock_api_client: Mock):
     mock_api_client.return_value = None
     transfer_data = ProspectTransferenciaViewModel()
 
-    prospects_api.transfer_prospect(transfer=transfer_data, async_req=False)
+    await prospects_api.transfer_prospect(transfer=transfer_data, async_req=False)
 
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
@@ -150,7 +151,7 @@ def test_error_handling(prospects_api: ProspectsApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        prospects_api.get_prospects(async_req=False)
+        await prospects_api.get_prospects(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"
