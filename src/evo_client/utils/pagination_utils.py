@@ -1,7 +1,8 @@
-from typing import List, Any, Callable, Dict, TypeVar
-from loguru import logger
 import time
 from threading import Lock as ThreadLock
+from typing import Any, Callable, Dict, List, TypeVar
+
+from loguru import logger
 
 from ..exceptions.api_exceptions import ApiException
 
