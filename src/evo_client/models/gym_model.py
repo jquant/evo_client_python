@@ -624,8 +624,17 @@ class GymOperatingData(BaseModel):
     average_visits_per_member: Decimal = Field(default=Decimal("0.00"))
 
     # Campaign and Discount Metrics
-    discount_effectiveness: Optional[str] = Field(default=None, description="Impact of discount campaigns on ARPU")
-    campaign_effectiveness: Optional[str] = Field(default=None, description="Impact of marketing campaigns on member reactivation")
+    discount_effectiveness: Optional[str] = Field(
+        default=None, description="Impact of discount campaigns on ARPU"
+    )
+    campaign_effectiveness: Optional[str] = Field(
+        default=None, description="Impact of marketing campaigns on member reactivation"
+    )
+
+    total_prospects: int = Field(default=0)
+    total_paid: Decimal = Field(default=Decimal("0.00"))
+    total_pending: Decimal = Field(default=Decimal("0.00"))
+    total_overdue: Decimal = Field(default=Decimal("0.00"))
 
     def __init__(self, **data):
         """Initialize GymOperatingData with logging."""
@@ -1112,7 +1121,9 @@ class MemberProfile(BaseModel):
                 activity_counts[name] = activity_counts.get(name, 0) + 1
         self.favorite_activities = sorted(
             activity_counts.keys(), key=lambda x: activity_counts[x], reverse=True
-        )[:5]  # Top 5 most attended activities
+        )[
+            :5
+        ]  # Top 5 most attended activities
 
     def add_timeline_event(
         self,

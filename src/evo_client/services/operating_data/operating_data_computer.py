@@ -3,22 +3,23 @@ from decimal import Decimal
 from datetime import datetime
 from ...models.gym_model import GymOperatingData, GymEntry
 from ...models.members_api_view_model import MembersApiViewModel
-from ...models.prospect_api_integracao_view_model import ProspectApiIntegracaoViewModel
+from ...models.prospects_resumo_api_view_model import ProspectsResumoApiViewModel
 from ...models.receivables_api_view_model import ReceivablesApiViewModel
 from ...models.contratos_resumo_api_view_model import ContratosResumoApiViewModel
+
 
 class OperatingDataComputer:
     def compute_metrics(
         self,
         active_members: List[MembersApiViewModel],
-        prospects: List[ProspectApiIntegracaoViewModel],
+        prospects: List[ProspectsResumoApiViewModel],
         non_renewed: List[MembersApiViewModel],
         receivables: List[ReceivablesApiViewModel],
         entries: List[GymEntry],
         active_contracts: List[ContratosResumoApiViewModel],
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
-        previous_data: Optional[GymOperatingData] = None
+        previous_data: Optional[GymOperatingData] = None,
     ) -> GymOperatingData:
         """
         Compute operating metrics from raw data, including advanced metrics.
@@ -48,7 +49,11 @@ class OperatingDataComputer:
         total_mrr = Decimal("0.00")
         for c in active_contracts:
             # Assuming c has a price attribute representing the monthly fee
-            price = Decimal(str(c.price)) if hasattr(c, "price") and c.price is not None else Decimal("0.00")
+            price = (
+                Decimal(str(c.value))
+                if hasattr(c, "value") and c.value is not None
+                else Decimal("0.00")
+            )
             total_mrr += price
 
         # ARR = MRR * 12
@@ -57,11 +62,17 @@ class OperatingDataComputer:
         # Calculate churn rate.
         # If previous_data is available, we use previous_data.total_active_members to determine churn.
         if previous_data and previous_data.total_active_members > 0:
-            churn_rate = (Decimal(str(total_churned)) / Decimal(str(previous_data.total_active_members))) * Decimal("100")
+            churn_rate = (
+                Decimal(str(total_churned))
+                / Decimal(str(previous_data.total_active_members))
+            ) * Decimal("100")
         else:
             # Without previous data, we estimate churn as non_renewed/active currently. This is less accurate.
             if total_active + total_churned > 0:
-                churn_rate = (Decimal(str(total_churned)) / Decimal(str(total_active + total_churned))) * Decimal("100")
+                churn_rate = (
+                    Decimal(str(total_churned))
+                    / Decimal(str(total_active + total_churned))
+                ) * Decimal("100")
             else:
                 churn_rate = Decimal("0.00")
 
@@ -106,12 +117,19 @@ class OperatingDataComputer:
         if previous_data and previous_data.mrr > 0:
             # Let's estimate churned_mrr as MRR fraction proportional to churned members
             if previous_data.total_active_members > 0 and total_churned > 0:
-                avg_prev_mrr_per_member = previous_data.mrr / Decimal(str(previous_data.total_active_members))
+                avg_prev_mrr_per_member = previous_data.mrr / Decimal(
+                    str(previous_data.total_active_members)
+                )
                 churned_mrr = avg_prev_mrr_per_member * Decimal(str(total_churned))
 
         if previous_data and previous_data.mrr > 0:
-            grr = ( (previous_data.mrr - churned_mrr) / previous_data.mrr ) * Decimal("100")
-            nrr = ( (previous_data.mrr + expansion_mrr - contraction_mrr - churned_mrr) / previous_data.mrr ) * Decimal("100")
+            grr = ((previous_data.mrr - churned_mrr) / previous_data.mrr) * Decimal(
+                "100"
+            )
+            nrr = (
+                (previous_data.mrr + expansion_mrr - contraction_mrr - churned_mrr)
+                / previous_data.mrr
+            ) * Decimal("100")
         else:
             # No previous_data, default
             grr = Decimal("100.00")
@@ -125,7 +143,13 @@ class OperatingDataComputer:
         # growth = ((current_active - prev_active)/prev_active)*100
         membership_growth_rate = Decimal("0.00")
         if previous_data and previous_data.total_active_members > 0:
-            membership_growth_rate = ((Decimal(str(total_active)) - Decimal(str(previous_data.total_active_members))) / Decimal(str(previous_data.total_active_members))) * Decimal("100")
+            membership_growth_rate = (
+                (
+                    Decimal(str(total_active))
+                    - Decimal(str(previous_data.total_active_members))
+                )
+                / Decimal(str(previous_data.total_active_members))
+            ) * Decimal("100")
 
         # class attendance rate:
         # We have entries and no direct info about classes. We'll just set it 0 for now.
@@ -136,7 +160,9 @@ class OperatingDataComputer:
         # average visits = total entries / total_active_members
         avg_visits_per_member = Decimal("0.00")
         if total_active > 0 and len(entries) > 0:
-            avg_visits_per_member = Decimal(str(len(entries))) / Decimal(str(total_active))
+            avg_visits_per_member = Decimal(str(len(entries))) / Decimal(
+                str(total_active)
+            )
 
         data = GymOperatingData(
             active_members=[m.model_dump() for m in active_members],
@@ -155,7 +181,9 @@ class OperatingDataComputer:
             total_active_members=total_active,
             total_churned_members=total_churned,
             churn_rate=churn_rate,
-            retention_rate=Decimal("100") - churn_rate if total_active > 0 else Decimal("100"),
+            retention_rate=(
+                Decimal("100") - churn_rate if total_active > 0 else Decimal("100")
+            ),
             membership_growth_rate=membership_growth_rate,
             multi_unit_member_percentage=multi_unit_percentage,
             capacity_metrics=None,

@@ -3,6 +3,9 @@ from typing import Dict, List
 import asyncio
 
 from evo_client.api.gym_api import GymApi
+from evo_client.api.api_client import ApiClient
+from evo_client.api.configuration import Configuration
+from evo_client.services.data_fetchers import BranchApiClientManager
 from evo_client.models.gym_model import (
     GymKnowledgeBase,
     GymOperatingData,
@@ -70,21 +73,29 @@ async def main():
         {"username": "branch2_user", "password": "branch2_pass", "branch_id": "2"},
         {"username": "branch3_user", "password": "branch3_pass", "branch_id": "3"},
     ]
-
-    gym_api = GymApi(branch_credentials=branch_credentials)
+    branch_api_clients = {
+        branch["branch_id"]: ApiClient(
+            configuration=Configuration(
+                username=branch["username"], password=branch["password"]
+            )
+        )
+        for branch in branch_credentials
+    }
+    client_manager = BranchApiClientManager(branch_api_clients=branch_api_clients)
+    gym_api = GymApi(client_manager=client_manager)
 
     # Set date range for data
     end_date = datetime.now()
     start_date = end_date - timedelta(days=30)
 
     # Get knowledge base for all branches
-    knowledge_bases = gym_api.get_gym_knowledge_base()
+    knowledge_bases = gym_api.knowledge_base_fetcher.build_knowledge_base()
     if isinstance(knowledge_bases, List):
         for kb, branch_id in zip(knowledge_bases, ["1", "2", "3"]):
             print_branch_summary(branch_id, kb)
 
     # Get operating data for all branches
-    operating_data = await gym_api.get_operating_data(
+    operating_data = await gym_api.receivables_data_fetcher.get_operating_data(
         from_date=start_date, to_date=end_date
     )
 
@@ -94,9 +105,13 @@ async def main():
 
     # Get member files for all branches
     member_ids = [1001, 1002, 1003]  # Example member IDs
-    members_files = gym_api.get_members_files(
-        member_ids=member_ids, from_date=start_date, to_date=end_date
-    )
+    members_files = []
+    for member_id in member_ids:
+        members_files.extend(
+            gym_api.member_data_fetcher.fetch_member_by_id(
+                member_id=member_id, branch_id=branch_id
+            )
+        )
 
     if isinstance(members_files, List):
         for files in members_files:

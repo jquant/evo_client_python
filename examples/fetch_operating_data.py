@@ -7,6 +7,7 @@ from evo_client.core.configuration import Configuration
 from evo_client.core.api_client import ApiClient
 from evo_client.api.gym_api import GymApi
 from evo_client.models.gym_model import GymOperatingData
+from evo_client.services.data_fetchers import BranchApiClientManager
 
 
 async def fetch_operating_data(
@@ -35,7 +36,10 @@ async def fetch_operating_data(
     configuration.host = host
 
     api_client = ApiClient(configuration=configuration)
-    gym_api = GymApi(api_client=api_client)
+    client_manager = BranchApiClientManager(
+        branch_api_clients={str(branch_id): api_client}
+    )
+    gym_api = GymApi(client_manager=client_manager)
 
     # Calculate date range
     end_date = datetime.now()
@@ -43,7 +47,7 @@ async def fetch_operating_data(
 
     try:
         # Fetch operating data
-        operating_data = await gym_api.get_operating_data(
+        operating_data = await gym_api.receivables_data_fetcher.get_operating_data(
             from_date=start_date,
             to_date=end_date,
             branch_ids=[str(branch_id)] if branch_id is not None else None,

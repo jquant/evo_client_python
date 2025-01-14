@@ -62,36 +62,46 @@ class OperatingDataFetcher:
                 active_members = self.member_fetcher.fetch_members(
                     membership_start_date_start=from_date,
                     membership_start_date_end=to_date,
-                    status=1  # Assuming 1 means active
+                    status=1,  # Assuming 1 means active
                 )
 
                 # Fetch non-renewed members
                 non_renewed = self.member_fetcher.fetch_members(
                     membership_cancel_date_start=from_date,
                     membership_cancel_date_end=to_date,
-                    status=2  # Assuming 2 means inactive/cancelled
+                    status=2,  # Assuming 2 means inactive/cancelled
                 )
 
                 # Fetch receivables
                 receivables = self.receivables_fetcher.fetch_receivables(
-                    due_date_start=from_date,
-                    due_date_end=to_date
+                    due_date_start=from_date, due_date_end=to_date
                 )
 
                 # Fetch entries
                 entries = self.entries_fetcher.fetch_entries(
-                    register_date_start=from_date,
-                    register_date_end=to_date
+                    register_date_start=from_date, register_date_end=to_date
+                )
+
+                # Fetch prospects
+                prospects = self.prospects_fetcher.fetch_prospects(
+                    register_date_start=from_date, register_date_end=to_date
+                )
+
+                # Fetch active contracts
+                active_contracts = self.membership_fetcher.fetch_memberships(
+                    active=True
                 )
 
                 # Compute metrics for this branch
                 branch_metrics = self.computer.compute_metrics(
                     active_members=active_members,
+                    prospects=prospects,
+                    active_contracts=active_contracts,
                     non_renewed=non_renewed,
                     receivables=receivables,
                     entries=entries,
                     from_date=from_date,
-                    to_date=to_date
+                    to_date=to_date,
                 )
 
                 # Add branch identifier
@@ -106,7 +116,7 @@ class OperatingDataFetcher:
         except Exception as e:
             logger.error(f"Error fetching operating data: {str(e)}")
             raise ValueError(f"Error fetching operating data: {str(e)}")
-
+ 
     def aggregate_branch_metrics(
         self, branch_metrics: List[GymOperatingData]
     ) -> GymOperatingData:
@@ -123,30 +133,36 @@ class OperatingDataFetcher:
 
         # Create base aggregated object
         aggregated = GymOperatingData(
-            data_from=branch_metrics[0].data_from,
-            data_to=branch_metrics[0].data_to
+            data_from=branch_metrics[0].data_from, data_to=branch_metrics[0].data_to
         )
 
         # Aggregate numeric metrics
-        aggregated.total_active_members = sum(d.total_active_members for d in branch_metrics)
-        aggregated.total_churned_members = sum(d.total_churned_members for d in branch_metrics)
+        aggregated.total_active_members = sum(
+            d.total_active_members for d in branch_metrics
+        )
+        aggregated.total_churned_members = sum(
+            d.total_churned_members for d in branch_metrics
+        )
         aggregated.total_prospects = sum(d.total_prospects for d in branch_metrics)
-        aggregated.mrr = sum(d.mrr for d in branch_metrics)
-        aggregated.total_paid = sum(d.total_paid for d in branch_metrics)
-        aggregated.total_pending = sum(d.total_pending for d in branch_metrics)
-        aggregated.total_overdue = sum(d.total_overdue for d in branch_metrics)
+        aggregated.mrr = Decimal(sum(d.mrr for d in branch_metrics))
+        aggregated.total_paid = Decimal(sum(d.total_paid for d in branch_metrics))
+        aggregated.total_pending = Decimal(sum(d.total_pending for d in branch_metrics))
+        aggregated.total_overdue = Decimal(sum(d.total_overdue for d in branch_metrics))
 
         # Calculate weighted average for percentages
         if aggregated.total_active_members > 0:
-            aggregated.churn_rate = sum(
-                d.churn_rate * d.total_active_members 
-                for d in branch_metrics
-            ) / aggregated.total_active_members
+            aggregated.churn_rate = Decimal(
+                sum(d.churn_rate * d.total_active_members for d in branch_metrics)
+                / aggregated.total_active_members
+            )
 
-            aggregated.multi_unit_member_percentage = sum(
-                d.multi_unit_member_percentage * d.total_active_members 
-                for d in branch_metrics
-            ) / aggregated.total_active_members
+            aggregated.multi_unit_member_percentage = Decimal(
+                sum(
+                    d.multi_unit_member_percentage * d.total_active_members
+                    for d in branch_metrics
+                )
+                / aggregated.total_active_members
+            )
 
         # Combine lists
         aggregated.active_members = [
@@ -155,15 +171,11 @@ class OperatingDataFetcher:
         aggregated.active_contracts = [
             c for d in branch_metrics for c in d.active_contracts
         ]
-        aggregated.prospects = [
-            p for d in branch_metrics for p in d.prospects
-        ]
+        aggregated.prospects = [p for d in branch_metrics for p in d.prospects]
         aggregated.non_renewed_members = [
             m for d in branch_metrics for m in d.non_renewed_members
         ]
-        aggregated.receivables = [
-            r for d in branch_metrics for r in d.receivables
-        ]
+        aggregated.receivables = [r for d in branch_metrics for r in d.receivables]
         aggregated.recent_entries = [
             e for d in branch_metrics for e in d.recent_entries
         ]
