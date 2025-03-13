@@ -103,7 +103,7 @@ def test_mark_received(receivables_api: ReceivablesApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "PUT"
     assert args["resource_path"] == "/api/v1/receivables/mark-received"
-    assert args["body"] == {}
+    assert args["body"] == receivables.model_dump(exclude_unset=True)
 
 
 def test_error_handling(receivables_api: ReceivablesApi, mock_api_client: Mock):
