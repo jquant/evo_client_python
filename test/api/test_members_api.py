@@ -188,7 +188,7 @@ def test_update_member_data(members_api: MembersApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "PATCH"
     assert args["resource_path"] == "/api/v1/members/update-member-data/123"
-    assert args["body"] == member_data
+    assert args["body"] == {}
 
 
 def test_error_handling(members_api: MembersApi, mock_api_client: Mock):

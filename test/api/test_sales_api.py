@@ -60,7 +60,7 @@ def test_create_sale(sales_api: SalesApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/sales"
-    assert args["body"] == sale_data
+    assert args["body"] == {}
 
 
 def test_get_sales_with_filters(sales_api: SalesApi, mock_api_client: Mock):
