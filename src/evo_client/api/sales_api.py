@@ -4,7 +4,7 @@ from typing import Any, List, Literal, Optional, Union, overload
 
 from .base import BaseApi
 from ..core.api_client import ApiClient
-from ..models.new_sale_view_model import NewSaleViewModel, NewSaleResponse
+from ..models.new_sale_view_model import NewSaleResponse, NewSaleViewModel
 from ..models.sales_items_view_model import SalesItemsViewModel
 from ..models.sales_view_model import SalesViewModel
 

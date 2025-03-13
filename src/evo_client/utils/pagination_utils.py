@@ -78,7 +78,6 @@ def compute_backoff_delay(
 
 
 def fetch_for_unit(
-    branch_id: str,
     api_func: Callable[..., List[T]],
     kwargs: Dict,
     page_size: int,
@@ -86,6 +85,7 @@ def fetch_for_unit(
     base_delay: float,
     supports_pagination: bool,
     pagination_type: str,
+    branch_id: str = "NOT INFORMED",
 ) -> List[T]:
     """Fetch all pages of data for a single unit, handling pagination and retries."""
     # Create rate limiter inside the process
@@ -144,12 +144,12 @@ def fetch_for_unit(
 
 def paginated_api_call(
     api_func: Callable[..., List[T]],
-    branch_id: str,
     page_size: int = 50,
     max_retries: int = 5,
     base_delay: float = 1.5,
     supports_pagination: bool = True,
     pagination_type: str = "skip_take",
+    branch_id: str = "NOT INFORMED",
     **kwargs,
 ) -> List[T]:
     """Execute paginated API calls with retry logic."""
