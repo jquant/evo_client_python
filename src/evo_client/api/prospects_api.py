@@ -155,7 +155,7 @@ class ProspectsApi:
         return self.api_client.call_api(
             resource_path=self.base_path,
             method="POST",
-            body=prospect,
+            body=prospect.model_dump(exclude_unset=True),
             response_type=ProspectIdViewModel,
             auth_settings=["Basic"],
             async_req=async_req,
@@ -202,7 +202,7 @@ class ProspectsApi:
         return self.api_client.call_api(
             resource_path=self.base_path,
             method="PUT",
-            body=prospect,
+            body=prospect.model_dump(exclude_unset=True),
             response_type=ProspectIdViewModel,
             auth_settings=["Basic"],
             async_req=async_req,
@@ -268,7 +268,7 @@ class ProspectsApi:
         return self.api_client.call_api(
             resource_path=f"{self.base_path}/transfer",
             method="POST",
-            body=transfer,
+            body=transfer.model_dump(exclude_unset=True),
             response_type=None,
             auth_settings=["Basic"],
             async_req=async_req,
