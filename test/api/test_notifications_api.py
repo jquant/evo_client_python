@@ -35,7 +35,7 @@ def test_create_notification(
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/notifications"
-    assert args["body"] == notification
+    assert args["body"] == notification.model_dump(exclude_unset=True)
 
 
 def test_error_handling(notifications_api: NotificationsApi, mock_api_client: Mock):

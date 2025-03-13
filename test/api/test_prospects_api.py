@@ -97,7 +97,7 @@ def test_create_prospect(prospects_api: ProspectsApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/prospects"
-    assert args["body"] == prospect_data
+    assert args["body"] == prospect_data.model_dump(exclude_unset=True)
 
 
 def test_update_prospect(prospects_api: ProspectsApi, mock_api_client: Mock):
@@ -113,7 +113,7 @@ def test_update_prospect(prospects_api: ProspectsApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "PUT"
     assert args["resource_path"] == "/api/v1/prospects"
-    assert args["body"] == prospect_data
+    assert args["body"] == prospect_data.model_dump(exclude_unset=True)
 
 
 def test_get_services(prospects_api: ProspectsApi, mock_api_client: Mock):
@@ -142,7 +142,7 @@ def test_transfer_prospect(prospects_api: ProspectsApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/prospects/transfer"
-    assert args["body"] == transfer_data
+    assert args["body"] == transfer_data.model_dump(exclude_unset=True)
 
 
 def test_error_handling(prospects_api: ProspectsApi, mock_api_client: Mock):

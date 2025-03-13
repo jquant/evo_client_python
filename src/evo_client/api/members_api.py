@@ -567,7 +567,7 @@ class MembersApi:
         return self.api_client.call_api(
             resource_path=f"{self.base_path}/update-member-data/{id_member}",
             method="PATCH",
-            body=body,
+            body=body.model_dump(exclude_unset=True),
             response_type=bool,
             auth_settings=["Basic"],
             async_req=async_req,

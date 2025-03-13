@@ -282,7 +282,7 @@ class ReceivablesApi:
         return self.api_client.call_api(
             resource_path=f"{self.base_path}/receivables/mark-received",
             method="PUT",
-            body=receivables,
+            body=receivables.model_dump(exclude_unset=True),
             response_type=None,
             auth_settings=["Basic"],
             async_req=async_req,
