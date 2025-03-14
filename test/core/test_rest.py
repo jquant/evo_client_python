@@ -59,7 +59,7 @@ async def test_request_get(rest_client: Tuple[RESTClient, Mock]):
     mock_response.headers = {"Content-Type": "application/json"}
     mock_session.request.return_value = mock_response
 
-    response = await rest_client[0].request(
+    response = rest_client[0].request(
         method="GET",
         url="http://example.com/api",
         preload_content=False,
@@ -91,7 +91,7 @@ async def test_request_post(rest_client: Tuple[RESTClient, Mock]):
     mock_response.headers = {"Content-Type": "application/json"}
     mock_session.request.return_value = mock_response
 
-    response = await rest_client[0].request(
+    response = rest_client[0].request(
         method="POST",
         url="http://example.com/api",
         body={"data": "test"},
@@ -126,7 +126,7 @@ async def test_request_error_handling_bad_request(rest_client: Tuple[RESTClient,
     mock_session.request.return_value = mock_response
 
     with pytest.raises(ApiException) as exc_info:
-        await rest_client[0].request(
+        rest_client[0].request(
             method="GET",
             url="http://example.com/api",
         )
@@ -144,7 +144,7 @@ async def test_request_error_handling_ssl_error(rest_client: Tuple[RESTClient, M
     mock_session.request.side_effect = requests.exceptions.SSLError("Error message")
 
     with pytest.raises(ApiException) as exc_info:
-        await rest_client[0].request(
+        rest_client[0].request(
             method="GET",
             url="http://example.com/api",
         )

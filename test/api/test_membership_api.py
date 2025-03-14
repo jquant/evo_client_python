@@ -91,7 +91,7 @@ def test_error_handling(membership_api: MembershipApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await membership_api.get_memberships(async_req=False)
+        membership_api.get_memberships(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

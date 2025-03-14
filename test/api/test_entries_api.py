@@ -71,7 +71,7 @@ def test_get_entries_with_filters(entries_api: EntriesApi, mock_api_client: Mock
 def test_get_entries_max_take(entries_api: EntriesApi, mock_api_client: Mock):
     """Test error when take parameter exceeds maximum."""
     with pytest.raises(ValueError) as exc:
-        await entries_api.get_entries(take=1001, async_req=False)
+        entries_api.get_entries(take=1001, async_req=False)
 
     assert str(exc.value) == "Maximum number of records to return is 1000"
     mock_api_client.assert_not_called()
@@ -125,7 +125,7 @@ def test_error_handling(entries_api: EntriesApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await entries_api.get_entries(async_req=False)
+        entries_api.get_entries(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

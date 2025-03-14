@@ -98,7 +98,7 @@ def test_mark_received(receivables_api: ReceivablesApi, mock_api_client: Mock):
     mock_api_client.return_value = None
     receivables = ReceivablesMaskReceivedViewModel()
 
-    await receivables_api.mark_received(receivables=receivables, async_req=False)
+    receivables_api.mark_received(receivables=receivables, async_req=False)
 
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
@@ -112,7 +112,7 @@ def test_error_handling(receivables_api: ReceivablesApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await receivables_api.get_receivables(async_req=False)
+        receivables_api.get_receivables(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

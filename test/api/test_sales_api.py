@@ -127,7 +127,7 @@ def test_error_handling(sales_api: SalesApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await sales_api.get_sale_by_id(sale_id=123, async_req=False)
+        sales_api.get_sale_by_id(sale_id=123, async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

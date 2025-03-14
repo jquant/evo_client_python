@@ -56,7 +56,7 @@ def test_error_handling(pix_api: PixApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await pix_api.get_qr_code(async_req=False)
+        pix_api.get_qr_code(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

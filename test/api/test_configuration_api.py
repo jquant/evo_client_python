@@ -110,7 +110,7 @@ def test_error_handling(configuration_api: ConfigurationApi, mock_api_client: Mo
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await configuration_api.get_gateway_config(async_req=False)
+        configuration_api.get_gateway_config(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

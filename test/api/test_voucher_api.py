@@ -120,7 +120,7 @@ def test_error_handling(voucher_api: VoucherApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await voucher_api.get_vouchers(async_req=False)
+        voucher_api.get_vouchers(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

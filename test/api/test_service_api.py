@@ -70,7 +70,7 @@ def test_error_handling(service_api: ServiceApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await service_api.get_services(async_req=False)
+        service_api.get_services(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

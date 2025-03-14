@@ -67,7 +67,7 @@ def test_error_handling(partnership_api: PartnershipApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await partnership_api.get_partnerships(async_req=False)
+        partnership_api.get_partnerships(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

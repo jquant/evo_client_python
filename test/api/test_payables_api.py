@@ -109,7 +109,7 @@ def test_error_handling(payables_api: PayablesApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await payables_api.get_payables(async_req=False)
+        payables_api.get_payables(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

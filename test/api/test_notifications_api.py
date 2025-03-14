@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 
-
 from evo_client.api.notifications_api import NotificationsApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.notification_api_view_model import NotificationApiViewModel
@@ -31,7 +30,7 @@ def test_create_notification(
     mock_api_client.return_value = None
     notification = NotificationApiViewModel()
 
-    await notifications_api.create_notification(notification=notification, async_req=False)
+    notifications_api.create_notification(notification=notification, async_req=False)
 
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]

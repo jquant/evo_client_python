@@ -137,7 +137,7 @@ def test_transfer_prospect(prospects_api: ProspectsApi, mock_api_client: Mock):
     mock_api_client.return_value = None
     transfer_data = ProspectTransferenciaViewModel()
 
-    await prospects_api.transfer_prospect(transfer=transfer_data, async_req=False)
+    prospects_api.transfer_prospect(transfer=transfer_data, async_req=False)
 
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
@@ -151,7 +151,7 @@ def test_error_handling(prospects_api: ProspectsApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await prospects_api.get_prospects(async_req=False)
+        prospects_api.get_prospects(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

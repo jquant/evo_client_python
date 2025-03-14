@@ -81,7 +81,7 @@ def test_get_invoices_with_filters(invoices_api: InvoicesApi, mock_api_client: M
 def test_get_invoices_take_limit(invoices_api: InvoicesApi, mock_api_client: Mock):
     """Test error when take parameter exceeds limit."""
     with pytest.raises(ValueError) as exc:
-        await invoices_api.get_invoices(take=251, async_req=False)
+        invoices_api.get_invoices(take=251, async_req=False)
 
     assert str(exc.value) == "Maximum number of records to return is 250"
     mock_api_client.assert_not_called()
@@ -92,7 +92,7 @@ def test_error_handling(invoices_api: InvoicesApi, mock_api_client: Mock):
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await invoices_api.get_invoices(async_req=False)
+        invoices_api.get_invoices(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"

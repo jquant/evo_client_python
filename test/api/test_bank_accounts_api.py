@@ -47,7 +47,7 @@ def test_error_handling(bank_accounts_api: BankAccountsApi, mock_api_client: Moc
     mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
 
     with pytest.raises(ApiException) as exc:
-        await bank_accounts_api.get_accounts(async_req=False)
+        bank_accounts_api.get_accounts(async_req=False)
 
     assert exc.value.status == 404
     assert exc.value.reason == "Not Found"
