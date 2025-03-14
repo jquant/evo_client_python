@@ -69,7 +69,7 @@ class SalesApi(BaseApi):
         return self.api_client.call_api(
             resource_path=self.base_path,
             method="POST",
-            body=body,
+            body=body.model_dump(exclude_unset=True) if body else None,
             response_type=NewSaleResponse,
             auth_settings=["Basic"],
             async_req=async_req,

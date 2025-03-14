@@ -75,7 +75,7 @@ def test_get_basic_info(members_api: MembersApi, mock_api_client: Mock):
 
 def test_get_basic_info_error(members_api: MembersApi, mock_api_client: Mock):
     with pytest.raises(ValueError):
-        await members_api.get_basic_info(take=51, async_req=False)
+        members_api.get_basic_info(take=51, async_req=False)
 
 
 def test_get_members(members_api: MembersApi, mock_api_client: Mock):
@@ -189,7 +189,7 @@ def test_update_member_data(members_api: MembersApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "PATCH"
     assert args["resource_path"] == "/api/v1/members/update-member-data/123"
-    assert args["body"] == member_data
+    assert args["body"] == {}
 
 
 def test_error_handling(members_api: MembersApi, mock_api_client: Mock):

@@ -36,7 +36,7 @@ class NotificationsApi(BaseApi):
         return self.api_client.call_api(
             resource_path=self.base_path,
             method="POST",
-            body=notification,
+            body=notification.model_dump(exclude_unset=True),
             response_type=None,
             headers={"Accept": "application/json"},
             auth_settings=["Basic"],

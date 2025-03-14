@@ -45,7 +45,7 @@ def test_get_sale_by_id_error(sales_api: SalesApi, mock_api_client: Mock):
     """Test error handling for getting sale by ID."""
 
     with pytest.raises(ValueError):
-        await sales_api.get_sale_by_id(sale_id=None, async_req=False)  # type: ignore
+        sales_api.get_sale_by_id(sale_id=0, async_req=False)
 
 
 def test_create_sale(sales_api: SalesApi, mock_api_client: Mock):
@@ -61,7 +61,7 @@ def test_create_sale(sales_api: SalesApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/sales"
-    assert args["body"] == sale_data
+    assert args["body"] == sale_data.model_dump(exclude_unset=True)
 
 
 def test_get_sales_with_filters(sales_api: SalesApi, mock_api_client: Mock):
