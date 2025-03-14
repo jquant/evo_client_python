@@ -17,10 +17,10 @@ from pydantic import BaseModel, Field
 
 class TipoContratoEnum(str, Enum):
     """Contract type enumeration
-    
+
     Values:
         _1: Comum (Common)
-        _3: Extensão de Plano (Plan Extension) 
+        _3: Extensão de Plano (Plan Extension)
         _4: Extensão de Bloqueio (Block Extension)
         _5: Mensal Recorrente (Monthly Recurring)
         _6: Recorrente Mensal com Validade (Recurring with Validity)
@@ -32,13 +32,13 @@ class TipoContratoEnum(str, Enum):
 
     _1 = "1"  # Comum
     _3 = "3"  # Extensão de Plano
-    _4 = "4"  # Extensão de Bloqueio  
+    _4 = "4"  # Extensão de Bloqueio
     _5 = "5"  # Mensal Recorrente
     _6 = "6"  # Recorrente Mensal com Validade
     _7 = "7"  # Mensal Recorrente com Renovação Automática
     _8 = "8"  # Dependente Adicional
     _9 = "9"  # Anual com Data de Término Específica
-    _10 = "10" # Contrato Adicional
+    _10 = "10"  # Contrato Adicional
 
     @classmethod
     def get_description(cls, value: str) -> str:
@@ -47,14 +47,14 @@ class TipoContratoEnum(str, Enum):
             enum_value = cls(value)
             descriptions = {
                 cls._1: "Comum",
-                cls._3: "Extensão de Plano", 
+                cls._3: "Extensão de Plano",
                 cls._4: "Extensão de Bloqueio",
                 cls._5: "Mensal Recorrente",
                 cls._6: "Recorrente Mensal com Validade",
                 cls._7: "Mensal Recorrente com Renovação Automática",
                 cls._8: "Dependente Adicional",
                 cls._9: "Anual com Data de Término Específica",
-                cls._10: "Contrato Adicional"
+                cls._10: "Contrato Adicional",
             }
             return descriptions.get(enum_value, "Unknown")
         except ValueError:
@@ -64,8 +64,8 @@ class TipoContratoEnum(str, Enum):
 class ETipoContrato(BaseModel):
     """
     Atributos:
-        tipo: O tipo de contrato, representado como uma enumeração. 
-              Os valores possíveis correspondem a diferentes tipos de contrato, como 
+        tipo: O tipo de contrato, representado como uma enumeração.
+              Os valores possíveis correspondem a diferentes tipos de contrato, como
               comum, extensão de plano, extensão de bloqueio, e mais.
               Exemplos:
                 "1" - Comum
@@ -78,7 +78,7 @@ class ETipoContrato(BaseModel):
                 "9" - Anual com Data de Término Específica
                 "10" - Contrato Adicional
     """
-    
+
     tipo: TipoContratoEnum = Field(
         description=(
             "O tipo de contrato, representado como uma enumeração. "
@@ -94,7 +94,7 @@ class ETipoContrato(BaseModel):
             "7",  # Mensal Recorrente com Renovação Automática
             "8",  # Dependente Adicional
             "9",  # Anual com Data de Término Específica
-            "10"  # Contrato Adicional
+            "10",  # Contrato Adicional
         ],
     )
 

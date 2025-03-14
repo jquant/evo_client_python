@@ -25,8 +25,8 @@ try:
         event_types=["NewSale", "CreateMember"],
         headers=[
             {"nome": "X-API-Key", "valor": "your-api-key"},
-            {"nome": "Content-Type", "valor": "application/json"}
-        ]
+            {"nome": "Content-Type", "valor": "application/json"},
+        ],
     )
     print(f"Subscription successful: {result}")
 except Exception as e:
@@ -40,8 +40,8 @@ try:
         event_types=["NewSale"],
         filters=[
             {"filterType": "SaleItemDescription", "value": "Premium Membership"},
-            {"filterType": "SaleItemDescription", "value": "Personal Training"}
-        ]
+            {"filterType": "SaleItemDescription", "value": "Personal Training"},
+        ],
     )
     print(f"Subscription successful: {result}")
 except Exception as e:
@@ -54,9 +54,9 @@ try:
         url_callback="https://example.com/webhook/multi-branch",
         branch_ids=["1", "2", "3"],
         event_types=["NewSale", "CreateMember", "AlterMember"],
-        headers=[{"nome": "X-Branch-ID", "valor": "dynamic"}]
+        headers=[{"nome": "X-Branch-ID", "valor": "dynamic"}],
     )
-    
+
     if isinstance(result, AsyncResult):
         success = cast(bool, result.get())
         print(f"Multi-branch subscription successful: {success}")
@@ -69,7 +69,7 @@ try:
     result = gym_api.manage_webhooks(
         url_callback="https://example.com/webhook",
         event_types=["NewSale", "CreateMember"],
-        unsubscribe=True
+        unsubscribe=True,
     )
     print(f"Unsubscription successful: {result}")
 except Exception as e:
@@ -81,7 +81,7 @@ try:
     webhooks = gym_api.webhook_api.get_webhooks()
     if isinstance(webhooks, AsyncResult):
         webhooks = cast(List[W12UtilsWebhookViewModel], webhooks.get())
-    
+
     for webhook in webhooks:
         print(f"Branch ID: {webhook.id_branch}")
         print(f"Event Type: {webhook.event_type}")
@@ -96,4 +96,4 @@ try:
                 print(f"  {filter.filter_type}: {filter.value}")
         print("---")
 except Exception as e:
-    print(f"Error listing webhooks: {str(e)}") 
+    print(f"Error listing webhooks: {str(e)}")

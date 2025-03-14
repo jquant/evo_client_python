@@ -4,7 +4,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-
 from evo_client.api.employees_api import EmployeesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.employee_api_integracao_atualizacao_view_model import (

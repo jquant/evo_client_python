@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-
 from evo_client.api.activities_api import ActivitiesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.atividade_basico_api_view_model import (

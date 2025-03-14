@@ -1,5 +1,6 @@
 # /src/evo_client/services/data_fetchers/configuration_data_fetcher.py
 from typing import List
+
 from loguru import logger
 
 from ...api.configuration_api import ConfigurationApi

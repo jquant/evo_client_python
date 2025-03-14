@@ -1,11 +1,12 @@
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
+from loguru import logger
 
 from ...api.sales_api import SalesApi
 from ...models.sales_view_model import SalesViewModel
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
-from loguru import logger
 
 
 class SalesDataFetcher(BaseDataFetcher):

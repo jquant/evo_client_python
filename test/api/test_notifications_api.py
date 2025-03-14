@@ -4,7 +4,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-
 from evo_client.api.notifications_api import NotificationsApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.notification_api_view_model import NotificationApiViewModel

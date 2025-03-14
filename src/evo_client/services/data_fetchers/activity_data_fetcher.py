@@ -1,5 +1,5 @@
-from typing import List, Optional, Dict
 from datetime import datetime
+from typing import Dict, List, Optional
 
 from ...api.activities_api import ActivitiesApi
 from ...models.atividade_list_api_view_model import AtividadeListApiViewModel

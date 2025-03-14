@@ -1,24 +1,18 @@
-from typing import List, Optional
 from datetime import datetime, timedelta
-from decimal import Decimal
-from loguru import logger
+from typing import List, Optional
 
-from . import BaseDataFetcher
 from ...models.gym_model import GymOperatingData
-from .membership_data_fetcher import MembershipDataFetcher
+from ...services.operating_data.operating_data_computer import OperatingDataComputer
+from . import BaseDataFetcher
+from .activity_data_fetcher import ActivityDataFetcher
+from .configuration_data_fetcher import ConfigurationDataFetcher
+from .entries_data_fetcher import EntriesDataFetcher
 from .member_data_fetcher import MemberDataFetcher
+from .membership_data_fetcher import MembershipDataFetcher
 from .prospects_data_fetcher import ProspectsDataFetcher
 from .receivables_data_fetcher import ReceivablesDataFetcher
-from .entries_data_fetcher import EntriesDataFetcher
 from .sales_data_fetcher import SalesDataFetcher
-from .configuration_data_fetcher import ConfigurationDataFetcher
-from .activity_data_fetcher import ActivityDataFetcher
-from ...models.contratos_resumo_api_view_model import ContratosResumoApiViewModel
-from ...models.members_api_view_model import MembersApiViewModel
-from ...models.prospect_api_integracao_view_model import ProspectApiIntegracaoViewModel
-from ...models.receivables_api_view_model import ReceivablesApiViewModel
-from ...models.gym_model import GymEntry
-from ...services.operating_data.operating_data_computer import OperatingDataComputer
+
 
 class GymMetricsDataFetcher(BaseDataFetcher):
     """
@@ -42,7 +36,7 @@ class GymMetricsDataFetcher(BaseDataFetcher):
         self,
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
-        branch_ids: Optional[List[int]] = None
+        branch_ids: Optional[List[int]] = None,
     ) -> GymOperatingData:
         """
         Fetch advanced metrics by comparing current and previous month's data.
@@ -72,56 +66,46 @@ class GymMetricsDataFetcher(BaseDataFetcher):
         active_members = self.member_fetcher.fetch_members(
             membership_start_date_start=from_date,
             membership_start_date_end=to_date,
-            status=1
+            status=1,
         )
         non_renewed = self.member_fetcher.fetch_members(
             membership_cancel_date_start=from_date,
             membership_cancel_date_end=to_date,
-            status=2
+            status=2,
         )
         prospects = self.prospects_fetcher.fetch_prospects(
-            register_date_start=from_date,
-            register_date_end=to_date
+            register_date_start=from_date, register_date_end=to_date
         )
         receivables = self.receivables_fetcher.fetch_receivables(
-            due_date_start=from_date,
-            due_date_end=to_date
+            due_date_start=from_date, due_date_end=to_date
         )
         entries = self.entries_fetcher.fetch_entries(
-            register_date_start=from_date,
-            register_date_end=to_date
+            register_date_start=from_date, register_date_end=to_date
         )
         # fetch memberships (active contracts)
-        active_contracts = self.membership_fetcher.fetch_memberships(
-            active=True
-        )
+        active_contracts = self.membership_fetcher.fetch_memberships(active=True)
 
         # Fetch previous data
         prev_active_members = self.member_fetcher.fetch_members(
             membership_start_date_start=prev_from_date,
             membership_start_date_end=prev_to_date,
-            status=1
+            status=1,
         )
         prev_non_renewed = self.member_fetcher.fetch_members(
             membership_cancel_date_start=prev_from_date,
             membership_cancel_date_end=prev_to_date,
-            status=2
+            status=2,
         )
         prev_prospects = self.prospects_fetcher.fetch_prospects(
-            register_date_start=prev_from_date,
-            register_date_end=prev_to_date
+            register_date_start=prev_from_date, register_date_end=prev_to_date
         )
         prev_receivables = self.receivables_fetcher.fetch_receivables(
-            due_date_start=prev_from_date,
-            due_date_end=prev_to_date
+            due_date_start=prev_from_date, due_date_end=prev_to_date
         )
         prev_entries = self.entries_fetcher.fetch_entries(
-            register_date_start=prev_from_date,
-            register_date_end=prev_to_date
+            register_date_start=prev_from_date, register_date_end=prev_to_date
         )
-        prev_active_contracts = self.membership_fetcher.fetch_memberships(
-            active=True
-        )
+        prev_active_contracts = self.membership_fetcher.fetch_memberships(active=True)
 
         previous_data = self.computer.compute_metrics(
             active_members=prev_active_members,
@@ -132,7 +116,7 @@ class GymMetricsDataFetcher(BaseDataFetcher):
             active_contracts=prev_active_contracts,
             from_date=prev_from_date,
             to_date=prev_to_date,
-            previous_data=None # no data before previous
+            previous_data=None,  # no data before previous
         )
 
         current_data = self.computer.compute_metrics(
@@ -144,7 +128,7 @@ class GymMetricsDataFetcher(BaseDataFetcher):
             active_contracts=active_contracts,
             from_date=from_date,
             to_date=to_date,
-            previous_data=previous_data
+            previous_data=previous_data,
         )
 
         return current_data

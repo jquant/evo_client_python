@@ -1,5 +1,6 @@
-from ..core.api_client import ApiClient
 from typing import Optional
+
+from ..core.api_client import ApiClient
 
 
 class BaseApi:

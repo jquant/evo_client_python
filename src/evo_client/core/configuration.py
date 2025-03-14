@@ -5,12 +5,12 @@ Handles authentication, logging, and connection settings for API requests.
 
 from __future__ import annotations
 
-from loguru import logger
 import multiprocessing
 import sys
 from typing import Callable, Dict, Optional
 from urllib.parse import urlparse
 
+from loguru import logger
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 from requests.auth import HTTPBasicAuth
 

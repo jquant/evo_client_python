@@ -1,10 +1,11 @@
 from typing import List, Optional
+
 from loguru import logger
 
 from ...api.webhook_api import WebhookApi
-from ...models.webhook_model import Webhook, WebhookEventType
-from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
+from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
+from ...models.webhook_model import Webhook, WebhookEventType
 from . import BaseDataFetcher
 
 
@@ -19,7 +20,7 @@ class WebhookDataFetcher(BaseDataFetcher):
         """
         # Use available branch IDs from base class
         branch_ids = self.get_available_branch_ids()
-        
+
         result = []
         for branch_id in branch_ids:
             branch_api = WebhookApi(api_client=self.get_branch_api(branch_id))
@@ -29,7 +30,9 @@ class WebhookDataFetcher(BaseDataFetcher):
                     if webhooks:
                         result.extend([Webhook(**webhook) for webhook in webhooks])
                 except Exception as e:
-                    logger.warning(f"Failed to fetch webhooks for branch {branch_id}: {e}")
+                    logger.warning(
+                        f"Failed to fetch webhooks for branch {branch_id}: {e}"
+                    )
 
         return result
 
@@ -76,7 +79,9 @@ class WebhookDataFetcher(BaseDataFetcher):
                     if success:
                         return True
                 except Exception as e:
-                    logger.warning(f"Failed to create webhook for branch {current_branch_id}: {e}")
+                    logger.warning(
+                        f"Failed to create webhook for branch {current_branch_id}: {e}"
+                    )
 
         return False
 
@@ -104,15 +109,21 @@ class WebhookDataFetcher(BaseDataFetcher):
             if branch_api:
                 try:
                     # Convert webhook_id to int if it's an object with id_webhook property
-                    webhook_id_value = int(webhook_id) if isinstance(webhook_id, (int, str)) else getattr(webhook_id, 'id_webhook', None)
+                    webhook_id_value = (
+                        int(webhook_id)
+                        if isinstance(webhook_id, (int, str))
+                        else getattr(webhook_id, "id_webhook", None)
+                    )
                     if webhook_id_value is None:
                         logger.warning(f"Invalid webhook ID: {webhook_id}")
                         continue
-                        
+
                     success = branch_api.delete_webhook(webhook_id=webhook_id_value)
                     if success:
                         return True
                 except Exception as e:
-                    logger.warning(f"Failed to delete webhook {webhook_id} from branch {current_branch_id}: {e}")
+                    logger.warning(
+                        f"Failed to delete webhook {webhook_id} from branch {current_branch_id}: {e}"
+                    )
 
-        return False 
+        return False

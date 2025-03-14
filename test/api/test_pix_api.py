@@ -4,7 +4,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-
 from evo_client.api.pix_api import PixApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.pix_payment_details_view_model import PixPaymentDetailsViewModel

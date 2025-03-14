@@ -4,7 +4,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-
 from evo_client.api.members_api import MembersApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.member_authenticate_view_model import MemberAuthenticateViewModel

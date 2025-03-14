@@ -1,9 +1,7 @@
 """Tests for the ManagementApi class."""
 
 from datetime import datetime
-from io import BytesIO
-from typing import List
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 

@@ -1,21 +1,18 @@
 # /src/evo_client/models/gym_model.py
 
-from datetime import time, datetime
-from typing import List, Optional, Dict, Union, Any, ClassVar, Tuple
-from pydantic import BaseModel, Field
-from enum import Enum
+from datetime import datetime, time, timedelta
 from decimal import Decimal
-from pydantic import ConfigDict
-from loguru import logger
-from datetime import timedelta
+from enum import Enum
+from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
 
-from .configuracao_api_view_model import ConfiguracaoApiViewModel
+from loguru import logger
+from pydantic import BaseModel, ConfigDict, Field
+
 from .atividade_list_api_view_model import AtividadeListApiViewModel
+from .configuracao_api_view_model import ConfiguracaoApiViewModel
+from .contratos_resumo_api_view_model import ContratosResumoApiViewModel
 from .receivables_api_view_model import ReceivablesApiViewModel
 from .servicos_resumo_api_view_model import ServicosResumoApiViewModel
-from .contratos_resumo_api_view_model import (
-    ContratosResumoApiViewModel,
-)
 from .w12_utils_category_membership_view_model import (
     W12UtilsCategoryMembershipViewModel,
 )

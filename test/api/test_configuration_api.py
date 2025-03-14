@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-
 from evo_client.api.configuration_api import ConfigurationApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.bandeiras_basico_view_model import BandeirasBasicoViewModel

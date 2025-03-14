@@ -4,7 +4,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-
 from evo_client.api.bank_accounts_api import BankAccountsApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.bank_accounts_view_model import BankAccountsViewModel

@@ -1,18 +1,17 @@
-from typing import List, Optional, Union, Dict, Any
 from datetime import datetime
 from decimal import Decimal
+from typing import List, Optional, Union
 
-from ...models.gym_model import GymOperatingData, GymEntry
-from ...models.receivables_api_view_model import ReceivablesApiViewModel
+from loguru import logger
+
+from ...models.gym_model import GymOperatingData
 from ..data_fetchers import BranchApiClientManager
+from ..data_fetchers.entries_data_fetcher import EntriesDataFetcher
 from ..data_fetchers.member_data_fetcher import MemberDataFetcher
 from ..data_fetchers.membership_data_fetcher import MembershipDataFetcher
 from ..data_fetchers.prospects_data_fetcher import ProspectsDataFetcher
 from ..data_fetchers.receivables_data_fetcher import ReceivablesDataFetcher
-from ..data_fetchers.entries_data_fetcher import EntriesDataFetcher
 from .operating_data_computer import OperatingDataComputer
-
-from loguru import logger
 
 
 class OperatingDataFetcher:
@@ -116,7 +115,7 @@ class OperatingDataFetcher:
         except Exception as e:
             logger.error(f"Error fetching operating data: {str(e)}")
             raise ValueError(f"Error fetching operating data: {str(e)}")
- 
+
     def aggregate_branch_metrics(
         self, branch_metrics: List[GymOperatingData]
     ) -> GymOperatingData:
