@@ -3,13 +3,14 @@ from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.vouchers_resumo_api_view_model import VouchersResumoApiViewModel
+from .base import BaseApi
 
 
-class VoucherApi:
+class VoucherApi(BaseApi):
     """Voucher API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/voucher"
 
     @overload

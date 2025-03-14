@@ -3,13 +3,14 @@ from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
+from .base import BaseApi
 
 
-class ServiceApi:
+class ServiceApi(BaseApi):
     """Service API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/service"
 
     @overload

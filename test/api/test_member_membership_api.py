@@ -79,7 +79,8 @@ def test_get_membership(
     assert args["response_type"] == MemberMembershipApiViewModel
 
 
-def test_get_canceled_memberships(
+@pytest.mark.asyncio
+async def test_get_canceled_memberships(
     member_membership_api: MemberMembershipApi, mock_api_client: Mock
 ):
     """Test getting canceled memberships with filters."""
@@ -116,7 +117,8 @@ def test_get_canceled_memberships(
     assert args["query_params"]["take"] == 10
 
 
-def test_get_canceled_memberships_take_limit(
+@pytest.mark.asyncio
+async def test_get_canceled_memberships_take_limit(
     member_membership_api: MemberMembershipApi,
 ):
     """Test take limit validation for get_canceled_memberships."""

@@ -1,70 +1,101 @@
 from datetime import datetime, timedelta
 from typing import Optional
+from decimal import Decimal
+import asyncio
 
 from evo_client.core.configuration import Configuration
 from evo_client.core.api_client import ApiClient
 from evo_client.api.gym_api import GymApi
 from evo_client.models.gym_model import GymOperatingData
+from evo_client.services.data_fetchers import BranchApiClientManager
 
 
-def fetch_operating_data(
+async def fetch_operating_data(
     username: str,
     password: str,
     host: str = "https://evo-integracao-api.w12app.com.br",
     branch_id: Optional[int] = None,
     days: int = 30,
 ) -> GymOperatingData:
-    """
-    Fetch operating data from a gym's EVO API.
+    """Fetch operating data from the EVO API.
 
     Args:
-        username: API username/login
+        username: API username
         password: API password
-        host: API host URL (default: https://evo-integracao-api.w12app.com.br)
-        branch_id: Optional branch ID to fetch specific branch info
-        days: Number of days of history to fetch (default: 30)
+        host: API host URL
+        branch_id: Optional branch ID to filter data
+        days: Number of days to fetch data for
 
     Returns:
-        GymOperatingData: The gym's operating data
+        GymOperatingData object containing metrics and data
     """
-    print(f"\n=== Fetching Operating Data from {host} ===")
+    # Initialize API client
+    configuration = Configuration()
+    configuration.username = username
+    configuration.password = password
+    configuration.host = host
 
-    # Initialize configuration with authentication
-    config = Configuration(username=username, password=password, host=host)
+    api_client = ApiClient(configuration=configuration)
+    client_manager = BranchApiClientManager(
+        branch_api_clients={str(branch_id): api_client}
+    )
+    gym_api = GymApi(client_manager=client_manager)
 
-    # Initialize API client with configuration
-    api_client = ApiClient(configuration=config)
-
-    # Initialize gym API with the authenticated client
-    gym_api = GymApi(api_client=api_client)
-
-    # Set date range
+    # Calculate date range
     end_date = datetime.now()
     start_date = end_date - timedelta(days=days)
 
     try:
         # Fetch operating data
-        operating_data = gym_api.get_operating_data(
-            from_date=start_date, to_date=end_date, branch_id=branch_id, async_req=False
+        operating_data = await gym_api.receivables_data_fetcher.get_operating_data(
+            from_date=start_date,
+            to_date=end_date,
+            branch_ids=[str(branch_id)] if branch_id is not None else None,
+            async_req=False,
         )
 
-        # Print summary
-        print("\n=== Gym Operating Data Summary ===")
-        print(f"Active Members: {len(operating_data.active_members)}")
-        print(f"Active Contracts: {len(operating_data.active_contracts)}")
-        print(f"Recent Entries: {len(operating_data.recent_entries)}")
-        print(f"Monthly Recurring Revenue: ${operating_data.mrr:.2f}")
-        print(f"Churn Rate: {operating_data.churn_rate:.1f}%")
+        # If we get a list of branch data, aggregate the metrics
+        if isinstance(operating_data, list):
+            # Create aggregated data object
+            aggregated = GymOperatingData(data_from=start_date, data_to=end_date)
 
-        # Print financial metrics
-        print("\n=== Financial Metrics ===")
-        total_receivables = sum(r.amount for r in operating_data.receivables)
-        total_overdue = sum(
-            r.amount for r in operating_data.receivables if r.status == "overdue"
-        )
-        print(f"Total Receivables: ${total_receivables:.2f}")
-        print(f"Total Overdue: ${total_overdue:.2f}")
-        print(f"Overdue Members: {len(operating_data.overdue_members)}")
+            # Aggregate metrics
+            aggregated.total_active_members = sum(
+                d.total_active_members for d in operating_data
+            )
+            aggregated.total_churned_members = sum(
+                d.total_churned_members for d in operating_data
+            )
+            aggregated.mrr = (
+                Decimal(str(sum(d.mrr for d in operating_data)))
+                if operating_data
+                else Decimal("0")
+            )
+            if operating_data:
+                avg_churn = sum(d.churn_rate for d in operating_data) / Decimal(
+                    str(len(operating_data))
+                )
+                aggregated.churn_rate = avg_churn
+            else:
+                aggregated.churn_rate = Decimal("0")
+
+            # Combine lists
+            aggregated.active_members = [
+                m for d in operating_data for m in d.active_members
+            ]
+            aggregated.active_contracts = [
+                c for d in operating_data for c in d.active_contracts
+            ]
+            aggregated.prospects = [p for d in operating_data for p in d.prospects]
+            aggregated.non_renewed_members = [
+                m for d in operating_data for m in d.non_renewed_members
+            ]
+            aggregated.receivables = [r for d in operating_data for r in d.receivables]
+            aggregated.recent_entries = [
+                e for d in operating_data for e in d.recent_entries
+            ]
+
+            return aggregated
 
         return operating_data
 
@@ -73,20 +104,25 @@ def fetch_operating_data(
         raise
 
 
-if __name__ == "__main__":
-    import os
+async def main():
+    # Example usage
+    username = "your_username"
+    password = "your_password"
+    branch_id = 1  # Optional: specify branch ID
 
-    # Get credentials from environment variables
-    username = os.getenv("EVO_USERNAME")
-    password = os.getenv("EVO_PASSWORD")
-    host = os.getenv("EVO_API_HOST", "https://evo-integracao-api.w12app.com.br")
-
-    if not username or not password:
-        raise ValueError(
-            "EVO_USERNAME and EVO_PASSWORD environment variables must be set"
+    try:
+        data = await fetch_operating_data(
+            username=username, password=password, branch_id=branch_id
         )
 
-    assert username is not None
-    assert password is not None
+        # Print some metrics
+        print(f"Active members: {data.total_active_members}")
+        print(f"MRR: ${data.mrr}")
+        print(f"Churn rate: {data.churn_rate}%")
 
-    fetch_operating_data(username=username, password=password, host=host)
+    except Exception as e:
+        print(f"Error: {str(e)}")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

@@ -11,13 +11,14 @@ from ..models.prospect_api_integracao_view_model import ProspectApiIntegracaoVie
 from ..models.prospect_id_view_model import ProspectIdViewModel
 from ..models.prospect_transferencia_view_model import ProspectTransferenciaViewModel
 from ..models.prospects_resumo_api_view_model import ProspectsResumoApiViewModel
+from .base import BaseApi
 
 
-class ProspectsApi:
+class ProspectsApi(BaseApi):
     """Prospects API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/prospects"
 
     @overload

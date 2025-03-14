@@ -11,6 +11,7 @@
 """
 
 from enum import Enum
+from typing import Union
 
 
 class EStatusAtividade(str, Enum):
@@ -35,6 +36,17 @@ class EStatusAtividade(str, Enum):
     _13 = "13"
     _14 = "14"
     _15 = "15"
+    _NA = "NA"
+
+    @classmethod
+    def _missing_(cls, value: Union[str, int]) -> "EStatusAtividade":
+        """Handle both string and integer inputs."""
+        if isinstance(value, int):
+            value = str(value)
+        for member in cls:
+            if member.value == value:
+                return member
+        return cls._NA
 
     def to_dict(self):
         """Returns the model properties as a dict"""
@@ -42,9 +54,10 @@ class EStatusAtividade(str, Enum):
 
     def __eq__(self, other):
         """Returns true if both objects are equal"""
+        if isinstance(other, (str, int)):
+            return self.value == str(other)
         if not isinstance(other, EStatusAtividade):
             return False
-
         return self.value == other.value
 
     def __ne__(self, other):

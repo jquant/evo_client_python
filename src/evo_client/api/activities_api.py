@@ -3,20 +3,19 @@ from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
+from ..models.atividade_agenda_api_view_model import AtividadeAgendaApiViewModel
 from ..models.atividade_basico_api_view_model import AtividadeBasicoApiViewModel
 from ..models.atividade_list_api_view_model import AtividadeListApiViewModel
-from ..models.atividade_sessao_participante_api_view_model import (
-    AtividadeSessaoParticipanteApiViewModel,
-)
 from ..models.e_origem_agendamento import EOrigemAgendamento
 from ..models.e_status_atividade_sessao import EStatusAtividadeSessao
+from .base import BaseApi
 
 
-class ActivitiesApi:
+class ActivitiesApi(BaseApi):
     """Activities API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/activities"
 
     @overload
@@ -208,7 +207,7 @@ class ActivitiesApi:
         show_full_week: bool = False,
         branch_token: Optional[str] = None,
         async_req: Literal[False] = False,
-    ) -> List[AtividadeSessaoParticipanteApiViewModel]:
+    ) -> List[AtividadeAgendaApiViewModel]:
         ...
 
     @overload
@@ -239,7 +238,7 @@ class ActivitiesApi:
         show_full_week: bool = False,
         branch_token: Optional[str] = None,
         async_req: bool = False,
-    ) -> Union[List[AtividadeSessaoParticipanteApiViewModel], AsyncResult[Any]]:
+    ) -> Union[List[AtividadeAgendaApiViewModel], AsyncResult[Any]]:
         """
         Get activities schedule with various filtering options.
 
@@ -274,7 +273,7 @@ class ActivitiesApi:
             resource_path=f"{self.base_path}/schedule",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
-            response_type=List[AtividadeSessaoParticipanteApiViewModel],
+            response_type=List[AtividadeAgendaApiViewModel],
             auth_settings=["Basic"],
             async_req=async_req,
         )

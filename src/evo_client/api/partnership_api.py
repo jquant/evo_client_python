@@ -4,13 +4,14 @@ from typing import Any, List, Literal, Optional, Union, overload
 
 from ..core.api_client import ApiClient
 from ..models.convenios_api_view_model import ConveniosApiViewModel
+from .base import BaseApi
 
 
-class PartnershipApi:
+class PartnershipApi(BaseApi):
     """Partnership API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/partnership"
 
     @overload

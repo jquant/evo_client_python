@@ -37,10 +37,16 @@ class RESTResponse(io.IOBase):
 
     def json(self) -> Any:
         """Returns response data as JSON."""
-        content_type = self.getheader("Content-Type", "")
-        if content_type and "application/json" in content_type:
+        try:
+            # Try to parse as JSON regardless of Content-Type
             return self.requests_response.json()
-        raise ValueError("Response content is not in JSON format")
+        except Exception as e:
+            # If parsing fails, check if it's due to Content-Type
+            content_type = self.getheader("Content-Type", "")
+            if content_type and "application/json" not in content_type:
+                raise ValueError("Response content is not in JSON format")
+            # Otherwise, re-raise the original error
+            raise e
 
     @overload
     def deserialize(self, response_type: Type[T]) -> T:

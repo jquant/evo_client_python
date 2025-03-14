@@ -5,16 +5,14 @@ Handles authentication, logging, and connection settings for API requests.
 
 from __future__ import annotations
 
-import logging
 import multiprocessing
 import sys
 from typing import Callable, Dict, Optional
 from urllib.parse import urlparse
 
+from loguru import logger
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 from requests.auth import HTTPBasicAuth
-
-logger = logging.getLogger(__name__)
 
 
 class Configuration(BaseModel):
@@ -24,6 +22,8 @@ class Configuration(BaseModel):
     host: str = Field(
         default="https://evo-integracao-api.w12app.com.br", validate_default=True
     )
+    base_path: str = Field(default="/api/v1")
+    default_headers: Dict[str, str] = Field(default_factory=dict)
     temp_folder_path: Optional[str] = None
     timeout: float = Field(default=60.0, validate_default=True)
 
@@ -47,6 +47,9 @@ class Configuration(BaseModel):
     )
     proxy: Optional[str] = None
     safe_chars_for_path_param: str = ""
+
+    # Branch configurations
+    branch_configs: list = []
 
     @field_validator("host")
     @classmethod

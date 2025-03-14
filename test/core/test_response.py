@@ -68,13 +68,17 @@ def test_rest_response_json(mock_urllib3_response):
     assert data == {"key": "value"}
 
 
-def test_rest_response_json_invalid_content_type(mock_urllib3_response):
-    """Test json method of RESTResponse with invalid content type."""
+def test_rest_response_json_with_non_json_content_type(mock_urllib3_response):
+    """Test json method of RESTResponse with non-JSON content type."""
     mock_urllib3_response.headers = {"Content-Type": "text/plain"}
+    # Even with text/plain, if the content is valid JSON, it should be parsed
+    mock_urllib3_response.json.return_value = {"key": "value"}
     response = RESTResponse(mock_urllib3_response)
-    with pytest.raises(ValueError) as exc_info:
-        response.json()
-    assert str(exc_info.value) == "Response content is not in JSON format"
+
+    # No error should be raised if the underlying json() method succeeds
+    data = response.json()
+    assert data == {"key": "value"}
+    mock_urllib3_response.json.assert_called_once()
 
 
 def test_rest_response_deserialize(mock_urllib3_response):

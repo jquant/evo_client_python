@@ -1,9 +1,21 @@
-from datetime import datetime, time
+# /src/evo_client/models/gym_model.py
+
+from datetime import datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
 
+from loguru import logger
 from pydantic import BaseModel, ConfigDict, Field
+
+from .atividade_list_api_view_model import AtividadeListApiViewModel
+from .configuracao_api_view_model import ConfiguracaoApiViewModel
+from .contratos_resumo_api_view_model import ContratosResumoApiViewModel
+from .receivables_api_view_model import ReceivablesApiViewModel
+from .servicos_resumo_api_view_model import ServicosResumoApiViewModel
+from .w12_utils_category_membership_view_model import (
+    W12UtilsCategoryMembershipViewModel,
+)
 
 
 class PaymentMethod(str, Enum):
@@ -64,44 +76,75 @@ class EntryType(str, Enum):
     EVENT = "event"
 
 
-class BusinessHours(BaseModel):
-    """Business hours for a branch"""
-
-    model_config = ConfigDict(populate_by_name=True)
-
-    # API fields
-    id_hour: Optional[int] = Field(default=None, alias="idHour")
-    id_branch: Optional[int] = Field(default=None, alias="idBranch")
-    week_day: Optional[str] = Field(default=None, alias="weekDay")
-    hours_from: Optional[datetime] = Field(default=None, alias="hoursFrom")
-    hours_to: Optional[datetime] = Field(default=None, alias="hoursTo")
-    fl_deleted: Optional[bool] = Field(default=None, alias="flDeleted")
-    id_tmp: Optional[int] = Field(default=None, alias="idTmp")
-    creation_date: Optional[datetime] = Field(default=None, alias="creationDate")
-    id_employee_creation: Optional[int] = Field(
-        default=None, alias="idEmployeeCreation"
-    )
-
-    # Internal fields for default hours
-    weekday_start: Optional[time] = Field(default=time(6, 0))  # 06:00
-    weekday_end: Optional[time] = Field(default=time(23, 0))  # 23:00
-    weekend_start: Optional[time] = Field(default=time(9, 0))  # 09:00
-    weekend_end: Optional[time] = Field(default=time(15, 0))  # 15:00
-
-
 class Address(BaseModel):
     """Physical address information"""
-
-    model_config = ConfigDict(populate_by_name=True)
 
     street: str
     number: str
     neighborhood: str
     city: str
     state: str
-    postal_code: str = Field(alias="postalCode")
-    country: str = Field(default="Brasil")
-    phone: str
+    postal_code: str
+    phone: Optional[str] = None
+
+
+class BusinessHours(BaseModel):
+    """Business hours information"""
+
+    weekDay: str
+    hoursFrom: str
+    hoursTo: str
+
+
+class GymUnitKnowledgeBase(BaseModel):
+    """Knowledge base for a specific gym unit"""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    branch_id: int = Field(description="Unit identifier")
+    name: str = Field(description="Name of the gym unit")
+    address: Address = Field(description="Physical location")
+    business_hours: List[BusinessHours] = Field(
+        alias="businessHours", description="Standard business hours"
+    )
+    activities: List[AtividadeListApiViewModel] = Field(
+        description="Available activities and classes"
+    )
+    available_services: List[ServicosResumoApiViewModel] = Field(
+        alias="availableServices",
+        description="Additional services that can be added to memberships",
+    )
+    plans: List[ContratosResumoApiViewModel] = Field(
+        description="Available membership plans"
+    )
+    payment_policy: Dict = Field(
+        default_factory=dict,
+        alias="paymentPolicy",
+        description="Payment and billing policies",
+    )
+    membership_categories: List[W12UtilsCategoryMembershipViewModel] = Field(
+        default_factory=list,
+        alias="membershipCategories",
+        description="Available membership categories",
+    )
+    branch_config: ConfiguracaoApiViewModel = Field(
+        alias="branchConfig", description="Branch-specific configuration"
+    )
+
+
+class GymKnowledgeBase(BaseModel):
+    """Complete knowledge base for the entire gym chain"""
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        title="Gym Knowledge Base",
+    )
+
+    name: str = Field(description="Name of the gym chain")
+    units: List[GymUnitKnowledgeBase] = Field(description="List of gym units")
+    faqs: List[Dict] = Field(
+        default_factory=list, description="Frequently asked questions"
+    )
 
 
 class Activity(BaseModel):
@@ -177,6 +220,13 @@ class GymPlan(BaseModel):
     cancellation_notice_days: int = Field(default=30)
     payment_methods: List[PaymentMethod]
     multi_unit_access: bool = Field(default=False, alias="accessBranches")
+    allowed_branch_ids: List[int] = Field(
+        default_factory=list, alias="allowedBranchIds"
+    )
+    home_branch_required: bool = Field(default=True, alias="homeBranchRequired")
+    max_branch_visits_per_month: Optional[int] = Field(
+        default=None, alias="maxBranchVisitsPerMonth"
+    )
     category: Optional[MembershipCategory] = None
     available_services: List[MembershipService] = Field(default_factory=list)
     max_installments: int = Field(default=1, alias="maxAmountInstallments")
@@ -265,6 +315,12 @@ class BranchConfig(BaseModel):
     gateway_config: Optional[GatewayConfig] = Field(None, alias="gatewayConfig")
     occupations: List[OccupationArea] = Field(default_factory=list)
     translations: Dict[str, str] = Field(default_factory=dict)
+    parent_branch_id: Optional[int] = Field(None, alias="parentBranchId")
+    child_branch_ids: List[int] = Field(default_factory=list, alias="childBranchIds")
+    is_main_branch: bool = Field(default=False, alias="isMainBranch")
+    allowed_access_branch_ids: List[int] = Field(
+        default_factory=list, alias="allowedAccessBranchIds"
+    )
 
 
 class GymEntry(BaseModel):
@@ -306,67 +362,6 @@ class MembershipContract(BaseModel):
     branch_id: Optional[int] = Field(None, alias="idBranch")
 
 
-class GymKnowledgeBase(BaseModel):
-    """Complete knowledge base for a gym chain including locations, plans, and policies"""
-
-    model_config = ConfigDict(
-        populate_by_name=True,
-        title="Gym Knowledge Base",
-        json_schema_extra={
-            "examples": [
-                {
-                    "name": "C4 Gym",
-                    "addresses": [
-                        {
-                            "street": "Avenida casa grande",
-                            "number": "1069",
-                            "neighborhood": "vila cunha bueno",
-                            "city": "São Paulo",
-                            "state": "SP",
-                            "postal_code": "03260-000",
-                            "phone": "+55 1195091-1252",
-                        }
-                    ],
-                    "business_hours": {
-                        "weekday_start": "06:00",
-                        "weekday_end": "23:00",
-                        "weekend_start": "09:00",
-                        "weekend_end": "15:00",
-                    },
-                }
-            ]
-        },
-    )
-
-    name: str = Field(description="Name of the gym")
-    addresses: List[Address] = Field(description="List of gym locations")
-    business_hours: List[BusinessHours] = Field(
-        alias="businessHours", description="Standard business hours"
-    )
-    plans: List[GymPlan] = Field(description="Available membership plans")
-    activities: List[Activity] = Field(description="Available activities and classes")
-    faqs: List[FAQ] = Field(description="Frequently asked questions")
-    payment_policy: PaymentPolicy = Field(
-        alias="paymentPolicy", description="Payment and billing policies"
-    )
-    branch_config: Optional[BranchConfig] = Field(
-        default=None, alias="branchConfig", description="Branch-specific configuration"
-    )
-    membership_categories: List[MembershipCategory] = Field(
-        default_factory=list,
-        alias="membershipCategories",
-        description="Available membership categories",
-    )
-    available_services: List[MembershipService] = Field(
-        default_factory=list,
-        alias="availableServices",
-        description="Additional services that can be added to memberships",
-    )
-    entries: List[GymEntry] = Field(
-        default_factory=list, description="Record of gym entries"
-    )
-
-
 class ReceivableStatus(str, Enum):
     """Status of a receivable"""
 
@@ -381,27 +376,74 @@ class Receivable(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
+    # Core fields
     id: int
-    description: str
+    description: Optional[str] = None
     amount: Decimal
     amount_paid: Optional[Decimal] = None
-    due_date: datetime
-    receiving_date: Optional[datetime] = None
     status: ReceivableStatus = Field(default=ReceivableStatus.PENDING)
     payment_method: Optional[PaymentMethod] = None
+    payment_types: Optional[str] = None
+    account_status: Optional[str] = None
 
-    # Member info
-    member_id: Optional[int] = None
-    member_name: Optional[str] = None
+    # Date fields
+    registration_date: Optional[datetime] = Field(
+        default=None, alias="registrationDate"
+    )
+    due_date: Optional[datetime] = Field(default=None, alias="dueDate")
+    receiving_date: Optional[datetime] = Field(default=None, alias="receivingDate")
+    competence_date: Optional[datetime] = Field(default=None, alias="competenceDate")
+    cancellation_date: Optional[datetime] = Field(
+        default=None, alias="cancellationDate"
+    )
+    charge_date: Optional[datetime] = Field(default=None, alias="chargeDate")
+    update_date: Optional[datetime] = Field(default=None, alias="updateDate")
+    invoice_date: Optional[datetime] = Field(default=None, alias="invoiceDate")
+    invoice_canceled_date: Optional[datetime] = Field(
+        default=None, alias="invoiceCanceledDate"
+    )
+    sale_date: Optional[datetime] = Field(default=None, alias="saleDate")
 
-    # Additional details
-    branch_id: Optional[int] = None
-    current_installment: Optional[int] = None
-    total_installments: Optional[int] = None
+    # Related IDs
+    member_id: Optional[int] = Field(default=None, alias="memberId")
+    member_name: Optional[str] = Field(default=None, alias="memberName")
+    employee_id: Optional[int] = Field(default=None, alias="employeeId")
+    employee_name: Optional[str] = Field(default=None, alias="employeeName")
+    branch_id: Optional[int] = Field(default=None, alias="branchId")
+    sale_id: Optional[int] = Field(default=None, alias="saleId")
+    receivable_id: Optional[int] = Field(default=None, alias="receivableId")
+
+    # Installment info
+    current_installment: Optional[int] = Field(default=None, alias="currentInstallment")
+    total_installments: Optional[int] = Field(default=None, alias="totalInstallments")
 
     def is_installment(self) -> bool:
         """Check if this receivable is part of an installment plan."""
         return self.total_installments is not None and self.total_installments > 1
+
+    @classmethod
+    def get_date_range_filters(cls) -> Dict[str, Tuple[str, str]]:
+        """Get mapping of date range filter fields."""
+        return {
+            "registration_date": ("registration_date_start", "registration_date_end"),
+            "due_date": ("due_date_start", "due_date_end"),
+            "receiving_date": ("receiving_date_start", "receiving_date_end"),
+            "competence_date": ("competence_date_start", "competence_date_end"),
+            "cancellation_date": ("cancellation_date_start", "cancellation_date_end"),
+            "charge_date": ("charge_date_start", "charge_date_end"),
+            "update_date": ("update_date_start", "update_date_end"),
+            "invoice_date": ("invoice_date_start", "invoice_date_end"),
+            "invoice_canceled_date": (
+                "invoice_canceled_date_start",
+                "invoice_canceled_date_end",
+            ),
+            "sale_date": ("sale_date_start", "sale_date_end"),
+        }
+
+    @classmethod
+    def get_amount_range_filters(cls) -> Tuple[str, str]:
+        """Get amount range filter field names."""
+        return ("amount_start", "amount_end")
 
 
 class OverdueMember(BaseModel):
@@ -414,7 +456,7 @@ class OverdueMember(BaseModel):
     total_overdue: Decimal
     overdue_since: datetime
     last_payment_date: Optional[datetime] = None
-    overdue_receivables: List[Receivable] = Field(default_factory=list)
+    overdue_receivables: List[ReceivablesApiViewModel] = Field(default_factory=list)
 
 
 class CardData(BaseModel):
@@ -460,60 +502,300 @@ class NewSale(BaseModel):
     card_data: Optional[CardData] = Field(None, alias="cardData")
 
 
-class GymOperatingData(BaseModel):
-    """Dynamic operational data for a gym branch.
-
-    This model contains all the dynamic/operational data about members, entries,
-    receivables, etc. This is separate from GymKnowledgeBase which contains
-    static configuration data.
-    """
+class RevenueBreakdown(BaseModel):
+    """Detailed breakdown of revenue sources"""
 
     model_config = ConfigDict(populate_by_name=True)
 
-    # Active members data
-    active_members: List[Dict[str, Any]] = Field(default_factory=list)
-    active_contracts: List[MembershipContract] = Field(default_factory=list)
+    membership_revenue: Decimal = Field(default=Decimal("0.00"))
+    class_revenue: Decimal = Field(default=Decimal("0.00"))
+    additional_services: Decimal = Field(default=Decimal("0.00"))
+    guest_passes: Decimal = Field(default=Decimal("0.00"))
+    pt_sessions: Decimal = Field(default=Decimal("0.00"))
+    retail: Decimal = Field(default=Decimal("0.00"))
 
-    # Prospects and leads
+    @property
+    def total_revenue(self) -> Decimal:
+        """Calculate total revenue from all sources"""
+        return (
+            self.membership_revenue
+            + self.class_revenue
+            + self.additional_services
+            + self.guest_passes
+            + self.pt_sessions
+            + self.retail
+        )
+
+
+class CapacityMetrics(BaseModel):
+    """Facility utilization and capacity metrics"""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    peak_hours_utilization: Decimal = Field(default=Decimal("0.00"))
+    off_peak_utilization: Decimal = Field(default=Decimal("0.00"))
+    class_fill_rate: Decimal = Field(default=Decimal("0.00"))
+    equipment_usage_rate: Optional[Decimal] = None
+    max_capacity: int = Field(default=0)
+    average_daily_visits: Decimal = Field(default=Decimal("0.00"))
+    busiest_day_visits: int = Field(default=0)
+    quietest_day_visits: int = Field(default=0)
+
+
+class MemberSegment(BaseModel):
+    """Member segment analytics"""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    segment_name: str
+    member_count: int = Field(default=0)
+    average_revenue: Decimal = Field(default=Decimal("0.00"))
+    retention_rate: Decimal = Field(default=Decimal("0.00"))
+    visit_frequency: Decimal = Field(default=Decimal("0.00"))
+    average_membership_duration: Decimal = Field(default=Decimal("0.00"))
+    member_ids: List[int] = Field(default_factory=list)
+
+
+class GymOperatingData(BaseModel):
+    """Enhanced operational data metrics for a gym branch."""
+
+    model_config = ConfigDict(populate_by_name=True)
+    logger: ClassVar = logger
+
+    # Branch Information
+    branch_id: Optional[str] = Field(
+        default=None, description="ID of the branch this data belongs to"
+    )
+    branch_name: Optional[str] = Field(default=None, description="Name of the branch")
+
+    # Base Data Collections
+    active_members: List[Dict[str, Any]] = Field(default_factory=list)
+    active_contracts: List["MembershipContract"] = Field(default_factory=list)
     prospects: List[Dict[str, Any]] = Field(default_factory=list)
     non_renewed_members: List[Dict[str, Any]] = Field(default_factory=list)
+    receivables: List["Receivable"] = Field(default_factory=list)
+    overdue_members: List["OverdueMember"] = Field(default_factory=list)
+    recent_entries: List["GymEntry"] = Field(default_factory=list)
+    cross_branch_entries: List["GymEntry"] = Field(default_factory=list)
 
-    # Financial data
-    receivables: List[Receivable] = Field(default_factory=list)
-    overdue_members: List[OverdueMember] = Field(default_factory=list)
-
-    # Access control
-    recent_entries: List[GymEntry] = Field(default_factory=list)
-
-    # Time filters
+    # Time Filters
     data_from: Optional[datetime] = Field(default=None)
     data_to: Optional[datetime] = Field(default=None)
 
-    # Financial metrics
+    # Core Financial Metrics
     mrr: Decimal = Field(
         default=Decimal("0.00"), description="Monthly Recurring Revenue in the period"
     )
-    churn_rate: Decimal = Field(
-        default=Decimal("0.00"), description="Churn Rate percentage in the period"
+    arr: Decimal = Field(
+        default=Decimal("0.00"), description="Annualized Recurring Revenue"
     )
-    total_active_members: int = Field(
-        default=0, description="Total number of active members in the period"
+    revenue_breakdown: RevenueBreakdown = Field(default_factory=RevenueBreakdown)
+    average_revenue_per_member: Decimal = Field(default=Decimal("0.00"))
+    lifetime_value: Decimal = Field(default=Decimal("0.00"))
+    grr: Decimal = Field(default=Decimal("0.00"), description="Gross Revenue Retention")
+    nrr: Decimal = Field(default=Decimal("0.00"), description="Net Revenue Retention")
+
+    # Membership Metrics
+    total_active_members: int = Field(default=0)
+    total_churned_members: int = Field(default=0)
+    churn_rate: Decimal = Field(default=Decimal("0.00"))
+    retention_rate: Decimal = Field(default=Decimal("0.00"))
+    membership_growth_rate: Decimal = Field(default=Decimal("0.00"))
+    member_segments: Dict[str, MemberSegment] = Field(default_factory=dict)
+
+    # Multi-Unit Metrics
+    cross_branch_revenue: Decimal = Field(
+        default=Decimal("0.00"), description="Revenue from cross-branch visits"
     )
-    total_churned_members: int = Field(
-        default=0, description="Total number of churned members in the period"
+    multi_unit_member_percentage: Decimal = Field(
+        default=Decimal("0.00"),
+        description="Percentage of members with multi-unit access",
     )
+
+    # Capacity and Utilization
+    capacity_metrics: CapacityMetrics = Field(default_factory=CapacityMetrics)
+
+    # Member Engagement
+    class_attendance_rate: Decimal = Field(default=Decimal("0.00"))
+    member_satisfaction_score: Optional[Decimal] = None
+    average_visits_per_member: Decimal = Field(default=Decimal("0.00"))
+
+    # Campaign and Discount Metrics
+    discount_effectiveness: Optional[str] = Field(
+        default=None, description="Impact of discount campaigns on ARPU"
+    )
+    campaign_effectiveness: Optional[str] = Field(
+        default=None, description="Impact of marketing campaigns on member reactivation"
+    )
+
+    total_prospects: int = Field(default=0)
+    total_paid: Decimal = Field(default=Decimal("0.00"))
+    total_pending: Decimal = Field(default=Decimal("0.00"))
+    total_overdue: Decimal = Field(default=Decimal("0.00"))
+
+    def __init__(self, **data):
+        """Initialize GymOperatingData with logging."""
+        self.logger.debug("Initializing GymOperatingData")
+        start_time = datetime.now()
+        super().__init__(**data)
+        self.logger.debug(
+            "GymOperatingData initialized in {}s",
+            (datetime.now() - start_time).total_seconds(),
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert model to dictionary."""
-        return self.model_dump(by_alias=True)
+        self.logger.debug("Converting GymOperatingData to dictionary")
+        start_time = datetime.now()
+        result = self.model_dump(by_alias=True)
+        self.logger.debug(
+            "Conversion completed in {}s", (datetime.now() - start_time).total_seconds()
+        )
+        return result
+
+    def _segment_members(self) -> None:
+        """Segment members based on behavior and value."""
+        self.logger.debug("Segmenting members")
+
+        segments = {
+            "premium": MemberSegment(segment_name="Premium"),
+            "regular": MemberSegment(segment_name="Regular"),
+            "at_risk": MemberSegment(segment_name="At Risk"),
+            "inactive": MemberSegment(segment_name="Inactive"),
+        }
+
+        for member in self.active_members:
+            member_id = member.get("id")
+            if not member_id:
+                continue
+
+            # Calculate member metrics
+            visit_count = len(
+                [e for e in self.recent_entries if e.member_id == member_id]
+            )
+            revenue = sum(
+                r.amount for r in self.receivables if r.member_id == member_id
+            )
+
+            # Determine segment
+            if visit_count == 0:
+                segment = segments["inactive"]
+            elif visit_count < 4:
+                segment = segments["at_risk"]
+            elif revenue > 1000:
+                segment = segments["premium"]
+            else:
+                segment = segments["regular"]
+
+            # Update segment metrics
+            segment.member_count += 1
+            segment.member_ids.append(member_id)
+            if segment.member_count > 0:
+                segment.average_revenue = (
+                    segment.average_revenue * (segment.member_count - 1) + revenue
+                ) / segment.member_count
+
+        self.member_segments = segments
+
+    def _analyze_capacity(self) -> None:
+        """Analyze facility capacity and utilization."""
+        self.logger.debug("Analyzing capacity metrics")
+
+        if not self.recent_entries:
+            return
+
+        # Group entries by day
+        daily_visits = {}
+        peak_hours_entries = []
+        off_peak_entries = []
+
+        for entry in self.recent_entries:
+            # Daily grouping
+            entry_date = entry.register_date.date()
+            if entry_date not in daily_visits:
+                daily_visits[entry_date] = []
+            daily_visits[entry_date].append(entry)
+
+            # Peak vs off-peak
+            hour = entry.register_date.hour
+            if 6 <= hour <= 9 or 17 <= hour <= 20:  # Peak hours
+                peak_hours_entries.append(entry)
+            else:
+                off_peak_entries.append(entry)
+
+        # Calculate metrics
+        total_days = len(daily_visits)
+        if total_days > 0:
+            self.capacity_metrics.average_daily_visits = Decimal(
+                str(len(self.recent_entries) / total_days)
+            )
+            self.capacity_metrics.busiest_day_visits = max(
+                len(visits) for visits in daily_visits.values()
+            )
+            self.capacity_metrics.quietest_day_visits = min(
+                len(visits) for visits in daily_visits.values()
+            )
+
+            # Utilization rates
+            if self.capacity_metrics.max_capacity > 0:
+                self.capacity_metrics.peak_hours_utilization = Decimal(
+                    str(
+                        len(peak_hours_entries)
+                        / (self.capacity_metrics.max_capacity * total_days)
+                    )
+                ) * Decimal("100")
+                self.capacity_metrics.off_peak_utilization = Decimal(
+                    str(
+                        len(off_peak_entries)
+                        / (self.capacity_metrics.max_capacity * total_days)
+                    )
+                ) * Decimal("100")
+
+    def _analyze_revenue(self) -> None:
+        """Analyze revenue streams."""
+        self.logger.debug("Analyzing revenue streams")
+
+        # Reset revenue breakdown
+        self.revenue_breakdown = RevenueBreakdown()
+
+        # Analyze receivables
+        for receivable in self.receivables:
+            if not receivable.amount:
+                continue
+
+            # Categorize revenue based on description or other attributes
+            description = (
+                receivable.description.lower() if receivable.description else ""
+            )
+            amount = receivable.amount
+
+            if "membership" in description:
+                self.revenue_breakdown.membership_revenue += amount
+            elif "class" in description:
+                self.revenue_breakdown.class_revenue += amount
+            elif "personal training" in description:
+                self.revenue_breakdown.pt_sessions += amount
+            elif "guest" in description:
+                self.revenue_breakdown.guest_passes += amount
+            elif "retail" in description:
+                self.revenue_breakdown.retail += amount
+            else:
+                self.revenue_breakdown.additional_services += amount
 
     def calculate_metrics(self) -> None:
-        """Calculate financial and operational metrics."""
+        """Calculate all financial and operational metrics."""
+        self.logger.info("Starting metrics calculation")
+        start_time = datetime.now()
+
         # Calculate total active members
+        self.logger.debug("Calculating active members count")
         self.total_active_members = len(self.active_members)
+        self.logger.info("Total active members: {}", self.total_active_members)
 
         # Calculate MRR from active contracts
+        self.logger.debug("Calculating Monthly Recurring Revenue")
         total_mrr = Decimal("0.00")
+        contract_count = 0
         for contract in self.active_contracts:
             if contract.total_value:
                 # Convert annual/quarterly values to monthly
@@ -522,17 +804,208 @@ class GymOperatingData(BaseModel):
                         str(contract.plan.minimum_commitment_months)
                     )
                     total_mrr += monthly_value
-        self.mrr = total_mrr
+                    contract_count += 1
 
-        # Calculate churn rate
+        self.mrr = total_mrr
+        self.arr = self.mrr * Decimal("12")
+
+        if self.total_active_members > 0:
+            self.average_revenue_per_member = self.mrr / Decimal(
+                str(self.total_active_members)
+            )
+
+        self.logger.info(
+            "Calculated MRR: ${:.2f} from {} contracts", self.mrr, contract_count
+        )
+
+        # Calculate churn and retention
+        self.logger.debug("Calculating churn metrics")
         self.total_churned_members = len(self.non_renewed_members)
         if self.total_active_members > 0:
             self.churn_rate = (
                 Decimal(str(self.total_churned_members))
                 / Decimal(str(self.total_active_members))
             ) * Decimal("100")
-        else:
-            self.churn_rate = Decimal("0.00")
+            self.retention_rate = Decimal("100") - self.churn_rate
+
+        self.logger.info(
+            "Churn rate: {:.2f}% ({} churned members)",
+            self.churn_rate,
+            self.total_churned_members,
+        )
+
+        # Calculate membership growth rate
+        if self.data_from:
+            initial_members = len(
+                [
+                    m
+                    for m in self.active_members
+                    if m.get("join_date") and m["join_date"] <= self.data_from
+                ]
+            )
+            if initial_members > 0:
+                growth = self.total_active_members - initial_members
+                self.membership_growth_rate = (
+                    Decimal(str(growth)) / Decimal(str(initial_members))
+                ) * Decimal("100")
+
+        # Calculate multi-unit metrics
+        self.logger.debug("Calculating multi-unit metrics")
+        multi_unit_members = sum(
+            1 for m in self.active_members if m.get("access_branches", False)
+        )
+        if self.total_active_members > 0:
+            self.multi_unit_member_percentage = (
+                Decimal(str(multi_unit_members))
+                / Decimal(str(self.total_active_members))
+            ) * Decimal("100")
+
+        self.logger.info(
+            "Multi-unit member percentage: {:.2f}%", self.multi_unit_member_percentage
+        )
+
+        # Calculate engagement metrics
+        if self.total_active_members > 0:
+            self.average_visits_per_member = Decimal(
+                str(len(self.recent_entries))
+            ) / Decimal(str(self.total_active_members))
+
+        # Run detailed analysis
+        self._segment_members()
+        self._analyze_capacity()
+        self._analyze_revenue()
+
+        # Calculate lifetime value
+        if self.total_active_members > 0 and self.retention_rate > 0:
+            avg_monthly_revenue = self.average_revenue_per_member
+            churn_rate_decimal = self.churn_rate / Decimal("100")
+            if churn_rate_decimal > 0:
+                self.lifetime_value = avg_monthly_revenue / churn_rate_decimal
+
+        elapsed_time = (datetime.now() - start_time).total_seconds()
+        self.logger.info("Metrics calculation completed in {:.2f}s", elapsed_time)
+
+    def get_membership_trends(self) -> Dict[str, Any]:
+        """Calculate membership trends over time."""
+        if not self.data_from or not self.data_to:
+            return {}
+
+        trends = {
+            "new_members_by_month": {},
+            "churned_members_by_month": {},
+            "net_growth_by_month": {},
+            "mrr_by_month": {},
+        }
+
+        current_date = self.data_from
+        while current_date <= self.data_to:
+            month_key = current_date.strftime("%Y-%m")
+
+            # New members this month
+            new_members = len(
+                [
+                    m
+                    for m in self.active_members
+                    if m.get("join_date")
+                    and m["join_date"].strftime("%Y-%m") == month_key
+                ]
+            )
+            trends["new_members_by_month"][month_key] = new_members
+
+            # Churned members this month
+            churned_members = len(
+                [
+                    m
+                    for m in self.non_renewed_members
+                    if m.get("cancellation_date")
+                    and m["cancellation_date"].strftime("%Y-%m") == month_key
+                ]
+            )
+            trends["churned_members_by_month"][month_key] = churned_members
+
+            # Net growth
+            trends["net_growth_by_month"][month_key] = new_members - churned_members
+
+            # MRR for the month
+            month_mrr = sum(
+                Decimal(str(c.total_value))
+                / Decimal(str(c.plan.minimum_commitment_months))
+                for c in self.active_contracts
+                if (
+                    c.start_date
+                    and c.start_date.strftime("%Y-%m") <= month_key
+                    and (not c.end_date or c.end_date.strftime("%Y-%m") > month_key)
+                )
+            )
+            trends["mrr_by_month"][month_key] = month_mrr
+
+            # Move to next month
+            current_date = (current_date.replace(day=1) + timedelta(days=32)).replace(
+                day=1
+            )
+
+        return trends
+
+    def get_revenue_summary(self) -> Dict[str, Decimal]:
+        """Get a summary of all revenue metrics."""
+        return {
+            "mrr": self.mrr,
+            "arr": self.arr,
+            "average_revenue_per_member": self.average_revenue_per_member,
+            "lifetime_value": self.lifetime_value,
+            "cross_branch_revenue": self.cross_branch_revenue,
+            "membership_revenue": self.revenue_breakdown.membership_revenue,
+            "class_revenue": self.revenue_breakdown.class_revenue,
+            "additional_services": self.revenue_breakdown.additional_services,
+            "pt_sessions": self.revenue_breakdown.pt_sessions,
+            "guest_passes": self.revenue_breakdown.guest_passes,
+            "retail": self.revenue_breakdown.retail,
+            "total_revenue": self.revenue_breakdown.total_revenue,
+        }
+
+    def get_membership_summary(self) -> Dict[str, Any]:
+        """Get a summary of all membership metrics."""
+        return {
+            "total_active_members": self.total_active_members,
+            "total_churned_members": self.total_churned_members,
+            "churn_rate": self.churn_rate,
+            "retention_rate": self.retention_rate,
+            "growth_rate": self.membership_growth_rate,
+            "multi_unit_percentage": self.multi_unit_member_percentage,
+            "average_visits_per_member": self.average_visits_per_member,
+            "segments": {
+                name: {
+                    "count": segment.member_count,
+                    "average_revenue": segment.average_revenue,
+                    "retention_rate": segment.retention_rate,
+                }
+                for name, segment in self.member_segments.items()
+            },
+        }
+
+    def get_capacity_summary(self) -> Dict[str, Any]:
+        """Get a summary of all capacity metrics."""
+        return {
+            "peak_hours_utilization": self.capacity_metrics.peak_hours_utilization,
+            "off_peak_utilization": self.capacity_metrics.off_peak_utilization,
+            "class_fill_rate": self.capacity_metrics.class_fill_rate,
+            "average_daily_visits": self.capacity_metrics.average_daily_visits,
+            "busiest_day_visits": self.capacity_metrics.busiest_day_visits,
+            "quietest_day_visits": self.capacity_metrics.quietest_day_visits,
+        }
+
+    def generate_report(self) -> Dict[str, Any]:
+        """Generate a comprehensive report of all metrics."""
+        return {
+            "time_period": {
+                "from": self.data_from.isoformat() if self.data_from else None,
+                "to": self.data_to.isoformat() if self.data_to else None,
+            },
+            "revenue": self.get_revenue_summary(),
+            "membership": self.get_membership_summary(),
+            "capacity": self.get_capacity_summary(),
+            "trends": self.get_membership_trends(),
+        }
 
 
 class MemberEventType(str, Enum):

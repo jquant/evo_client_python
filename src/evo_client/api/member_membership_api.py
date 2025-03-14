@@ -7,13 +7,14 @@ from ..models.contratos_cancelados_resumo_api_view_model import (
     ContratosCanceladosResumoApiViewModel,
 )
 from ..models.member_membership_api_view_model import MemberMembershipApiViewModel
+from .base import BaseApi
 
 
-class MemberMembershipApi:
+class MemberMembershipApi(BaseApi):
     """Member Membership API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/membermembership"
 
     @overload

@@ -8,13 +8,14 @@ from ..models.receivables_mask_received_view_model import (
     ReceivablesMaskReceivedViewModel,
 )
 from ..models.revenue_center_api_view_model import RevenueCenterApiViewModel
+from .base import BaseApi
 
 
-class ReceivablesApi:
+class ReceivablesApi(BaseApi):
     """Receivables API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1"
 
     @overload

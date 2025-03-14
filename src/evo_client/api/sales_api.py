@@ -6,13 +6,14 @@ from ..core.api_client import ApiClient
 from ..models.new_sale_view_model import NewSaleResponse, NewSaleViewModel
 from ..models.sales_items_view_model import SalesItemsViewModel
 from ..models.sales_view_model import SalesViewModel
+from .base import BaseApi
 
 
-class SalesApi:
+class SalesApi(BaseApi):
     """Sales API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1/sales"
 
     @overload
@@ -98,7 +99,7 @@ class SalesApi:
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: Literal[False] = False,
-    ) -> SalesViewModel:
+    ) -> List[SalesViewModel]:
         ...
 
     @overload
@@ -143,7 +144,7 @@ class SalesApi:
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: bool = False,
-    ) -> Union[SalesViewModel, AsyncResult[Any]]:
+    ) -> Union[List[SalesViewModel], AsyncResult[Any]]:
         """
         Get sales with various filtering options.
 
@@ -188,7 +189,7 @@ class SalesApi:
             resource_path="/api/v2/sales",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
-            response_type=SalesViewModel,
+            response_type=List[SalesViewModel],
             auth_settings=["Basic"],
             async_req=async_req,
         )

@@ -5,13 +5,14 @@ from typing import Any, Literal, Optional, Union, overload
 from ..core.api_client import ApiClient
 from ..models.cost_center_api_view_model import CostCenterApiViewModel
 from ..models.payables_api_view_model import PayablesApiViewModel
+from .base import BaseApi
 
 
-class PayablesApi:
+class PayablesApi(BaseApi):
     """Payables API client for EVO API."""
 
     def __init__(self, api_client: Optional[ApiClient] = None):
-        self.api_client = api_client or ApiClient()
+        super().__init__(api_client)
         self.base_path = "/api/v1"
 
     @overload

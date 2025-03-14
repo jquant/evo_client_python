@@ -43,7 +43,8 @@ def test_gym_connection(
     try:
         print("\nFetching gym knowledge base...")
         result = gym_api.get_gym_knowledge_base(
-            branch_id=branch_id, include_activity_details=True
+            branch_ids=[str(branch_id)] if branch_id is not None else None,
+            include_activity_details=True,
         )
 
         # Handle async result if necessary
