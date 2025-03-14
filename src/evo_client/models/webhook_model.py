@@ -1,6 +1,5 @@
 from enum import Enum
-from typing import Optional, Dict, List
-from pydantic import AnyHttpUrl
+from typing import Dict, List, Optional
 
 from .w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 from .w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
@@ -56,7 +55,7 @@ class Webhook(W12UtilsWebhookViewModel):
             "urlCallback": "https://...",
             ...
         }
-        
+
     Response format:
         {
             "idWebhook": 123,
@@ -66,6 +65,7 @@ class Webhook(W12UtilsWebhookViewModel):
             ...
         }
     """
+
     def __init__(self, **data):
         # Handle response format conversion
         if "idFilial" in data:
@@ -73,6 +73,7 @@ class Webhook(W12UtilsWebhookViewModel):
         if "tipoEvento" in data:
             data["eventType"] = data.pop("tipoEvento")
         super().__init__(**data)
+
     @classmethod
     def create(
         cls,

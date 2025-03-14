@@ -4,7 +4,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-
 from evo_client.api.voucher_api import VoucherApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.vouchers_resumo_api_view_model import VouchersResumoApiViewModel

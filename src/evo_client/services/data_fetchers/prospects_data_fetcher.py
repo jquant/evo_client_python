@@ -1,11 +1,10 @@
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
 from loguru import logger
 
 from ...api.prospects_api import ProspectsApi
-from ...models.prospects_resumo_api_view_model import (
-    ProspectsResumoApiViewModel,
-)
+from ...models.prospects_resumo_api_view_model import ProspectsResumoApiViewModel
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 

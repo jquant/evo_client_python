@@ -6,7 +6,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-
 from evo_client.api.member_membership_api import MemberMembershipApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.contratos_cancelados_resumo_api_view_model import (

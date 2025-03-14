@@ -1,11 +1,10 @@
 import json
 from datetime import datetime
-from pathlib import Path
-from typing import Annotated, Optional, List
 from functools import wraps
+from pathlib import Path
+from typing import Annotated, List, Optional
 
 import typer
-
 from loguru import logger
 from rich import print as rich_print
 from rich.console import Console
@@ -15,23 +14,17 @@ from rich.tree import Tree
 from ..api.gym_api import GymApi
 from ..core.api_client import ApiClient
 from ..core.configuration import Configuration
+from ..models.gym_model import GymKnowledgeBase
+from ..models.webhook_model import WebhookEventType
 from ..services.data_fetchers import BranchApiClientManager
-from ..services.gym_knowledge_base.gym_kb_data_fetcher import GymKnowledgeBaseService
-from ..services.member_files.member_files_data_fetcher import MemberFilesDataFetcher
-from ..services.operating_data.operating_data_fetcher import OperatingDataFetcher
-
+from ..services.data_fetchers.gym_metrics_data_fetcher import GymMetricsDataFetcher
 from ..services.data_fetchers.overdue_members_data_fetcher import (
     OverdueMembersDataFetcher,
 )
-from ..services.data_fetchers.gym_metrics_data_fetcher import GymMetricsDataFetcher
+from ..services.gym_knowledge_base.gym_kb_data_fetcher import GymKnowledgeBaseService
+from ..services.member_files.member_files_data_fetcher import MemberFilesDataFetcher
+from ..services.operating_data.operating_data_fetcher import OperatingDataFetcher
 from ..services.webhook_management.webhook_management import WebhookManagementService
-from ..models.webhook_model import WebhookEventType
-from ..models.gym_model import (
-    GymKnowledgeBase,
-    GymUnitKnowledgeBase,
-    Address,
-    BusinessHours,
-)
 
 console = Console()
 
@@ -1180,7 +1173,7 @@ def list_webhooks():
                 if webhook.filters
                 else ""
             )
-            created_date = webhook.created_date if webhook.created_date else "N/A"
+            webhook.created_date if webhook.created_date else "N/A"
 
             table.add_row(
                 str(webhook.IdBranch or "All"),

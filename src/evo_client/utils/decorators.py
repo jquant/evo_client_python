@@ -1,6 +1,7 @@
 import functools
+from typing import Any, Callable, TypeVar
+
 from loguru import logger
-from typing import Callable, TypeVar, Any
 from rich.console import Console
 from rich.panel import Panel
 

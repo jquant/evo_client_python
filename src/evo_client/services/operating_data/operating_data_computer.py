@@ -1,11 +1,12 @@
-from typing import List, Optional
-from decimal import Decimal
 from datetime import datetime
-from ...models.gym_model import GymOperatingData, GymEntry
+from decimal import Decimal
+from typing import List, Optional
+
+from ...models.contratos_resumo_api_view_model import ContratosResumoApiViewModel
+from ...models.gym_model import GymEntry, GymOperatingData
 from ...models.members_api_view_model import MembersApiViewModel
 from ...models.prospects_resumo_api_view_model import ProspectsResumoApiViewModel
 from ...models.receivables_api_view_model import ReceivablesApiViewModel
-from ...models.contratos_resumo_api_view_model import ContratosResumoApiViewModel
 
 
 class OperatingDataComputer:

@@ -1,10 +1,11 @@
 from typing import List, Optional
 
+from loguru import logger
+
 from ...api.service_api import ServiceApi
 from ...models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
-from loguru import logger
 
 
 class ServiceDataFetcher(BaseDataFetcher):

@@ -4,6 +4,6 @@ from ...models.gym_model import GymOperatingData
 from .operating_data_computer import OperatingDataComputer
 
 __all__ = [
-    'GymOperatingData',
-    'OperatingDataComputer',
-] 
+    "GymOperatingData",
+    "OperatingDataComputer",
+]

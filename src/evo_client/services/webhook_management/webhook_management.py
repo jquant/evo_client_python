@@ -51,9 +51,9 @@ class WebhookManagement(BaseDataFetcher):
         # Wait between attempts
         return False
 
+
 from ..data_fetchers.webhook_data_fetcher import WebhookDataFetcher
 from ..data_fetchers import BranchApiClientManager
-from ...models.webhook_model import WebhookEventType
 from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 
@@ -136,7 +136,9 @@ class WebhookManagementService:
                 for branch_id in branch_ids:
                     if branch_id in self.webhook_fetcher.get_available_branch_ids():
                         logger.debug(f"Getting webhooks for branch {branch_id}")
-                        branch_webhook_api = WebhookApi(self.webhook_fetcher.get_branch_api(branch_id))
+                        branch_webhook_api = WebhookApi(
+                            self.webhook_fetcher.get_branch_api(branch_id)
+                        )
                         existing_webhooks = paginated_api_call(
                             api_func=branch_webhook_api.get_webhooks,
                             branch_id=str(branch_id),

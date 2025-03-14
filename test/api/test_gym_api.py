@@ -1,34 +1,34 @@
 """Tests for the GymApi class."""
 
-from unittest.mock import Mock, patch, PropertyMock, MagicMock
+from datetime import datetime
 from decimal import Decimal
-from datetime import datetime, time
+from unittest.mock import MagicMock, Mock, PropertyMock, patch
+
 import pytest
 
 from evo_client.api.gym_api import GymApi
 from evo_client.exceptions.api_exceptions import ApiException
+from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
+from evo_client.models.configuracao_api_view_model import ConfiguracaoApiViewModel
+from evo_client.models.contratos_resumo_api_view_model import (
+    ContratosResumoApiViewModel,
+)
 from evo_client.models.gym_model import (
+    Address,
+    BusinessHours,
     GymKnowledgeBase,
     GymOperatingData,
     GymPlan,
     GymUnitKnowledgeBase,
-    MembershipCategory,
     MembershipContract,
     OverdueMember,
+    PaymentMethod,
     Receivable,
     ReceivableStatus,
-    PaymentMethod,
-    Address,
-    BusinessHours,
 )
-from evo_client.services.data_fetchers import BranchApiClientManager
 from evo_client.models.receivables_api_view_model import ReceivablesApiViewModel
-from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
 from evo_client.models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
-from evo_client.models.contratos_resumo_api_view_model import (
-    ContratosResumoApiViewModel,
-)
-from evo_client.models.configuracao_api_view_model import ConfiguracaoApiViewModel
+from evo_client.services.data_fetchers import BranchApiClientManager
 
 
 @pytest.fixture

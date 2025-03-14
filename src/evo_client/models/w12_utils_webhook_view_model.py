@@ -12,7 +12,7 @@
 
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from .w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 from .w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
@@ -20,6 +20,7 @@ from .w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 
 class W12UtilsWebhookViewModel(BaseModel):
     """Model representing a webhook configuration."""
+
     model_config = ConfigDict(
         populate_by_name=True,
         extra="allow",
@@ -30,7 +31,7 @@ class W12UtilsWebhookViewModel(BaseModel):
     urlCallback: Optional[str] = None
     headers: Optional[List[W12UtilsWebhookHeaderViewModel]] = Field(default=[])
     filters: Optional[List[W12UtilsWebhookFilterViewModel]] = Field(default=[])
-    
+
     # Internal fields not sent to API
     id_webhook: Optional[int] = None
     id_w12: Optional[int] = None

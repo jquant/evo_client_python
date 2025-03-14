@@ -1,18 +1,19 @@
 from datetime import datetime
+from io import BytesIO
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
-from loguru import logger
-import pandas as pd
-from io import BytesIO
 
-from .base import BaseApi
+import pandas as pd
+from loguru import logger
+
 from ..core.api_client import ApiClient
+from ..exceptions.api_exceptions import ApiException
 from ..models.clientes_ativos_view_model import ClientesAtivosViewModel
 from ..models.contrato_nao_renovados_view_model import ContratoNaoRenovadosViewModel
 from ..models.sps_rel_prospects_cadastrados_convertidos import (
     SpsRelProspectsCadastradosConvertidos,
 )
-from ..exceptions.api_exceptions import ApiException
+from .base import BaseApi
 
 
 def convert_value(value: Any, expected_type: type) -> Any:
@@ -52,12 +53,12 @@ class ManagementApi(BaseApi):
     @overload
     def get_active_clients(
         self, async_req: Literal[False] = False
-    ) -> List[ClientesAtivosViewModel]: ...
+    ) -> List[ClientesAtivosViewModel]:
+        ...
 
     @overload
-    def get_active_clients(
-        self, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]: ...
+    def get_active_clients(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
+        ...
 
     def get_active_clients(
         self, async_req: bool = False
@@ -244,7 +245,8 @@ class ManagementApi(BaseApi):
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> List[SpsRelProspectsCadastradosConvertidos]: ...
+    ) -> List[SpsRelProspectsCadastradosConvertidos]:
+        ...
 
     @overload
     def get_prospects(
@@ -252,7 +254,8 @@ class ManagementApi(BaseApi):
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_prospects(
         self,
@@ -299,7 +302,8 @@ class ManagementApi(BaseApi):
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> List[ContratoNaoRenovadosViewModel]: ...
+    ) -> List[ContratoNaoRenovadosViewModel]:
+        ...
 
     @overload
     def get_non_renewed_clients(
@@ -307,7 +311,8 @@ class ManagementApi(BaseApi):
         dt_start: Optional[datetime] = None,
         dt_end: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_non_renewed_clients(
         self,

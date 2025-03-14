@@ -21,7 +21,7 @@ class EStatusAtividade(str, Enum):
     """
 
     _0 = "0"
-    _1 = "1" 
+    _1 = "1"
     _2 = "2"
     _3 = "3"
     _4 = "4"
@@ -38,7 +38,6 @@ class EStatusAtividade(str, Enum):
     _15 = "15"
     _NA = "NA"
 
-
     @classmethod
     def _missing_(cls, value: Union[str, int]) -> "EStatusAtividade":
         """Handle both string and integer inputs."""
@@ -48,7 +47,7 @@ class EStatusAtividade(str, Enum):
             if member.value == value:
                 return member
         return cls._NA
-    
+
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.value
