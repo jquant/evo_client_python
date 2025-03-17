@@ -39,7 +39,7 @@ def test_telefone_api_view_model_creation(telefone_api_view_model):
     assert telefone_api_view_model.id_employee == 3
     assert telefone_api_view_model.id_prospect == 4
     assert telefone_api_view_model.id_provider == 5
-    assert telefone_api_view_model.id_contact_type == "Mobile"
+    assert telefone_api_view_model.id_contact_type == 1
     assert telefone_api_view_model.contact_type == "Personal"
     assert telefone_api_view_model.description == "Primary contact number"
 
@@ -54,7 +54,7 @@ def test_telefone_api_view_model_to_dict(telefone_api_view_model):
     assert model_dict["idEmployee"] == 3
     assert model_dict["idProspect"] == 4
     assert model_dict["idProvider"] == 5
-    assert model_dict["idContactType"] == "Mobile"
+    assert model_dict["idContactType"] == 1
     assert model_dict["contactType"] == "Personal"
     assert model_dict["description"] == "Primary contact number"
 
