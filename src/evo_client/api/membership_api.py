@@ -14,24 +14,23 @@ class MembershipApi(BaseApi):
 
     def __init__(self, api_client: Optional[ApiClient] = None):
         super().__init__(api_client)
-        self.base_path = "/api/v1/membership"
+        self.base_path_v1 = "/api/v1/membership"
+        self.base_path_v2 = "/api/v2/membership"
 
     @overload
     def get_categories(
         self, async_req: Literal[False] = False
-    ) -> List[W12UtilsCategoryMembershipViewModel]:
-        ...
+    ) -> List[W12UtilsCategoryMembershipViewModel]: ...
 
     @overload
-    def get_categories(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
-        ...
+    def get_categories(self, async_req: Literal[True] = True) -> AsyncResult[Any]: ...
 
     def get_categories(
         self, async_req: bool = False
     ) -> Union[List[W12UtilsCategoryMembershipViewModel], AsyncResult[Any]]:
         """Get membership categories."""
         return self.api_client.call_api(
-            resource_path=f"{self.base_path}/category",
+            resource_path=f"{self.base_path_v1}/category",
             method="GET",
             response_type=List[W12UtilsCategoryMembershipViewModel],
             auth_settings=["Basic"],
@@ -48,8 +47,7 @@ class MembershipApi(BaseApi):
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[False] = False,
-    ) -> List[ContratosResumoApiViewModel]:
-        ...
+    ) -> List[ContratosResumoApiViewModel]: ...
 
     @overload
     def get_memberships(
@@ -61,8 +59,7 @@ class MembershipApi(BaseApi):
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_memberships(
         self,
@@ -96,7 +93,7 @@ class MembershipApi(BaseApi):
         }
 
         return self.api_client.call_api(
-            resource_path=self.base_path,
+            resource_path=self.base_path_v2,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             response_type=List[ContratosResumoApiViewModel],

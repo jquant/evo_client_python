@@ -14,19 +14,18 @@ class SalesApi(BaseApi):
 
     def __init__(self, api_client: Optional[ApiClient] = None):
         super().__init__(api_client)
-        self.base_path = "/api/v1/sales"
+        self.base_path_v1 = "/api/v1/sales"
+        self.base_path_v2 = "/api/v2/sales"
 
     @overload
     def get_sale_by_id(
         self, sale_id: int, async_req: Literal[False] = False
-    ) -> SalesViewModel:
-        ...
+    ) -> SalesViewModel: ...
 
     @overload
     def get_sale_by_id(
         self, sale_id: int, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_sale_by_id(
         self, sale_id: int, async_req: bool = False
@@ -36,7 +35,7 @@ class SalesApi(BaseApi):
             raise ValueError("sale_id is required")
 
         return self.api_client.call_api(
-            resource_path=f"{self.base_path}/{sale_id}",
+            resource_path=f"{self.base_path_v1}/{sale_id}",
             method="GET",
             response_type=SalesViewModel,
             auth_settings=["Basic"],
@@ -46,14 +45,12 @@ class SalesApi(BaseApi):
     @overload
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: Literal[False] = False
-    ) -> NewSaleResponse:
-        ...
+    ) -> NewSaleResponse: ...
 
     @overload
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: bool = False
@@ -71,7 +68,7 @@ class SalesApi(BaseApi):
         - 7: Pix
         """
         return self.api_client.call_api(
-            resource_path=self.base_path,
+            resource_path=self.base_path_v2,
             method="POST",
             body=body.model_dump(exclude_unset=True) if body else None,
             response_type=NewSaleResponse,
@@ -99,8 +96,7 @@ class SalesApi(BaseApi):
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: Literal[False] = False,
-    ) -> List[SalesViewModel]:
-        ...
+    ) -> List[SalesViewModel]: ...
 
     @overload
     def get_sales(
@@ -122,8 +118,7 @@ class SalesApi(BaseApi):
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_sales(
         self,
@@ -186,7 +181,7 @@ class SalesApi(BaseApi):
         }
 
         return self.api_client.call_api(
-            resource_path="/api/v2/sales",
+            resource_path=self.base_path_v2,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             response_type=List[SalesViewModel],
@@ -197,14 +192,12 @@ class SalesApi(BaseApi):
     @overload
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: Literal[False] = False
-    ) -> List[SalesItemsViewModel]:
-        ...
+    ) -> List[SalesItemsViewModel]: ...
 
     @overload
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: bool = False
@@ -213,7 +206,7 @@ class SalesApi(BaseApi):
         params = {"idBranch": branch_id} if branch_id else {}
 
         return self.api_client.call_api(
-            resource_path=f"{self.base_path}/sales-items",
+            resource_path=f"{self.base_path_v1}/sales-items",
             method="GET",
             query_params=params,
             response_type=List[SalesItemsViewModel],
@@ -227,8 +220,7 @@ class SalesApi(BaseApi):
         session_id: str,
         date: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> int:
-        ...
+    ) -> int: ...
 
     @overload
     def get_sale_by_session_id(
@@ -236,8 +228,7 @@ class SalesApi(BaseApi):
         session_id: str,
         date: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_sale_by_session_id(
         self, session_id: str, date: Optional[datetime] = None, async_req: bool = False
@@ -246,7 +237,7 @@ class SalesApi(BaseApi):
         params = {"sessionId": session_id, "date": date}
 
         return self.api_client.call_api(
-            resource_path=f"{self.base_path}/by-session-id",
+            resource_path=f"{self.base_path_v1}/by-session-id",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             response_type=int,

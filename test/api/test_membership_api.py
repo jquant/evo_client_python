@@ -52,7 +52,7 @@ def test_get_memberships_basic(membership_api: MembershipApi, mock_api_client: M
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/membership"
+    assert args["resource_path"] == "/api/v2/membership"
 
 
 def test_get_memberships_with_filters(
