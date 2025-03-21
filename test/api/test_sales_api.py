@@ -59,7 +59,7 @@ def test_create_sale(sales_api: SalesApi, mock_api_client: Mock):
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
-    assert args["resource_path"] == "/api/v1/sales"
+    assert args["resource_path"] == "/api/v2/sales"
     assert args["body"] == sale_data.model_dump(exclude_unset=True)
 
 
