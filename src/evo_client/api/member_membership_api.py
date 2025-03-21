@@ -15,7 +15,8 @@ class MemberMembershipApi(BaseApi):
 
     def __init__(self, api_client: Optional[ApiClient] = None):
         super().__init__(api_client)
-        self.base_path = "/api/v1/membermembership"
+        self.base_path_v1 = "/api/v1/membermembership"
+        self.base_path_v2 = "/api/v2/membermembership"
 
     @overload
     def cancel_membership(
@@ -33,8 +34,7 @@ class MemberMembershipApi(BaseApi):
         add_fine: bool = False,
         value_fine: Optional[float] = None,
         async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def cancel_membership(
@@ -52,8 +52,7 @@ class MemberMembershipApi(BaseApi):
         add_fine: bool = False,
         value_fine: Optional[float] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def cancel_membership(
         self,
@@ -105,7 +104,7 @@ class MemberMembershipApi(BaseApi):
         }
 
         return self.api_client.call_api(
-            resource_path=f"{self.base_path}/cancellation",
+            resource_path=f"{self.base_path_v1}/cancellation",
             method="POST",
             query_params={k: v for k, v in params.items() if v is not None},
             auth_settings=["Basic"],
@@ -116,14 +115,12 @@ class MemberMembershipApi(BaseApi):
     @overload
     def get_membership(
         self, id_member_membership: int, async_req: Literal[False] = False
-    ) -> MemberMembershipApiViewModel:
-        ...
+    ) -> MemberMembershipApiViewModel: ...
 
     @overload
     def get_membership(
         self, id_member_membership: int, async_req: Literal[True] = True
-    ) -> MemberMembershipApiViewModel:
-        ...
+    ) -> MemberMembershipApiViewModel: ...
 
     def get_membership(
         self, id_member_membership: int, async_req: bool = False
@@ -136,7 +133,7 @@ class MemberMembershipApi(BaseApi):
             async_req: Execute request asynchronously
         """
         return self.api_client.call_api(
-            resource_path=f"{self.base_path}/{id_member_membership}",
+            resource_path=f"{self.base_path_v1}/{id_member_membership}",
             method="GET",
             response_type=MemberMembershipApiViewModel,
             auth_settings=["Basic"],
@@ -161,8 +158,7 @@ class MemberMembershipApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> List[ContratosCanceladosResumoApiViewModel]:
-        ...
+    ) -> List[ContratosCanceladosResumoApiViewModel]: ...
 
     @overload
     def get_canceled_memberships(
@@ -181,8 +177,7 @@ class MemberMembershipApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> List[ContratosCanceladosResumoApiViewModel]:
-        ...
+    ) -> List[ContratosCanceladosResumoApiViewModel]: ...
 
     def get_canceled_memberships(
         self,
@@ -243,7 +238,7 @@ class MemberMembershipApi(BaseApi):
         }
 
         return self.api_client.call_api(
-            resource_path="/api/v2/membermembership",
+            resource_path=f"{self.base_path_v2}",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             response_type=List[ContratosCanceladosResumoApiViewModel],
