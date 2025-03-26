@@ -1,8 +1,13 @@
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 
+from loguru import logger
+
 from ..core.api_client import ApiClient
-from ..models.contratos_resumo_api_view_model import ContratosResumoApiViewModel
+from ..models.contratos_resumo_api_view_model import (
+    ContratosResumoApiViewModel,
+    ContratosResumoContainerViewModel,
+)
 from ..models.w12_utils_category_membership_view_model import (
     W12UtilsCategoryMembershipViewModel,
 )
@@ -20,10 +25,12 @@ class MembershipApi(BaseApi):
     @overload
     def get_categories(
         self, async_req: Literal[False] = False
-    ) -> List[W12UtilsCategoryMembershipViewModel]: ...
+    ) -> List[W12UtilsCategoryMembershipViewModel]:
+        ...
 
     @overload
-    def get_categories(self, async_req: Literal[True] = True) -> AsyncResult[Any]: ...
+    def get_categories(self, async_req: Literal[True] = True) -> AsyncResult[Any]:
+        ...
 
     def get_categories(
         self, async_req: bool = False
@@ -47,7 +54,8 @@ class MembershipApi(BaseApi):
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[False] = False,
-    ) -> List[ContratosResumoApiViewModel]: ...
+    ) -> ContratosResumoContainerViewModel:
+        ...
 
     @overload
     def get_memberships(
@@ -59,7 +67,8 @@ class MembershipApi(BaseApi):
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]: ...
+    ) -> AsyncResult[Any]:
+        ...
 
     def get_memberships(
         self,
@@ -70,7 +79,7 @@ class MembershipApi(BaseApi):
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         async_req: bool = False,
-    ) -> Union[List[ContratosResumoApiViewModel], AsyncResult[Any]]:
+    ) -> Union[ContratosResumoContainerViewModel, AsyncResult[Any]]:
         """
         Get memberships list with optional filtering.
 
@@ -92,11 +101,31 @@ class MembershipApi(BaseApi):
             "active": active,
         }
 
-        return self.api_client.call_api(
+        # Use the container model as the response type
+        response = self.api_client.call_api(
             resource_path=self.base_path_v2,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
-            response_type=List[ContratosResumoApiViewModel],
+            response_type=ContratosResumoContainerViewModel,
             auth_settings=["Basic"],
             async_req=async_req,
         )
+
+        # For async requests, return the AsyncResult directly
+        if async_req:
+            return response
+
+        # For synchronous requests, extract the list from the container
+        return response
+
+    def list_memberships(self) -> List[ContratosResumoApiViewModel]:
+        """List all memberships."""
+        response = self.get_memberships(async_req=False)
+        if response.list:
+            return response.list
+        else:
+            error_message = (
+                "Invalid response type: 'list' is missing from the response."
+            )
+            logger.error(f"{error_message} Response: {response}")
+            raise ValueError(error_message)

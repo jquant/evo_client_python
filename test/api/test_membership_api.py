@@ -7,7 +7,7 @@ import pytest
 from evo_client.api.membership_api import MembershipApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.contratos_resumo_api_view_model import (
-    ContratosResumoApiViewModel,
+    ContratosResumoContainerViewModel,
 )
 from evo_client.models.w12_utils_category_membership_view_model import (
     W12UtilsCategoryMembershipViewModel,
@@ -43,7 +43,7 @@ def test_get_categories(membership_api: MembershipApi, mock_api_client: Mock):
 
 def test_get_memberships_basic(membership_api: MembershipApi, mock_api_client: Mock):
     """Test getting memberships list with no parameters."""
-    expected = [ContratosResumoApiViewModel()]
+    expected = ContratosResumoContainerViewModel()
     mock_api_client.return_value = expected
 
     result = membership_api.get_memberships(async_req=False)
@@ -59,7 +59,7 @@ def test_get_memberships_with_filters(
     membership_api: MembershipApi, mock_api_client: Mock
 ):
     """Test getting memberships with search filters."""
-    expected = [ContratosResumoApiViewModel()]
+    expected = ContratosResumoContainerViewModel()
     mock_api_client.return_value = expected
 
     result = membership_api.get_memberships(
