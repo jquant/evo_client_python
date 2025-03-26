@@ -2,6 +2,7 @@ from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 
 from loguru import logger
+
 from ..core.api_client import ApiClient
 from ..models.contratos_resumo_api_view_model import (
     ContratosResumoApiViewModel,
