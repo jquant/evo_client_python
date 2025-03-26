@@ -1,6 +1,7 @@
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
 
+from loguru import logger
 from ..core.api_client import ApiClient
 from ..models.contratos_resumo_api_view_model import (
     ContratosResumoApiViewModel,
@@ -118,4 +119,8 @@ class MembershipApi(BaseApi):
         if response.list:
             return response.list
         else:
-            raise ValueError("Invalid response type")
+            error_message = (
+                "Invalid response type: 'list' is missing from the response."
+            )
+            logger.error(f"{error_message} Response: {response}")
+            raise ValueError(error_message)
