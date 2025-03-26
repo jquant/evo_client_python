@@ -36,7 +36,7 @@ class MembershipDataFetcher(BaseDataFetcher):
                 branch_api = MembershipApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     result = paginated_api_call(
-                        api_func=branch_api.get_memberships,
+                        api_func=branch_api.list_memberships,
                         branch_id=str(branch_id),
                         membership_id=membership_id,
                         name=name,
