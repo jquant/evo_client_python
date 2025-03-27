@@ -55,7 +55,8 @@ class MembershipApi(BaseApi):
         active: Optional[bool] = None,
         version: Literal["v1"] = "v1",
         async_req: Literal[False] = False,
-    ) -> List[ContratosResumoApiViewModel]: ...
+    ) -> List[ContratosResumoApiViewModel]:
+        ...
 
     @overload
     def get_memberships(
@@ -82,9 +83,9 @@ class MembershipApi(BaseApi):
         active: Optional[bool] = None,
         version: Literal["v1", "v2"] = "v2",
         async_req: Literal[False] = False,
-    ) -> Union[
-        List[ContratosResumoApiViewModel], ContratosResumoContainerViewModel
-    ]: ...
+    ) -> Union[List[ContratosResumoApiViewModel], ContratosResumoContainerViewModel]:
+        ...
+
     @overload
     def get_memberships(
         self,
