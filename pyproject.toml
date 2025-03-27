@@ -1,6 +1,6 @@
 [project]
 name = "evo_client"
-version = "1.0.9"
+version = "1.0.10"
 description = "ABC Evo SDK"
 authors = [
     {email = "support@evo.com"}
