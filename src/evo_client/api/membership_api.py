@@ -50,6 +50,20 @@ class MembershipApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         active: Optional[bool] = None,
+        version: Literal["v1"] = "v1",
+        async_req: Literal[False] = False,
+    ) -> List[ContratosResumoApiViewModel]: ...
+
+    @overload
+    def get_memberships(
+        self,
+        membership_id: Optional[int] = None,
+        name: Optional[str] = None,
+        branch_id: Optional[int] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        active: Optional[bool] = None,
+        version: Literal["v2"] = "v2",
         async_req: Literal[False] = False,
     ) -> ContratosResumoContainerViewModel: ...
 
@@ -62,6 +76,21 @@ class MembershipApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         active: Optional[bool] = None,
+        version: Literal["v1", "v2"] = "v2",
+        async_req: Literal[False] = False,
+    ) -> Union[
+        List[ContratosResumoApiViewModel], ContratosResumoContainerViewModel
+    ]: ...
+    @overload
+    def get_memberships(
+        self,
+        membership_id: Optional[int] = None,
+        name: Optional[str] = None,
+        branch_id: Optional[int] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        active: Optional[bool] = None,
+        version: Literal["v1", "v2"] = "v2",
         async_req: Literal[True] = True,
     ) -> AsyncResult[Any]: ...
 
@@ -73,8 +102,13 @@ class MembershipApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         active: Optional[bool] = None,
+        version: Literal["v1", "v2"] = "v2",
         async_req: bool = False,
-    ) -> Union[ContratosResumoContainerViewModel, AsyncResult[Any]]:
+    ) -> Union[
+        ContratosResumoContainerViewModel,
+        List[ContratosResumoApiViewModel],
+        AsyncResult[Any],
+    ]:
         """
         Get memberships list with optional filtering.
 
@@ -95,13 +129,19 @@ class MembershipApi(BaseApi):
             "skip": skip,
             "active": active,
         }
+        if version == "v1":
+            resource_path = self.base_path_v1
+            response_type = List[ContratosResumoApiViewModel]
+        else:
+            resource_path = self.base_path_v2
+            response_type = ContratosResumoContainerViewModel
 
         # Use the container model as the response type
         response = self.api_client.call_api(
-            resource_path=self.base_path_v2,
+            resource_path=resource_path,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
-            response_type=ContratosResumoContainerViewModel,
+            response_type=response_type,
             auth_settings=["Basic"],
             async_req=async_req,
         )
@@ -113,10 +153,30 @@ class MembershipApi(BaseApi):
         # For synchronous requests, extract the list from the container
         return response
 
-    def list_memberships(self) -> List[ContratosResumoApiViewModel]:
+    def list_memberships(
+        self,
+        membership_id: Optional[int] = None,
+        name: Optional[str] = None,
+        branch_id: Optional[int] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        active: Optional[bool] = None,
+        version: Literal["v1", "v2"] = "v2",
+    ) -> List[ContratosResumoApiViewModel]:
         """List all memberships."""
-        response = self.get_memberships(async_req=False)
-        if response.list:
+        response = self.get_memberships(
+            membership_id=membership_id,
+            name=name,
+            branch_id=branch_id,
+            take=take,
+            skip=skip,
+            active=active,
+            version=version,
+            async_req=False,
+        )
+        if isinstance(response, list):
+            return response
+        elif isinstance(response, ContratosResumoContainerViewModel) and response.list:
             return response.list
         else:
             error_message = (

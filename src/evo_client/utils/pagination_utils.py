@@ -117,8 +117,8 @@ def fetch_for_unit(
                         return unit_results
                 else:
                     unit_results.append(result)
-                    if not supports_pagination:
-                        return unit_results
+                    # this is to avoid infinite loops
+                    return unit_results
 
                 page += 1
                 break
