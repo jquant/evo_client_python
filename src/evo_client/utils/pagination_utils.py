@@ -12,7 +12,7 @@ T = TypeVar("T")
 class RateLimiter:
     """Global rate limiter to ensure we don't exceed API limits."""
 
-    def __init__(self, max_requests: int = 35, time_window: int = 60):
+    def __init__(self, max_requests: int = 40, time_window: int = 60):
         self.max_requests = max_requests
         self.time_window = time_window
         self.requests: List[float] = []
@@ -87,10 +87,11 @@ def fetch_for_unit(
     supports_pagination: bool,
     pagination_type: str,
     branch_id: str = "NOT INFORMED",
+    post_request_delay: float = 1.0,
 ) -> List[T]:
-    """Fetch all pages of data for a single unit, handling pagination and retries."""
+    """Fetch all pages of data for a single branch/unit, handling pagination and retries."""
     # Create rate limiter inside the process
-    rate_limiter = RateLimiter(max_requests=5, time_window=1)
+    rate_limiter = RateLimiter()
     unit_results: List[T] = []
     page = 0
 
@@ -106,7 +107,7 @@ def fetch_for_unit(
             rate_limiter.acquire()
             try:
                 result = api_func(**call_kwargs)
-                time.sleep(1)
+                time.sleep(post_request_delay)
 
                 if not result:
                     return unit_results
@@ -151,9 +152,23 @@ def paginated_api_call(
     supports_pagination: bool = True,
     pagination_type: str = "skip_take",
     branch_id: str = "NOT INFORMED",
+    post_request_delay: float = 1.0,
     **kwargs,
 ) -> List[T]:
-    """Execute paginated API calls with retry logic."""
+    """
+    Execute paginated API calls with retry logic.
+
+    Args:
+        api_func: The API function to call
+        page_size: Number of items to request per page
+        max_retries: Maximum number of retry attempts for failed calls
+        base_delay: Base delay in seconds for retry backoff
+        supports_pagination: Whether the API supports pagination
+        pagination_type: Type of pagination ('skip_take' or 'page_page_size')
+        branch_id: Identifier for the branch/unit being processed
+        post_request_delay: Delay in seconds after each successful API call
+        **kwargs: Additional arguments to pass to the API function
+    """
     if pagination_type not in ("skip_take", "page_page_size"):
         raise ValueError(
             "Unsupported pagination_type. Use 'skip_take' or 'page_page_size'."
@@ -167,6 +182,8 @@ def paginated_api_call(
     )
 
     flat_results: List[Any] = []
+    success = True
+    error_message = None
     try:
         result = fetch_for_unit(
             branch_id=branch_id,
@@ -177,12 +194,18 @@ def paginated_api_call(
             base_delay=base_delay,
             supports_pagination=supports_pagination,
             pagination_type=pagination_type,
+            post_request_delay=post_request_delay,
         )
         if isinstance(result, list):
             flat_results.extend(result)
         else:
             flat_results.append(result)
     except Exception as e:
-        logger.error(f"Error fetching for unit {branch_id}: {e}")
+        success = False
+        error_message = str(e)
+        logger.error(f"Error fetching for branch {branch_id}: {e}")
+
+    if not success:
+        logger.warning(f"Returning partial results due to error: {error_message}")
 
     return flat_results
