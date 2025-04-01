@@ -18,19 +18,19 @@ from evo_client.models.e_status_atividade import EStatusAtividade
 def test_e_status_atividade_creation():
     """Test creating an EStatusAtividade instance"""
     assert isinstance(EStatusAtividade._0, EStatusAtividade)
-    assert EStatusAtividade._0 is EStatusAtividade("0")
-    assert EStatusAtividade._1 is EStatusAtividade("1")
-    assert EStatusAtividade._2 is EStatusAtividade("2")
+    assert EStatusAtividade._0 is EStatusAtividade(0)
+    assert EStatusAtividade._1 is EStatusAtividade(1)
+    assert EStatusAtividade._2 is EStatusAtividade(2)
 
 
 def test_e_status_atividade_to_dict():
     """Test converting EStatusAtividade to dictionary"""
-    assert EStatusAtividade._0.to_dict() == "0"
-    assert EStatusAtividade._1.to_dict() == "1"
+    assert EStatusAtividade._0.to_dict() == 0
+    assert EStatusAtividade._1.to_dict() == 1
 
 
 def test_e_status_atividade_equality():
     """Test equality comparison of EStatusAtividade instances"""
-    assert EStatusAtividade._0 is EStatusAtividade("0")
-    assert EStatusAtividade._1 != EStatusAtividade("0")
-    assert EStatusAtividade._0 != 1
+    assert EStatusAtividade._0 is EStatusAtividade(0)
+    assert EStatusAtividade._1 != EStatusAtividade(0)
+    assert EStatusAtividade._0 != "1"

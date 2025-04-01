@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import IntEnum
 
 
-class EStatusAtividadeSessao(str, Enum):
+class EStatusAtividadeSessao(IntEnum):
     """Status for member/prospect attendance in an activity.
     Used in change_status() method.
 
@@ -11,9 +11,9 @@ class EStatusAtividadeSessao(str, Enum):
     - _2: Justified absence
     """
 
-    _0 = "0"  # Attending
-    _1 = "1"  # Absent
-    _2 = "2"  # Justified absence
+    _0 = 0  # Attending
+    _1 = 1  # Absent
+    _2 = 2  # Justified absence
 
     def to_dict(self):
         """Returns the model properties as a dict"""
@@ -31,24 +31,24 @@ class EStatusAtividadeSessao(str, Enum):
         return not self == other
 
 
-class EStatusAtividadeAgendamento(str, Enum):
+class EStatusAtividadeAgendamento(IntEnum):
     """Status for activity schedule.
     Used in get_schedule() method.
     """
 
-    LIVRE = "0"  # Free
-    DISPONIVEL = "1"  # Available
-    LOTADA = "2"  # Full
-    RESERVA_ENCERRADA = "3"  # Reservation Closed
-    RESTRITA = "4"  # Restricted
-    CADASTRADO = "5"  # Registered
-    FINALIZADA = "6"  # Finished
-    CANCELADA = "7"  # Cancelled
-    NA_FILA = "8"  # In Queue
-    LIVRE_ENCERRADA = "10"  # Free Closed
-    RESTRITA_ENCERRADA = "11"  # Restricted Closed
-    RESTRITA_NAO_PERMITE_PARTICIPAR = "12"  # Restricted Not Allowed
-    LOTADA_SEM_FILA_ESPERA = "15"  # Full No Waiting List
+    LIVRE = 0  # Free
+    DISPONIVEL = 1  # Available
+    LOTADA = 2  # Full
+    RESERVA_ENCERRADA = 3  # Reservation Closed
+    RESTRITA = 4  # Restricted
+    CADASTRADO = 5  # Registered
+    FINALIZADA = 6  # Finished
+    CANCELADA = 7  # Cancelled
+    NA_FILA = 8  # In Queue
+    LIVRE_ENCERRADA = 10  # Free Closed
+    RESTRITA_ENCERRADA = 11  # Restricted Closed
+    RESTRITA_NAO_PERMITE_PARTICIPAR = 12  # Restricted Not Allowed
+    LOTADA_SEM_FILA_ESPERA = 15  # Full No Waiting List
 
     def to_dict(self):
         """Returns the model properties as a dict"""
