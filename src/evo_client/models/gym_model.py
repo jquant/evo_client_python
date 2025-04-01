@@ -2,7 +2,7 @@
 
 from datetime import datetime, time, timedelta
 from decimal import Decimal
-from enum import Enum
+from enum import Enum, IntEnum
 from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
 
 from loguru import logger
@@ -18,19 +18,19 @@ from .w12_utils_category_membership_view_model import (
 )
 
 
-class PaymentMethod(str, Enum):
+class PaymentMethod(IntEnum):
     """Payment method enumeration"""
 
-    CREDIT_CARD = "1"
-    BOLETO = "2"
-    SALE_CREDITS = "3"
-    TRANSFER = "4"
-    VALOR_ZERADO = "5"
-    LINK_CHECKOUT = "6"
-    PIX = "7"
+    CREDIT_CARD = 1
+    BOLETO = 2
+    SALE_CREDITS = 3
+    TRANSFER = 4
+    VALOR_ZERADO = 5
+    LINK_CHECKOUT = 6
+    PIX = 7
 
 
-class ActivityStatus(int, Enum):
+class ActivityStatus(IntEnum):
     """Status of a membership"""
 
     FREE = 0

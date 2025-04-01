@@ -4,7 +4,7 @@ from datetime import datetime
 from unittest.mock import Mock, patch
 
 import pytest
-
+from loguru import logger
 from evo_client.api.activities_api import ActivitiesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.atividade_basico_api_view_model import (
@@ -128,6 +128,7 @@ def test_enroll_prospect(activities_api: ActivitiesApi, mock_api_client: Mock):
 
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
+    logger.info(args)
     assert args["query_params"]["idProspect"] == 456
     assert args["query_params"]["slotNumber"] == 2
     assert args["query_params"]["origin"] == EOrigemAgendamento._0.value

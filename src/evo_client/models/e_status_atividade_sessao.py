@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import IntEnum
 
 
-class EStatusAtividadeSessao(int, Enum):
+class EStatusAtividadeSessao(IntEnum):
     """Status for member/prospect attendance in an activity.
     Used in change_status() method.
 
@@ -31,7 +31,7 @@ class EStatusAtividadeSessao(int, Enum):
         return not self == other
 
 
-class EStatusAtividadeAgendamento(int, Enum):
+class EStatusAtividadeAgendamento(IntEnum):
     """Status for activity schedule.
     Used in get_schedule() method.
     """
