@@ -171,7 +171,7 @@ def test_transfer_member(members_api: MembersApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/members/transfer"
-    assert args["body"] == transfer_data.model_dump(exclude_unset=True)
+    assert args["body"] == transfer_data.model_dump(exclude_unset=True, by_alias=True)
 
 
 def test_update_member_data(members_api: MembersApi, mock_api_client: Mock):

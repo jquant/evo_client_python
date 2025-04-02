@@ -52,8 +52,7 @@ class ReceivablesApi(BaseApi):
         sale_date_start: Optional[datetime] = None,
         sale_date_end: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> List[ReceivablesApiViewModel]:
-        ...
+    ) -> List[ReceivablesApiViewModel]: ...
 
     @overload
     def get_receivables(
@@ -89,8 +88,7 @@ class ReceivablesApi(BaseApi):
         sale_date_start: Optional[datetime] = None,
         sale_date_end: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_receivables(
         self,
@@ -214,8 +212,7 @@ class ReceivablesApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> RevenueCenterApiViewModel:
-        ...
+    ) -> RevenueCenterApiViewModel: ...
 
     @overload
     def get_revenue_centers(
@@ -223,8 +220,7 @@ class ReceivablesApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_revenue_centers(
         self,
@@ -259,16 +255,14 @@ class ReceivablesApi(BaseApi):
         self,
         receivables: ReceivablesMaskReceivedViewModel,
         async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def mark_received(
         self,
         receivables: ReceivablesMaskReceivedViewModel,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def mark_received(
         self, receivables: ReceivablesMaskReceivedViewModel, async_req: bool = False
@@ -283,7 +277,7 @@ class ReceivablesApi(BaseApi):
         return self.api_client.call_api(
             resource_path=f"{self.base_path}/receivables/mark-received",
             method="PUT",
-            body=receivables.model_dump(exclude_unset=True),
+            body=receivables.model_dump(exclude_unset=True, by_alias=True),
             response_type=None,
             auth_settings=["Basic"],
             async_req=async_req,

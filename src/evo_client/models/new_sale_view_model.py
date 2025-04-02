@@ -46,6 +46,9 @@ class NewSaleViewModel(BaseModel):
     payment: Optional[EFormaPagamentoTotem] = None
     session_id: Optional[str] = Field(default=None, alias="sessionId")
 
+    class Config:
+        use_enum_values = True
+
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.model_dump(by_alias=True, exclude_none=True)
