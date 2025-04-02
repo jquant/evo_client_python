@@ -94,7 +94,7 @@ def test_update_employee(employees_api: EmployeesApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/employees"
-    assert args["body"] == employee.model_dump(exclude_unset=True)
+    assert args["body"] == employee.model_dump(exclude_unset=True, by_alias=True)
 
 
 def test_create_employee(employees_api: EmployeesApi, mock_api_client: Mock):
@@ -108,7 +108,7 @@ def test_create_employee(employees_api: EmployeesApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "PUT"
     assert args["resource_path"] == "/api/v1/employees"
-    assert args["body"] == employee.model_dump(exclude_unset=True)
+    assert args["body"] == employee.model_dump(exclude_unset=True, by_alias=True)
 
 
 def test_error_handling(employees_api: EmployeesApi, mock_api_client: Mock):

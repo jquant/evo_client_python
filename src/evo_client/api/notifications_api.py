@@ -16,14 +16,12 @@ class NotificationsApi(BaseApi):
     @overload
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: Literal[False] = False
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def create_notification(
         self, notification: NotificationApiViewModel, async_req: bool = False
@@ -38,7 +36,7 @@ class NotificationsApi(BaseApi):
         return self.api_client.call_api(
             resource_path=self.base_path,
             method="POST",
-            body=notification.model_dump(exclude_unset=True),
+            body=notification.model_dump(exclude_unset=True, by_alias=True),
             response_type=None,
             headers={"Accept": "application/json"},
             auth_settings=["Basic"],

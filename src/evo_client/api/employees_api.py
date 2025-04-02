@@ -26,8 +26,7 @@ class EmployeesApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> List[FuncionariosResumoApiViewModel]:
-        ...
+    ) -> List[FuncionariosResumoApiViewModel]: ...
 
     @overload
     def get_employees(
@@ -38,8 +37,7 @@ class EmployeesApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_employees(
         self,
@@ -85,14 +83,12 @@ class EmployeesApi(BaseApi):
     @overload
     def delete_employee(
         self, employee_id: int, async_req: Literal[False] = False
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def delete_employee(
         self, employee_id: int, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def delete_employee(
         self, employee_id: int, async_req: bool = False
@@ -118,14 +114,12 @@ class EmployeesApi(BaseApi):
         self,
         employee: EmployeeApiIntegracaoViewModel,
         async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def update_employee(
         self, employee: EmployeeApiIntegracaoViewModel, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def update_employee(
         self, employee: EmployeeApiIntegracaoViewModel, async_req: bool = False
@@ -140,7 +134,7 @@ class EmployeesApi(BaseApi):
         return self.api_client.call_api(
             resource_path=self.base_path,
             method="POST",
-            body=employee.model_dump(exclude_unset=True),
+            body=employee.model_dump(exclude_unset=True, by_alias=True),
             auth_settings=["Basic"],
             async_req=async_req,
             headers={"Accept": "application/json", "Content-Type": "application/json"},
@@ -151,16 +145,14 @@ class EmployeesApi(BaseApi):
         self,
         employee: EmployeeApiIntegracaoAtualizacaoViewModel,
         async_req: Literal[False] = False,
-    ) -> Union[Any, AsyncResult[Any]]:
-        ...
+    ) -> Union[Any, AsyncResult[Any]]: ...
 
     @overload
     def create_employee(
         self,
         employee: EmployeeApiIntegracaoAtualizacaoViewModel,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def create_employee(
         self,
@@ -177,7 +169,7 @@ class EmployeesApi(BaseApi):
         return self.api_client.call_api(
             resource_path=self.base_path,
             method="PUT",
-            body=employee.model_dump(exclude_unset=True),
+            body=employee.model_dump(exclude_unset=True, by_alias=True),
             auth_settings=["Basic"],
             async_req=async_req,
             headers={
