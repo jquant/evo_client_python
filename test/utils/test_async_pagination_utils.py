@@ -299,70 +299,135 @@ class TestConcurrentPaginationManager:
 
     @pytest.mark.asyncio
     async def test_fetch_multiple_branches_success(self):
+        # Use mocks instead of real objects for speed
+        mock_rate_limiter = AsyncMock()
+        mock_retry_handler = Mock()
+        mock_retry_handler.config = RetryConfig(max_retries=1, base_delay=0.01)
+
+        # Create mock executor that uses mocked components
+        mock_executor = AsyncMock()
+        mock_executor.rate_limiter = mock_rate_limiter
+        mock_executor.retry_handler = mock_retry_handler
+
+        # Mock the execute_with_retry to return data directly
+        async def mock_execute_with_retry(api_func, context, *args, **kwargs):
+            return await api_func(*args, **kwargs)
+
+        mock_executor.execute_with_retry.side_effect = mock_execute_with_retry
+
         manager = ConcurrentPaginationManager(
-            max_concurrent_operations=2, global_rate_limiter=AsyncRateLimiter()
+            max_concurrent_operations=2,
+            global_rate_limiter=mock_rate_limiter,
         )
 
-        async def mock_api_func(**kwargs):
-            # Extract branch_id from kwargs since it's passed there
-            branch_id = kwargs.get("branch_id", "unknown")
-            if branch_id == "branch1":
-                return [
-                    {"id": 1, "branch": branch_id},
-                    {"id": 2, "branch": branch_id},
-                ]
-            elif branch_id == "branch2":
-                return [{"id": 3, "branch": branch_id}]
-            else:
-                return []
+        # Patch the AsyncApiCallExecutor to return our mock
+        with patch(
+            "evo_client.utils.async_pagination_utils.AsyncApiCallExecutor",
+            return_value=mock_executor,
+        ):
 
-        branch_configs = [
-            {"branch_id": "branch1", "filter": "active"},
-            {"branch_id": "branch2", "filter": "inactive"},
-        ]
+            async def mock_api_func(**kwargs):
+                # Extract branch_id from kwargs since it's passed there
+                branch_id = kwargs.get("branch_id", "unknown")
+                if branch_id == "branch1":
+                    return [
+                        {"id": 1, "branch": branch_id},
+                        {"id": 2, "branch": branch_id},
+                    ]
+                elif branch_id == "branch2":
+                    return [{"id": 3, "branch": branch_id}]
+                else:
+                    return []
 
-        config = PaginationConfig(page_size=10, post_request_delay=0.0)
-        results = await manager.fetch_multiple_branches(
-            mock_api_func, branch_configs, config
-        )
+            branch_configs = [
+                {"branch_id": "branch1", "filter": "active"},
+                {"branch_id": "branch2", "filter": "inactive"},
+            ]
 
-        assert len(results) == 2
-        assert "branch1" in results
-        assert "branch2" in results
-        assert results["branch1"].success is True
-        assert results["branch2"].success is True
-        assert len(results["branch1"].data) == 2
-        assert len(results["branch2"].data) == 1
+            # Use fast configuration to reduce test time
+            fast_config = PaginationConfig(
+                page_size=10, post_request_delay=0.0, max_retries=1, base_delay=0.01
+            )
+            results = await manager.fetch_multiple_branches(
+                mock_api_func, branch_configs, fast_config
+            )
+
+            assert len(results) == 2
+            assert "branch1" in results
+            assert "branch2" in results
+            assert results["branch1"].success is True
+            assert results["branch2"].success is True
+            assert len(results["branch1"].data) == 2
+            assert len(results["branch2"].data) == 1
 
     @pytest.mark.asyncio
     async def test_fetch_multiple_branches_with_failure(self):
-        manager = ConcurrentPaginationManager(max_concurrent_operations=3)
+        # Use mocks instead of real objects for speed
+        mock_rate_limiter = AsyncMock()
+        mock_retry_handler = Mock()
+        mock_retry_handler.config = RetryConfig(max_retries=1, base_delay=0.01)
 
-        async def mock_api_func(**kwargs):
-            branch_id = kwargs.get("branch_id", "unknown")
-            if branch_id == "failing_branch":
-                raise ApiException("Branch API failed")
-            return [{"id": 1, "branch": branch_id}]
+        # Create mock executor that uses mocked components
+        mock_executor = AsyncMock()
+        mock_executor.rate_limiter = mock_rate_limiter
+        mock_executor.retry_handler = mock_retry_handler
 
-        branch_configs = [
-            {"branch_id": "good_branch"},
-            {"branch_id": "failing_branch"},
-        ]
+        # Mock the execute_with_retry to either return data or raise exception
+        async def mock_execute_with_retry(api_func, context, *args, **kwargs):
+            try:
+                return await api_func(*args, **kwargs)
+            except Exception as e:
+                # For failing branch, simulate retry exhaustion
+                raise e
 
-        results = await manager.fetch_multiple_branches(mock_api_func, branch_configs)
+        mock_executor.execute_with_retry.side_effect = mock_execute_with_retry
 
-        # Should have results for both branches - one successful, one failed
-        assert len(results) == 2
-        assert "good_branch" in results
-        assert "failing_branch" in results
+        manager = ConcurrentPaginationManager(
+            max_concurrent_operations=3,
+            global_rate_limiter=mock_rate_limiter,
+        )
 
-        # Good branch should succeed
-        assert results["good_branch"].success is True
-        assert len(results["good_branch"].data) == 1
+        # Patch the AsyncApiCallExecutor to return our mock
+        with patch(
+            "evo_client.utils.async_pagination_utils.AsyncApiCallExecutor",
+            return_value=mock_executor,
+        ):
 
-        # Failing branch should have success=False
-        assert results["failing_branch"].success is False
-        assert results["failing_branch"].error_message == "Branch API failed"
+            async def mock_api_func(**kwargs):
+                branch_id = kwargs.get("branch_id", "unknown")
+                if branch_id == "failing_branch":
+                    raise ApiException("Branch API failed")
+                return [{"id": 1, "branch": branch_id}]
+
+            branch_configs = [
+                {"branch_id": "good_branch"},
+                {"branch_id": "failing_branch"},
+            ]
+
+            # Use fast configuration to reduce test time
+            fast_config = PaginationConfig(
+                page_size=10,
+                max_retries=1,  # Reduce retries for faster tests
+                base_delay=0.01,  # Very short delay
+                post_request_delay=0.0,
+            )
+
+            results = await manager.fetch_multiple_branches(
+                mock_api_func, branch_configs, fast_config
+            )
+
+            # Should have results for both branches - one successful, one failed
+            assert len(results) == 2
+            assert "good_branch" in results
+            assert "failing_branch" in results
+
+            # Good branch should succeed
+            assert results["good_branch"].success is True
+            assert len(results["good_branch"].data) == 1
+
+            # Failing branch should have success=False
+            assert results["failing_branch"].success is False
+            assert results["failing_branch"].error_message == "Branch API failed"
 
 
 class TestAsyncIntegration:
@@ -373,13 +438,19 @@ class TestAsyncIntegration:
     async def test_full_async_integration_with_retry_and_pagination(self, mock_sleep):
         """Test a complete async scenario with rate limiting, retries, and pagination."""
 
-        # Create a real AsyncPaginatedApiCaller with minimal delays
-        rate_limiter = AsyncRateLimiter(max_requests=5, time_window=60)
-        retry_handler = AsyncRetryHandler(RetryConfig(max_retries=2, base_delay=0.1))
+        # Create a real AsyncPaginatedApiCaller with fast configurations for testing
+        rate_limiter = AsyncRateLimiter(
+            max_requests=10, time_window=1
+        )  # More requests in shorter window
+        retry_handler = AsyncRetryHandler(
+            RetryConfig(max_retries=2, base_delay=0.01)
+        )  # Shorter delays
         executor = AsyncApiCallExecutor(rate_limiter, retry_handler)
         caller = AsyncPaginatedApiCaller(executor)
 
-        config = PaginationConfig(page_size=3, post_request_delay=0.0)
+        config = PaginationConfig(
+            page_size=3, post_request_delay=0.0
+        )  # No delay between requests
 
         # Mock API function that fails once then returns paginated data
         call_count = 0
@@ -402,7 +473,7 @@ class TestAsyncIntegration:
                 return []  # No more data
 
         result = await caller.fetch_all_pages(
-            mock_api_func, config, branch_id="integration_test"
+            mock_api_func, config, branch_id_logging="integration_test"
         )
 
         # Verify the result

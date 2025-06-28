@@ -213,7 +213,7 @@ class TestApiCallExecutor:
         mock_api_func = Mock(return_value="success")
 
         result = executor.execute_with_retry(
-            mock_api_func, {"param1": "value1"}, "test context"
+            mock_api_func, "test context", param1="value1"
         )
 
         assert result == "success"
@@ -240,7 +240,7 @@ class TestApiCallExecutor:
             ]
         )
 
-        result = executor.execute_with_retry(mock_api_func, {}, "test context")
+        result = executor.execute_with_retry(mock_api_func, "test context")
 
         assert result == "success"
         assert mock_rate_limiter.acquire.call_count == 3
@@ -261,7 +261,7 @@ class TestApiCallExecutor:
         mock_api_func = Mock(side_effect=ApiException("Always fails"))
 
         with pytest.raises(ApiException, match="Always fails"):
-            executor.execute_with_retry(mock_api_func, {}, "test context")
+            executor.execute_with_retry(mock_api_func, "test context")
 
         assert mock_rate_limiter.acquire.call_count == 2
         assert mock_api_func.call_count == 2
@@ -311,11 +311,15 @@ class TestPaginatedApiCaller:
         # Verify the executor was called with correct parameters
         mock_executor.execute_with_retry.assert_called_once()
         call_args = mock_executor.execute_with_retry.call_args
+
+        # call_args is (args, kwargs) where:
+        # args[0] = api_func, args[1] = context string
+        # kwargs contains the actual function parameters
         assert call_args[0][0] == mock_api_func  # api_func
-        assert call_args[0][1]["extra_param"] == "value"  # kwargs
-        assert call_args[0][1]["async_req"] is False
-        assert call_args[0][1]["take"] == 10
-        assert call_args[0][1]["skip"] == 0
+        assert call_args[0][1].startswith("unknown_function page 0")  # context string
+        assert call_args[1]["extra_param"] == "value"  # kwargs
+        assert call_args[1]["take"] == 10
+        assert call_args[1]["skip"] == 0
 
         mock_sleep.assert_called_once_with(0.1)
 
