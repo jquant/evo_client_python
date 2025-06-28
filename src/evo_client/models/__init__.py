@@ -47,6 +47,17 @@ from evo_client.models.cliente_transferencia_view_model import (
     ClienteTransferenciaViewModel,
 )
 from evo_client.models.clientes_ativos_view_model import ClientesAtivosViewModel
+
+# Import common models
+from evo_client.models.common_models import (
+    ActivityOperationResponse,
+    ApiOperationResponse,
+    EmployeeOperationResponse,
+    MemberServiceResponse,
+    NotificationCreateResponse,
+    StateResponse,
+    WebhookResponse,
+)
 from evo_client.models.configuracao_api_view_model import ConfiguracaoApiViewModel
 from evo_client.models.contrato_entradas_api_view_model import (
     ContratoEntradasApiViewModel,
@@ -190,27 +201,16 @@ from evo_client.models.w12_utils_webhook_header_view_model import (
     W12UtilsWebhookHeaderViewModel,
 )
 from evo_client.models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
-from evo_client.models.year_discount_view_model import YearDiscountViewModel
-
-# Import common models
-from evo_client.models.common_models import (
-    StateResponse,
-    NotificationCreateResponse,
-    WebhookResponse,
-    ApiOperationResponse,
-    MemberServiceResponse,
-    EmployeeOperationResponse,
-    ActivityOperationResponse,
-)
 
 # Import workout models
 from evo_client.models.workout_models import (
     WorkoutResponse,
-    WorkoutUpdateResponse,
     WorkoutSeries,
     WorkoutSeriesItem,
     WorkoutTag,
+    WorkoutUpdateResponse,
 )
+from evo_client.models.year_discount_view_model import YearDiscountViewModel
 
 from .gym_model import (
     FAQ,

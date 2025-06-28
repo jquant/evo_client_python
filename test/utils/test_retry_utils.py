@@ -1,10 +1,11 @@
 """Tests for retry_utils module."""
 
+from unittest.mock import patch
+
 import pytest
-import time
-from unittest.mock import Mock, patch
-from src.evo_client.utils.retry_utils import with_retry, retry_operation
+
 from src.evo_client.exceptions.api_exceptions import ApiException
+from src.evo_client.utils.retry_utils import retry_operation, with_retry
 
 
 class TestWithRetryDecorator:
@@ -48,7 +49,6 @@ class TestWithRetryDecorator:
         with patch("time.sleep"), patch(
             "src.evo_client.utils.retry_utils.logger"
         ) as mock_logger:
-
             with pytest.raises(ApiException) as exc_info:
                 always_failing_function()
 
@@ -70,7 +70,6 @@ class TestWithRetryDecorator:
         with patch("time.sleep") as mock_sleep, patch(
             "src.evo_client.utils.retry_utils.logger"
         ) as mock_logger:
-
             result = rate_limited_function()
 
         assert result == "success"
@@ -106,7 +105,6 @@ class TestWithRetryDecorator:
         with patch("time.sleep"), patch(
             "src.evo_client.utils.retry_utils.logger"
         ) as mock_logger:
-
             with pytest.raises(ApiException) as exc_info:
                 failing_function()
 
@@ -122,7 +120,6 @@ class TestWithRetryDecorator:
         with patch("time.sleep") as mock_sleep, patch(
             "src.evo_client.utils.retry_utils.logger"
         ):
-
             with pytest.raises(ApiException):
                 rate_limited_function()
 
@@ -150,7 +147,6 @@ class TestWithRetryDecorator:
         @with_retry()
         def original_function():
             """Original function docstring."""
-            pass
 
         assert original_function.__name__ == "original_function"
         assert original_function.__doc__ == "Original function docstring."
@@ -196,7 +192,6 @@ class TestRetryOperation:
         with patch("time.sleep"), patch(
             "src.evo_client.utils.retry_utils.logger"
         ) as mock_logger:
-
             with pytest.raises(ApiException) as exc_info:
                 retry_operation(
                     always_failing_operation,
@@ -221,7 +216,6 @@ class TestRetryOperation:
         with patch("time.sleep") as mock_sleep, patch(
             "src.evo_client.utils.retry_utils.logger"
         ) as mock_logger:
-
             result = retry_operation(
                 rate_limited_operation, max_retries=3, base_delay=0.01
             )
@@ -270,7 +264,6 @@ class TestRetryOperation:
             raise Exception("Mystery error")
 
         with patch("time.sleep"), patch("src.evo_client.utils.retry_utils.logger"):
-
             with pytest.raises(ApiException) as exc_info:
                 retry_operation(mysterious_operation, max_retries=1)
 

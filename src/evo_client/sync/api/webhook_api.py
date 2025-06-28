@@ -1,13 +1,13 @@
 """Clean synchronous Webhook API."""
 
-from typing import Any, List, Optional, cast
+from typing import Any, List, Optional
 
 from loguru import logger
 
+from ...models.common_models import WebhookResponse
 from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ...models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
-from ...models.common_models import WebhookResponse
 from .base import SyncBaseApi
 
 

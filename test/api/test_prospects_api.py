@@ -5,14 +5,12 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncProspectsApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.prospect_api_integracao_view_model import (
-    ProspectApiIntegracaoViewModel,
-)
 from evo_client.models.prospect_api_integracao_atualizacao_view_model import (
     ProspectApiIntegracaoAtualizacaoViewModel,
+)
+from evo_client.models.prospect_api_integracao_view_model import (
+    ProspectApiIntegracaoViewModel,
 )
 from evo_client.models.prospect_id_view_model import ProspectIdViewModel
 from evo_client.models.prospect_transferencia_view_model import (
@@ -21,6 +19,8 @@ from evo_client.models.prospect_transferencia_view_model import (
 from evo_client.models.prospects_resumo_api_view_model import (
     ProspectsResumoApiViewModel,
 )
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncProspectsApi
 
 
 @pytest.fixture

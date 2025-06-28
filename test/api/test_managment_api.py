@@ -5,8 +5,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncManagementApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.clientes_ativos_view_model import ClientesAtivosViewModel
 from evo_client.models.contrato_nao_renovados_view_model import (
@@ -15,6 +13,8 @@ from evo_client.models.contrato_nao_renovados_view_model import (
 from evo_client.models.sps_rel_prospects_cadastrados_convertidos import (
     SpsRelProspectsCadastradosConvertidos,
 )
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncManagementApi
 
 
 @pytest.fixture

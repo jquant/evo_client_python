@@ -65,9 +65,7 @@ async def demo_async_client():
             print(
                 "📞 Would call: await members_api.get_basic_info(email='test@example.com')"
             )
-            print(
-                "📞 Would call: await members_api.authenticate_member('user', 'pass')"
-            )
+            print("📞 Would call: await members_api.authenticate_member('user', 'pass')")
             print("📞 Would call: await members_api.update_fitcoins(123, 'add', 100)")
 
             print("✅ Clean async patterns demonstrated")

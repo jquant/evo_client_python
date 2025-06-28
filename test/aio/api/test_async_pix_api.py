@@ -1,12 +1,11 @@
 """Tests for the AsyncPixApi class."""
 
-from datetime import datetime
 from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncPixApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncPixApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.pix_payment_details_view_model import PixPaymentDetailsViewModel
 

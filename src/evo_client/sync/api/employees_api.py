@@ -1,13 +1,13 @@
 """Clean synchronous Employees API."""
 
-from typing import List, Optional, cast, Any
+from typing import Any, List, Optional, cast
 
+from ...models.common_models import EmployeeOperationResponse
 from ...models.employee_api_integracao_atualizacao_view_model import (
     EmployeeApiIntegracaoAtualizacaoViewModel,
 )
 from ...models.employee_api_integracao_view_model import EmployeeApiIntegracaoViewModel
 from ...models.funcionarios_resumo_api_view_model import FuncionariosResumoApiViewModel
-from ...models.common_models import EmployeeOperationResponse
 from .base import SyncBaseApi
 
 

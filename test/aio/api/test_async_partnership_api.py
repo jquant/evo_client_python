@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncPartnershipApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncPartnershipApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.convenios_api_view_model import ConveniosApiViewModel
 
@@ -31,7 +31,9 @@ def mock_api_client():
 
 
 @pytest.mark.asyncio
-async def test_get_partnerships(partnership_api: AsyncPartnershipApi, mock_api_client: Mock):
+async def test_get_partnerships(
+    partnership_api: AsyncPartnershipApi, mock_api_client: Mock
+):
     """Test getting partnerships list."""
     expected = [ConveniosApiViewModel()]
     mock_api_client.return_value = expected
@@ -69,7 +71,9 @@ async def test_get_partnerships_with_filters(
 
 
 @pytest.mark.asyncio
-async def test_error_handling(partnership_api: AsyncPartnershipApi, mock_api_client: Mock):
+async def test_error_handling(
+    partnership_api: AsyncPartnershipApi, mock_api_client: Mock
+):
     """Test API error handling."""
     mock_api_client.side_effect = ApiException(status=500, reason="Server Error")
 

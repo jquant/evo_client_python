@@ -1,28 +1,28 @@
 """Synchronous API classes."""
 
-from .base import SyncBaseApi
-from .members_api import SyncMembersApi
-from .sales_api import SyncSalesApi
 from .activities_api import SyncActivitiesApi
-from .membership_api import SyncMembershipApi
-from .receivables_api import SyncReceivablesApi
-from .payables_api import SyncPayablesApi
-from .entries_api import SyncEntriesApi
-from .prospects_api import SyncProspectsApi
-from .invoices_api import SyncInvoicesApi
-from .pix_api import SyncPixApi
 from .bank_accounts_api import SyncBankAccountsApi
-from .voucher_api import SyncVoucherApi
-from .member_membership_api import SyncMemberMembershipApi
-from .workout_api import SyncWorkoutApi
-from .employees_api import SyncEmployeesApi
+from .base import SyncBaseApi
 from .configuration_api import SyncConfigurationApi
-from .states_api import SyncStatesApi
-from .service_api import SyncServiceApi
+from .employees_api import SyncEmployeesApi
+from .entries_api import SyncEntriesApi
+from .invoices_api import SyncInvoicesApi
 from .management_api import SyncManagementApi
+from .member_membership_api import SyncMemberMembershipApi
+from .members_api import SyncMembersApi
+from .membership_api import SyncMembershipApi
 from .notifications_api import SyncNotificationsApi
-from .webhook_api import SyncWebhookApi
 from .partnership_api import SyncPartnershipApi
+from .payables_api import SyncPayablesApi
+from .pix_api import SyncPixApi
+from .prospects_api import SyncProspectsApi
+from .receivables_api import SyncReceivablesApi
+from .sales_api import SyncSalesApi
+from .service_api import SyncServiceApi
+from .states_api import SyncStatesApi
+from .voucher_api import SyncVoucherApi
+from .webhook_api import SyncWebhookApi
+from .workout_api import SyncWorkoutApi
 
 __all__ = [
     "SyncBaseApi",

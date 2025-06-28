@@ -5,13 +5,13 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncReceivablesApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.receivables_api_view_model import ReceivablesApiViewModel
 from evo_client.models.receivables_mask_received_view_model import (
     ReceivablesMaskReceivedViewModel,
 )
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncReceivablesApi
 
 
 @pytest.fixture

@@ -5,14 +5,14 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncProspectsApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncProspectsApi
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.prospect_api_integracao_view_model import (
-    ProspectApiIntegracaoViewModel,
-)
 from evo_client.models.prospect_api_integracao_atualizacao_view_model import (
     ProspectApiIntegracaoAtualizacaoViewModel,
+)
+from evo_client.models.prospect_api_integracao_view_model import (
+    ProspectApiIntegracaoViewModel,
 )
 from evo_client.models.prospect_id_view_model import ProspectIdViewModel
 from evo_client.models.prospect_transferencia_view_model import (

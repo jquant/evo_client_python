@@ -4,14 +4,13 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncMembersApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.member_authenticate_view_model import MemberAuthenticateViewModel
 from evo_client.models.member_data_view_model import MemberDataViewModel
-from evo_client.models.member_service_view_model import MemberServiceViewModel
 from evo_client.models.member_transfer_view_model import MemberTransferViewModel
 from evo_client.models.members_basic_api_view_model import MembersBasicApiViewModel
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncMembersApi
 
 
 @pytest.fixture

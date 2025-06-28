@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from evo_client.core.configuration import Configuration
 from evo_client.aio.core.request_handler import AsyncRequestHandler, AsyncRESTResponse
+from evo_client.core.configuration import Configuration
 
 
 @pytest.fixture
@@ -67,7 +67,6 @@ async def test_ensure_session_creates_session(async_request_handler):
     with patch("aiohttp.ClientSession") as mock_session_class, patch(
         "aiohttp.ClientTimeout"
     ) as mock_timeout_class, patch("aiohttp.TCPConnector") as mock_connector_class:
-
         mock_session = AsyncMock()
         mock_session.closed = False
         mock_session_class.return_value = mock_session
@@ -430,6 +429,7 @@ class TestAsyncRESTResponse:
     def test_deserialize_list(self):
         """Test deserialize method with list."""
         from typing import List
+
         from evo_client.models.members_basic_api_view_model import (
             MembersBasicApiViewModel,
         )

@@ -2,8 +2,6 @@
 
 import asyncio
 import time
-from abc import ABC, abstractmethod
-from threading import Lock as ThreadLock
 from typing import (
     Any,
     Awaitable,
@@ -11,17 +9,16 @@ from typing import (
     Dict,
     List,
     Optional,
-    Protocol,
-    TypeVar,
-    Union,
-    Tuple,
     ParamSpec,
+    Protocol,
+    Tuple,
+    TypeVar,
 )
 
 from loguru import logger
 
 from ..exceptions.api_exceptions import ApiException
-from .pagination_utils import PaginationConfig, RetryConfig, PaginationResult
+from .pagination_utils import PaginationConfig, PaginationResult, RetryConfig
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -331,7 +328,6 @@ class AsyncPaginatedApiCaller:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         # Cleanup if needed
-        pass
 
 
 # Factory function for async pagination

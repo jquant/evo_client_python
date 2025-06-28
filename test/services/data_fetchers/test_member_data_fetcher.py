@@ -1,18 +1,19 @@
 """Tests for MemberDataFetcher."""
 
-import pytest
 from datetime import datetime
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
-from src.evo_client.services.data_fetchers.member_data_fetcher import MemberDataFetcher
-from src.evo_client.services.data_fetchers import (
-    BaseDataFetcher,
-    BranchApiClientManager,
-)
+import pytest
+
 from src.evo_client.models.cliente_detalhes_basicos_api_view_model import (
     ClienteDetalhesBasicosApiViewModel,
 )
 from src.evo_client.models.members_api_view_model import MembersApiViewModel
+from src.evo_client.services.data_fetchers import (
+    BaseDataFetcher,
+    BranchApiClientManager,
+)
+from src.evo_client.services.data_fetchers.member_data_fetcher import MemberDataFetcher
 
 
 class TestMemberDataFetcher:
@@ -185,7 +186,6 @@ class TestMemberDataFetcher:
         ) as mock_paginated, patch(
             "src.evo_client.services.data_fetchers.member_data_fetcher.SyncMembersApi"
         ) as mock_sync_api:
-
             mock_paginated.side_effect = [
                 [member1],  # Branch 1
                 [member2],  # Branch 2
@@ -220,7 +220,6 @@ class TestMemberDataFetcher:
         ) as mock_paginated, patch(
             "src.evo_client.services.data_fetchers.member_data_fetcher.SyncMembersApi"
         ) as mock_sync_api:
-
             mock_paginated.return_value = []
             mock_api_client = Mock()
             mock_members_api = Mock()
@@ -295,7 +294,6 @@ class TestMemberDataFetcher:
         ) as mock_paginated, patch(
             "src.evo_client.services.data_fetchers.member_data_fetcher.SyncMembersApi"
         ) as mock_sync_api:
-
             mock_paginated.side_effect = Exception("Pagination error")
             mock_api_client = Mock()
             mock_members_api = Mock()
@@ -319,7 +317,6 @@ class TestMemberDataFetcher:
         ) as mock_paginated, patch(
             "src.evo_client.services.data_fetchers.member_data_fetcher.SyncMembersApi"
         ) as mock_sync_api:
-
             mock_sync_api.return_value = None  # Simulate None API client
             member_fetcher.get_branch_api = Mock(return_value=Mock())
             member_fetcher.get_available_branch_ids = Mock(return_value=[1])
@@ -337,7 +334,6 @@ class TestMemberDataFetcher:
         ) as mock_paginated, patch(
             "src.evo_client.services.data_fetchers.member_data_fetcher.SyncMembersApi"
         ) as mock_sync_api:
-
             mock_paginated.return_value = []
             mock_api_client = Mock()
             mock_members_api = Mock()

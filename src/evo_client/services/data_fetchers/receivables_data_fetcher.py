@@ -3,8 +3,8 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...sync.api.receivables_api import SyncReceivablesApi
 from ...models.receivables_api_view_model import ReceivablesApiViewModel
+from ...sync.api.receivables_api import SyncReceivablesApi
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 

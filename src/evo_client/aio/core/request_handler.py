@@ -5,7 +5,6 @@ import json
 from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union
 
 import aiohttp
-
 from loguru import logger
 from pydantic import BaseModel
 
@@ -146,7 +145,6 @@ class AsyncRequestHandler:
                 json=json_data,
                 auth=auth,
             ) as response:
-
                 logger.debug(f"Response status: {response.status}")
                 logger.debug(f"Response headers: {dict(response.headers)}")
 

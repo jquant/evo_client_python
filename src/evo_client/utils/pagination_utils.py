@@ -1,20 +1,9 @@
 """Pagination utilities for API calls with improved typing and testability."""
 
 import time
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from threading import Lock as ThreadLock
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    ParamSpec,
-    Protocol,
-    TypeVar,
-    Union,
-)
+from typing import Any, Callable, Dict, List, Optional, ParamSpec, Protocol, TypeVar
 
 from loguru import logger
 
