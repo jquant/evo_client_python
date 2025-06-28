@@ -13,6 +13,9 @@ from .invoices_api import SyncInvoicesApi
 from .pix_api import SyncPixApi
 from .bank_accounts_api import SyncBankAccountsApi
 from .voucher_api import SyncVoucherApi
+from .member_membership_api import SyncMemberMembershipApi
+from .workout_api import SyncWorkoutApi
+from .employees_api import SyncEmployeesApi
 
 __all__ = [
     "SyncBaseApi",
@@ -28,4 +31,7 @@ __all__ = [
     "SyncPixApi",
     "SyncBankAccountsApi",
     "SyncVoucherApi",
+    "SyncMemberMembershipApi",
+    "SyncWorkoutApi",
+    "SyncEmployeesApi",
 ]
