@@ -63,7 +63,8 @@ ApiClient = SyncApiClient
 # New users should use the sync/aio versions instead
 from .api.activities_api import ActivitiesApi
 from .api.bank_accounts_api import BankAccountsApi
-from .api.configuration_api import ConfigurationApi
+
+# from .api.configuration_api import ConfigurationApi  # DEPRECATED - use sync.api or aio.api instead
 from .api.employees_api import EmployeesApi
 from .api.entries_api import EntriesApi
 from .api.invoices_api import InvoicesApi
@@ -238,7 +239,6 @@ __all__ = [
     # Legacy API classes (for existing code)
     "ActivitiesApi",
     "BankAccountsApi",
-    "ConfigurationApi",
     "EmployeesApi",
     "EntriesApi",
     "InvoicesApi",

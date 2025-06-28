@@ -3,7 +3,7 @@ from typing import List
 
 from loguru import logger
 
-from ...api.configuration_api import ConfigurationApi
+from ...sync.api.configuration_api import SyncConfigurationApi
 from ...exceptions.api_exceptions import ApiException
 from ...models.configuracao_api_view_model import ConfiguracaoApiViewModel
 from . import BaseDataFetcher
@@ -22,7 +22,9 @@ class ConfigurationDataFetcher(BaseDataFetcher):
             configs: List[ConfiguracaoApiViewModel] = []
             # Get configurations from branch clients
             for branch_id in self.get_available_branch_ids():
-                branch_api = ConfigurationApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncConfigurationApi(
+                    api_client=self.get_branch_api(branch_id)
+                )
                 if branch_api:
                     try:
                         branch_result = branch_api.get_branch_config()

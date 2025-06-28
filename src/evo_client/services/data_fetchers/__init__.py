@@ -3,13 +3,13 @@
 import abc
 from typing import Dict, List, Optional
 
-from evo_client.core.api_client import ApiClient
+from evo_client.sync.core.api_client import SyncApiClient
 
 
 class BranchApiClientManager:
     """Manager for branch API clients."""
 
-    def __init__(self, branch_api_clients: Dict[str, ApiClient]):
+    def __init__(self, branch_api_clients: Dict[str, SyncApiClient]):
         """Initialize the data fetcher.
 
         Args:
@@ -36,7 +36,7 @@ class BaseDataFetcher(abc.ABC):
         """
         self.client_manager = client_manager
 
-    def get_branch_api(self, branch_id: int) -> Optional[ApiClient]:
+    def get_branch_api(self, branch_id: int) -> Optional[SyncApiClient]:
         """Get a branch-specific API instance.
 
         Args:

@@ -63,7 +63,7 @@ def gym_api(mock_client_manager):
 
     # Mock the knowledge base service but keep the original implementation
     with patch(
-        "evo_client.api.gym_api.GymKnowledgeBaseService",
+        "evo_client.services.gym_knowledge_base.gym_kb_data_fetcher.GymKnowledgeBaseService",
         return_value=mock_knowledge_base_service,
     ):
         api = GymApi(client_manager=mock_client_manager)
