@@ -1,3 +1,4 @@
+import warnings
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
@@ -10,9 +11,37 @@ from .base import BaseApi
 
 
 class SalesApi(BaseApi):
-    """Sales API client for EVO API."""
+    """Sales API client for EVO API.
+
+    ⚠️  DEPRECATION WARNING ⚠️
+    This API class uses the old bundler pattern and is deprecated.
+
+    Please migrate to the new clean implementations:
+
+    🔄 For synchronous usage:
+        from evo_client.sync.api import SyncSalesApi
+
+        with SyncApiClient() as client:
+            sales_api = SyncSalesApi(client)
+            sales = sales_api.get_sales()
+
+    🔄 For asynchronous usage:
+        from evo_client.aio.api import AsyncSalesApi
+
+        async with AsyncApiClient() as client:
+            sales_api = AsyncSalesApi(client)
+            sales = await sales_api.get_sales()
+
+    This old API will be removed in a future version.
+    """
 
     def __init__(self, api_client: Optional[ApiClient] = None):
+        warnings.warn(
+            "SalesApi is deprecated. Use SyncSalesApi or AsyncSalesApi instead. "
+            "See: https://github.com/[your-repo]/evo-client-python#migration-guide",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__(api_client)
         self.base_path_v1 = "/api/v1/sales"
         self.base_path_v2 = "/api/v2/sales"
@@ -20,14 +49,12 @@ class SalesApi(BaseApi):
     @overload
     def get_sale_by_id(
         self, sale_id: int, async_req: Literal[False] = False
-    ) -> SalesViewModel:
-        ...
+    ) -> SalesViewModel: ...
 
     @overload
     def get_sale_by_id(
         self, sale_id: int, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_sale_by_id(
         self, sale_id: int, async_req: bool = False
@@ -47,14 +74,12 @@ class SalesApi(BaseApi):
     @overload
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: Literal[False] = False
-    ) -> NewSaleResponse:
-        ...
+    ) -> NewSaleResponse: ...
 
     @overload
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def create_sale(
         self, body: Optional[NewSaleViewModel] = None, async_req: bool = False
@@ -100,8 +125,7 @@ class SalesApi(BaseApi):
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: Literal[False] = False,
-    ) -> List[SalesViewModel]:
-        ...
+    ) -> List[SalesViewModel]: ...
 
     @overload
     def get_sales(
@@ -123,8 +147,7 @@ class SalesApi(BaseApi):
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_sales(
         self,
@@ -198,14 +221,12 @@ class SalesApi(BaseApi):
     @overload
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: Literal[False] = False
-    ) -> List[SalesItemsViewModel]:
-        ...
+    ) -> List[SalesItemsViewModel]: ...
 
     @overload
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_sales_items(
         self, branch_id: Optional[int] = None, async_req: bool = False
@@ -228,8 +249,7 @@ class SalesApi(BaseApi):
         session_id: str,
         date: Optional[datetime] = None,
         async_req: Literal[False] = False,
-    ) -> int:
-        ...
+    ) -> int: ...
 
     @overload
     def get_sale_by_session_id(
@@ -237,8 +257,7 @@ class SalesApi(BaseApi):
         session_id: str,
         date: Optional[datetime] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_sale_by_session_id(
         self, session_id: str, date: Optional[datetime] = None, async_req: bool = False

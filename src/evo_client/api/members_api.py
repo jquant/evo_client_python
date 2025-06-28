@@ -1,3 +1,4 @@
+import warnings
 from datetime import datetime
 from multiprocessing.pool import AsyncResult
 from typing import Any, List, Literal, Optional, Union, overload
@@ -16,9 +17,37 @@ from .base import BaseApi
 
 
 class MembersApi(BaseApi):
-    """Members API client for EVO API."""
+    """Members API client for EVO API.
+
+    ⚠️  DEPRECATION WARNING ⚠️
+    This API class uses the old bundler pattern and is deprecated.
+
+    Please migrate to the new clean implementations:
+
+    🔄 For synchronous usage:
+        from evo_client.sync.api import SyncMembersApi
+
+        with SyncApiClient() as client:
+            members_api = SyncMembersApi(client)
+            members = members_api.get_members()
+
+    🔄 For asynchronous usage:
+        from evo_client.aio.api import AsyncMembersApi
+
+        async with AsyncApiClient() as client:
+            members_api = AsyncMembersApi(client)
+            members = await members_api.get_members()
+
+    This old API will be removed in a future version.
+    """
 
     def __init__(self, api_client: Optional[ApiClient] = None):
+        warnings.warn(
+            "MembersApi is deprecated. Use SyncMembersApi or AsyncMembersApi instead. "
+            "See: https://github.com/[your-repo]/evo-client-python#migration-guide",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__(api_client)
         self.base_path = "/api/v1/members"
 
@@ -29,8 +58,7 @@ class MembersApi(BaseApi):
         password: str,
         change_password: bool = False,
         async_req: Literal[False] = False,
-    ) -> MemberAuthenticateViewModel:
-        ...
+    ) -> MemberAuthenticateViewModel: ...
 
     @overload
     def authenticate_member(
@@ -39,8 +67,7 @@ class MembersApi(BaseApi):
         password: str,
         change_password: bool = False,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def authenticate_member(
         self,
@@ -84,8 +111,7 @@ class MembersApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> MembersBasicApiViewModel:
-        ...
+    ) -> MembersBasicApiViewModel: ...
 
     @overload
     def get_basic_info(
@@ -97,8 +123,7 @@ class MembersApi(BaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_basic_info(
         self,
@@ -150,12 +175,10 @@ class MembersApi(BaseApi):
     @overload
     def get_fitcoins(
         self, id_member: int, async_req: Literal[False] = False
-    ) -> Union[None, AsyncResult[Any]]:
-        ...
+    ) -> Union[None, AsyncResult[Any]]: ...
 
     @overload
-    def get_fitcoins(self, id_member: int, async_req: Literal[True] = True) -> None:
-        ...
+    def get_fitcoins(self, id_member: int, async_req: Literal[True] = True) -> None: ...
 
     def get_fitcoins(
         self, id_member: int, async_req: bool = False
@@ -170,8 +193,7 @@ class MembersApi(BaseApi):
         fitcoin: int,
         reason: Optional[str] = None,
         async_req: Literal[False] = False,
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def update_fitcoins(
@@ -181,8 +203,7 @@ class MembersApi(BaseApi):
         fitcoin: int,
         reason: Optional[str] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def update_fitcoins(
         self,
@@ -242,8 +263,7 @@ class MembersApi(BaseApi):
         personal_type: Optional[int] = None,
         show_activity_data: bool = False,
         async_req: Literal[False] = False,
-    ) -> List[MembersApiViewModel]:
-        ...
+    ) -> List[MembersApiViewModel]: ...
 
     @overload
     def get_members(
@@ -269,8 +289,7 @@ class MembersApi(BaseApi):
         personal_type: Optional[int] = None,
         show_activity_data: bool = False,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_members(
         self,
@@ -341,14 +360,12 @@ class MembersApi(BaseApi):
     @overload
     def update_member_card(
         self, id_member: int, card_number: str, async_req: Literal[False] = False
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def update_member_card(
         self, id_member: int, card_number: str, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def update_member_card(
         self,
@@ -382,14 +399,12 @@ class MembersApi(BaseApi):
     @overload
     def get_member_profile(
         self, id_member: int, async_req: Literal[False] = False
-    ) -> ClienteDetalhesBasicosApiViewModel:
-        ...
+    ) -> ClienteDetalhesBasicosApiViewModel: ...
 
     @overload
     def get_member_profile(
         self, id_member: int, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_member_profile(
         self, id_member: int, async_req: bool = False
@@ -416,8 +431,7 @@ class MembersApi(BaseApi):
         user: str,
         sign_in: bool = False,
         async_req: Literal[False] = False,
-    ) -> MemberAuthenticateViewModel:
-        ...
+    ) -> MemberAuthenticateViewModel: ...
 
     @overload
     def reset_password(
@@ -425,8 +439,7 @@ class MembersApi(BaseApi):
         user: str,
         sign_in: bool = False,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def reset_password(
         self,
@@ -462,16 +475,14 @@ class MembersApi(BaseApi):
         self,
         id_member: Optional[int] = None,
         async_req: Literal[False] = False,
-    ) -> list:
-        ...
+    ) -> list: ...
 
     @overload
     def get_member_services(
         self,
         id_member: Optional[int] = None,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def get_member_services(
         self,
@@ -502,14 +513,12 @@ class MembersApi(BaseApi):
     @overload
     def transfer_member(
         self, transfer_data: MemberTransferViewModel, async_req: Literal[False] = False
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def transfer_member(
         self, transfer_data: MemberTransferViewModel, async_req: Literal[True] = True
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def transfer_member(
         self, transfer_data: MemberTransferViewModel, async_req: bool = False
@@ -536,8 +545,7 @@ class MembersApi(BaseApi):
         id_member: int,
         body: MemberDataViewModel,
         async_req: Literal[False] = False,
-    ) -> bool:
-        ...
+    ) -> bool: ...
 
     @overload
     def update_member_data(
@@ -545,8 +553,7 @@ class MembersApi(BaseApi):
         id_member: int,
         body: MemberDataViewModel,
         async_req: Literal[True] = True,
-    ) -> AsyncResult[Any]:
-        ...
+    ) -> AsyncResult[Any]: ...
 
     def update_member_data(
         self,

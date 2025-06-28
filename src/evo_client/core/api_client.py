@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from multiprocessing.pool import AsyncResult
 from typing import (
     Any,
@@ -23,7 +24,29 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class ApiClient:
-    """Modern API client for Swagger-generated services."""
+    """Legacy API client with bundler pattern - DEPRECATED.
+
+    ⚠️  DEPRECATION WARNING ⚠️
+    This ApiClient uses the confusing bundler pattern and is deprecated.
+
+    Please migrate to the new clean implementations:
+
+    🔄 For synchronous usage:
+        from evo_client.sync import SyncApiClient
+
+        with SyncApiClient() as client:
+            # Use clean sync APIs
+            pass
+
+    🔄 For asynchronous usage:
+        from evo_client.aio import AsyncApiClient
+
+        async with AsyncApiClient() as client:
+            # Use clean async APIs
+            pass
+
+    This old client will be removed in a future version.
+    """
 
     def __init__(
         self,
@@ -32,6 +55,13 @@ class ApiClient:
         header_value: Optional[str] = None,
         cookie: Optional[str] = None,
     ):
+        warnings.warn(
+            "ApiClient is deprecated. Use SyncApiClient or AsyncApiClient instead. "
+            "See: https://github.com/[your-repo]/evo-client-python#migration-guide",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         self.configuration = configuration or Configuration()
 
         self.request_handler = RequestHandler(self.configuration)
@@ -75,8 +105,7 @@ class ApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Union[Any, AsyncResult[Any]]:
-        ...
+    ) -> Union[Any, AsyncResult[Any]]: ...
 
     @overload
     def call_api(
@@ -96,8 +125,7 @@ class ApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Union[T, AsyncResult[T]]:
-        ...
+    ) -> Union[T, AsyncResult[T]]: ...
 
     @overload
     def call_api(
@@ -117,8 +145,7 @@ class ApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Union[List[T], AsyncResult[List[T]]]:
-        ...
+    ) -> Union[List[T], AsyncResult[List[T]]]: ...
 
     @overload
     def call_api(
@@ -138,8 +165,7 @@ class ApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]:
-        ...
+    ) -> Union[AsyncResult[T], AsyncResult[List[T]], AsyncResult[Any]]: ...
 
     @overload
     def call_api(
@@ -159,8 +185,7 @@ class ApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Union[T, List[T], Any]:
-        ...
+    ) -> Union[T, List[T], Any]: ...
 
     def call_api(
         self,
