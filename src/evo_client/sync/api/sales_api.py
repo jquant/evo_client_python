@@ -73,7 +73,7 @@ class SyncSalesApi(SyncBaseApi):
             ...     print(f"Sale created with ID: {response.sale_id}")
         """
         result = self.api_client.call_api(
-            resource_path=self.base_path_v2,
+            resource_path=self.base_path_v1,
             method="POST",
             body=body.model_dump(exclude_unset=True, by_alias=True) if body else None,
             response_type=NewSaleResponse,
@@ -101,38 +101,34 @@ class SyncSalesApi(SyncBaseApi):
         only_total_pass: Optional[bool] = None,
     ) -> List[SalesViewModel]:
         """
-        Get sales with various filtering options.
+        Get sales with optional filtering.
 
         Args:
             member_id: Filter by member ID
-            date_sale_start: Filter sales starting from date
-            date_sale_end: Filter sales until date
-            removal_date_start: Filter removed sales from date
-            removal_date_end: Filter removed sales until date
-            receivables_registration_date_start: Filter receivables from date
-            receivables_registration_date_end: Filter receivables until date
-            show_receivables: Show sale receivables details
+            date_sale_start: Start date for sale registration
+            date_sale_end: End date for sale registration
+            removal_date_start: Start date for sale removal
+            removal_date_end: End date for sale removal
+            receivables_registration_date_start: Start date for receivables registration
+            receivables_registration_date_end: End date for receivables registration
+            show_receivables: Show sale receivables and sale value without credit value
             take: Number of records to return (max 100, default 25)
             skip: Number of records to skip
-            only_membership: Return only membership sales
-            at_least_monthly: Filter out memberships less than 30 days
-            fl_swimming: Filter by swimming flag
+            only_membership: Return only sales with membership
+            at_least_monthly: Remove memberships less than 30 days old
+            fl_swimming: Filter memberships by swimming flag
             show_only_active_memberships: Show only active memberships
-            show_allow_locker: Show sales with locker access
-            only_total_pass: Show only total pass sales
+            show_allow_locker: Allow locker display
+            only_total_pass: Show only total pass
 
         Returns:
             List of sales matching the criteria
 
         Example:
             >>> with SyncSalesApi() as api:
-            ...     sales = api.get_sales(
-            ...         member_id=123,
-            ...         only_membership=True,
-            ...         take=10
-            ...     )
+            ...     sales = api.get_sales(member_id=123, take=10)
             ...     for sale in sales:
-            ...         print(f"Sale #{sale.id} - {sale.member_name}")
+            ...         print(f"Sale #{sale.id} - ${sale.total}")
         """
         params = {
             "idMember": member_id,
@@ -197,7 +193,7 @@ class SyncSalesApi(SyncBaseApi):
             params["idBranch"] = branch_id
 
         result = self.api_client.call_api(
-            resource_path=f"{self.base_path_v1}/items",
+            resource_path=f"{self.base_path_v1}/sales-items",
             method="GET",
             query_params=params if params else None,
             response_type=List[SalesItemsViewModel],
@@ -228,7 +224,7 @@ class SyncSalesApi(SyncBaseApi):
             params["date"] = date.isoformat()
 
         result = self.api_client.call_api(
-            resource_path=f"{self.base_path_v1}/session",
+            resource_path=f"{self.base_path_v1}/by-session-id",
             method="GET",
             query_params=params,
             response_type=None,  # Returns int directly

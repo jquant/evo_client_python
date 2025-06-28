@@ -175,28 +175,28 @@ class SyncMembersApi(SyncBaseApi):
         show_activity_data: bool = False,
     ) -> List[MembersApiViewModel]:
         """
-        Get members with advanced filtering options.
+        Get members list with filtering options.
 
         Args:
             name: Filter by member name
             email: Filter by member email
             document: Filter by member document
-            phone: Filter by phone number
-            conversion_date_start: Start date for conversion filter
-            conversion_date_end: End date for conversion filter
-            register_date_start: Start date for registration filter
-            register_date_end: End date for registration filter
-            membership_start_date_start: Start date for membership start filter
-            membership_start_date_end: End date for membership start filter
-            membership_cancel_date_start: Start date for membership cancellation filter
-            membership_cancel_date_end: End date for membership cancellation filter
-            status: Member status filter
-            token_gympass: Gympass token filter
-            take: Number of records to return
+            phone: Filter by phone (format: 1112341234)
+            conversion_date_start: Filter by conversion date from
+            conversion_date_end: Filter by conversion date to
+            register_date_start: Filter by registration date from
+            register_date_end: Filter by registration date to
+            membership_start_date_start: Filter by membership start date from
+            membership_start_date_end: Filter by membership start date to
+            membership_cancel_date_start: Filter by membership cancel date from
+            membership_cancel_date_end: Filter by membership cancel date to
+            status: Filter by member status (1=Active, 2=Inactive)
+            token_gympass: Filter by gympass token
+            take: Number of records to return (max 50)
             skip: Number of records to skip
-            ids_members: Comma-separated member IDs
-            only_personal: Filter only personal members
-            personal_type: Personal type filter
+            ids_members: Filter by member IDs (comma-separated: "1,2,3")
+            only_personal: Show only personal trainers
+            personal_type: Filter by personal type (1=Internal, 2=External)
             show_activity_data: Include activity data
 
         Returns:
@@ -204,7 +204,7 @@ class SyncMembersApi(SyncBaseApi):
 
         Example:
             >>> api = SyncMembersApi()
-            >>> members = api.get_members(name="John", take=10)
+            >>> members = api.get_members(name="John", status=1, take=10)
             >>> for member in members:
             ...     print(f"{member.name} - {member.email}")
         """
@@ -281,12 +281,11 @@ class SyncMembersApi(SyncBaseApi):
             >>> result = api.update_member_card(123, "1234567890")
         """
         params = {
-            "idMember": id_member,
             "cardNumber": card_number,
         }
 
         return self.api_client.call_api(
-            resource_path=f"{self.base_path}/card",
+            resource_path=f"{self.base_path}/{id_member}/card",
             method="PUT",
             query_params=params,
             response_type=None,
@@ -310,7 +309,7 @@ class SyncMembersApi(SyncBaseApi):
             >>> print(f"{profile.name} - {profile.email}")
         """
         result = self.api_client.call_api(
-            resource_path=f"{self.base_path}/{id_member}/profile",
+            resource_path=f"{self.base_path}/{id_member}",
             method="GET",
             response_type=ClienteDetalhesBasicosApiViewModel,
             auth_settings=["Basic"],
@@ -341,8 +340,8 @@ class SyncMembersApi(SyncBaseApi):
         }
 
         result = self.api_client.call_api(
-            resource_path=f"{self.base_path}/resetpassword",
-            method="POST",
+            resource_path=f"{self.base_path}/resetPassword",
+            method="GET",
             query_params=params,
             response_type=MemberAuthenticateViewModel,
             auth_settings=["Basic"],
@@ -419,8 +418,8 @@ class SyncMembersApi(SyncBaseApi):
             >>> result = api.update_member_data(123, data)
         """
         return self.api_client.call_api(
-            resource_path=f"{self.base_path}/{id_member}",
-            method="PUT",
+            resource_path=f"{self.base_path}/update-member-data/{id_member}",
+            method="PATCH",
             body=body.model_dump(exclude_unset=True, by_alias=True),
             response_type=None,  # Let it return raw response
             auth_settings=["Basic"],

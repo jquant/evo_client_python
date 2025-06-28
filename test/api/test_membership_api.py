@@ -1,96 +1,101 @@
-"""Tests for the MembershipApi class."""
+"""Tests for the SyncMembershipApi class."""
 
 from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.api.membership_api import MembershipApi
+from evo_client.sync.api import SyncMembershipApi
+from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.contratos_resumo_api_view_model import (
-    ContratosResumoContainerViewModel,
-)
-from evo_client.models.w12_utils_category_membership_view_model import (
-    W12UtilsCategoryMembershipViewModel,
+    ContratosResumoApiViewModel,
 )
 
 
 @pytest.fixture
-def membership_api():
-    """Create a MembershipApi instance for testing."""
-    return MembershipApi()
+def sync_client():
+    """Create a SyncApiClient instance for testing."""
+    return SyncApiClient()
+
+
+@pytest.fixture
+def membership_api(sync_client):
+    """Create a SyncMembershipApi instance for testing."""
+    return SyncMembershipApi(sync_client)
 
 
 @pytest.fixture
 def mock_api_client():
     """Create a mock API client."""
-    with patch("evo_client.api.membership_api.ApiClient.call_api") as mock:
+    with patch("evo_client.sync.core.api_client.SyncApiClient.call_api") as mock:
         yield mock
 
 
-def test_get_categories(membership_api: MembershipApi, mock_api_client: Mock):
-    """Test getting membership categories."""
-    expected = [W12UtilsCategoryMembershipViewModel()]
+def test_get_memberships_basic(
+    membership_api: SyncMembershipApi, mock_api_client: Mock
+):
+    """Test getting memberships without filters using v1."""
+    expected = [ContratosResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    result = membership_api.get_categories(async_req=False)
+    result = membership_api.get_memberships_v1()
 
     assert result == expected
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/membership/category"
-
-
-def test_get_memberships_basic(membership_api: MembershipApi, mock_api_client: Mock):
-    """Test getting memberships list with no parameters."""
-    expected = ContratosResumoContainerViewModel()
-    mock_api_client.return_value = expected
-
-    result = membership_api.get_memberships(async_req=False)
-
-    assert result == expected
-    mock_api_client.assert_called_once()
-    args = mock_api_client.call_args[1]
-    assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v2/membership"
+    assert args["resource_path"] == "/api/v1/membership"
 
 
 def test_get_memberships_with_filters(
-    membership_api: MembershipApi, mock_api_client: Mock
+    membership_api: SyncMembershipApi, mock_api_client: Mock
 ):
-    """Test getting memberships with search filters."""
-    expected = ContratosResumoContainerViewModel()
+    """Test getting memberships with various filters."""
+    expected = [ContratosResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    result = membership_api.get_memberships(
+    result = membership_api.get_memberships_v1(
         membership_id=123,
-        name="Gold",
-        branch_id=456,
-        take=10,
+        name="Premium",
+        branch_id=1,
+        take=50,
         skip=0,
         active=True,
-        async_req=False,
     )
 
     assert result == expected
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
-    assert args["query_params"] == {
-        "idMembership": 123,
-        "name": "Gold",
-        "idBranch": 456,
-        "take": 10,
-        "skip": 0,
-        "active": True,
-    }
+    assert args["method"] == "GET"
+    assert args["resource_path"] == "/api/v1/membership"
+    query_params = args["query_params"]
+    assert query_params["idMembership"] == 123
+    assert query_params["name"] == "Premium"
+    assert query_params["idBranch"] == 1
+    assert query_params["take"] == 50
+    assert query_params["skip"] == 0
+    assert query_params["active"] == True
 
 
-def test_error_handling(membership_api: MembershipApi, mock_api_client: Mock):
+def test_list_memberships(membership_api: SyncMembershipApi, mock_api_client: Mock):
+    """Test list memberships convenience method."""
+    expected = [ContratosResumoApiViewModel()]
+    mock_api_client.return_value = expected
+
+    result = membership_api.list_memberships(
+        name="Gold", active=True, take=25, version="v1"
+    )
+
+    assert result == expected
+    mock_api_client.assert_called_once()
+
+
+def test_error_handling(membership_api: SyncMembershipApi, mock_api_client: Mock):
     """Test API error handling."""
-    mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
+    mock_api_client.side_effect = ApiException(status=500, reason="Server Error")
 
     with pytest.raises(ApiException) as exc:
-        membership_api.get_memberships(async_req=False)
+        membership_api.get_memberships_v1()
 
-    assert exc.value.status == 404
-    assert exc.value.reason == "Not Found"
+    assert exc.value.status == 500
+    assert exc.value.reason == "Server Error"

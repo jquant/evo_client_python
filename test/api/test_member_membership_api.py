@@ -1,4 +1,4 @@
-"""Tests for the MemberMembershipApi class."""
+"""Tests for the SyncMemberMembershipApi class."""
 
 from datetime import datetime
 from typing import List
@@ -6,7 +6,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.api.member_membership_api import MemberMembershipApi
+from evo_client.sync.api import SyncMemberMembershipApi
+from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.contratos_cancelados_resumo_api_view_model import (
     ContratosCanceladosResumoApiViewModel,
@@ -17,71 +18,146 @@ from evo_client.models.member_membership_api_view_model import (
 
 
 @pytest.fixture
-def member_membership_api():
-    """Create a MemberMembershipApi instance for testing."""
-    return MemberMembershipApi()
+def sync_client():
+    """Create a SyncApiClient instance for testing."""
+    return SyncApiClient()
+
+
+@pytest.fixture
+def member_membership_api(sync_client):
+    """Create a SyncMemberMembershipApi instance for testing."""
+    return SyncMemberMembershipApi(sync_client)
 
 
 @pytest.fixture
 def mock_api_client():
     """Create a mock API client."""
-    with patch("evo_client.api.member_membership_api.ApiClient.call_api") as mock:
+    with patch("evo_client.sync.core.api_client.SyncApiClient.call_api") as mock:
         yield mock
 
 
 def test_cancel_membership(
-    member_membership_api: MemberMembershipApi, mock_api_client: Mock
+    member_membership_api: SyncMemberMembershipApi, mock_api_client: Mock
 ):
-    """Test canceling a membership."""
-    mock_api_client.return_value = None
-    cancellation_date = datetime(2023, 1, 1)
+    """Test cancelling a membership."""
+    mock_api_client.return_value = True
 
-    member_membership_api.cancel_membership(
+    result = member_membership_api.cancel_membership(
         id_member_membership=123,
-        id_member_branch=456,
-        cancellation_date=cancellation_date,
-        reason_cancellation="Test cancellation",
-        notice_cancellation="Test notice",
+        id_member_branch=1,
+        cancellation_date=datetime(2023, 12, 31),
+        reason_cancellation="Member requested",
+        notice_cancellation="End of year cancellation",
         cancel_future_releases=True,
-        cancel_future_sessions=True,
-        convert_credit_days=False,
+        cancel_future_sessions=False,
+        convert_credit_days=True,
         schedule_cancellation=False,
         add_fine=False,
-        async_req=False,
     )
 
+    assert result is True
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/membermembership/cancellation"
-    assert args["query_params"]["IdMemberMembership"] == 123
-    assert args["query_params"]["IdMemberBranch"] == 456
-    assert args["query_params"]["CancellationDate"] == cancellation_date
-    assert args["query_params"]["ReasonCancellation"] == "Test cancellation"
+
+
+def test_cancel_membership_minimal(
+    member_membership_api: SyncMemberMembershipApi, mock_api_client: Mock
+):
+    """Test cancelling a membership with minimal parameters."""
+    mock_api_client.return_value = True
+
+    result = member_membership_api.cancel_membership(
+        id_member_membership=123,
+        id_member_branch=1,
+        cancellation_date=datetime(2023, 12, 31),
+        reason_cancellation="Member requested",
+    )
+
+    assert result is True
+    mock_api_client.assert_called_once()
+    args = mock_api_client.call_args[1]
+    assert args["method"] == "POST"
+    assert args["resource_path"] == "/api/v1/membermembership/cancellation"
 
 
 def test_get_membership(
-    member_membership_api: MemberMembershipApi, mock_api_client: Mock
+    member_membership_api: SyncMemberMembershipApi, mock_api_client: Mock
 ):
-    """Test getting membership details."""
+    """Test getting membership by ID."""
     expected = MemberMembershipApiViewModel()
     mock_api_client.return_value = expected
 
-    result = member_membership_api.get_membership(
-        id_member_membership=123, async_req=False
-    )
+    result = member_membership_api.get_membership(id_member_membership=123)
 
     assert result == expected
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
     assert args["resource_path"] == "/api/v1/membermembership/123"
-    assert args["response_type"] == MemberMembershipApiViewModel
+
+
+def test_cancel_membership_with_fine(
+    member_membership_api: SyncMemberMembershipApi, mock_api_client: Mock
+):
+    """Test cancelling a membership with fine."""
+    mock_api_client.return_value = True
+
+    result = member_membership_api.cancel_membership(
+        id_member_membership=123,
+        id_member_branch=1,
+        cancellation_date=datetime(2023, 12, 31),
+        reason_cancellation="Early cancellation",
+        add_fine=True,
+        value_fine=50.0,
+    )
+
+    assert result is True
+    mock_api_client.assert_called_once()
+    args = mock_api_client.call_args[1]
+    assert args["method"] == "POST"
+    assert args["resource_path"] == "/api/v1/membermembership/cancellation"
+
+
+def test_cancel_membership_scheduled(
+    member_membership_api: SyncMemberMembershipApi, mock_api_client: Mock
+):
+    """Test scheduling a membership cancellation."""
+    mock_api_client.return_value = True
+
+    result = member_membership_api.cancel_membership(
+        id_member_membership=123,
+        id_member_branch=1,
+        cancellation_date=datetime(2023, 12, 31),
+        reason_cancellation="Scheduled cancellation",
+        schedule_cancellation=True,
+        schedule_cancellation_date=datetime(2024, 1, 31),
+    )
+
+    assert result is True
+    mock_api_client.assert_called_once()
+    args = mock_api_client.call_args[1]
+    assert args["method"] == "POST"
+    assert args["resource_path"] == "/api/v1/membermembership/cancellation"
+
+
+def test_error_handling(
+    member_membership_api: SyncMemberMembershipApi, mock_api_client: Mock
+):
+    """Test API error handling."""
+    mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
+
+    with pytest.raises(ApiException) as exc:
+        member_membership_api.get_membership(id_member_membership=999)
+
+    assert exc.value.status == 404
+    assert exc.value.reason == "Not Found"
 
 
 @pytest.mark.asyncio
 async def test_get_canceled_memberships(
-    member_membership_api: MemberMembershipApi, mock_api_client: Mock
+    member_membership_api: SyncMemberMembershipApi, mock_api_client: Mock
 ):
     """Test getting canceled memberships with filters."""
     expected = [ContratosCanceladosResumoApiViewModel()]
@@ -103,7 +179,6 @@ async def test_get_canceled_memberships(
         contract_type="type1",
         take=10,
         skip=0,
-        async_req=False,
     )
 
     assert result == expected
@@ -119,23 +194,10 @@ async def test_get_canceled_memberships(
 
 @pytest.mark.asyncio
 async def test_get_canceled_memberships_take_limit(
-    member_membership_api: MemberMembershipApi,
+    member_membership_api: SyncMemberMembershipApi,
 ):
     """Test take limit validation for get_canceled_memberships."""
     with pytest.raises(ValueError) as exc:
-        member_membership_api.get_canceled_memberships(take=30, async_req=False)
+        member_membership_api.get_canceled_memberships(take=30)
 
     assert str(exc.value) == "Maximum number of records to return is 25"
-
-
-def test_error_handling(
-    member_membership_api: MemberMembershipApi, mock_api_client: Mock
-):
-    """Test API error handling."""
-    mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
-
-    with pytest.raises(ApiException) as exc:
-        member_membership_api.get_membership(id_member_membership=123, async_req=False)
-
-    assert exc.value.status == 404
-    assert exc.value.reason == "Not Found"
