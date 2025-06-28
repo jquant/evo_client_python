@@ -7,15 +7,7 @@ from ..data_fetchers import BranchApiClientManager
 from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 from ...sync.api.webhook_api import SyncWebhookApi
-from ..data_fetchers import BaseDataFetcher
 from ...utils.pagination_utils import paginated_api_call
-from ...utils.async_pagination_utils import async_paginated_api_call
-
-
-class WebhookManagement(BaseDataFetcher):
-    """Webhook management service."""
-
-    pass
 
 
 class WebhookManagementService:
