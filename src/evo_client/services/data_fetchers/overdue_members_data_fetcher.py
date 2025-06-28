@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from loguru import logger
 
@@ -45,7 +45,7 @@ class OverdueMembersDataFetcher(BaseDataFetcher):
                 # We assume member_id and member_name might be available in extended model
                 # If not directly available, we might need a members lookup - but we only have the given code.
                 # Let's assume `payer_name` and `id_member_payer` from receivables
-                members_seen = {}
+                members_seen: Dict[int, Dict[str, Any]] = {}
                 for rv in receivables:
                     if rv.id_member_payer and rv.id_member_payer > 0:
                         key = rv.id_member_payer

@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from loguru import logger
 
+from ...models.entradas_resumo_api_view_model import EntradasResumoApiViewModel
 from ...sync.api.entries_api import SyncEntriesApi
 from ...models.gym_model import GymEntry
 from ...utils.pagination_utils import paginated_api_call
@@ -31,7 +32,7 @@ class EntriesDataFetcher(BaseDataFetcher):
             List[GymEntry]: List of entries matching the filters
         """
         try:
-            entries = []
+            entries: List[EntradasResumoApiViewModel] = []
             # Get entries from branch clients
             for branch_id in self.get_available_branch_ids():
                 branch_api = SyncEntriesApi(api_client=self.get_branch_api(branch_id))

@@ -312,10 +312,10 @@ class BranchConfig(BaseModel):
     email: str
     address: Address
     business_hours: List[BusinessHours] = Field(..., alias="businessHours")
-    gateway_config: Optional[GatewayConfig] = Field(None, alias="gatewayConfig")
+    gateway_config: Optional[GatewayConfig] = Field(default=None, alias="gatewayConfig")
     occupations: List[OccupationArea] = Field(default_factory=list)
     translations: Dict[str, str] = Field(default_factory=dict)
-    parent_branch_id: Optional[int] = Field(None, alias="parentBranchId")
+    parent_branch_id: Optional[int] = Field(default=None, alias="parentBranchId")
     child_branch_ids: List[int] = Field(default_factory=list, alias="childBranchIds")
     is_main_branch: bool = Field(default=False, alias="isMainBranch")
     allowed_access_branch_ids: List[int] = Field(
@@ -329,15 +329,15 @@ class GymEntry(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     id: int = Field(..., alias="idEntry")
-    member_id: Optional[int] = Field(None, alias="idMember")
-    prospect_id: Optional[int] = Field(None, alias="idProspect")
+    member_id: Optional[int] = Field(default=None, alias="idMember")
+    prospect_id: Optional[int] = Field(default=None, alias="idProspect")
     register_date: datetime = Field(..., alias="registerDate")
     entry_type: EntryType = Field(default=EntryType.REGULAR, alias="entryType")
     status: EntryStatus = Field(default=EntryStatus.VALID)
-    branch_id: Optional[int] = Field(None, alias="idBranch")
-    activity_id: Optional[int] = Field(None, alias="idActivity")
-    membership_id: Optional[int] = Field(None, alias="idMembership")
-    device_id: Optional[str] = Field(None, alias="deviceId")
+    branch_id: Optional[int] = Field(default=None, alias="idBranch")
+    activity_id: Optional[int] = Field(default=None, alias="idActivity")
+    membership_id: Optional[int] = Field(default=None, alias="idMembership")
+    device_id: Optional[str] = Field(default=None, alias="deviceId")
     notes: Optional[str]
 
 
@@ -352,14 +352,14 @@ class MembershipContract(BaseModel):
     category: Optional[MembershipCategory] = None
     status: MembershipStatus = Field(default=MembershipStatus.PENDING)
     start_date: datetime = Field(..., alias="startDate")
-    end_date: Optional[datetime] = Field(None, alias="endDate")
-    last_renewal_date: Optional[datetime] = Field(None, alias="lastRenewalDate")
-    next_renewal_date: Optional[datetime] = Field(None, alias="nextRenewalDate")
+    end_date: Optional[datetime] = Field(default=None, alias="endDate")
+    last_renewal_date: Optional[datetime] = Field(default=None, alias="lastRenewalDate")
+    next_renewal_date: Optional[datetime] = Field(default=None, alias="nextRenewalDate")
     payment_day: int = Field(ge=1, le=31, alias="paymentDay")
     is_auto_renewal: bool = Field(default=False, alias="isAutoRenewal")
     total_value: Decimal = Field(..., alias="totalValue")
     installments: int = Field(default=1)
-    branch_id: Optional[int] = Field(None, alias="idBranch")
+    branch_id: Optional[int] = Field(default=None, alias="idBranch")
 
 
 class ReceivableStatus(str, Enum):
@@ -495,11 +495,11 @@ class NewSale(BaseModel):
 
     branch_id: int = Field(..., alias="idBranch")
     member_id: int = Field(..., alias="idMember")
-    service_id: Optional[int] = Field(None, alias="idService")
+    service_id: Optional[int] = Field(default=None, alias="idService")
     service_value: Decimal = Field(..., alias="serviceValue")
     payment_method: PaymentMethod
     total_installments: int = Field(default=1, alias="totalInstallments")
-    card_data: Optional[CardData] = Field(None, alias="cardData")
+    card_data: Optional[CardData] = Field(default=None, alias="cardData")
 
 
 class RevenueBreakdown(BaseModel):
