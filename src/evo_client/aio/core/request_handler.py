@@ -4,11 +4,7 @@ import asyncio
 import json
 from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union
 
-try:
-    import aiohttp
-except ImportError:
-    # Will be handled at runtime if aiohttp is not installed
-    aiohttp = None  # type: ignore
+import aiohttp
 
 from loguru import logger
 from pydantic import BaseModel
@@ -116,7 +112,17 @@ class AsyncRequestHandler:
         basic_auth = self.configuration.get_basic_auth_token()
         if basic_auth:
             # Extract username and password from HTTPBasicAuth object
-            auth = aiohttp.BasicAuth(basic_auth.username, basic_auth.password)
+            login = (
+                basic_auth.username
+                if isinstance(basic_auth.username, str)
+                else str(basic_auth.username)
+            )
+            password = (
+                basic_auth.password
+                if isinstance(basic_auth.password, str)
+                else str(basic_auth.password)
+            )
+            auth = aiohttp.BasicAuth(login, password)
 
         # Prepare request data
         data = None
