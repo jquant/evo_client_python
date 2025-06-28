@@ -20,6 +20,9 @@ from .configuration_api import SyncConfigurationApi
 from .states_api import SyncStatesApi
 from .service_api import SyncServiceApi
 from .management_api import SyncManagementApi
+from .notifications_api import SyncNotificationsApi
+from .webhook_api import SyncWebhookApi
+from .partnership_api import SyncPartnershipApi
 
 __all__ = [
     "SyncBaseApi",
@@ -42,4 +45,7 @@ __all__ = [
     "SyncStatesApi",
     "SyncServiceApi",
     "SyncManagementApi",
+    "SyncNotificationsApi",
+    "SyncWebhookApi",
+    "SyncPartnershipApi",
 ]

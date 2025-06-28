@@ -20,6 +20,9 @@ from .configuration_api import AsyncConfigurationApi
 from .states_api import AsyncStatesApi
 from .service_api import AsyncServiceApi
 from .management_api import AsyncManagementApi
+from .notifications_api import AsyncNotificationsApi
+from .webhook_api import AsyncWebhookApi
+from .partnership_api import AsyncPartnershipApi
 
 __all__ = [
     "AsyncBaseApi",
@@ -42,4 +45,7 @@ __all__ = [
     "AsyncStatesApi",
     "AsyncServiceApi",
     "AsyncManagementApi",
+    "AsyncNotificationsApi",
+    "AsyncWebhookApi",
+    "AsyncPartnershipApi",
 ]
