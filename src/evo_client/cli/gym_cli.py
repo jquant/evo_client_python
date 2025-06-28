@@ -11,7 +11,7 @@ from rich.console import Console
 from rich.table import Table
 from rich.tree import Tree
 
-from ..core.api_client import ApiClient
+from ..sync.core.api_client import SyncApiClient
 from ..core.configuration import Configuration
 from ..models.gym_model import GymKnowledgeBase
 from ..models.webhook_model import WebhookEventType
@@ -81,6 +81,7 @@ class State:
             config_dir = Path(".config")
 
             # Check for active credentials first
+            cred_file: Optional[Path] = None
             active_cred_file = config_dir / "active_credentials"
             if active_cred_file.exists():
                 cred_file = Path(active_cred_file.read_text().strip())
@@ -94,8 +95,6 @@ class State:
                     )
                     active_cred_file.unlink()
                     cred_file = None
-            else:
-                cred_file = None
 
             if not cred_file:
                 # Fall back to finding credentials files
@@ -127,10 +126,12 @@ class State:
 
             branch_api_clients = {}
             for branch_id, branch_creds in creds.items():
-                config = Configuration()
-                config.username = branch_creds["username"]
-                config.password = branch_creds["password"]
-                branch_api_clients[str(branch_id)] = ApiClient(configuration=config)
+                configuration = Configuration()
+                configuration.username = branch_creds["username"]
+                configuration.password = branch_creds["password"]
+                branch_api_clients[str(branch_id)] = SyncApiClient(
+                    configuration=configuration
+                )
             self._client_manager = BranchApiClientManager(
                 branch_api_clients=branch_api_clients
             )
@@ -198,10 +199,10 @@ def get_gym_api() -> GymApi:
     # Initialize branch API clients
     branch_api_clients = {}
     for branch_id, branch_creds in creds.items():
-        config = Configuration()
-        config.username = branch_creds["username"]
-        config.password = branch_creds["password"]
-        branch_api_clients[str(branch_id)] = ApiClient(configuration=config)
+        configuration = Configuration()
+        configuration.username = branch_creds["username"]
+        configuration.password = branch_creds["password"]
+        branch_api_clients[str(branch_id)] = SyncApiClient(configuration=configuration)
 
     client_manager = BranchApiClientManager(branch_api_clients=branch_api_clients)
     gym_api = GymApi(client_manager=client_manager)
@@ -376,10 +377,12 @@ def auth_login_file(
         # Initialize API client and fetch configurations
         branch_api_clients = {}
         for branch_id, branch_creds in creds.items():
-            config = Configuration()
-            config.username = branch_creds["username"]
-            config.password = branch_creds["password"]
-            branch_api_clients[str(branch_id)] = ApiClient(configuration=config)
+            configuration = Configuration()
+            configuration.username = branch_creds["username"]
+            configuration.password = branch_creds["password"]
+            branch_api_clients[str(branch_id)] = SyncApiClient(
+                configuration=configuration
+            )
 
         client_manager = BranchApiClientManager(branch_api_clients=branch_api_clients)
         api_client = GymApi(client_manager=client_manager)

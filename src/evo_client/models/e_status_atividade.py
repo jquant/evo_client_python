@@ -77,16 +77,6 @@ class EStatusAtividade(IntEnum):
         except ValueError:
             return "Unknown"
 
-    @classmethod
-    def _missing_(cls, value: Union[str, int]) -> "EStatusAtividade":
-        """Handle both string and integer inputs."""
-        if isinstance(value, int):
-            value = str(value)
-        for member in cls:
-            if member.value == value:
-                return member
-        return cls._0
-
     def to_dict(self):
         """Returns the model properties as a dict"""
         return self.value

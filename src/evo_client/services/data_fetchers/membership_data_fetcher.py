@@ -31,7 +31,7 @@ class MembershipDataFetcher(BaseDataFetcher):
             List[ContratosResumoApiViewModel]: List of membership plans matching the filters
         """
         try:
-            memberships = []
+            memberships: List[ContratosResumoApiViewModel] = []
             for branch_id in self.get_available_branch_ids():
                 branch_api = SyncMembershipApi(
                     api_client=self.get_branch_api(branch_id)
@@ -61,7 +61,7 @@ class MembershipDataFetcher(BaseDataFetcher):
             List[W12UtilsCategoryMembershipViewModel]: List of membership categories
         """
         try:
-            categories = []
+            categories: List[W12UtilsCategoryMembershipViewModel] = []
             for branch_id in self.get_available_branch_ids():
                 branch_api = SyncMembershipApi(
                     api_client=self.get_branch_api(branch_id)
@@ -80,8 +80,8 @@ class MembershipDataFetcher(BaseDataFetcher):
             seen_categories = set()
             unique_categories = []
             for category in categories:
-                if category.id not in seen_categories:
-                    seen_categories.add(category.id)
+                if category.id_category_membership not in seen_categories:
+                    seen_categories.add(category.id_category_membership)
                     unique_categories.append(category)
 
             return unique_categories

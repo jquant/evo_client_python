@@ -87,8 +87,8 @@ class ConfigValidator:
     @classmethod
     def _validate_host(cls, host: str) -> Tuple[List[str], List[str]]:
         """Validate host URL."""
-        errors = []
-        warnings = []
+        errors: List[str] = []
+        warnings: List[str] = []
 
         if not host:
             errors.append("Host URL is required")

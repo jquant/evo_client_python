@@ -1,6 +1,6 @@
 # /src/evo_client/models/gym_model.py
 
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, date
 from decimal import Decimal
 from enum import Enum, IntEnum
 from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
@@ -705,7 +705,7 @@ class GymOperatingData(BaseModel):
             return
 
         # Group entries by day
-        daily_visits = {}
+        daily_visits: Dict[date, List[GymEntry]] = {}
         peak_hours_entries = []
         off_peak_entries = []
 
@@ -890,7 +890,7 @@ class GymOperatingData(BaseModel):
         if not self.data_from or not self.data_to:
             return {}
 
-        trends = {
+        trends: Dict[str, Dict[str, int | Decimal]] = {
             "new_members_by_month": {},
             "churned_members_by_month": {},
             "net_growth_by_month": {},
@@ -1111,7 +1111,7 @@ class MemberProfile(BaseModel):
         self.last_entry = self.entries_history[-1] if self.entries_history else None
 
         # Calculate favorite activities
-        activity_counts = {}
+        activity_counts: Dict[str, int] = {}
         for activity in self.activities_history:
             name = activity.get("name", "")
             if name:
