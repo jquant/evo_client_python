@@ -14,13 +14,9 @@
 For more advanced examples, see: examples/v2/modern_sync_example.py
 """
 
-import sys
 import os
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
-
-# Add the src directory to the path so we can import our modules
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
+from typing import Dict, List
 
 from evo_client.config import ConfigBuilder
 from evo_client.sync import SyncApiClient
@@ -79,14 +75,14 @@ def setup_multi_branch_configs() -> List[Dict[str, str]]:
 # =============================================================================
 
 
-def analyze_branch_configuration(branch_config: Dict[str, str]) -> Dict:
+def analyze_branch_configuration(branch_config: Dict[str, str], host: str) -> Dict:
     """Analyze configuration for a single branch."""
     print(f"\n📊 Analyzing {branch_config['name']}...")
 
     try:
         # Create configuration for this branch
         config = ConfigBuilder.basic_auth(
-            host=branch_config["host"],
+            host=host,
             username=branch_config["username"],
             password=branch_config["password"],
         )
@@ -249,7 +245,7 @@ def analyze_member_activity(branch_config: Dict[str, str]) -> Dict:
 # =============================================================================
 
 
-def generate_multi_unit_report(branch_configs: List[Dict[str, str]]) -> Dict:
+def generate_multi_unit_report(branch_configs: List[Dict[str, str]], host: str) -> Dict:
     """Generate comprehensive multi-unit analysis report."""
     print("\n📊 Generating multi-unit analysis report...")
 
@@ -269,7 +265,7 @@ def generate_multi_unit_report(branch_configs: List[Dict[str, str]]) -> Dict:
 
     for branch_config in branch_configs:
         # Configuration analysis
-        config_analysis = analyze_branch_configuration(branch_config)
+        config_analysis = analyze_branch_configuration(branch_config, host)
         report["branch_analyses"].append(config_analysis)
 
         if config_analysis["status"] == "accessible":
@@ -337,12 +333,13 @@ def print_summary_report(report: Dict):
 def main():
     """Run the multi-unit analysis."""
     print("🎯 Starting multi-unit gym analysis...\n")
+    host = os.getenv("EVO_HOST", "https://evo-integracao-api.w12app.com.br")
 
     # Setup configurations
     branch_configs = setup_multi_branch_configs()
 
     # Generate comprehensive report
-    report = generate_multi_unit_report(branch_configs)
+    report = generate_multi_unit_report(branch_configs, host)
 
     # Print summary
     print_summary_report(report)
