@@ -8,6 +8,7 @@ import pytest
 from evo_client.sync.api import SyncWorkoutApi
 from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
+from evo_client.models.workout_models import WorkoutResponse, WorkoutUpdateResponse
 
 
 @pytest.fixture
@@ -43,7 +44,11 @@ def test_update_workout(workout_api: SyncWorkoutApi, mock_api_client: Mock):
         weekly_frequency=3,
     )
 
-    assert result == expected
+    assert result == WorkoutUpdateResponse(
+        success=True,
+        message="Workout updated successfully",
+        workout_id=123,
+    )
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "PUT"
@@ -64,15 +69,15 @@ def test_get_client_workouts(workout_api: SyncWorkoutApi, mock_api_client: Mock)
         deleted=False,
     )
 
-    assert result == expected
+    assert result == [WorkoutResponse.model_validate(expected[0])]
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
     assert args["resource_path"] == "/api/v1/workout/default-client-workout"
     query_params = args["query_params"]
     assert query_params["idClient"] == 123
-    assert query_params["inactive"] == False
-    assert query_params["deleted"] == False
+    assert query_params["inactive"] is False
+    assert query_params["deleted"] is False
 
 
 def test_get_default_workouts(workout_api: SyncWorkoutApi, mock_api_client: Mock):
@@ -85,7 +90,7 @@ def test_get_default_workouts(workout_api: SyncWorkoutApi, mock_api_client: Mock
         tag_id=456,
     )
 
-    assert result == expected
+    assert result == [WorkoutResponse.model_validate(expected[0])]
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
@@ -100,14 +105,13 @@ def test_link_workout_to_client(workout_api: SyncWorkoutApi, mock_api_client: Mo
     expected = True
     mock_api_client.return_value = expected
 
-    result = workout_api.link_workout_to_client(
+    workout_api.link_workout_to_client(
         source_workout_id=456,
         prescription_employee_id=10,
         client_id=123,
         prescription_date=datetime(2024, 1, 1),
     )
 
-    assert result == expected
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"

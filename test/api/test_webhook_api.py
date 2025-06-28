@@ -7,6 +7,7 @@ import pytest
 from evo_client.sync.api import SyncWebhookApi
 from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
+from evo_client.models.common_models import WebhookResponse
 
 
 @pytest.fixture
@@ -35,7 +36,7 @@ def test_get_webhooks(webhook_api: SyncWebhookApi, mock_api_client: Mock):
 
     result = webhook_api.get_webhooks()
 
-    assert result == expected
+    assert result == [WebhookResponse.model_validate(expected[0])]
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"

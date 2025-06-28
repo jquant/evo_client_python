@@ -8,6 +8,7 @@ from evo_client.sync.api import SyncNotificationsApi
 from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.notification_api_view_model import NotificationApiViewModel
+from evo_client.models.common_models import NotificationCreateResponse
 
 
 @pytest.fixture
@@ -41,7 +42,7 @@ def test_create_notification(
 
     result = notifications_api.create_notification(notification=notification_data)
 
-    assert result == expected
+    assert result == NotificationCreateResponse.model_validate(expected)
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"

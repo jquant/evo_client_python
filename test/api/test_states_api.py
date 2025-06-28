@@ -7,6 +7,7 @@ import pytest
 from evo_client.sync.api import SyncStatesApi
 from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
+from evo_client.models.common_models import StateResponse
 
 
 @pytest.fixture
@@ -35,7 +36,7 @@ def test_get_states(states_api: SyncStatesApi, mock_api_client: Mock):
 
     result = states_api.get_states()
 
-    assert result == expected
+    assert result == [StateResponse.model_validate(expected[0])]
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"

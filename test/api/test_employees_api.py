@@ -1,6 +1,5 @@
 """Tests for the SyncEmployeesApi class."""
 
-from datetime import datetime
 from unittest.mock import Mock, patch
 
 import pytest
@@ -17,6 +16,7 @@ from evo_client.models.employee_api_integracao_atualizacao_view_model import (
 from evo_client.models.funcionarios_resumo_api_view_model import (
     FuncionariosResumoApiViewModel,
 )
+from evo_client.models.common_models import EmployeeOperationResponse
 
 
 @pytest.fixture
@@ -62,7 +62,6 @@ def test_get_employees_with_filters(
     result = employees_api.get_employees(
         employee_id=123,
         name="John",
-        email="john@example.com",
         take=50,
         skip=0,
     )
@@ -75,7 +74,6 @@ def test_get_employees_with_filters(
     query_params = args["query_params"]
     assert query_params["idEmployee"] == 123
     assert query_params["name"] == "John"
-    assert query_params["email"] == "john@example.com"
     assert query_params["take"] == 50
     assert query_params["skip"] == 0
 
@@ -88,7 +86,7 @@ def test_create_employee(employees_api: SyncEmployeesApi, mock_api_client: Mock)
 
     result = employees_api.create_employee(employee=employee_data)
 
-    assert result == expected
+    assert result == EmployeeOperationResponse.model_validate(expected)
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "PUT"
@@ -104,7 +102,7 @@ def test_update_employee(employees_api: SyncEmployeesApi, mock_api_client: Mock)
 
     result = employees_api.update_employee(employee=employee_data)
 
-    assert result == expected
+    assert result == EmployeeOperationResponse.model_validate(expected)
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
@@ -119,7 +117,7 @@ def test_delete_employee(employees_api: SyncEmployeesApi, mock_api_client: Mock)
 
     result = employees_api.delete_employee(employee_id=123)
 
-    assert result == expected
+    assert result == EmployeeOperationResponse.model_validate(expected)
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "DELETE"

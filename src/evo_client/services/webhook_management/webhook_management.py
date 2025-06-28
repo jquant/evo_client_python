@@ -12,6 +12,8 @@ from ...utils.pagination_utils import paginated_api_call
 
 
 class WebhookManagement(BaseDataFetcher):
+    """Webhook management service."""
+
     async def _delete_webhook_with_retry(
         self,
         webhook_api: SyncWebhookApi,
@@ -145,10 +147,10 @@ class WebhookManagementService:
                         )
 
                         for webhook in existing_webhooks:
-                            webhook_id = webhook.get("idWebhook")
-                            webhook_url = webhook.get("urlCallback")
-                            webhook_event = webhook.get("tipoEvento")
-                            webhook_branch = webhook.get("idFilial")
+                            webhook_id = webhook.id
+                            webhook_url = webhook.url_callback
+                            webhook_event = webhook.event_type
+                            webhook_branch = webhook.id_branch
 
                             logger.debug(
                                 f"Checking webhook: ID={webhook_id}, URL={webhook_url}, Event={webhook_event}, Branch={webhook_branch}"
@@ -159,7 +161,9 @@ class WebhookManagementService:
                                 and webhook_event in event_types
                                 and str(webhook_branch) == branch_id
                             ):
-                                success = self._delete_webhook_with_retry(
+                                success = WebhookManagement(
+                                    self.client_manager
+                                )._delete_webhook_with_retry(
                                     branch_webhook_api, webhook_id
                                 )
                                 if not success:

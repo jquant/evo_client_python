@@ -153,7 +153,8 @@ class SyncActivitiesApi(SyncBaseApi):
         prospect_id: Optional[int] = None,
         configuration_id: Optional[int] = None,
         activity_date: Optional[datetime] = None,
-        activity_session_id: Optional[int] = None,
+        slot_number: Optional[int] = None,
+        origin: Optional[int] = None,
         enrollment_origin: Optional[EOrigemAgendamento] = None,
         spot: Optional[str] = None,
     ) -> bool:
@@ -161,13 +162,15 @@ class SyncActivitiesApi(SyncBaseApi):
         Enroll member/prospect in activity.
 
         Args:
-            member_id: Member ID
-            prospect_id: Prospect ID
-            configuration_id: Activity configuration ID
-            activity_date: Activity date
-            activity_session_id: Activity session ID
-            enrollment_origin: Origin of enrollment
-            spot: Spot reservation
+            member_id: Member ID (required if prospect_id is null)
+            prospect_id: Prospect ID (required if member_id is null)
+            configuration_id: Activity configuration identifier
+            activity_date: Scheduled activity date
+            slot_number: Slot number for the activity (for individual slot reservations)
+            origin: Origin of the inscription/reservation
+            activity_session_id: [DEPRECATED] Activity session ID - use configuration_id instead
+            enrollment_origin: [DEPRECATED] Origin of enrollment - use origin instead
+            spot: [DEPRECATED] Spot reservation - use slot_number instead
 
         Returns:
             True if enrollment was successful
@@ -179,19 +182,35 @@ class SyncActivitiesApi(SyncBaseApi):
             ...     success = api.enroll_in_activity(
             ...         member_id=123,
             ...         configuration_id=456,
-            ...         activity_date=date
+            ...         activity_date=date,
+            ...         slot_number=1,
+            ...         origin=2
             ...     )
             ...     if success:
             ...         print("Enrolled successfully")
         """
+        # Handle backward compatibility
+        if enrollment_origin is not None and origin is None:
+            origin = (
+                enrollment_origin.value
+                if hasattr(enrollment_origin, "value")
+                else enrollment_origin
+            )
+
+        if spot is not None and slot_number is None:
+            # Try to convert spot to slot_number if it's numeric
+            try:
+                slot_number = int(spot)
+            except (ValueError, TypeError):
+                pass
+
         params = {
-            "idMember": member_id,
-            "idProspect": prospect_id,
             "idConfiguration": configuration_id,
             "activityDate": activity_date.isoformat() if activity_date else None,
-            "idActivitySession": activity_session_id,
-            "enrollmentOrigin": enrollment_origin.value if enrollment_origin else None,
-            "spot": spot,
+            "slotNumber": slot_number,
+            "idMember": member_id,
+            "idProspect": prospect_id,
+            "origin": origin,
         }
 
         result: Any = self.api_client.call_api(
@@ -249,7 +268,7 @@ class SyncActivitiesApi(SyncBaseApi):
         }
 
         try:
-            result: Any = self.api_client.call_api(
+            self.api_client.call_api(
                 resource_path=f"{self.base_path}/schedule/enroll/change-status",
                 method="POST",
                 query_params={k: v for k, v in params.items() if v is not None},
