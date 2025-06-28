@@ -80,7 +80,7 @@ class SyncEmployeesApi(SyncBaseApi):
             ...         print("Employee deleted successfully")
         """
         try:
-            result: Any = self.api_client.call_api(
+            self.api_client.call_api(
                 resource_path=self.base_path,
                 method="DELETE",
                 query_params={"idEmployee": employee_id},
@@ -127,7 +127,7 @@ class SyncEmployeesApi(SyncBaseApi):
             ...         print("Employee updated successfully")
         """
         try:
-            result: Any = self.api_client.call_api(
+            self.api_client.call_api(
                 resource_path=self.base_path,
                 method="POST",
                 body=employee.model_dump(exclude_unset=True, by_alias=True),

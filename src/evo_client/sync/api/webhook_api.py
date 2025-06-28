@@ -1,6 +1,6 @@
 """Clean synchronous Webhook API."""
 
-from typing import Any, List, Optional, cast
+from typing import Any, List, Optional
 
 from loguru import logger
 

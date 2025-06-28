@@ -2,8 +2,6 @@
 
 import asyncio
 import time
-from abc import ABC, abstractmethod
-from threading import Lock as ThreadLock
 from typing import (
     Any,
     Awaitable,
@@ -13,7 +11,6 @@ from typing import (
     Optional,
     Protocol,
     TypeVar,
-    Union,
     Tuple,
     ParamSpec,
 )

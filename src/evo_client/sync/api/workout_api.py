@@ -2,7 +2,7 @@
 
 import json
 from datetime import datetime
-from typing import List, Optional, Union, cast, Any
+from typing import List, Optional, Any
 
 from ...models.workout_models import WorkoutResponse, WorkoutUpdateResponse
 from .base import SyncBaseApi

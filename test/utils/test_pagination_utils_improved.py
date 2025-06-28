@@ -1,8 +1,6 @@
 """Tests for improved pagination utilities."""
 
 import pytest
-import time
-from typing import List
 from unittest.mock import Mock, patch, call
 
 from evo_client.utils.pagination_utils import (
@@ -347,6 +345,23 @@ class TestPaginatedApiCaller:
         assert result.data == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         assert result.total_requests == 3
         assert mock_executor.execute_with_retry.call_count == 3
+
+    def test_fetch_all_pages_api_error(self):
+        mock_executor = Mock()
+        mock_retry_handler = Mock()
+        mock_retry_handler.config = Mock()
+        mock_retry_handler.config.max_retries = 3
+        mock_executor.retry_handler = mock_retry_handler
+        mock_executor.execute_with_retry.side_effect = ApiException("API failed")
+
+        caller = PaginatedApiCaller(executor=mock_executor)
+        mock_api_func = Mock()
+
+        result = caller.fetch_all_pages(mock_api_func, branch_id="test")
+
+        assert result.success is False
+        assert result.error_message == "API failed"
+        assert result.data == []
 
     @patch("time.sleep")
     def test_fetch_all_pages_empty_response(self, mock_sleep):

@@ -1,7 +1,7 @@
 """API error handling decorators."""
 
 import functools
-from typing import Any, Callable, TypeVar, ParamSpec
+from typing import Callable, TypeVar, ParamSpec
 from rich.console import Console
 from rich.panel import Panel
 from loguru import logger
