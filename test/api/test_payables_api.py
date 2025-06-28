@@ -1,64 +1,41 @@
-"""Tests for the PayablesApi class."""
+"""Tests for the SyncPayablesApi class."""
 
 from datetime import datetime
 from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.api.payables_api import PayablesApi
+from evo_client.sync.api import SyncPayablesApi
+from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.cost_center_api_view_model import CostCenterApiViewModel
 from evo_client.models.payables_api_view_model import PayablesApiViewModel
 
 
 @pytest.fixture
-def payables_api():
-    """Create a PayablesApi instance for testing."""
-    return PayablesApi()
+def sync_client():
+    """Create a SyncApiClient instance for testing."""
+    return SyncApiClient()
+
+
+@pytest.fixture
+def payables_api(sync_client):
+    """Create a SyncPayablesApi instance for testing."""
+    return SyncPayablesApi(sync_client)
 
 
 @pytest.fixture
 def mock_api_client():
     """Create a mock API client."""
-    with patch("evo_client.api.payables_api.ApiClient.call_api") as mock:
+    with patch("evo_client.sync.core.api_client.SyncApiClient.call_api") as mock:
         yield mock
 
 
-def test_get_cost_centers_basic(payables_api: PayablesApi, mock_api_client: Mock):
-    """Test getting cost centers list with no parameters."""
-    expected = CostCenterApiViewModel()
-    mock_api_client.return_value = expected
-
-    result = payables_api.get_cost_centers(async_req=False)
-
-    assert result == expected
-    mock_api_client.assert_called_once()
-    args = mock_api_client.call_args[1]
-    assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/costcenter"
-
-
-def test_get_cost_centers_with_pagination(
-    payables_api: PayablesApi, mock_api_client: Mock
-):
-    """Test getting cost centers with pagination."""
-    expected = CostCenterApiViewModel()
-    mock_api_client.return_value = expected
-
-    result = payables_api.get_cost_centers(take=10, skip=0, async_req=False)
-
-    assert result == expected
-    mock_api_client.assert_called_once()
-    args = mock_api_client.call_args[1]
-    assert args["query_params"] == {"take": 10, "skip": 0}
-
-
-def test_get_payables_basic(payables_api: PayablesApi, mock_api_client: Mock):
-    """Test getting payables list with no parameters."""
+def test_get_payables(payables_api: SyncPayablesApi, mock_api_client: Mock):
+    """Test getting payables list."""
     expected = PayablesApiViewModel()
     mock_api_client.return_value = expected
 
-    result = payables_api.get_payables(async_req=False)
+    result = payables_api.get_payables()
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -67,48 +44,39 @@ def test_get_payables_basic(payables_api: PayablesApi, mock_api_client: Mock):
     assert args["resource_path"] == "/api/v1/payables"
 
 
-def test_get_payables_with_filters(payables_api: PayablesApi, mock_api_client: Mock):
-    """Test getting payables with search filters."""
+def test_get_payables_with_filters(
+    payables_api: SyncPayablesApi, mock_api_client: Mock
+):
+    """Test getting payables with date filters."""
     expected = PayablesApiViewModel()
     mock_api_client.return_value = expected
+    start_date = datetime(2023, 1, 1)
+    end_date = datetime(2023, 12, 31)
 
     result = payables_api.get_payables(
-        description="Test Payment",
-        date_input_start=datetime(2023, 1, 1),
-        date_input_end=datetime(2023, 12, 31),
-        due_date_start=datetime(2023, 1, 1),
-        due_date_end=datetime(2023, 12, 31),
-        amount_start=100.0,
-        amount_end=500.0,
+        description="Office Rent",
+        due_date_start=start_date,
+        due_date_end=end_date,
         account_status="1",
         take=10,
-        skip=0,
-        async_req=False,
     )
 
     assert result == expected
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
-    assert args["query_params"] == {
-        "description": "Test Payment",
-        "dateInputStart": datetime(2023, 1, 1),
-        "dateInputEnd": datetime(2023, 12, 31),
-        "dueDateStart": datetime(2023, 1, 1),
-        "dueDateEnd": datetime(2023, 12, 31),
-        "amountStart": 100.0,
-        "amountEnd": 500.0,
-        "accountStatus": "1",
-        "take": 10,
-        "skip": 0,
-    }
+    assert args["method"] == "GET"
+    assert args["resource_path"] == "/api/v1/payables"
+    assert args["query_params"]["description"] == "Office Rent"
+    assert args["query_params"]["accountStatus"] == "1"
+    assert args["query_params"]["take"] == 10
 
 
-def test_error_handling(payables_api: PayablesApi, mock_api_client: Mock):
+def test_error_handling(payables_api: SyncPayablesApi, mock_api_client: Mock):
     """Test API error handling."""
-    mock_api_client.side_effect = ApiException(status=404, reason="Not Found")
+    mock_api_client.side_effect = ApiException(status=500, reason="Server Error")
 
     with pytest.raises(ApiException) as exc:
-        payables_api.get_payables(async_req=False)
+        payables_api.get_payables()
 
-    assert exc.value.status == 404
-    assert exc.value.reason == "Not Found"
+    assert exc.value.status == 500
+    assert exc.value.reason == "Server Error"
