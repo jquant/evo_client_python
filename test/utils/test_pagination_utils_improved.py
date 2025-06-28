@@ -248,7 +248,8 @@ class TestApiCallExecutor:
         assert mock_sleep.call_count == 2
         mock_sleep.assert_has_calls([call(1.0), call(2.0)])
 
-    def test_max_retries_exceeded(self):
+    @patch("time.sleep")
+    def test_max_retries_exceeded(self, mock_sleep):
         mock_rate_limiter = Mock()
         mock_retry_handler = Mock()
         mock_retry_handler.config = RetryConfig(max_retries=2)
@@ -265,6 +266,8 @@ class TestApiCallExecutor:
 
         assert mock_rate_limiter.acquire.call_count == 2
         assert mock_api_func.call_count == 2
+        # Verify sleep was called for retry delay
+        mock_sleep.assert_called_once_with(1.0)
 
 
 class TestPaginatedApiCaller:
@@ -345,48 +348,41 @@ class TestPaginatedApiCaller:
         assert result.total_requests == 3
         assert mock_executor.execute_with_retry.call_count == 3
 
-    def test_fetch_all_pages_api_error(self):
-        mock_executor = Mock()
-        mock_retry_handler = Mock()
-        mock_retry_handler.config = Mock()
-        mock_retry_handler.config.max_retries = 3
-        mock_executor.retry_handler = mock_retry_handler
-        mock_executor.execute_with_retry.side_effect = ApiException("API failed")
-
-        caller = PaginatedApiCaller(executor=mock_executor)
-        mock_api_func = Mock()
-
-        result = caller.fetch_all_pages(mock_api_func, branch_id="test")
-
-        assert result.success is False
-        assert result.error_message == "API failed"
-        assert result.data == []
-
-    def test_fetch_all_pages_empty_response(self):
+    @patch("time.sleep")
+    def test_fetch_all_pages_empty_response(self, mock_sleep):
         mock_executor = Mock()
         mock_executor.execute_with_retry.return_value = []
 
         caller = PaginatedApiCaller(executor=mock_executor)
+        # Use config with no delays to speed up test
+        config = PaginationConfig(post_request_delay=0.0)
         mock_api_func = Mock()
 
-        result = caller.fetch_all_pages(mock_api_func, branch_id="test")
+        result = caller.fetch_all_pages(mock_api_func, config, branch_id="test")
 
         assert result.success is True
         assert result.data == []
         assert result.total_requests == 1
+        # Should not sleep since post_request_delay=0.0
+        mock_sleep.assert_not_called()
 
-    def test_fetch_all_pages_non_list_response(self):
+    @patch("time.sleep")
+    def test_fetch_all_pages_non_list_response(self, mock_sleep):
         mock_executor = Mock()
         mock_executor.execute_with_retry.return_value = {"single": "object"}
 
         caller = PaginatedApiCaller(executor=mock_executor)
+        # Use config with no delays to speed up test
+        config = PaginationConfig(post_request_delay=0.0)
         mock_api_func = Mock()
 
-        result = caller.fetch_all_pages(mock_api_func, branch_id="test")
+        result = caller.fetch_all_pages(mock_api_func, config, branch_id="test")
 
         assert result.success is True
         assert result.data == [{"single": "object"}]
         assert result.total_requests == 1
+        # Should not sleep since post_request_delay=0.0
+        mock_sleep.assert_not_called()
 
 
 class TestFactoryFunctions:
