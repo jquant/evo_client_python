@@ -9,10 +9,26 @@ from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterV
 from ...sync.api.webhook_api import SyncWebhookApi
 from ..data_fetchers import BaseDataFetcher
 from ...utils.pagination_utils import paginated_api_call
+from ...utils.async_pagination_utils import async_paginated_api_call
 
 
 class WebhookManagement(BaseDataFetcher):
     """Webhook management service."""
+
+    pass
+
+
+class WebhookManagementService:
+    """Service for managing webhook subscriptions."""
+
+    def __init__(self, client_manager: BranchApiClientManager):
+        """Initialize the webhook management service.
+
+        Args:
+            client_manager: The client manager instance
+        """
+        self.client_manager = client_manager
+        self.webhook_fetcher = WebhookDataFetcher(client_manager)
 
     async def _delete_webhook_with_retry(
         self,
@@ -55,20 +71,7 @@ class WebhookManagement(BaseDataFetcher):
         # Wait between attempts
         return False
 
-
-class WebhookManagementService:
-    """Service for managing webhook subscriptions."""
-
-    def __init__(self, client_manager: BranchApiClientManager):
-        """Initialize the webhook management service.
-
-        Args:
-            client_manager: The client manager instance
-        """
-        self.client_manager = client_manager
-        self.webhook_fetcher = WebhookDataFetcher(client_manager)
-
-    def manage_webhooks(
+    async def manage_webhooks(
         self,
         url_callback: str,
         branch_ids: Optional[List[int]] = None,
@@ -139,8 +142,7 @@ class WebhookManagementService:
                         )
                         existing_webhooks = paginated_api_call(
                             api_func=branch_webhook_api.get_webhooks,
-                            branch_id=str(branch_id),
-                            async_req=False,
+                            branch_id_logging=str(branch_id),
                         )
                         logger.debug(
                             f"Found webhooks for branch {branch_id}: {existing_webhooks}"
@@ -161,9 +163,7 @@ class WebhookManagementService:
                                 and webhook_event in event_types
                                 and str(webhook_branch) == branch_id
                             ):
-                                success = WebhookManagement(
-                                    self.client_manager
-                                )._delete_webhook_with_retry(
+                                success = await self._delete_webhook_with_retry(
                                     branch_webhook_api, webhook_id
                                 )
                                 if not success:
@@ -196,16 +196,14 @@ class WebhookManagementService:
                         logger.debug(
                             f"Creating webhook for branch {branch_id}, event {event_type}"
                         )
-                        success = paginated_api_call(
-                            api_func=webhook_api.create_webhook,
-                            branch_id=str(branch_id),
+                        success = webhook_api.create_webhook(
                             event_type=event_type,
                             url_callback=url_callback,
+                            branch_id=branch_id,
                             headers=webhook_headers,
                             filters=(
                                 webhook_filters if event_type == "NewSale" else None
                             ),
-                            async_req=False,
                         )
                         if not success:
                             logger.error(

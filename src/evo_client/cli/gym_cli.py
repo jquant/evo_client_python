@@ -1163,6 +1163,7 @@ def list_webhooks():
         table.add_column("Created Date")
 
         for webhook in webhooks:
+            # Unused variables are commented out to avoid mypy errors
             # Convert header models to dicts before JSON serialization
             # headers_str = (
             #     json.dumps(
