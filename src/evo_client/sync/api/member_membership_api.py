@@ -79,7 +79,7 @@ class SyncMemberMembershipApi(SyncBaseApi):
             "ValueFine": value_fine,
         }
 
-        result = self.api_client.call_api(
+        result: Any = self.api_client.call_api(
             resource_path=f"{self.base_path_v1}/cancellation",
             method="POST",
             query_params={k: v for k, v in params.items() if v is not None},

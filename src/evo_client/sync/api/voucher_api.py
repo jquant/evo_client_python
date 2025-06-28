@@ -1,8 +1,14 @@
 """Clean synchronous Voucher API."""
 
-from typing import Any, List, Optional, cast
+from typing import List, Optional, cast, Any
+import json
 
 from ...models.vouchers_resumo_api_view_model import VouchersResumoApiViewModel
+from ...models.voucher_models import (
+    VoucherDetails,
+    VoucherCreateResponse,
+    VoucherCalculationResponse,
+)
 from .base import SyncBaseApi
 
 
@@ -51,7 +57,7 @@ class SyncVoucherApi(SyncBaseApi):
             ...         take=10
             ...     )
             ...     for voucher in vouchers:
-            ...         print(f"Voucher: {voucher.name} - {voucher.discount_value}")
+            ...         print(f"Voucher: {voucher.name_voucher} - {voucher.type_voucher}")
         """
         params = {
             "idVoucher": voucher_id,
@@ -63,7 +69,7 @@ class SyncVoucherApi(SyncBaseApi):
             "type": voucher_type,
         }
 
-        result = self.api_client.call_api(
+        result: Any = self.api_client.call_api(
             resource_path=self.base_path,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
@@ -73,7 +79,7 @@ class SyncVoucherApi(SyncBaseApi):
         )
         return cast(List[VouchersResumoApiViewModel], result)
 
-    def get_voucher_details(self, voucher_id: int) -> Any:
+    def get_voucher_details(self, voucher_id: int) -> VoucherDetails:
         """
         Get detailed information about a specific voucher.
 
@@ -90,74 +96,124 @@ class SyncVoucherApi(SyncBaseApi):
         Example:
             >>> with SyncVoucherApi() as api:
             ...     details = api.get_voucher_details(voucher_id=123)
-            ...     print(f"Voucher Details: {details}")
+            ...     print(f"Voucher: {details.name} - Value: {details.value}")
         """
-        result = self.api_client.call_api(
+        result: Any = self.api_client.call_api(
             resource_path=f"{self.base_path}/{voucher_id}",
             method="GET",
             headers={"Accept": ["text/plain", "application/json", "text/json"]},
             auth_settings=["Basic"],
         )
-        return result
+
+        # Parse the raw result into VoucherDetails model
+        return VoucherDetails.model_validate(result)
 
     def create_voucher(
         self,
-        name: str,
-        discount_type: int,
-        discount_value: float,
-        valid_from: str,
-        valid_until: str,
-        branch_id: Optional[int] = None,
-        usage_limit: Optional[int] = None,
-        min_value: Optional[float] = None,
-    ) -> Any:
+        member_id: int,
+        value: float,
+        description: Optional[str] = None,
+        expiration_date: Optional[str] = None,
+    ) -> VoucherCreateResponse:
         """
-        Create a new voucher.
+        Create a new voucher for a member.
 
         Args:
-            name: Name/code of the voucher
-            discount_type: Type of discount (1=Percentage, 2=Fixed amount)
-            discount_value: Value of the discount
-            valid_from: Start date of validity (format: YYYY-MM-DD)
-            valid_until: End date of validity (format: YYYY-MM-DD)
-            branch_id: Branch ID for voucher (multilocation only)
-            usage_limit: Maximum number of times voucher can be used
-            min_value: Minimum purchase value required
+            member_id: ID of the member to create voucher for
+            value: Voucher value amount
+            description: Optional voucher description
+            expiration_date: Optional expiration date (YYYY-MM-DD format)
 
         Returns:
-            Created voucher details
+            Created voucher details including ID and status
 
         Example:
             >>> with SyncVoucherApi() as api:
-            ...     voucher = api.create_voucher(
-            ...         name="NEWUSER10",
-            ...         discount_type=1,
-            ...         discount_value=10.0,
-            ...         valid_from="2024-01-01",
-            ...         valid_until="2024-12-31",
-            ...         usage_limit=100
+            ...     response = api.create_voucher(
+            ...         member_id=123,
+            ...         value=50.0,
+            ...         description="Bonus voucher",
+            ...         expiration_date="2024-12-31"
             ...     )
-            ...     print(f"Created voucher with ID: {voucher.id}")
+            ...     if response.success:
+            ...         print(f"Voucher created with ID: {response.voucher_id}")
         """
-        voucher_data = {
-            "name": name,
-            "discountType": discount_type,
-            "discountValue": discount_value,
-            "validFrom": valid_from,
-            "validUntil": valid_until,
-            "branchId": branch_id,
-            "usageLimit": usage_limit,
-            "minValue": min_value,
+        request_data = {
+            "memberId": member_id,
+            "value": value,
+            "description": description,
+            "expirationDate": expiration_date,
         }
 
-        result = self.api_client.call_api(
-            resource_path=self.base_path,
+        # Remove None values
+        request_data = {k: v for k, v in request_data.items() if v is not None}
+
+        try:
+            result: Any = self.api_client.call_api(
+                resource_path=f"{self.base_path}/create-voucher",
+                method="POST",
+                body=json.dumps(request_data),
+                headers={"Content-Type": "application/json"},
+                auth_settings=["Basic"],
+            )
+
+            # Parse response or create success response
+            if isinstance(result, dict):
+                return VoucherCreateResponse.model_validate(result)
+            else:
+                # If API doesn't return structured response, create our own
+                return VoucherCreateResponse(
+                    success=True, message="Voucher created successfully"
+                )
+        except Exception as e:
+            return VoucherCreateResponse(
+                success=False,
+                message=f"Error creating voucher: {str(e)}",
+                errors=[str(e)],
+            )
+
+    def calculate_voucher_value(
+        self,
+        base_value: float,
+        discount_percentage: Optional[float] = None,
+        additional_fees: Optional[float] = None,
+    ) -> VoucherCalculationResponse:
+        """
+        Calculate the final voucher value with discounts and fees.
+
+        Args:
+            base_value: Base voucher value
+            discount_percentage: Optional discount percentage (0-100)
+            additional_fees: Optional additional fees to add
+
+        Returns:
+            Calculation result with final value and breakdown
+
+        Example:
+            >>> with SyncVoucherApi() as api:
+            ...     calculation = api.calculate_voucher_value(
+            ...         base_value=100.0,
+            ...         discount_percentage=10.0,
+            ...         additional_fees=5.0
+            ...     )
+            ...     print(f"Final value: {calculation.final_value}")
+        """
+        request_data = {
+            "baseValue": base_value,
+            "discountPercentage": discount_percentage,
+            "additionalFees": additional_fees,
+        }
+
+        # Remove None values
+        request_data = {k: v for k, v in request_data.items() if v is not None}
+
+        result: Any = self.api_client.call_api(
+            resource_path=f"{self.base_path}/calculate-value",
             method="POST",
-            body={k: v for k, v in voucher_data.items() if v is not None},
-            headers={
-                "Accept": ["text/plain", "application/json", "text/json"],
-                "Content-Type": ["application/json"],
-            },
+            body=json.dumps(request_data),
+            headers={"Content-Type": "application/json"},
             auth_settings=["Basic"],
         )
-        return result
+
+        # Parse the raw result into VoucherCalculationResponse model
+        return VoucherCalculationResponse.model_validate(result)

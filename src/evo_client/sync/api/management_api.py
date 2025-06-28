@@ -80,7 +80,7 @@ class SyncManagementApi(SyncBaseApi):
             logger.debug(f"Request headers: {headers}")
 
             # Make API call and get response directly
-            response = self.api_client.call_api(
+            response: Any = self.api_client.call_api(
                 resource_path=f"{self.base_path}/activeclients",
                 method="GET",
                 headers=headers,
@@ -207,7 +207,7 @@ class SyncManagementApi(SyncBaseApi):
             logger.debug(f"Request headers: {headers}")
 
             # Make API call and get response directly
-            response = self.api_client.call_api(
+            response: Any = self.api_client.call_api(
                 resource_path=f"{self.base_path}/prospects",
                 method="GET",
                 headers=headers,
@@ -291,7 +291,7 @@ class SyncManagementApi(SyncBaseApi):
             logger.debug(f"Request headers: {headers}")
 
             # Make API call and get response directly
-            response = self.api_client.call_api(
+            response: Any = self.api_client.call_api(
                 resource_path=f"{self.base_path}/not-renewed",
                 method="GET",
                 headers=headers,

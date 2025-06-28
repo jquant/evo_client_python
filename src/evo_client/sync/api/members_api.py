@@ -11,6 +11,7 @@ from ...models.member_data_view_model import MemberDataViewModel
 from ...models.member_transfer_view_model import MemberTransferViewModel
 from ...models.members_api_view_model import MembersApiViewModel
 from ...models.members_basic_api_view_model import MembersBasicApiViewModel
+from ...models.common_models import MemberServiceResponse, ApiOperationResponse
 from .base import SyncBaseApi
 
 
@@ -119,7 +120,7 @@ class SyncMembersApi(SyncBaseApi):
         fitcoin_type: str,
         fitcoin: int,
         reason: Optional[str] = None,
-    ) -> Any:
+    ) -> ApiOperationResponse:
         """
         Update member fitcoins.
 
@@ -130,11 +131,13 @@ class SyncMembersApi(SyncBaseApi):
             reason: Reason for the fitcoin update
 
         Returns:
-            Update result
+            Update result with success status
 
         Example:
             >>> api = SyncMembersApi()
             >>> result = api.update_fitcoins(123, "add", 100, "Bonus points")
+            >>> if result.success:
+            ...     print("Fitcoins updated successfully")
         """
         params = {
             "idMember": id_member,
@@ -143,14 +146,27 @@ class SyncMembersApi(SyncBaseApi):
             "reason": reason,
         }
 
-        return self.api_client.call_api(
-            resource_path=f"{self.base_path}/fitcoins",
-            method="PUT",
-            query_params={k: v for k, v in params.items() if v is not None},
-            response_type=None,
-            auth_settings=["Basic"],
-            headers={"Accept": "application/json"},
-        )
+        try:
+            result: Any = self.api_client.call_api(
+                resource_path=f"{self.base_path}/fitcoins",
+                method="PUT",
+                query_params={k: v for k, v in params.items() if v is not None},
+                response_type=None,
+                auth_settings=["Basic"],
+                headers={"Accept": "application/json"},
+            )
+
+            return ApiOperationResponse(
+                success=True,
+                message="Fitcoins updated successfully",
+                data=result if isinstance(result, dict) else None,
+            )
+        except Exception as e:
+            return ApiOperationResponse(
+                success=False,
+                message=f"Error updating fitcoins: {str(e)}",
+                errors=[str(e)],
+            )
 
     def get_members(
         self,
@@ -256,7 +272,7 @@ class SyncMembersApi(SyncBaseApi):
             "showActivityData": show_activity_data,
         }
 
-        result = self.api_client.call_api(
+        result: Any = self.api_client.call_api(
             resource_path=self.base_path_v2,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
@@ -266,7 +282,9 @@ class SyncMembersApi(SyncBaseApi):
         )
         return cast(List[MembersApiViewModel], result)
 
-    def update_member_card(self, id_member: int, card_number: str) -> Any:
+    def update_member_card(
+        self, id_member: int, card_number: str
+    ) -> ApiOperationResponse:
         """
         Update member card number.
 
@@ -275,24 +293,39 @@ class SyncMembersApi(SyncBaseApi):
             card_number: New card number
 
         Returns:
-            Update result
+            Update result with success status
 
         Example:
             >>> api = SyncMembersApi()
             >>> result = api.update_member_card(123, "1234567890")
+            >>> if result.success:
+            ...     print("Card updated successfully")
         """
         params = {
             "cardNumber": card_number,
         }
 
-        return self.api_client.call_api(
-            resource_path=f"{self.base_path}/{id_member}/card",
-            method="PUT",
-            query_params=params,
-            response_type=None,
-            auth_settings=["Basic"],
-            headers={"Accept": "application/json"},
-        )
+        try:
+            result: Any = self.api_client.call_api(
+                resource_path=f"{self.base_path}/{id_member}/card",
+                method="PUT",
+                query_params=params,
+                response_type=None,
+                auth_settings=["Basic"],
+                headers={"Accept": "application/json"},
+            )
+
+            return ApiOperationResponse(
+                success=True,
+                message="Member card updated successfully",
+                data=result if isinstance(result, dict) else None,
+            )
+        except Exception as e:
+            return ApiOperationResponse(
+                success=False,
+                message=f"Error updating member card: {str(e)}",
+                errors=[str(e)],
+            )
 
     def get_member_profile(self, id_member: int) -> ClienteDetalhesBasicosApiViewModel:
         """
@@ -309,7 +342,7 @@ class SyncMembersApi(SyncBaseApi):
             >>> profile = api.get_member_profile(123)
             >>> print(f"{profile.name} - {profile.email}")
         """
-        result = self.api_client.call_api(
+        result: Any = self.api_client.call_api(
             resource_path=f"{self.base_path_v2}/{id_member}",
             method="GET",
             response_type=ClienteDetalhesBasicosApiViewModel,
@@ -340,7 +373,7 @@ class SyncMembersApi(SyncBaseApi):
             "signIn": sign_in,
         }
 
-        result = self.api_client.call_api(
+        result: Any = self.api_client.call_api(
             resource_path=f"{self.base_path}/resetPassword",
             method="GET",
             query_params=params,
@@ -350,7 +383,9 @@ class SyncMembersApi(SyncBaseApi):
         )
         return cast(MemberAuthenticateViewModel, result)
 
-    def get_member_services(self, id_member: Optional[int] = None) -> list:
+    def get_member_services(
+        self, id_member: Optional[int] = None
+    ) -> List[MemberServiceResponse]:
         """
         Get member services.
 
@@ -358,17 +393,19 @@ class SyncMembersApi(SyncBaseApi):
             id_member: Optional member ID filter
 
         Returns:
-            List of member services
+            List of member services with details
 
         Example:
             >>> api = SyncMembersApi()
             >>> services = api.get_member_services(123)
+            >>> for service in services:
+            ...     print(f"Service: {service.service_name} - {service.service_type}")
         """
         params = {}
         if id_member:
             params["idMember"] = id_member
 
-        result = self.api_client.call_api(
+        result: Any = self.api_client.call_api(
             resource_path=f"{self.base_path}/services",
             method="GET",
             query_params=params if params else None,
@@ -376,9 +413,18 @@ class SyncMembersApi(SyncBaseApi):
             auth_settings=["Basic"],
             headers={"Accept": "application/json"},
         )
-        return cast(list, result)
 
-    def transfer_member(self, transfer_data: MemberTransferViewModel) -> Any:
+        # Parse the raw result into MemberServiceResponse models
+        if isinstance(result, list):
+            return [MemberServiceResponse.model_validate(service) for service in result]
+        elif result:
+            return [MemberServiceResponse.model_validate(result)]
+        else:
+            return []
+
+    def transfer_member(
+        self, transfer_data: MemberTransferViewModel
+    ) -> ApiOperationResponse:
         """
         Transfer member to another branch/location.
 
@@ -386,23 +432,43 @@ class SyncMembersApi(SyncBaseApi):
             transfer_data: Transfer details
 
         Returns:
-            Transfer result
+            Transfer result with success status
 
         Example:
             >>> api = SyncMembersApi()
             >>> transfer = MemberTransferViewModel(member_id=123, target_branch=456)
             >>> result = api.transfer_member(transfer)
+            >>> if result.success:
+            ...     print("Member transferred successfully")
         """
-        return self.api_client.call_api(
-            resource_path=f"{self.base_path}/transfer",
-            method="POST",
-            body=transfer_data.model_dump(exclude_unset=True, by_alias=True),
-            response_type=None,
-            auth_settings=["Basic"],
-            headers={"Accept": "application/json", "Content-Type": "application/json"},
-        )
+        try:
+            result: Any = self.api_client.call_api(
+                resource_path=f"{self.base_path}/transfer",
+                method="POST",
+                body=transfer_data.model_dump(exclude_unset=True, by_alias=True),
+                response_type=None,
+                auth_settings=["Basic"],
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+            )
 
-    def update_member_data(self, id_member: int, body: MemberDataViewModel) -> Any:
+            return ApiOperationResponse(
+                success=True,
+                message="Member transferred successfully",
+                data=result if isinstance(result, dict) else None,
+            )
+        except Exception as e:
+            return ApiOperationResponse(
+                success=False,
+                message=f"Error transferring member: {str(e)}",
+                errors=[str(e)],
+            )
+
+    def update_member_data(
+        self, id_member: int, body: MemberDataViewModel
+    ) -> ApiOperationResponse:
         """
         Update member data.
 
@@ -411,18 +477,36 @@ class SyncMembersApi(SyncBaseApi):
             body: Updated member data
 
         Returns:
-            Update result (success status or response data)
+            Update result with success status
 
         Example:
             >>> api = SyncMembersApi()
             >>> data = MemberDataViewModel(name="John Doe", email="john@example.com")
             >>> result = api.update_member_data(123, data)
+            >>> if result.success:
+            ...     print("Member data updated successfully")
         """
-        return self.api_client.call_api(
-            resource_path=f"{self.base_path}/update-member-data/{id_member}",
-            method="PATCH",
-            body=body.model_dump(exclude_unset=True, by_alias=True),
-            response_type=None,  # Let it return raw response
-            auth_settings=["Basic"],
-            headers={"Accept": "application/json", "Content-Type": "application/json"},
-        )
+        try:
+            result: Any = self.api_client.call_api(
+                resource_path=f"{self.base_path}/update-member-data/{id_member}",
+                method="PATCH",
+                body=body.model_dump(exclude_unset=True, by_alias=True),
+                response_type=None,  # Let it return raw response
+                auth_settings=["Basic"],
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+            )
+
+            return ApiOperationResponse(
+                success=True,
+                message="Member data updated successfully",
+                data=result if isinstance(result, dict) else None,
+            )
+        except Exception as e:
+            return ApiOperationResponse(
+                success=False,
+                message=f"Error updating member data: {str(e)}",
+                errors=[str(e)],
+            )

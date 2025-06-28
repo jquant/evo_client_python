@@ -1,7 +1,7 @@
 """Clean synchronous Sales API."""
 
 from datetime import datetime
-from typing import List, Optional, cast
+from typing import List, Optional, cast, Any
 
 from ...models.new_sale_view_model import NewSaleResponse, NewSaleViewModel
 from ...models.sales_items_view_model import SalesItemsViewModel
@@ -161,8 +161,8 @@ class SyncSalesApi(SyncBaseApi):
             "onlyTotalPass": only_total_pass,
         }
 
-        result = self.api_client.call_api(
-            resource_path=self.base_path_v2,
+        result: Any = self.api_client.call_api(
+            resource_path=f"{self.base_path_v2}",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             response_type=List[SalesViewModel],
@@ -192,7 +192,7 @@ class SyncSalesApi(SyncBaseApi):
         if branch_id is not None:
             params["idBranch"] = branch_id
 
-        result = self.api_client.call_api(
+        result: Any = self.api_client.call_api(
             resource_path=f"{self.base_path_v1}/sales-items",
             method="GET",
             query_params=params if params else None,
@@ -223,7 +223,7 @@ class SyncSalesApi(SyncBaseApi):
         if date:
             params["date"] = date.isoformat()
 
-        result = self.api_client.call_api(
+        result: Any = self.api_client.call_api(
             resource_path=f"{self.base_path_v1}/by-session-id",
             method="GET",
             query_params=params,

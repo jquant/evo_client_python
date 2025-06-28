@@ -138,7 +138,7 @@ class SyncConfigurationApi(SyncBaseApi):
             ...     for lang, terms in translations.items():
             ...         print(f"{lang}: {terms}")
         """
-        result = self.api_client.call_api(
+        result: Any = self.api_client.call_api(
             resource_path=f"{self.base_path}/card-translation",
             method="GET",
             auth_settings=["Basic"],

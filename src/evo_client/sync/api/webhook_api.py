@@ -1,12 +1,13 @@
 """Clean synchronous Webhook API."""
 
-from typing import Any, List, Optional
+from typing import Any, List, Optional, cast
 
 from loguru import logger
 
 from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ...models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
+from ...models.common_models import WebhookResponse
 from .base import SyncBaseApi
 
 
@@ -41,7 +42,7 @@ class SyncWebhookApi(SyncBaseApi):
             # Pass webhook ID as a string in query parameters
             params = {"IdWebhook": str(webhook_id)}
 
-            response = self.api_client.call_api(
+            response: Any = self.api_client.call_api(
                 resource_path=self.base_path,
                 method="DELETE",
                 query_params=params,
@@ -71,7 +72,7 @@ class SyncWebhookApi(SyncBaseApi):
             logger.exception("Full traceback:")
             return False
 
-    def get_webhooks(self) -> Any:
+    def get_webhooks(self) -> List[WebhookResponse]:
         """
         List all webhooks created.
 
@@ -86,7 +87,7 @@ class SyncWebhookApi(SyncBaseApi):
             >>> with SyncWebhookApi() as api:
             ...     webhooks = api.get_webhooks()
             ...     for webhook in webhooks:
-            ...         print(f"Webhook: {webhook['eventType']} -> {webhook['urlCallback']}")
+            ...         print(f"Webhook: {webhook.event_type} -> {webhook.url_callback}")
         """
         try:
             logger.debug("Getting webhooks")
@@ -106,7 +107,7 @@ class SyncWebhookApi(SyncBaseApi):
                 query_params["idFilial"] = branch_id
                 logger.debug(f"Using branch ID in query params: {branch_id}")
 
-            response = self.api_client.call_api(
+            response: Any = self.api_client.call_api(
                 resource_path=self.base_path,
                 method="GET",
                 query_params=query_params,
@@ -122,7 +123,7 @@ class SyncWebhookApi(SyncBaseApi):
             # If we got a list directly, return it
             if isinstance(response, list):
                 logger.debug("Got list response directly")
-                return response
+                return [WebhookResponse.model_validate(webhook) for webhook in response]
 
             # Otherwise try to get data from response
             try:
@@ -138,7 +139,13 @@ class SyncWebhookApi(SyncBaseApi):
 
                                 data = json.loads(decoded)
                                 logger.debug(f"Parsed JSON data: {data}")
-                                return data
+                                if isinstance(data, list):
+                                    return [
+                                        WebhookResponse.model_validate(webhook)
+                                        for webhook in data
+                                    ]
+                                else:
+                                    return []
                             except json.JSONDecodeError as e:
                                 logger.warning(f"Response is not valid JSON: {e}")
                                 return []
@@ -151,16 +158,35 @@ class SyncWebhookApi(SyncBaseApi):
 
                             data = json.loads(raw_data)
                             logger.debug(f"Parsed JSON data: {data}")
-                            return data
+                            if isinstance(data, list):
+                                return [
+                                    WebhookResponse.model_validate(webhook)
+                                    for webhook in data
+                                ]
+                            else:
+                                return []
                         except json.JSONDecodeError as e:
                             logger.warning(f"Response is not valid JSON: {e}")
                             return []
-                    return raw_data
-                return response
+                    if isinstance(raw_data, list):
+                        return [
+                            WebhookResponse.model_validate(webhook)
+                            for webhook in raw_data
+                        ]
+                    else:
+                        return []
+                if isinstance(response, list):
+                    return [
+                        WebhookResponse.model_validate(webhook) for webhook in response
+                    ]
+                else:
+                    return []
             except Exception as e:
                 logger.warning(f"Failed to get response data: {e}")
                 if isinstance(response, list):
-                    return response
+                    return [
+                        WebhookResponse.model_validate(webhook) for webhook in response
+                    ]
                 return []
 
         except Exception as e:
@@ -211,7 +237,7 @@ class SyncWebhookApi(SyncBaseApi):
             logger.debug(f"Creating webhook with data: {webhook_data}")
 
             # Make the API call
-            response = self.api_client.call_api(
+            response: Any = self.api_client.call_api(
                 resource_path=self.base_path,
                 method="POST",
                 body=webhook_data,

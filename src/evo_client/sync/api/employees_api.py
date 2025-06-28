@@ -1,12 +1,13 @@
 """Clean synchronous Employees API."""
 
-from typing import Any, List, Optional, cast
+from typing import List, Optional, cast, Any
 
 from ...models.employee_api_integracao_atualizacao_view_model import (
     EmployeeApiIntegracaoAtualizacaoViewModel,
 )
 from ...models.employee_api_integracao_view_model import EmployeeApiIntegracaoViewModel
 from ...models.funcionarios_resumo_api_view_model import FuncionariosResumoApiViewModel
+from ...models.common_models import EmployeeOperationResponse
 from .base import SyncBaseApi
 
 
@@ -19,43 +20,40 @@ class SyncEmployeesApi(SyncBaseApi):
 
     def get_employees(
         self,
-        employee_id: Optional[int] = None,
         name: Optional[str] = None,
-        email: Optional[str] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
+        active: Optional[bool] = None,
+        employee_id: Optional[int] = None,
     ) -> List[FuncionariosResumoApiViewModel]:
         """
-        Get employees with optional filtering.
+        Get employees with filtering options.
 
         Args:
-            employee_id: Filter by employee ID
-            name: Filter by name
-            email: Filter by email
-            take: Number of records to return
+            name: Filter by employee name
+            take: Number of records to return (max 50)
             skip: Number of records to skip
+            active: Filter by active status
+            employee_id: Filter by specific employee ID
 
         Returns:
-            List of employees matching the criteria
+            List of employee objects
 
         Example:
-            >>> with SyncEmployeesApi() as api:
-            ...     employees = api.get_employees(
-            ...         name="John",
-            ...         take=10
-            ...     )
-            ...     for employee in employees:
-            ...         print(f"Employee: {employee.name} - {employee.email}")
+            >>> api = SyncEmployeesApi()
+            >>> employees = api.get_employees(active=True, take=10)
+            >>> for emp in employees:
+            ...     print(f"{emp.name} - {emp.function}")
         """
         params = {
-            "idEmployee": employee_id,
             "name": name,
-            "email": email,
             "take": take,
             "skip": skip,
+            "active": active,
+            "idEmployee": employee_id,
         }
 
-        result = self.api_client.call_api(
+        result: Any = self.api_client.call_api(
             resource_path=self.base_path,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
@@ -65,7 +63,7 @@ class SyncEmployeesApi(SyncBaseApi):
         )
         return cast(List[FuncionariosResumoApiViewModel], result)
 
-    def delete_employee(self, employee_id: int) -> Any:
+    def delete_employee(self, employee_id: int) -> EmployeeOperationResponse:
         """
         Delete an employee.
 
@@ -73,23 +71,41 @@ class SyncEmployeesApi(SyncBaseApi):
             employee_id: ID of employee to delete
 
         Returns:
-            Deletion result
+            Deletion result with success status
 
         Example:
             >>> with SyncEmployeesApi() as api:
             ...     result = api.delete_employee(employee_id=123)
-            ...     print(f"Employee deleted: {result}")
+            ...     if result.success:
+            ...         print("Employee deleted successfully")
         """
-        result = self.api_client.call_api(
-            resource_path=self.base_path,
-            method="DELETE",
-            query_params={"idEmployee": employee_id},
-            auth_settings=["Basic"],
-            headers={"Accept": "application/json"},
-        )
-        return result
+        try:
+            result: Any = self.api_client.call_api(
+                resource_path=self.base_path,
+                method="DELETE",
+                query_params={"idEmployee": employee_id},
+                auth_settings=["Basic"],
+                headers={"Accept": "application/json"},
+            )
 
-    def update_employee(self, employee: EmployeeApiIntegracaoViewModel) -> Any:
+            return EmployeeOperationResponse(
+                success=True,
+                employeeId=employee_id,
+                message="Employee deleted successfully",
+                operationType="delete",
+            )
+        except Exception as e:
+            return EmployeeOperationResponse(
+                success=False,
+                employeeId=employee_id,
+                message=f"Error deleting employee: {str(e)}",
+                operationType="delete",
+                errors=[str(e)],
+            )
+
+    def update_employee(
+        self, employee: EmployeeApiIntegracaoViewModel
+    ) -> EmployeeOperationResponse:
         """
         Update an existing employee.
 
@@ -97,7 +113,7 @@ class SyncEmployeesApi(SyncBaseApi):
             employee: Employee data to update
 
         Returns:
-            Update result
+            Update result with success status
 
         Example:
             >>> with SyncEmployeesApi() as api:
@@ -107,20 +123,47 @@ class SyncEmployeesApi(SyncBaseApi):
             ...         email="john.updated@example.com"
             ...     )
             ...     result = api.update_employee(employee_data)
-            ...     print(f"Employee updated: {result}")
+            ...     if result.success:
+            ...         print("Employee updated successfully")
         """
-        result = self.api_client.call_api(
-            resource_path=self.base_path,
-            method="POST",
-            body=employee.model_dump(exclude_unset=True, by_alias=True),
-            auth_settings=["Basic"],
-            headers={"Accept": "application/json", "Content-Type": "application/json"},
-        )
-        return result
+        try:
+            result: Any = self.api_client.call_api(
+                resource_path=self.base_path,
+                method="POST",
+                body=employee.model_dump(exclude_unset=True, by_alias=True),
+                headers={
+                    "Accept": ["text/plain", "application/json", "text/json"],
+                    "Content-Type": ["application/json"],
+                },
+                auth_settings=["Basic"],
+            )
+
+            # Extract employee ID from the input model
+            employee_id = getattr(employee, "id", None) or getattr(
+                employee, "idEmployee", None
+            )
+
+            return EmployeeOperationResponse(
+                success=True,
+                employeeId=employee_id,
+                message="Employee updated successfully",
+                operationType="update",
+            )
+        except Exception as e:
+            employee_id = getattr(employee, "id", None) or getattr(
+                employee, "idEmployee", None
+            )
+            return EmployeeOperationResponse(
+                success=False,
+                employeeId=employee_id,
+                message=f"Error updating employee: {str(e)}",
+                operationType="update",
+                errors=[str(e)],
+            )
 
     def create_employee(
         self, employee: EmployeeApiIntegracaoAtualizacaoViewModel
-    ) -> Any:
+    ) -> EmployeeOperationResponse:
         """
         Create a new employee.
 
@@ -128,7 +171,7 @@ class SyncEmployeesApi(SyncBaseApi):
             employee: Employee data to create
 
         Returns:
-            Created employee result
+            Created employee result with success status
 
         Example:
             >>> with SyncEmployeesApi() as api:
@@ -138,16 +181,40 @@ class SyncEmployeesApi(SyncBaseApi):
             ...         department="HR"
             ...     )
             ...     result = api.create_employee(employee_data)
-            ...     print(f"Employee created: {result}")
+            ...     if result.success:
+            ...         print("Employee created successfully")
         """
-        result = self.api_client.call_api(
-            resource_path=self.base_path,
-            method="PUT",
-            body=employee.model_dump(exclude_unset=True, by_alias=True),
-            auth_settings=["Basic"],
-            headers={
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            },
-        )
-        return result
+        try:
+            result: Any = self.api_client.call_api(
+                resource_path=self.base_path,
+                method="PUT",
+                body=employee.model_dump(exclude_unset=True, by_alias=True),
+                headers={
+                    "Accept": ["text/plain", "application/json", "text/json"],
+                    "Content-Type": ["application/json"],
+                },
+                auth_settings=["Basic"],
+            )
+
+            # Extract employee ID from result if available
+            employee_id = None
+            if isinstance(result, dict):
+                employee_id = (
+                    result.get("id")
+                    or result.get("idEmployee")
+                    or result.get("employeeId")
+                )
+
+            return EmployeeOperationResponse(
+                success=True,
+                employeeId=employee_id,
+                message="Employee created successfully",
+                operationType="create",
+            )
+        except Exception as e:
+            return EmployeeOperationResponse(
+                success=False,
+                message=f"Error creating employee: {str(e)}",
+                operationType="create",
+                errors=[str(e)],
+            )
