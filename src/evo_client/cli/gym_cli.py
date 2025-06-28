@@ -1164,18 +1164,18 @@ def list_webhooks():
 
         for webhook in webhooks:
             # Convert header models to dicts before JSON serialization
-            headers_str = (
-                json.dumps(
-                    [{"name": h.nome, "value": h.valor} for h in webhook.headers]
-                )
-                if webhook.headers
-                else ""
-            )
-            filters_str = (
-                json.dumps([f.model_dump() for f in webhook.filters])
-                if webhook.filters
-                else ""
-            )
+            # headers_str = (
+            #     json.dumps(
+            #         [{"name": h.nome, "value": h.valor} for h in webhook.headers]
+            #     )
+            #     if webhook.headers
+            #     else ""
+            # )
+            # filters_str = (
+            #     json.dumps([f.model_dump() for f in webhook.filters])
+            #     if webhook.filters
+            #     else ""
+            # )
             webhook.created_date if webhook.created_date else "N/A"
 
             table.add_row(

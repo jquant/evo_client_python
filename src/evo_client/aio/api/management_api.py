@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from io import BytesIO
-from typing import Any, List, Optional, cast
+from typing import Any, List, Optional
 
 import pandas as pd
 from loguru import logger

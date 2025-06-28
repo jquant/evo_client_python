@@ -6,7 +6,7 @@ Pre-configured settings for common EVO Client usage scenarios.
 Makes it easy to get started with sensible defaults.
 """
 
-from typing import Dict, Any
+from typing import Dict
 
 from ..core.configuration import Configuration
 

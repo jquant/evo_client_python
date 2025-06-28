@@ -1,6 +1,6 @@
 """Async Members API client for EVO API."""
 
-from typing import List, Optional
+from typing import Optional
 
 from ...models.members_basic_api_view_model import MembersBasicApiViewModel
 from ...models.member_authenticate_view_model import MemberAuthenticateViewModel

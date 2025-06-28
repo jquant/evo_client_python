@@ -1,7 +1,7 @@
 """Clean synchronous Sales API."""
 
 from datetime import datetime
-from typing import Any, List, Optional, cast
+from typing import List, Optional, cast
 
 from ...models.new_sale_view_model import NewSaleResponse, NewSaleViewModel
 from ...models.sales_items_view_model import SalesItemsViewModel

@@ -6,8 +6,7 @@ Provides easy-to-use factory methods for creating configurations that work
 seamlessly with both sync and async EVO clients.
 """
 
-import os
-from typing import Dict, Optional, Union
+from typing import Dict
 
 from ..core.configuration import Configuration
 

@@ -2,6 +2,8 @@ from typing import List, Dict, Optional
 import asyncio
 from loguru import logger
 
+from ..data_fetchers.webhook_data_fetcher import WebhookDataFetcher
+from ..data_fetchers import BranchApiClientManager
 from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 from ...sync.api.webhook_api import SyncWebhookApi
@@ -50,12 +52,6 @@ class WebhookManagement(BaseDataFetcher):
 
         # Wait between attempts
         return False
-
-
-from ..data_fetchers.webhook_data_fetcher import WebhookDataFetcher
-from ..data_fetchers import BranchApiClientManager
-from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
-from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 
 
 class WebhookManagementService:

@@ -6,8 +6,7 @@ Validates EVO Client configurations to catch issues early and provide
 helpful feedback to users.
 """
 
-import re
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Tuple
 from urllib.parse import urlparse
 
 from ..core.configuration import Configuration

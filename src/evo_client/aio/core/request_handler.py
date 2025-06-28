@@ -10,7 +10,6 @@ from loguru import logger
 from pydantic import BaseModel
 
 from ...core.configuration import Configuration
-from ...core.response import RESTResponse
 
 T = TypeVar("T", bound=BaseModel)
 
