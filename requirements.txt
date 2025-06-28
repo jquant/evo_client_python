@@ -2,6 +2,7 @@ certifi >= 14.05.14
 loguru >= 0.7.3
 pandas >=2.2.3
 pydantic >= 2.10.1
+python-dotenv==1.1.0
 python_dateutil >= 2.5.3
 requests >= 2.32.3
 setuptools >= 21.0.0

@@ -25,3 +25,28 @@ from evo_client.api.webhook_api import WebhookApi
 from evo_client.api.workout_api import WorkoutApi
 
 # flake8: noqa
+
+__all__ = [
+    "ActivitiesApi",
+    "BankAccountsApi",
+    "ConfigurationApi",
+    "EmployeesApi",
+    "EntriesApi",
+    "InvoicesApi",
+    "ManagementApi",
+    "MemberMembershipApi",
+    "MembersApi",
+    "MembershipApi",
+    "NotificationsApi",
+    "PartnershipApi",
+    "PayablesApi",
+    "PixApi",
+    "ProspectsApi",
+    "ReceivablesApi",
+    "SalesApi",
+    "ServiceApi",
+    "StatesApi",
+    "VoucherApi",
+    "WebhookApi",
+    "WorkoutApi",
+]

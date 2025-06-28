@@ -11,7 +11,6 @@ from rich.console import Console
 from rich.table import Table
 from rich.tree import Tree
 
-from ..api.gym_api import GymApi
 from ..core.api_client import ApiClient
 from ..core.configuration import Configuration
 from ..models.gym_model import GymKnowledgeBase
@@ -21,6 +20,7 @@ from ..services.data_fetchers.gym_metrics_data_fetcher import GymMetricsDataFetc
 from ..services.data_fetchers.overdue_members_data_fetcher import (
     OverdueMembersDataFetcher,
 )
+from ..services.gym_api import GymApi
 from ..services.gym_knowledge_base.gym_kb_data_fetcher import GymKnowledgeBaseService
 from ..services.member_files.member_files_data_fetcher import MemberFilesDataFetcher
 from ..services.operating_data.operating_data_fetcher import OperatingDataFetcher

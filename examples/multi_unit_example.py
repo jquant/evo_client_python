@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 from typing import Dict, List
 import asyncio
 
-from evo_client.api.gym_api import GymApi
-from evo_client.api.api_client import ApiClient
-from evo_client.api.configuration import Configuration
+from evo_client.services.gym_api import GymApi
+from evo_client.core.api_client import ApiClient
+from evo_client.core.configuration import Configuration
 from evo_client.services.data_fetchers import BranchApiClientManager
 from evo_client.models.gym_model import (
     GymKnowledgeBase,

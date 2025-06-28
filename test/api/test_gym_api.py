@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, Mock, PropertyMock, patch
 
 import pytest
 
-from evo_client.api.gym_api import GymApi
+from evo_client.services.gym_api import GymApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
 from evo_client.models.configuracao_api_view_model import ConfiguracaoApiViewModel

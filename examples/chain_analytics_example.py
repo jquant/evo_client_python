@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Dict, List, Optional, NamedTuple
 import asyncio
 
-from evo_client.api.gym_api import GymApi
+from evo_client.services.gym_api import GymApi
 from evo_client.models.gym_model import GymOperatingData, GymEntry, MembershipStatus
 
 

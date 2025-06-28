@@ -3,7 +3,7 @@ from multiprocessing.pool import AsyncResult
 from pathlib import Path
 from typing import cast, Optional
 
-from evo_client.api.gym_api import GymApi
+from evo_client.services.gym_api import GymApi
 from evo_client.core.api_client import ApiClient
 from evo_client.core.configuration import Configuration
 from evo_client.models.gym_model import GymKnowledgeBase

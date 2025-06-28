@@ -28,7 +28,6 @@ class SalesDataFetcher(BaseDataFetcher):
         show_only_active_memberships: Optional[bool] = None,
         show_allow_locker: Optional[bool] = None,
         only_total_pass: Optional[bool] = None,
-        default_client: bool = True,
     ) -> List[SalesViewModel]:
         """Fetch sales with various filters.
 
