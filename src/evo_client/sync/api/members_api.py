@@ -1,0 +1,428 @@
+"""Clean synchronous Members API."""
+
+from datetime import datetime
+from typing import Any, List, Optional, cast
+
+from ...models.cliente_detalhes_basicos_api_view_model import (
+    ClienteDetalhesBasicosApiViewModel,
+)
+from ...models.member_authenticate_view_model import MemberAuthenticateViewModel
+from ...models.member_data_view_model import MemberDataViewModel
+from ...models.member_transfer_view_model import MemberTransferViewModel
+from ...models.members_api_view_model import MembersApiViewModel
+from ...models.members_basic_api_view_model import MembersBasicApiViewModel
+from .base import SyncBaseApi
+
+
+class SyncMembersApi(SyncBaseApi):
+    """Clean synchronous Members API client."""
+
+    def __init__(self, api_client=None):
+        super().__init__(api_client)
+        self.base_path = "/api/v1/members"
+
+    def authenticate_member(
+        self,
+        email: str,
+        password: str,
+        change_password: bool = False,
+    ) -> MemberAuthenticateViewModel:
+        """
+        Authenticate member.
+
+        Args:
+            email: Member email
+            password: Member password
+            change_password: True if password needs to be changed
+
+        Returns:
+            Member authentication details
+
+        Example:
+            >>> api = SyncMembersApi()
+            >>> result = api.authenticate_member("user@example.com", "password123")
+            >>> print(result.authenticated)
+        """
+        params = {
+            "email": email,
+            "password": password,
+            "changePassword": change_password,
+        }
+
+        result = self.api_client.call_api(
+            resource_path=f"{self.base_path}/auth",
+            method="POST",
+            query_params=params,
+            response_type=MemberAuthenticateViewModel,
+            auth_settings=["Basic"],
+            headers={"Accept": "application/json"},
+        )
+        return cast(MemberAuthenticateViewModel, result)
+
+    def get_basic_info(
+        self,
+        email: Optional[str] = None,
+        document: Optional[str] = None,
+        phone: Optional[str] = None,
+        member_id: Optional[int] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+    ) -> MembersBasicApiViewModel:
+        """
+        Get basic member information.
+
+        Args:
+            email: Filter by member email
+            document: Filter by member document
+            phone: Filter by phone (format: 1112341234)
+            member_id: Filter by member ID
+            take: Number of records to return (max 50)
+            skip: Number of records to skip
+
+        Returns:
+            Basic member information
+
+        Raises:
+            ValueError: If take > 50
+
+        Example:
+            >>> api = SyncMembersApi()
+            >>> result = api.get_basic_info(email="user@example.com")
+            >>> print(result.data[0].name if result.data else "No member found")
+        """
+        if take and take > 50:
+            raise ValueError("Maximum number of records to return is 50")
+
+        params = {
+            "email": email,
+            "document": document,
+            "phone": phone,
+            "idMember": member_id,
+            "take": take,
+            "skip": skip,
+        }
+
+        result = self.api_client.call_api(
+            resource_path=f"{self.base_path}/basic",
+            method="GET",
+            query_params={k: v for k, v in params.items() if v is not None},
+            response_type=MembersBasicApiViewModel,
+            auth_settings=["Basic"],
+            headers={"Accept": "application/json"},
+        )
+        return cast(MembersBasicApiViewModel, result)
+
+    def update_fitcoins(
+        self,
+        id_member: int,
+        fitcoin_type: str,
+        fitcoin: int,
+        reason: Optional[str] = None,
+    ) -> Any:
+        """
+        Update member fitcoins.
+
+        Args:
+            id_member: Member ID to update fitcoins
+            fitcoin_type: Type of fitcoin operation ("add" or "subtract")
+            fitcoin: Amount of fitcoins to add/subtract
+            reason: Reason for the fitcoin update
+
+        Returns:
+            Update result
+
+        Example:
+            >>> api = SyncMembersApi()
+            >>> result = api.update_fitcoins(123, "add", 100, "Bonus points")
+        """
+        params = {
+            "idMember": id_member,
+            "fitcoinType": fitcoin_type,
+            "fitcoin": fitcoin,
+            "reason": reason,
+        }
+
+        return self.api_client.call_api(
+            resource_path=f"{self.base_path}/fitcoins",
+            method="PUT",
+            query_params={k: v for k, v in params.items() if v is not None},
+            response_type=None,
+            auth_settings=["Basic"],
+            headers={"Accept": "application/json"},
+        )
+
+    def get_members(
+        self,
+        name: Optional[str] = None,
+        email: Optional[str] = None,
+        document: Optional[str] = None,
+        phone: Optional[str] = None,
+        conversion_date_start: Optional[datetime] = None,
+        conversion_date_end: Optional[datetime] = None,
+        register_date_start: Optional[datetime] = None,
+        register_date_end: Optional[datetime] = None,
+        membership_start_date_start: Optional[datetime] = None,
+        membership_start_date_end: Optional[datetime] = None,
+        membership_cancel_date_start: Optional[datetime] = None,
+        membership_cancel_date_end: Optional[datetime] = None,
+        status: Optional[int] = None,
+        token_gympass: Optional[str] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        ids_members: Optional[str] = None,
+        only_personal: bool = False,
+        personal_type: Optional[int] = None,
+        show_activity_data: bool = False,
+    ) -> List[MembersApiViewModel]:
+        """
+        Get members with advanced filtering options.
+
+        Args:
+            name: Filter by member name
+            email: Filter by member email
+            document: Filter by member document
+            phone: Filter by phone number
+            conversion_date_start: Start date for conversion filter
+            conversion_date_end: End date for conversion filter
+            register_date_start: Start date for registration filter
+            register_date_end: End date for registration filter
+            membership_start_date_start: Start date for membership start filter
+            membership_start_date_end: End date for membership start filter
+            membership_cancel_date_start: Start date for membership cancellation filter
+            membership_cancel_date_end: End date for membership cancellation filter
+            status: Member status filter
+            token_gympass: Gympass token filter
+            take: Number of records to return
+            skip: Number of records to skip
+            ids_members: Comma-separated member IDs
+            only_personal: Filter only personal members
+            personal_type: Personal type filter
+            show_activity_data: Include activity data
+
+        Returns:
+            List of members matching the criteria
+
+        Example:
+            >>> api = SyncMembersApi()
+            >>> members = api.get_members(name="John", take=10)
+            >>> for member in members:
+            ...     print(f"{member.name} - {member.email}")
+        """
+        params = {
+            "name": name,
+            "email": email,
+            "document": document,
+            "phone": phone,
+            "conversionDateStart": (
+                conversion_date_start.isoformat() if conversion_date_start else None
+            ),
+            "conversionDateEnd": (
+                conversion_date_end.isoformat() if conversion_date_end else None
+            ),
+            "registerDateStart": (
+                register_date_start.isoformat() if register_date_start else None
+            ),
+            "registerDateEnd": (
+                register_date_end.isoformat() if register_date_end else None
+            ),
+            "membershipStartDateStart": (
+                membership_start_date_start.isoformat()
+                if membership_start_date_start
+                else None
+            ),
+            "membershipStartDateEnd": (
+                membership_start_date_end.isoformat()
+                if membership_start_date_end
+                else None
+            ),
+            "membershipCancelDateStart": (
+                membership_cancel_date_start.isoformat()
+                if membership_cancel_date_start
+                else None
+            ),
+            "membershipCancelDateEnd": (
+                membership_cancel_date_end.isoformat()
+                if membership_cancel_date_end
+                else None
+            ),
+            "status": status,
+            "tokenGympass": token_gympass,
+            "take": take,
+            "skip": skip,
+            "idsMembers": ids_members,
+            "onlyPersonal": only_personal,
+            "personalType": personal_type,
+            "showActivityData": show_activity_data,
+        }
+
+        result = self.api_client.call_api(
+            resource_path=self.base_path,
+            method="GET",
+            query_params={k: v for k, v in params.items() if v is not None},
+            response_type=List[MembersApiViewModel],
+            auth_settings=["Basic"],
+            headers={"Accept": "application/json"},
+        )
+        return cast(List[MembersApiViewModel], result)
+
+    def update_member_card(self, id_member: int, card_number: str) -> Any:
+        """
+        Update member card number.
+
+        Args:
+            id_member: Member ID
+            card_number: New card number
+
+        Returns:
+            Update result
+
+        Example:
+            >>> api = SyncMembersApi()
+            >>> result = api.update_member_card(123, "1234567890")
+        """
+        params = {
+            "idMember": id_member,
+            "cardNumber": card_number,
+        }
+
+        return self.api_client.call_api(
+            resource_path=f"{self.base_path}/card",
+            method="PUT",
+            query_params=params,
+            response_type=None,
+            auth_settings=["Basic"],
+            headers={"Accept": "application/json"},
+        )
+
+    def get_member_profile(self, id_member: int) -> ClienteDetalhesBasicosApiViewModel:
+        """
+        Get detailed member profile.
+
+        Args:
+            id_member: Member ID
+
+        Returns:
+            Detailed member profile information
+
+        Example:
+            >>> api = SyncMembersApi()
+            >>> profile = api.get_member_profile(123)
+            >>> print(f"{profile.name} - {profile.email}")
+        """
+        result = self.api_client.call_api(
+            resource_path=f"{self.base_path}/{id_member}/profile",
+            method="GET",
+            response_type=ClienteDetalhesBasicosApiViewModel,
+            auth_settings=["Basic"],
+            headers={"Accept": "application/json"},
+        )
+        return cast(ClienteDetalhesBasicosApiViewModel, result)
+
+    def reset_password(
+        self, user: str, sign_in: bool = False
+    ) -> MemberAuthenticateViewModel:
+        """
+        Reset member password.
+
+        Args:
+            user: Member username/email
+            sign_in: Whether to sign in after reset
+
+        Returns:
+            Authentication result
+
+        Example:
+            >>> api = SyncMembersApi()
+            >>> result = api.reset_password("user@example.com", sign_in=True)
+        """
+        params = {
+            "user": user,
+            "signIn": sign_in,
+        }
+
+        result = self.api_client.call_api(
+            resource_path=f"{self.base_path}/resetpassword",
+            method="POST",
+            query_params=params,
+            response_type=MemberAuthenticateViewModel,
+            auth_settings=["Basic"],
+            headers={"Accept": "application/json"},
+        )
+        return cast(MemberAuthenticateViewModel, result)
+
+    def get_member_services(self, id_member: Optional[int] = None) -> list:
+        """
+        Get member services.
+
+        Args:
+            id_member: Optional member ID filter
+
+        Returns:
+            List of member services
+
+        Example:
+            >>> api = SyncMembersApi()
+            >>> services = api.get_member_services(123)
+        """
+        params = {}
+        if id_member:
+            params["idMember"] = id_member
+
+        result = self.api_client.call_api(
+            resource_path=f"{self.base_path}/services",
+            method="GET",
+            query_params=params if params else None,
+            response_type=None,  # Let it return raw data as list
+            auth_settings=["Basic"],
+            headers={"Accept": "application/json"},
+        )
+        return cast(list, result)
+
+    def transfer_member(self, transfer_data: MemberTransferViewModel) -> Any:
+        """
+        Transfer member to another branch/location.
+
+        Args:
+            transfer_data: Transfer details
+
+        Returns:
+            Transfer result
+
+        Example:
+            >>> api = SyncMembersApi()
+            >>> transfer = MemberTransferViewModel(member_id=123, target_branch=456)
+            >>> result = api.transfer_member(transfer)
+        """
+        return self.api_client.call_api(
+            resource_path=f"{self.base_path}/transfer",
+            method="POST",
+            body=transfer_data.model_dump(exclude_unset=True, by_alias=True),
+            response_type=None,
+            auth_settings=["Basic"],
+            headers={"Accept": "application/json", "Content-Type": "application/json"},
+        )
+
+    def update_member_data(self, id_member: int, body: MemberDataViewModel) -> Any:
+        """
+        Update member data.
+
+        Args:
+            id_member: Member ID
+            body: Updated member data
+
+        Returns:
+            Update result (success status or response data)
+
+        Example:
+            >>> api = SyncMembersApi()
+            >>> data = MemberDataViewModel(name="John Doe", email="john@example.com")
+            >>> result = api.update_member_data(123, data)
+        """
+        return self.api_client.call_api(
+            resource_path=f"{self.base_path}/{id_member}",
+            method="PUT",
+            body=body.model_dump(exclude_unset=True, by_alias=True),
+            response_type=None,  # Let it return raw response
+            auth_settings=["Basic"],
+            headers={"Accept": "application/json", "Content-Type": "application/json"},
+        )
