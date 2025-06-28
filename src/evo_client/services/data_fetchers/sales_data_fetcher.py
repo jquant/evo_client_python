@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...api.sales_api import SalesApi
+from ...sync.api.sales_api import SyncSalesApi
 from ...models.sales_view_model import SalesViewModel
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
@@ -53,7 +53,7 @@ class SalesDataFetcher(BaseDataFetcher):
         try:
             result = []
             for branch_id in self.get_available_branch_ids():
-                branch_api = SalesApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncSalesApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     result.extend(
                         paginated_api_call(

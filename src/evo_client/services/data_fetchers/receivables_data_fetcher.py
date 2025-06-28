@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...api.receivables_api import ReceivablesApi
+from ...sync.api.receivables_api import SyncReceivablesApi
 from ...models.receivables_api_view_model import ReceivablesApiViewModel
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
@@ -81,7 +81,9 @@ class ReceivablesDataFetcher(BaseDataFetcher):
         try:
             result = []
             for branch_id in self.get_available_branch_ids():
-                branch_api = ReceivablesApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncReceivablesApi(
+                    api_client=self.get_branch_api(branch_id)
+                )
                 if branch_api:
                     result.extend(
                         paginated_api_call(

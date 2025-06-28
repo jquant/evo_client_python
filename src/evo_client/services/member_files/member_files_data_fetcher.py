@@ -4,10 +4,10 @@ from typing import List, Optional, Tuple, Union
 
 from loguru import logger
 
-from ...api.activities_api import ActivitiesApi
-from ...api.entries_api import EntriesApi
-from ...api.members_api import MembersApi
-from ...api.receivables_api import ReceivablesApi
+from ...sync.api.activities_api import SyncActivitiesApi
+from ...sync.api.entries_api import SyncEntriesApi
+from ...sync.api.members_api import SyncMembersApi
+from ...sync.api.receivables_api import SyncReceivablesApi
 from ...models.atividade_agenda_api_view_model import AtividadeAgendaApiViewModel
 from ...models.cliente_detalhes_basicos_api_view_model import (
     ClienteDetalhesBasicosApiViewModel,
@@ -73,10 +73,10 @@ class MemberFilesDataFetcher(BaseDataFetcher):
                 api = self.get_branch_api(branch_id)
                 if not api:
                     continue
-                members_api = MembersApi(api_client=api)
-                entries_api = EntriesApi(api_client=api)
-                receivables_api = ReceivablesApi(api_client=api)
-                activities_api = ActivitiesApi(api_client=api)
+                members_api = SyncMembersApi(api_client=api)
+                entries_api = SyncEntriesApi(api_client=api)
+                receivables_api = SyncReceivablesApi(api_client=api)
+                activities_api = SyncActivitiesApi(api_client=api)
 
                 for member_id in member_ids:
                     all_results.append(

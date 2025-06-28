@@ -58,43 +58,6 @@ from . import aio
 # For backward compatibility, map old ApiClient to SyncApiClient
 ApiClient = SyncApiClient
 
-# ⚠️  DEPRECATION WARNING ⚠️
-# Legacy API imports (DEPRECATED - use sync/aio versions instead)
-# These import the OLD bundler-pattern APIs from .api/ directory
-# Please migrate to the new clean implementations:
-#
-# 🔄 For synchronous usage:
-#     from evo_client.sync.api import Sync[API_NAME]Api
-#
-# 🔄 For asynchronous usage:
-#     from evo_client.aio.api import Async[API_NAME]Api
-#
-# These old APIs will be removed in a future version.
-
-from .api.activities_api import ActivitiesApi
-from .api.bank_accounts_api import BankAccountsApi
-
-# from .api.configuration_api import ConfigurationApi  # DEPRECATED - use sync.api or aio.api instead
-from .api.employees_api import EmployeesApi
-from .api.entries_api import EntriesApi
-from .api.invoices_api import InvoicesApi
-from .api.managment_api import ManagementApi
-from .api.member_membership_api import MemberMembershipApi
-from .api.members_api import MembersApi
-from .api.membership_api import MembershipApi
-from .api.notifications_api import NotificationsApi
-from .api.partnership_api import PartnershipApi
-from .api.payables_api import PayablesApi
-from .api.pix_api import PixApi
-from .api.prospects_api import ProspectsApi
-from .api.receivables_api import ReceivablesApi
-from .api.sales_api import SalesApi
-from .api.service_api import ServiceApi
-from .api.states_api import StatesApi
-from .api.voucher_api import VoucherApi
-from .api.webhook_api import WebhookApi
-from .api.workout_api import WorkoutApi
-
 # ==============================================================================
 # 📦 MODEL IMPORTS (Shared across sync/async)
 # ==============================================================================
@@ -247,28 +210,6 @@ __all__ = [
     "Configuration",
     # ⚠️  DEPRECATED - Backward compatibility only (use sync/aio versions instead)
     "ApiClient",  # -> SyncApiClient (DEPRECATED)
-    # ⚠️  DEPRECATED Legacy API classes (use sync/aio versions instead)
-    "ActivitiesApi",  # -> SyncActivitiesApi / AsyncActivitiesApi
-    "BankAccountsApi",  # -> SyncBankAccountsApi / AsyncBankAccountsApi
-    "EmployeesApi",  # -> SyncEmployeesApi / AsyncEmployeesApi
-    "EntriesApi",  # -> SyncEntriesApi / AsyncEntriesApi
-    "InvoicesApi",  # -> SyncInvoicesApi / AsyncInvoicesApi
-    "ManagementApi",  # -> SyncManagementApi / AsyncManagementApi
-    "MemberMembershipApi",  # -> SyncMemberMembershipApi / AsyncMemberMembershipApi
-    "MembersApi",  # -> SyncMembersApi / AsyncMembersApi
-    "MembershipApi",  # -> SyncMembershipApi / AsyncMembershipApi
-    "NotificationsApi",  # -> SyncNotificationsApi / AsyncNotificationsApi
-    "PartnershipApi",  # -> SyncPartnershipApi / AsyncPartnershipApi
-    "PayablesApi",  # -> SyncPayablesApi / AsyncPayablesApi
-    "PixApi",  # -> SyncPixApi / AsyncPixApi
-    "ProspectsApi",  # -> SyncProspectsApi / AsyncProspectsApi
-    "ReceivablesApi",  # -> SyncReceivablesApi / AsyncReceivablesApi
-    "SalesApi",  # -> SyncSalesApi / AsyncSalesApi
-    "ServiceApi",  # -> SyncServiceApi / AsyncServiceApi
-    "StatesApi",  # -> SyncStatesApi / AsyncStatesApi
-    "VoucherApi",  # -> SyncVoucherApi / AsyncVoucherApi
-    "WebhookApi",  # -> SyncWebhookApi / AsyncWebhookApi
-    "WorkoutApi",  # -> SyncWorkoutApi / AsyncWorkoutApi
     # All model classes available (these remain the same)
     # (Full list maintained for compatibility)
 ]

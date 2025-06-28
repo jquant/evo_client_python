@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...api.entries_api import EntriesApi
+from ...sync.api.entries_api import SyncEntriesApi
 from ...models.gym_model import GymEntry
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
@@ -34,7 +34,7 @@ class EntriesDataFetcher(BaseDataFetcher):
             entries = []
             # Get entries from branch clients
             for branch_id in self.get_available_branch_ids():
-                branch_api = EntriesApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncEntriesApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     try:
                         branch_result = paginated_api_call(

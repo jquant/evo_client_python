@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...api.receivables_api import ReceivablesApi
+from ...sync.api.receivables_api import SyncReceivablesApi
 from ...models.gym_model import OverdueMember
 from . import BaseDataFetcher
 
@@ -34,7 +34,7 @@ class OverdueMembersDataFetcher(BaseDataFetcher):
             api = self.get_branch_api(branch_id)
             if not api:
                 continue
-            rapi = ReceivablesApi(api)
+            rapi = SyncReceivablesApi(api)
             try:
                 # We'll fetch all receivables that are overdue
                 # Assume due_date_end as filter

@@ -62,12 +62,16 @@ class TestPhase4ImportPatterns:
     def test_backward_compatible_imports(self):
         """Test backward compatible import pattern."""
         # Old style imports - should still work
-        from evo_client import ApiClient, MembersApi, SalesApi
+        from evo_client import ApiClient
+        from evo_client.sync.api import SyncMembersApi, SyncSalesApi
+        from evo_client.aio.api import AsyncMembersApi, AsyncSalesApi
         from evo_client import SyncApiClient
 
         assert ApiClient is not None
-        assert MembersApi is not None
-        assert SalesApi is not None
+        assert SyncMembersApi is not None
+        assert AsyncMembersApi is not None
+        assert SyncSalesApi is not None
+        assert AsyncSalesApi is not None
 
         # Verify backward compatibility mapping
         assert ApiClient is SyncApiClient
@@ -471,14 +475,16 @@ class TestPhase4BackwardCompatibility:
     def test_legacy_import_patterns_still_work(self):
         """Test that old import patterns continue to work."""
         # Old style imports should still work
-        from evo_client import ApiClient, Configuration, MembersApi
-        from evo_client.api import SalesApi, ActivitiesApi
+        from evo_client import ApiClient, Configuration
+        from evo_client.sync.api import SyncMembersApi, SyncSalesApi
+        from evo_client.aio.api import AsyncMembersApi, AsyncSalesApi
 
         assert ApiClient is not None
         assert Configuration is not None
-        assert MembersApi is not None
-        assert SalesApi is not None
-        assert ActivitiesApi is not None
+        assert SyncMembersApi is not None
+        assert SyncSalesApi is not None
+        assert AsyncMembersApi is not None
+        assert AsyncSalesApi is not None
 
     def test_legacy_configuration_patterns_work(self):
         """Test that old configuration patterns still work."""
@@ -503,7 +509,7 @@ class TestPhase4BackwardCompatibility:
     def test_legacy_api_usage_patterns(self):
         """Test that old API usage patterns still work."""
         from evo_client import ApiClient, Configuration  # Use aliased ApiClient
-        from evo_client.api import MembersApi
+        from evo_client.sync.api import SyncMembersApi
 
         config = Configuration()
         config.host = "https://test.evo.com"

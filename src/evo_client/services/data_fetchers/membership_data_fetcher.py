@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...api.membership_api import MembershipApi
+from ...sync.api.membership_api import SyncMembershipApi
 from ...models.contratos_resumo_api_view_model import ContratosResumoApiViewModel
 from ...models.w12_utils_category_membership_view_model import (
     W12UtilsCategoryMembershipViewModel,
@@ -33,7 +33,9 @@ class MembershipDataFetcher(BaseDataFetcher):
         try:
             memberships = []
             for branch_id in self.get_available_branch_ids():
-                branch_api = MembershipApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncMembershipApi(
+                    api_client=self.get_branch_api(branch_id)
+                )
                 if branch_api:
                     result = paginated_api_call(
                         api_func=branch_api.list_memberships,
@@ -61,7 +63,9 @@ class MembershipDataFetcher(BaseDataFetcher):
         try:
             categories = []
             for branch_id in self.get_available_branch_ids():
-                branch_api = MembershipApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncMembershipApi(
+                    api_client=self.get_branch_api(branch_id)
+                )
                 if branch_api:
                     try:
                         branch_result = branch_api.get_categories()

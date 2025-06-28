@@ -4,7 +4,7 @@ from loguru import logger
 
 from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
-from ...api.webhook_api import WebhookApi
+from ...sync.api.webhook_api import SyncWebhookApi
 from ..data_fetchers import BaseDataFetcher
 from ...utils.pagination_utils import paginated_api_call
 
@@ -12,7 +12,7 @@ from ...utils.pagination_utils import paginated_api_call
 class WebhookManagement(BaseDataFetcher):
     async def _delete_webhook_with_retry(
         self,
-        webhook_api: WebhookApi,
+        webhook_api: SyncWebhookApi,
         webhook_id: int,
         max_retries: int = 3,
         base_delay: float = 1.5,
@@ -20,7 +20,7 @@ class WebhookManagement(BaseDataFetcher):
         """Delete webhook with retry logic."""
         for attempt in range(max_retries):
             try:
-                response = webhook_api.delete_webhook(webhook_id, async_req=False)
+                response = webhook_api.delete_webhook(webhook_id)
                 # If response is boolean, use it directly
                 if isinstance(response, bool):
                     if response:
@@ -136,7 +136,7 @@ class WebhookManagementService:
                 for branch_id in branch_ids:
                     if branch_id in self.webhook_fetcher.get_available_branch_ids():
                         logger.debug(f"Getting webhooks for branch {branch_id}")
-                        branch_webhook_api = WebhookApi(
+                        branch_webhook_api = SyncWebhookApi(
                             self.webhook_fetcher.get_branch_api(branch_id)
                         )
                         existing_webhooks = paginated_api_call(
@@ -163,7 +163,7 @@ class WebhookManagementService:
                                 and webhook_event in event_types
                                 and str(webhook_branch) == branch_id
                             ):
-                                success = await self._delete_webhook_with_retry(
+                                success = self._delete_webhook_with_retry(
                                     branch_webhook_api, webhook_id
                                 )
                                 if not success:
@@ -186,7 +186,7 @@ class WebhookManagementService:
                     logger.debug(
                         f"Branch {branch_id} username: {client.configuration.username}"
                     )
-                    webhook_api = WebhookApi(client)
+                    webhook_api = SyncWebhookApi(client)
                 else:
                     logger.error(f"No configuration for branch {branch_id}")
                     raise ValueError(f"No configuration for branch {branch_id}")
