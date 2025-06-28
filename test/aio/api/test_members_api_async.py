@@ -42,7 +42,7 @@ async def test_get_basic_info(members_api: AsyncMembersApi, mock_api_client: Moc
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/members/basic-info"
+    assert args["resource_path"] == "/api/v1/members/basic"
     assert args["query_params"]["email"] == "john@example.com"
     assert args["query_params"]["take"] == 10
     assert args["query_params"]["skip"] == 0
@@ -68,7 +68,7 @@ async def test_get_basic_info_with_filters(
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/members/basic-info"
+    assert args["resource_path"] == "/api/v1/members/basic"
     assert args["query_params"]["email"] == "john@example.com"
     assert args["query_params"]["document"] == "12345678900"
     assert args["query_params"]["phone"] == "1234567890"

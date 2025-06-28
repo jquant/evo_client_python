@@ -20,6 +20,7 @@ class SyncMembersApi(SyncBaseApi):
     def __init__(self, api_client=None):
         super().__init__(api_client)
         self.base_path = "/api/v1/members"
+        self.base_path_v2 = "/api/v2/members"
 
     def authenticate_member(
         self,
@@ -256,7 +257,7 @@ class SyncMembersApi(SyncBaseApi):
         }
 
         result = self.api_client.call_api(
-            resource_path=self.base_path,
+            resource_path=self.base_path_v2,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             response_type=List[MembersApiViewModel],
@@ -309,7 +310,7 @@ class SyncMembersApi(SyncBaseApi):
             >>> print(f"{profile.name} - {profile.email}")
         """
         result = self.api_client.call_api(
-            resource_path=f"{self.base_path}/{id_member}",
+            resource_path=f"{self.base_path_v2}/{id_member}",
             method="GET",
             response_type=ClienteDetalhesBasicosApiViewModel,
             auth_settings=["Basic"],

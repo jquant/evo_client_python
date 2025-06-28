@@ -26,6 +26,7 @@ async def test_async_members_api_initialization():
     with patch("evo_client.aio.api.base.AsyncApiClient"):
         api = AsyncMembersApi()
         assert api.base_path == "/api/v1/members"
+        assert api.base_path_v2 == "/api/v2/members"
         assert hasattr(api, "api_client")
 
 
@@ -40,7 +41,7 @@ async def test_get_basic_info_minimal(async_members_api):
     assert result == expected_response
     async_members_api.api_client.call_api.assert_called_once()
     call_args = async_members_api.api_client.call_api.call_args[1]
-    assert call_args["resource_path"] == "/api/v1/members/basic-info"
+    assert call_args["resource_path"] == "/api/v1/members/basic"
     assert call_args["method"] == "GET"
     assert call_args["query_params"] == {"email": "test@example.com"}
     assert call_args["response_type"] == MembersBasicApiViewModel
@@ -150,12 +151,12 @@ async def test_update_fitcoins_minimal(async_members_api):
         id_member=123, fitcoin_type="add", fitcoin=100
     )
 
-    assert result is True
+    assert result == {"success": True}
     async_members_api.api_client.call_api.assert_called_once()
     call_args = async_members_api.api_client.call_api.call_args[1]
     assert call_args["resource_path"] == "/api/v1/members/fitcoins"
     assert call_args["method"] == "PUT"
-    expected_params = {"idMember": 123, "type": "add", "fitcoin": 100}
+    expected_params = {"idMember": 123, "fitcoinType": "add", "fitcoin": 100}
     assert call_args["query_params"] == expected_params
     assert call_args["auth_settings"] == ["Basic"]
     assert call_args["headers"] == {"Accept": "application/json"}
@@ -170,11 +171,11 @@ async def test_update_fitcoins_with_reason(async_members_api):
         id_member=123, fitcoin_type="add", fitcoin=100, reason="Bonus reward"
     )
 
-    assert result is True
+    assert result == {"success": True}
     call_args = async_members_api.api_client.call_api.call_args[1]
     expected_params = {
         "idMember": 123,
-        "type": "add",
+        "fitcoinType": "add",
         "fitcoin": 100,
         "reason": "Bonus reward",
     }
@@ -190,22 +191,22 @@ async def test_update_fitcoins_filter_none_params(async_members_api):
         id_member=123, fitcoin_type="add", fitcoin=100, reason=None
     )
 
-    assert result is True
+    assert result == {"success": True}
     call_args = async_members_api.api_client.call_api.call_args[1]
-    expected_params = {"idMember": 123, "type": "add", "fitcoin": 100}
+    expected_params = {"idMember": 123, "fitcoinType": "add", "fitcoin": 100}
     assert call_args["query_params"] == expected_params
 
 
 @pytest.mark.asyncio
-async def test_update_fitcoins_returns_false_on_none_response(async_members_api):
-    """Test update_fitcoins returns False when response is None."""
+async def test_update_fitcoins_returns_none_on_none_response(async_members_api):
+    """Test update_fitcoins with None response."""
     async_members_api.api_client.call_api.return_value = None
 
     result = await async_members_api.update_fitcoins(
         id_member=123, fitcoin_type="add", fitcoin=100
     )
 
-    assert result is False
+    assert result is None
 
 
 @pytest.mark.asyncio

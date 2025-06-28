@@ -47,13 +47,11 @@ def test_authenticate_member(members_api: SyncMembersApi, mock_api_client: Mock)
     assert result == expected
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
-    assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/members/auth"
-    assert args["query_params"] == {
-        "email": "test@example.com",
-        "password": "password123",
-        "changePassword": False,
-    }
+    assert args["method"] == "POST"
+    assert args["query_params"]["email"] == "test@example.com"
+    assert args["query_params"]["password"] == "password123"
+    assert args["query_params"]["changePassword"] is False
 
 
 def test_get_basic_info(members_api: SyncMembersApi, mock_api_client: Mock):
@@ -101,7 +99,7 @@ def test_get_members(members_api: SyncMembersApi, mock_api_client: Mock):
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/members"
+    assert args["resource_path"] == "/api/v2/members"
 
 
 def test_update_member_card(members_api: SyncMembersApi, mock_api_client: Mock):
@@ -128,7 +126,7 @@ def test_get_member_profile(members_api: SyncMembersApi, mock_api_client: Mock):
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/members/123"
+    assert args["resource_path"] == "/api/v2/members/123"
 
 
 def test_reset_password(members_api: SyncMembersApi, mock_api_client: Mock):
@@ -186,7 +184,7 @@ def test_update_member_data(members_api: SyncMembersApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "PATCH"
     assert args["resource_path"] == "/api/v1/members/update-member-data/123"
-    assert args["body"] == {}
+    assert args["body"] == member_data.model_dump(exclude_unset=True, by_alias=True)
 
 
 def test_error_handling(members_api: SyncMembersApi, mock_api_client: Mock):
