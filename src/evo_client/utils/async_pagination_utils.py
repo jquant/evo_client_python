@@ -225,19 +225,18 @@ class AsyncPaginatedApiCaller:
         self,
         api_func: Callable[P, Awaitable[List[T]]],
         config: Optional[PaginationConfig] = None,
-        branch_id: str = "unknown",
+        branch_id_logging: str = "unknown",
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> PaginationResult:
         """
-        Fetch all pages of data from a paginated async API.
+        Fetch all pages of data from a paginated API.
 
         Args:
             api_func: Async API function to call
             config: Pagination configuration (uses default if None)
-            branch_id: Identifier for logging context
             *args: Additional arguments for the API function
-            **kwargs: Additional keyword arguments for the API function
+            **kwargs: Additional keyword arguments for the API function (including branch_id)
 
         Returns:
             PaginationResult with data and metadata
@@ -248,21 +247,20 @@ class AsyncPaginatedApiCaller:
         total_requests = 0
         total_retries = 0
 
+        # Extract branch_id for logging, default to "unknown"
         func_name = getattr(api_func, "__name__", "unknown_function")
         logger.debug(
-            f"Starting async paginated fetch for {func_name} (branch: {branch_id})"
+            f"Starting async paginated fetch for {func_name} (branch: {branch_id_logging})"
         )
 
         try:
             while True:
                 # Build call arguments
-                call_kwargs = {**kwargs}
-
                 if config.supports_pagination:
                     pagination_params = self._build_pagination_params(page, config)
-                    call_kwargs.update(pagination_params)
+                    kwargs.update(pagination_params)
 
-                context = f"{func_name} page {page} (branch: {branch_id})"
+                context = f"{func_name} page {page} (branch: {branch_id_logging})"
 
                 try:
                     # Execute API call with retry logic
@@ -364,58 +362,6 @@ def create_async_paginated_caller(
     return AsyncPaginatedApiCaller(executor=executor)
 
 
-# Async backward compatibility function
-async def async_paginated_api_call(
-    api_func: Callable[P, Awaitable[List[T]]],
-    page_size: int = 50,
-    max_retries: int = 5,
-    base_delay: float = 1.5,
-    supports_pagination: bool = True,
-    pagination_type: str = "skip_take",
-    branch_id: str = "NOT INFORMED",
-    post_request_delay: float = 1.0,
-    *args: P.args,
-    **kwargs: P.kwargs,
-) -> List[T]:
-    """
-    Execute async paginated API calls with retry logic (backward compatibility).
-
-    Args:
-        api_func: The async API function to call
-        page_size: Number of items to request per page
-        max_retries: Maximum number of retry attempts for failed calls
-        base_delay: Base delay in seconds for retry backoff
-        supports_pagination: Whether the API supports pagination
-        pagination_type: Type of pagination ('skip_take' or 'page_page_size')
-        branch_id: Identifier for the branch/unit being processed
-        post_request_delay: Delay in seconds after each successful API call
-        **kwargs: Additional arguments to pass to the API function
-
-    Returns:
-        List of results from all pages
-    """
-    config = PaginationConfig(
-        page_size=page_size,
-        max_retries=max_retries,
-        base_delay=base_delay,
-        supports_pagination=supports_pagination,
-        pagination_type=pagination_type,
-        post_request_delay=post_request_delay,
-    )
-
-    caller = create_async_paginated_caller(
-        max_retries=max_retries, base_delay=base_delay
-    )
-    result = await caller.fetch_all_pages(api_func, config, branch_id, *args, **kwargs)
-
-    if not result.success and result.error_message:
-        logger.warning(
-            f"Returning partial results due to error: {result.error_message}"
-        )
-
-    return result.data
-
-
 # Utility class for managing concurrent pagination
 class ConcurrentPaginationManager:
     """Manages multiple concurrent pagination operations with proper resource limits."""
@@ -458,12 +404,15 @@ class ConcurrentPaginationManager:
                     executor=executor, default_config=config
                 )
 
-                # Pass branch_id only in kwargs to avoid parameter conflict
+                # Pass the config to API function, branch_id goes to fetch_all_pages for logging
+                api_kwargs = {
+                    k: v for k, v in branch_config.items() if k != "branch_id"
+                }
+                api_kwargs["branch_id"] = branch_id  # Ensure branch_id is in API kwargs
                 result = await caller.fetch_all_pages(
                     api_func,
                     config,
-                    # Don't pass branch_id as positional parameter
-                    **branch_config,  # Pass the entire config including branch_id to API function
+                    **api_kwargs,
                 )
                 return branch_id, result
 
@@ -486,3 +435,58 @@ class ConcurrentPaginationManager:
                 logger.error(f"Unexpected result format: {result}")
 
         return branch_results
+
+
+# Backward compatibility function
+async def async_paginated_api_call(
+    api_func: Callable[P, Awaitable[List[T]]],
+    page_size: int = 50,
+    max_retries: int = 5,
+    base_delay: float = 1.5,
+    supports_pagination: bool = True,
+    pagination_type: str = "skip_take",
+    branch_id_logging: str = "NOT INFORMED",
+    post_request_delay: float = 1.0,
+    *args: P.args,
+    **kwargs: P.kwargs,
+) -> List[T]:
+    """
+    Execute async paginated API calls with retry logic (backward compatibility).
+
+    Args:
+        api_func: The async API function to call
+        page_size: Number of items to request per page
+        max_retries: Maximum number of retry attempts for failed calls
+        base_delay: Base delay in seconds for retry backoff
+        supports_pagination: Whether the API supports pagination
+        pagination_type: Type of pagination ('skip_take' or 'page_page_size')
+        branch_id: Identifier for the branch/unit being processed
+        post_request_delay: Delay in seconds after each successful API call
+        *args: Additional arguments for the API function
+        **kwargs: Additional arguments to pass to the API function
+
+    Returns:
+        List of results from all pages
+    """
+    config = PaginationConfig(
+        page_size=page_size,
+        max_retries=max_retries,
+        base_delay=base_delay,
+        supports_pagination=supports_pagination,
+        pagination_type=pagination_type,
+        post_request_delay=post_request_delay,
+    )
+
+    caller = create_async_paginated_caller(
+        max_retries=max_retries, base_delay=base_delay
+    )
+    result = await caller.fetch_all_pages(
+        api_func, config, branch_id_logging=branch_id_logging, *args, **kwargs
+    )
+
+    if not result.success and result.error_message:
+        logger.warning(
+            f"Returning partial results due to error: {result.error_message}"
+        )
+
+    return result.data

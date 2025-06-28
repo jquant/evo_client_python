@@ -275,7 +275,7 @@ class PaginatedApiCaller:
         self,
         api_func: Callable[P, List[T]],
         config: Optional[PaginationConfig] = None,
-        branch_id: str = "unknown",
+        branch_id_logging: str = "unknown",
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> PaginationResult:
@@ -298,17 +298,18 @@ class PaginatedApiCaller:
         total_retries = 0
 
         func_name = getattr(api_func, "__name__", "unknown_function")
-        logger.debug(f"Starting paginated fetch for {func_name} (branch: {branch_id})")
+        logger.debug(
+            f"Starting paginated fetch for {func_name} (branch: {branch_id_logging})"
+        )
 
         try:
             while True:
                 # Build call arguments
-
                 if config.supports_pagination:
                     pagination_params = self._build_pagination_params(page, config)
                     kwargs.update(pagination_params)
 
-                context = f"{func_name} page {page} (branch: {branch_id})"
+                context = f"{func_name} page {page} (branch: {branch_id_logging})"
 
                 try:
                     # Execute API call with retry logic
@@ -405,7 +406,7 @@ def paginated_api_call(
     base_delay: float = 1.5,
     supports_pagination: bool = True,
     pagination_type: str = "skip_take",
-    branch_id: str = "NOT INFORMED",
+    branch_id_logging: str = "NOT INFORMED",
     post_request_delay: float = 1.0,
     *args: P.args,
     **kwargs: P.kwargs,
@@ -437,7 +438,13 @@ def paginated_api_call(
     )
 
     caller = create_paginated_caller(max_retries=max_retries, base_delay=base_delay)
-    result = caller.fetch_all_pages(api_func, config, branch_id, *args, **kwargs)
+    result = caller.fetch_all_pages(
+        api_func,
+        config,
+        branch_id_logging=branch_id_logging,
+        *args,
+        **kwargs,
+    )
 
     if not result.success and result.error_message:
         logger.warning(

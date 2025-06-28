@@ -11,7 +11,6 @@ from evo_client.utils.async_pagination_utils import (
     AsyncPaginatedApiCaller,
     ConcurrentPaginationManager,
     create_async_paginated_caller,
-    async_paginated_api_call,
 )
 from evo_client.utils.pagination_utils import (
     PaginationConfig,
@@ -294,40 +293,6 @@ class TestFactoryFunctions:
         assert caller.executor.retry_handler.config.max_retries == 3
         assert caller.executor.retry_handler.config.base_delay == 2.0
 
-    @pytest.mark.asyncio
-    async def test_async_paginated_api_call_backward_compatibility(self):
-        """Test that the async paginated_api_call function works."""
-
-        call_count = 0
-
-        async def mock_api_func(**kwargs):
-            nonlocal call_count
-            call_count += 1
-
-            # Return paginated data based on skip parameter
-            skip = kwargs.get("skip", 0)
-            if skip == 0:
-                return [1, 2, 3]  # First page
-            elif skip == 3:
-                return [4, 5]  # Second page (partial)
-            else:
-                return []  # No more data
-
-        result = await async_paginated_api_call(
-            mock_api_func,
-            page_size=3,
-            max_retries=2,
-            base_delay=0.1,
-            supports_pagination=True,
-            pagination_type="skip_take",
-            branch_id="test_branch",
-            post_request_delay=0.0,
-            extra_param="test_value",
-        )
-
-        assert result == [1, 2, 3, 4, 5]
-        assert call_count == 2
-
 
 class TestConcurrentPaginationManager:
     """Test concurrent pagination manager functionality."""
@@ -447,34 +412,6 @@ class TestAsyncIntegration:
 
         # Verify we made the expected number of API calls (1 failed + 2 successful)
         assert call_count == 3
-
-    @pytest.mark.asyncio
-    async def test_async_vs_sync_behavior_consistency(self):
-        """Test that async and sync versions behave consistently."""
-
-        # Define identical mock API behavior
-        async def async_mock_api(**kwargs):
-            skip = kwargs.get("skip", 0)
-            if skip == 0:
-                return [1, 2, 3]
-            elif skip == 3:
-                return [4, 5]
-            else:
-                return []
-
-        # Test async version
-        async_result = await async_paginated_api_call(
-            async_mock_api,
-            page_size=3,
-            max_retries=2,
-            base_delay=0.1,
-            post_request_delay=0.0,
-            branch_id="consistency_test",
-        )
-
-        # Both should produce the same data
-        expected_data = [1, 2, 3, 4, 5]
-        assert async_result == expected_data
 
 
 if __name__ == "__main__":

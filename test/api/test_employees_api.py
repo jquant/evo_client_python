@@ -86,7 +86,13 @@ def test_create_employee(employees_api: SyncEmployeesApi, mock_api_client: Mock)
 
     result = employees_api.create_employee(employee=employee_data)
 
-    assert result == EmployeeOperationResponse.model_validate(expected)
+    # The API creates its own EmployeeOperationResponse, not validating the raw response
+    assert isinstance(result, EmployeeOperationResponse)
+    assert result.success is True
+    assert result.operation_type == "create"
+    assert result.message == "Employee created successfully"
+    assert result.employee_id == 123  # Extracted from the mocked API response
+
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "PUT"
@@ -102,7 +108,12 @@ def test_update_employee(employees_api: SyncEmployeesApi, mock_api_client: Mock)
 
     result = employees_api.update_employee(employee=employee_data)
 
-    assert result == EmployeeOperationResponse.model_validate(expected)
+    # The API creates its own EmployeeOperationResponse, not validating the raw response
+    assert isinstance(result, EmployeeOperationResponse)
+    assert result.success is True
+    assert result.operation_type == "update"
+    assert result.message == "Employee updated successfully"
+
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
@@ -117,7 +128,13 @@ def test_delete_employee(employees_api: SyncEmployeesApi, mock_api_client: Mock)
 
     result = employees_api.delete_employee(employee_id=123)
 
-    assert result == EmployeeOperationResponse.model_validate(expected)
+    # The API creates its own EmployeeOperationResponse, not validating the raw response
+    assert isinstance(result, EmployeeOperationResponse)
+    assert result.success is True
+    assert result.operation_type == "delete"
+    assert result.message == "Employee deleted successfully"
+    assert result.employee_id == 123
+
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "DELETE"

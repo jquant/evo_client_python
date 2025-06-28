@@ -192,6 +192,17 @@ from evo_client.models.w12_utils_webhook_header_view_model import (
 from evo_client.models.w12_utils_webhook_view_model import W12UtilsWebhookViewModel
 from evo_client.models.year_discount_view_model import YearDiscountViewModel
 
+# Import common models
+from evo_client.models.common_models import (
+    StateResponse,
+    NotificationCreateResponse,
+    WebhookResponse,
+    ApiOperationResponse,
+    MemberServiceResponse,
+    EmployeeOperationResponse,
+    ActivityOperationResponse,
+)
+
 # Import workout models
 from evo_client.models.workout_models import (
     WorkoutResponse,
@@ -257,4 +268,12 @@ __all__ = [
     "WorkoutSeries",
     "WorkoutSeriesItem",
     "WorkoutTag",
+    # Add common models
+    "StateResponse",
+    "NotificationCreateResponse",
+    "WebhookResponse",
+    "ApiOperationResponse",
+    "MemberServiceResponse",
+    "EmployeeOperationResponse",
+    "ActivityOperationResponse",
 ]

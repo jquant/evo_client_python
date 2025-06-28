@@ -146,12 +146,16 @@ def test_reset_password(members_api: SyncMembersApi, mock_api_client: Mock):
 
 def test_get_member_services(members_api: SyncMembersApi, mock_api_client: Mock):
     """Test getting member services."""
-    expected = [MemberServiceViewModel()]
+    # Mock raw API response that gets converted to MemberServiceResponse
+    expected = [{"id": 1, "serviceName": "Test Service", "serviceType": "Monthly"}]
     mock_api_client.return_value = expected
 
     result = members_api.get_member_services(id_member=123)
 
-    assert result == expected
+    # Should return list of MemberServiceResponse objects
+    assert len(result) == 1
+    assert hasattr(result[0], "service_name")  # Check it's a MemberServiceResponse
+
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
@@ -179,7 +183,11 @@ def test_update_member_data(members_api: SyncMembersApi, mock_api_client: Mock):
 
     result = members_api.update_member_data(id_member=123, body=member_data)
 
-    assert result is True
+    # Should return ApiOperationResponse, not boolean
+    assert hasattr(result, "success")
+    assert result.success is True
+    assert result.message == "Member data updated successfully"
+
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "PATCH"

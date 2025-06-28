@@ -57,8 +57,10 @@ def test_error_handling(notifications_api: SyncNotificationsApi, mock_api_client
     mock_api_client.side_effect = ApiException(status=500, reason="Server Error")
     notification_data = NotificationApiViewModel()
 
-    with pytest.raises(ApiException) as exc:
-        notifications_api.create_notification(notification=notification_data)
+    # The API catches exceptions and returns error response instead of raising
+    result = notifications_api.create_notification(notification=notification_data)
 
-    assert exc.value.status == 500
-    assert exc.value.reason == "Server Error"
+    assert isinstance(result, NotificationCreateResponse)
+    assert result.success is False
+    assert result.message is not None and "Server Error" in result.message
+    assert result.errors is not None

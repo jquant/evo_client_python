@@ -13,7 +13,7 @@ import asyncio
 from datetime import datetime
 from dataclasses import asdict
 
-from evo_client.utils.async_pagination_utils import (
+from test.utils.async_pagination_utils import (
     AsyncPaginatedApiCaller,
     ConcurrentPaginationManager,
     create_async_paginated_caller,
