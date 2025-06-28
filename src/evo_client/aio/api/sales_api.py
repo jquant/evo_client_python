@@ -75,7 +75,7 @@ class AsyncSalesApi(AsyncBaseApi):
             ...     print(f"Sale created with ID: {response.sale_id}")
         """
         result = await self.api_client.call_api(
-            resource_path=self.base_path_v2,
+            resource_path=self.base_path_v1,
             method="POST",
             body=body.model_dump(exclude_unset=True, by_alias=True) if body else None,
             response_type=NewSaleResponse,
@@ -199,7 +199,7 @@ class AsyncSalesApi(AsyncBaseApi):
             params["idBranch"] = branch_id
 
         result = await self.api_client.call_api(
-            resource_path=f"{self.base_path_v1}/items",
+            resource_path=f"{self.base_path_v1}/sales-items",
             method="GET",
             query_params=params if params else None,
             response_type=List[SalesItemsViewModel],
@@ -230,7 +230,7 @@ class AsyncSalesApi(AsyncBaseApi):
             params["date"] = date.isoformat()
 
         result = await self.api_client.call_api(
-            resource_path=f"{self.base_path_v1}/session",
+            resource_path=f"{self.base_path_v1}/by-session-id",
             method="GET",
             query_params=params,
             response_type=None,  # Returns int directly
