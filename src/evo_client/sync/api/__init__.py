@@ -16,6 +16,10 @@ from .voucher_api import SyncVoucherApi
 from .member_membership_api import SyncMemberMembershipApi
 from .workout_api import SyncWorkoutApi
 from .employees_api import SyncEmployeesApi
+from .configuration_api import SyncConfigurationApi
+from .states_api import SyncStatesApi
+from .service_api import SyncServiceApi
+from .management_api import SyncManagementApi
 
 __all__ = [
     "SyncBaseApi",
@@ -34,4 +38,8 @@ __all__ = [
     "SyncMemberMembershipApi",
     "SyncWorkoutApi",
     "SyncEmployeesApi",
+    "SyncConfigurationApi",
+    "SyncStatesApi",
+    "SyncServiceApi",
+    "SyncManagementApi",
 ]
