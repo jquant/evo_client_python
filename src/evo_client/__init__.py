@@ -44,6 +44,9 @@ from .aio.core.api_client import AsyncApiClient
 # Configuration
 from .core.configuration import Configuration
 
+# Configuration helpers
+from . import config
+
 # Clean module imports
 from . import sync
 from . import aio
@@ -228,6 +231,7 @@ __all__ = [
     "AsyncApiClient",
     "sync",
     "aio",
+    "config",
     # 🔄 Backward compatibility
     "ApiClient",  # -> SyncApiClient
     "Configuration",
@@ -265,37 +269,82 @@ __all__ = [
 """
 🎯 **RECOMMENDED USAGE PATTERNS:**
 
-1️⃣ **Clean Async** (Modern, efficient):
+1️⃣ **Super Easy Configuration** (New in Phase 4.2!):
+    ```python
+    from evo_client.config import ConfigBuilder
+    from evo_client import SyncApiClient, AsyncApiClient
+    
+    # Environment-based config (recommended)
+    config = ConfigBuilder.from_env()  # Reads EVO_* env vars
+    
+    # Or quick gym setup
+    config = ConfigBuilder.basic_auth(
+        host="https://api.evo.com", 
+        username="your_gym_dns",
+        password="your_secret_key"
+    )
+    
+    # Works with both sync and async!
+    with SyncApiClient(config) as client:
+        # Use sync client
+        pass
+        
+    async with AsyncApiClient(config) as client:
+        # Use async client  
+        pass
+    ```
+
+2️⃣ **Configuration Presets** (Instant setup):
+    ```python
+    from evo_client.config import ConfigPresets
+    
+    # Development setup
+    config = ConfigPresets.gym_development()
+    
+    # Production setup  
+    config = ConfigPresets.gym_production()
+    config.username = "your_gym_dns"
+    config.password = "your_secret_key"
+    
+    # High-performance setup
+    config = ConfigPresets.high_performance()
+    ```
+
+3️⃣ **Clean Async** (Modern, efficient):
     ```python
     from evo_client.aio import AsyncApiClient
     from evo_client.aio.api import AsyncMembersApi
+    from evo_client.config import ConfigBuilder
     
-    async with AsyncApiClient() as client:
+    config = ConfigBuilder.from_env()
+    async with AsyncApiClient(config) as client:
         members_api = AsyncMembersApi(client)
         members = await members_api.get_members()
     ```
 
-2️⃣ **Clean Sync** (Simple, direct):
+4️⃣ **Clean Sync** (Simple, direct):
     ```python
     from evo_client.sync import SyncApiClient
     from evo_client.sync.api import SyncMembersApi
+    from evo_client.config import QuickConfig
     
-    with SyncApiClient() as client:
+    config = QuickConfig.gym_basic("your_gym_dns", "secret_key")
+    with SyncApiClient(config) as client:
         members_api = SyncMembersApi(client)
         members = members_api.get_members()
     ```
 
-3️⃣ **Even Simpler** (Direct import):
+5️⃣ **Configuration Validation** (Catch issues early):
     ```python
-    from evo_client import SyncApiClient, AsyncApiClient
+    from evo_client.config import ConfigValidator
     
-    # Sync
-    with SyncApiClient() as client:
-        # Use client...
-        
-    # Async  
-    async with AsyncApiClient() as client:
-        # Use client...
+    is_valid, errors, warnings = ConfigValidator.validate_config(config)
+    if not is_valid:
+        print(f"Config errors: {errors}")
+    
+    # Get full report
+    report = ConfigValidator.get_validation_report(config)
+    print(report)
     ```
 
 🔄 **Backward Compatible** (Existing code):
