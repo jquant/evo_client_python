@@ -4,8 +4,6 @@
 from .api import (
     SyncActivitiesApi,
     SyncBankAccountsApi,
-    SyncVoucherApi,
-    SyncWorkoutApi,
     SyncConfigurationApi,
     SyncEmployeesApi,
     SyncEntriesApi,
@@ -23,7 +21,9 @@ from .api import (
     SyncSalesApi,
     SyncServiceApi,
     SyncStatesApi,
+    SyncVoucherApi,
     SyncWebhookApi,
+    SyncWorkoutApi,
 )
 from .api.base import SyncBaseApi
 from .core.api_client import SyncApiClient

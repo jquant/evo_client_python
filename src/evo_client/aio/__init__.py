@@ -5,8 +5,6 @@ from .api import (
     AsyncActivitiesApi,
     AsyncBankAccountsApi,
     AsyncBaseApi,
-    AsyncVoucherApi,
-    AsyncWorkoutApi,
     AsyncConfigurationApi,
     AsyncEmployeesApi,
     AsyncEntriesApi,
@@ -24,7 +22,9 @@ from .api import (
     AsyncSalesApi,
     AsyncServiceApi,
     AsyncStatesApi,
+    AsyncVoucherApi,
     AsyncWebhookApi,
+    AsyncWorkoutApi,
 )
 from .core.api_client import AsyncApiClient
 

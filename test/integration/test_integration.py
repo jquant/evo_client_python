@@ -94,39 +94,10 @@ class TestPhase4ImportPatterns:
     def test_all_22_apis_accessible(self):
         """Test that all 22 APIs are accessible through new import patterns."""
         # Test sync APIs
-        from evo_client.sync.api import (
-            SyncMembersApi,
-            SyncSalesApi,
-            SyncActivitiesApi,
-            SyncMembershipApi,
-            SyncReceivablesApi,
-            SyncPayablesApi,
-            SyncEntriesApi,
-            SyncProspectsApi,
-            SyncInvoicesApi,
-            SyncPixApi,
-            SyncBankAccountsApi,
-            SyncVoucherApi,
-            SyncMemberMembershipApi,
-            SyncWorkoutApi,
-            SyncEmployeesApi,
-            SyncConfigurationApi,
-            SyncStatesApi,
-            SyncServiceApi,
-            SyncManagementApi,
-            SyncNotificationsApi,
-            SyncWebhookApi,
-            SyncPartnershipApi,
-        )
-
         # Test async APIs
         from evo_client.aio.api import (
             AsyncActivitiesApi,
             AsyncBankAccountsApi,
-            AsyncVoucherApi,
-            AsyncMemberMembershipApi,
-            AsyncWorkoutApi,
-            AsyncEmployeesApi,
             AsyncConfigurationApi,
             AsyncEmployeesApi,
             AsyncEntriesApi,
@@ -144,7 +115,9 @@ class TestPhase4ImportPatterns:
             AsyncSalesApi,
             AsyncServiceApi,
             AsyncStatesApi,
+            AsyncVoucherApi,
             AsyncWebhookApi,
+            AsyncWorkoutApi,
         )
         from evo_client.sync.api import (
             SyncActivitiesApi,
@@ -166,7 +139,9 @@ class TestPhase4ImportPatterns:
             SyncSalesApi,
             SyncServiceApi,
             SyncStatesApi,
+            SyncVoucherApi,
             SyncWebhookApi,
+            SyncWorkoutApi,
         )
 
         # Verify all APIs are not None (basic import test)

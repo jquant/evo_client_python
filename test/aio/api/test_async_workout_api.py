@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncWorkoutApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncWorkoutApi
 from evo_client.exceptions.api_exceptions import ApiException
 
 
@@ -78,7 +78,9 @@ async def test_get_client_workouts(workout_api: AsyncWorkoutApi, mock_api_client
 
 
 @pytest.mark.asyncio
-async def test_get_default_workouts(workout_api: AsyncWorkoutApi, mock_api_client: Mock):
+async def test_get_default_workouts(
+    workout_api: AsyncWorkoutApi, mock_api_client: Mock
+):
     """Test getting default workouts."""
     expected = [{"id": 1, "name": "Default Workout"}]
     mock_api_client.return_value = expected
@@ -99,7 +101,9 @@ async def test_get_default_workouts(workout_api: AsyncWorkoutApi, mock_api_clien
 
 
 @pytest.mark.asyncio
-async def test_link_workout_to_client(workout_api: AsyncWorkoutApi, mock_api_client: Mock):
+async def test_link_workout_to_client(
+    workout_api: AsyncWorkoutApi, mock_api_client: Mock
+):
     """Test linking workout to client."""
     expected = True
     mock_api_client.return_value = expected
