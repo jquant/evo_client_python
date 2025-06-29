@@ -20,7 +20,9 @@ from .receivables_api import SyncReceivablesApi
 from .sales_api import SyncSalesApi
 from .service_api import SyncServiceApi
 from .states_api import SyncStatesApi
+from .voucher_api import SyncVoucherApi
 from .webhook_api import SyncWebhookApi
+from .workout_api import SyncWorkoutApi
 
 __all__ = [
     "SyncBaseApi",
@@ -35,7 +37,9 @@ __all__ = [
     "SyncInvoicesApi",
     "SyncPixApi",
     "SyncBankAccountsApi",
+    "SyncVoucherApi",
     "SyncMemberMembershipApi",
+    "SyncWorkoutApi",
     "SyncEmployeesApi",
     "SyncConfigurationApi",
     "SyncStatesApi",

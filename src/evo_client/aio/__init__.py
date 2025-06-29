@@ -22,7 +22,9 @@ from .api import (
     AsyncSalesApi,
     AsyncServiceApi,
     AsyncStatesApi,
+    AsyncVoucherApi,
     AsyncWebhookApi,
+    AsyncWorkoutApi,
 )
 from .core.api_client import AsyncApiClient
 

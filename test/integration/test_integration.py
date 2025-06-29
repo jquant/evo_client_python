@@ -91,8 +91,8 @@ class TestPhase4ImportPatterns:
         assert EnvConfigLoader is not None
         assert QuickConfig is not None
 
-    def test_all_20_apis_accessible(self):
-        """Test that all 20 APIs are accessible through new import patterns."""
+    def test_all_22_apis_accessible(self):
+        """Test that all 22 APIs are accessible through new import patterns."""
         # Test sync APIs
         # Test async APIs
         from evo_client.aio.api import (
@@ -115,7 +115,9 @@ class TestPhase4ImportPatterns:
             AsyncSalesApi,
             AsyncServiceApi,
             AsyncStatesApi,
+            AsyncVoucherApi,
             AsyncWebhookApi,
+            AsyncWorkoutApi,
         )
         from evo_client.sync.api import (
             SyncActivitiesApi,
@@ -137,7 +139,9 @@ class TestPhase4ImportPatterns:
             SyncSalesApi,
             SyncServiceApi,
             SyncStatesApi,
+            SyncVoucherApi,
             SyncWebhookApi,
+            SyncWorkoutApi,
         )
 
         # Verify all APIs are not None (basic import test)
@@ -153,7 +157,9 @@ class TestPhase4ImportPatterns:
             SyncInvoicesApi,
             SyncPixApi,
             SyncBankAccountsApi,
+            SyncVoucherApi,
             SyncMemberMembershipApi,
+            SyncWorkoutApi,
             SyncEmployeesApi,
             SyncConfigurationApi,
             SyncStatesApi,
@@ -176,7 +182,9 @@ class TestPhase4ImportPatterns:
             AsyncInvoicesApi,
             AsyncPixApi,
             AsyncBankAccountsApi,
+            AsyncVoucherApi,
             AsyncMemberMembershipApi,
+            AsyncWorkoutApi,
             AsyncEmployeesApi,
             AsyncConfigurationApi,
             AsyncStatesApi,
@@ -187,8 +195,8 @@ class TestPhase4ImportPatterns:
             AsyncPartnershipApi,
         ]
 
-        assert len(sync_apis) == 20, f"Expected 20 sync APIs, got {len(sync_apis)}"
-        assert len(async_apis) == 20, f"Expected 20 async APIs, got {len(async_apis)}"
+        assert len(sync_apis) == 22, f"Expected 22 sync APIs, got {len(sync_apis)}"
+        assert len(async_apis) == 22, f"Expected 22 async APIs, got {len(async_apis)}"
 
         for api in sync_apis + async_apis:
             assert api is not None

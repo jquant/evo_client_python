@@ -20,7 +20,9 @@ from .receivables_api import AsyncReceivablesApi
 from .sales_api import AsyncSalesApi
 from .service_api import AsyncServiceApi
 from .states_api import AsyncStatesApi
+from .voucher_api import AsyncVoucherApi
 from .webhook_api import AsyncWebhookApi
+from .workout_api import AsyncWorkoutApi
 
 __all__ = [
     "AsyncBaseApi",
@@ -35,7 +37,9 @@ __all__ = [
     "AsyncInvoicesApi",
     "AsyncPixApi",
     "AsyncBankAccountsApi",
+    "AsyncVoucherApi",
     "AsyncMemberMembershipApi",
+    "AsyncWorkoutApi",
     "AsyncEmployeesApi",
     "AsyncConfigurationApi",
     "AsyncStatesApi",

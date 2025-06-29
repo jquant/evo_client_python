@@ -21,7 +21,9 @@ from .api import (
     SyncSalesApi,
     SyncServiceApi,
     SyncStatesApi,
+    SyncVoucherApi,
     SyncWebhookApi,
+    SyncWorkoutApi,
 )
 from .api.base import SyncBaseApi
 from .core.api_client import SyncApiClient
@@ -44,7 +46,9 @@ __all__ = [
     "SyncInvoicesApi",
     "SyncPixApi",
     "SyncBankAccountsApi",
+    "SyncVoucherApi",
     "SyncMemberMembershipApi",
+    "SyncWorkoutApi",
     "SyncEmployeesApi",
     "SyncConfigurationApi",
     "SyncStatesApi",
