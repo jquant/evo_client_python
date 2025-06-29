@@ -8,11 +8,9 @@ from .member_membership_api import AsyncMemberMembershipApi
 from .workout_api import AsyncWorkoutApi
 from .employees_api import AsyncEmployeesApi
 from .configuration_api import AsyncConfigurationApi
-from .employees_api import AsyncEmployeesApi
 from .entries_api import AsyncEntriesApi
 from .invoices_api import AsyncInvoicesApi
 from .management_api import AsyncManagementApi
-from .member_membership_api import AsyncMemberMembershipApi
 from .members_api import AsyncMembersApi
 from .membership_api import AsyncMembershipApi
 from .notifications_api import AsyncNotificationsApi

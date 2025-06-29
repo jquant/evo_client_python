@@ -7,7 +7,6 @@ from ...models.vouchers_resumo_api_view_model import VouchersResumoApiViewModel
 from ...models.voucher_models import (
     VoucherDetails,
     VoucherCreateResponse,
-    VoucherCalculationResponse,
 )
 from .base import SyncBaseApi
 

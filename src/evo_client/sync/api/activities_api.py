@@ -6,9 +6,6 @@ from typing import Any, List, Optional, cast
 from ...models.atividade_agenda_api_view_model import AtividadeAgendaApiViewModel
 from ...models.atividade_basico_api_view_model import AtividadeBasicoApiViewModel
 from ...models.atividade_list_api_view_model import AtividadeListApiViewModel
-from ...models.atividade_sessao_participante_api_view_model import (
-    AtividadeSessaoParticipanteApiViewModel,
-)
 from ...models.atividade_lugar_reserva_api_view_model import (
     AtividadeLugarReservaApiViewModel,
 )

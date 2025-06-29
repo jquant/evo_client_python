@@ -8,11 +8,9 @@ from .member_membership_api import SyncMemberMembershipApi
 from .workout_api import SyncWorkoutApi
 from .employees_api import SyncEmployeesApi
 from .configuration_api import SyncConfigurationApi
-from .employees_api import SyncEmployeesApi
 from .entries_api import SyncEntriesApi
 from .invoices_api import SyncInvoicesApi
 from .management_api import SyncManagementApi
-from .member_membership_api import SyncMemberMembershipApi
 from .members_api import SyncMembersApi
 from .membership_api import SyncMembershipApi
 from .notifications_api import SyncNotificationsApi
