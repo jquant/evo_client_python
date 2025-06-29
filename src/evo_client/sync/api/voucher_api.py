@@ -1,13 +1,10 @@
 """Clean synchronous Voucher API."""
 
-from typing import List, Optional, cast, Any
 import json
+from typing import Any, List, Optional, cast
 
+from ...models.voucher_models import VoucherCreateResponse, VoucherDetails
 from ...models.vouchers_resumo_api_view_model import VouchersResumoApiViewModel
-from ...models.voucher_models import (
-    VoucherDetails,
-    VoucherCreateResponse,
-)
 from .base import SyncBaseApi
 
 

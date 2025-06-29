@@ -4,10 +4,10 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncVoucherApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.vouchers_resumo_api_view_model import VouchersResumoApiViewModel
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncVoucherApi
 
 
 @pytest.fixture

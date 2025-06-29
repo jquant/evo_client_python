@@ -174,7 +174,7 @@ class TestAPIConsistencyMarked:
 
     def test_api_consistency_marked(self, consistency_results, report_generator):
         """Test marked with consistency marker."""
-        report = report_generator(consistency_results)
+        report_generator(consistency_results)
 
         # This test is marked for easy running with: pytest -m consistency
         # It won't fail but will report current state
