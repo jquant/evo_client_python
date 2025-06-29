@@ -5,16 +5,16 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncActivitiesApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.atividade_agenda_api_view_model import (
     AtividadeAgendaApiViewModel,
 )
-from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
 from evo_client.models.atividade_basico_api_view_model import (
     AtividadeBasicoApiViewModel,
 )
+from evo_client.models.atividade_list_api_view_model import AtividadeListApiViewModel
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncActivitiesApi
 
 
 @pytest.fixture

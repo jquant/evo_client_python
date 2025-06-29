@@ -4,8 +4,8 @@ from typing import List, Optional
 from loguru import logger
 
 from ...models.entradas_resumo_api_view_model import EntradasResumoApiViewModel
-from ...sync.api.entries_api import SyncEntriesApi
 from ...models.gym_model import GymEntry
+from ...sync.api.entries_api import SyncEntriesApi
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 

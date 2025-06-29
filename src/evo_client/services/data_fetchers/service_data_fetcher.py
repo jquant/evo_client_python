@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...sync.api.service_api import SyncServiceApi
 from ...models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
+from ...sync.api.service_api import SyncServiceApi
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 

@@ -6,12 +6,12 @@ from typing import Any, List, Optional, cast
 from ...models.cliente_detalhes_basicos_api_view_model import (
     ClienteDetalhesBasicosApiViewModel,
 )
+from ...models.common_models import ApiOperationResponse, MemberServiceResponse
 from ...models.member_authenticate_view_model import MemberAuthenticateViewModel
 from ...models.member_data_view_model import MemberDataViewModel
 from ...models.member_transfer_view_model import MemberTransferViewModel
 from ...models.members_api_view_model import MembersApiViewModel
 from ...models.members_basic_api_view_model import MembersBasicApiViewModel
-from ...models.common_models import MemberServiceResponse, ApiOperationResponse
 from .base import SyncBaseApi
 
 

@@ -4,8 +4,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncServiceApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncServiceApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
 
@@ -66,7 +66,9 @@ async def test_get_services_with_branch_filter(
 
 
 @pytest.mark.asyncio
-async def test_get_services_no_params(service_api: AsyncServiceApi, mock_api_client: Mock):
+async def test_get_services_no_params(
+    service_api: AsyncServiceApi, mock_api_client: Mock
+):
     """Test getting services without parameters."""
     expected = [ServicosResumoApiViewModel()]
     mock_api_client.return_value = expected

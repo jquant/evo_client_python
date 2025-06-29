@@ -3,8 +3,8 @@ from typing import Any, Dict, List, Optional
 
 from loguru import logger
 
-from ...sync.api.receivables_api import SyncReceivablesApi
 from ...models.gym_model import OverdueMember
+from ...sync.api.receivables_api import SyncReceivablesApi
 from . import BaseDataFetcher
 
 

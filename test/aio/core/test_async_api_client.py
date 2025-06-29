@@ -4,8 +4,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.core.configuration import Configuration
 from evo_client.aio.core.api_client import AsyncApiClient
+from evo_client.core.configuration import Configuration
 from evo_client.models.members_basic_api_view_model import MembersBasicApiViewModel
 
 
@@ -71,7 +71,6 @@ async def test_context_manager(async_api_client):
     ) as mock_enter, patch.object(
         async_api_client.request_handler, "__aexit__"
     ) as mock_exit:
-
         mock_enter.return_value = async_api_client.request_handler
         mock_exit.return_value = None
 

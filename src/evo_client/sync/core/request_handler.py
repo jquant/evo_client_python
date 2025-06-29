@@ -21,7 +21,6 @@ class SyncRequestHandler:
     def cleanup(self) -> None:
         """Cleanup resources."""
         # No thread pool to clean up in sync version
-        pass
 
     def execute(
         self, response_type: Optional[Type[T] | Type[Iterable[T]]] = None, **kwargs

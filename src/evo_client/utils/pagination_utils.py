@@ -3,16 +3,7 @@
 import time
 from dataclasses import dataclass
 from threading import Lock as ThreadLock
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    ParamSpec,
-    Protocol,
-    TypeVar,
-)
+from typing import Any, Callable, Dict, List, Optional, ParamSpec, Protocol, TypeVar
 
 from loguru import logger
 

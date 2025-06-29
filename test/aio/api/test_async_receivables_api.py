@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncReceivablesApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncReceivablesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.receivables_api_view_model import ReceivablesApiViewModel
 from evo_client.models.receivables_mask_received_view_model import (
@@ -82,7 +82,9 @@ async def test_get_receivables_with_filters(
 
 
 @pytest.mark.asyncio
-async def test_mark_received(receivables_api: AsyncReceivablesApi, mock_api_client: Mock):
+async def test_mark_received(
+    receivables_api: AsyncReceivablesApi, mock_api_client: Mock
+):
     """Test marking receivables as received."""
     mock_api_client.return_value = None
     mask_data = ReceivablesMaskReceivedViewModel()
@@ -97,7 +99,9 @@ async def test_mark_received(receivables_api: AsyncReceivablesApi, mock_api_clie
 
 
 @pytest.mark.asyncio
-async def test_error_handling(receivables_api: AsyncReceivablesApi, mock_api_client: Mock):
+async def test_error_handling(
+    receivables_api: AsyncReceivablesApi, mock_api_client: Mock
+):
     """Test API error handling."""
     mock_api_client.side_effect = ApiException(status=500, reason="Server Error")
 

@@ -1,6 +1,6 @@
 # /src/evo_client/models/gym_model.py
 
-from datetime import datetime, time, timedelta, date
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum, IntEnum
 from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union

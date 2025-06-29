@@ -7,7 +7,7 @@ making it easy to configure applications through environment settings.
 """
 
 import os
-from typing import Dict, Optional, Any
+from typing import Any, Dict, Optional
 from warnings import warn
 
 from ..core.configuration import Configuration

@@ -1,11 +1,9 @@
 """Tests for decorators module."""
 
-import pytest
-from unittest.mock import Mock, patch
-from rich.console import Console
+from unittest.mock import patch
 
-from evo_client.utils.decorators import handle_api_errors
 from evo_client.exceptions.api_exceptions import ApiException
+from evo_client.utils.decorators import handle_api_errors
 
 
 class TestHandleApiErrors:
@@ -31,7 +29,6 @@ class TestHandleApiErrors:
         with patch("evo_client.utils.decorators.logger") as mock_logger, patch(
             "evo_client.utils.decorators.console"
         ) as mock_console:
-
             result = function_with_api_error()
 
             # Should return None (no return statement in wrapper)
@@ -60,7 +57,6 @@ class TestHandleApiErrors:
         with patch("evo_client.utils.decorators.logger") as mock_logger, patch(
             "evo_client.utils.decorators.console"
         ) as mock_console:
-
             result = function_with_generic_error()
 
             # Should return None
@@ -97,7 +93,6 @@ class TestHandleApiErrors:
         @handle_api_errors
         def original_function():
             """Original function docstring."""
-            pass
 
         assert original_function.__name__ == "original_function"
         assert original_function.__doc__ == "Original function docstring."
@@ -134,6 +129,5 @@ class TestHandleApiErrors:
         with patch("evo_client.utils.decorators.logger"), patch(
             "evo_client.utils.decorators.console"
         ):
-
             result = function_that_should_return()
             assert result is None  # Should return None on exception

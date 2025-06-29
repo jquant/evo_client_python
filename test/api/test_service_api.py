@@ -4,10 +4,10 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncServiceApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncServiceApi
 
 
 @pytest.fixture
