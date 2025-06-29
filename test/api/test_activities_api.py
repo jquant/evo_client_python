@@ -58,8 +58,10 @@ def test_get_activities_with_filters(
     mock_api_client.return_value = expected
 
     result = activities_api.get_activities(
-        activity_name="Yoga",
+        search="Yoga",
         branch_id=1,
+        take=50,
+        skip=0,
     )
 
     assert result == expected
@@ -68,8 +70,10 @@ def test_get_activities_with_filters(
     assert args["method"] == "GET"
     assert args["resource_path"] == "/api/v1/activities"
     query_params = args["query_params"]
-    assert query_params["activityName"] == "Yoga"
+    assert query_params["search"] == "Yoga"
     assert query_params["idBranch"] == 1
+    assert query_params["take"] == 50
+    assert query_params["skip"] == 0
 
 
 def test_get_schedule_detail(activities_api: SyncActivitiesApi, mock_api_client: Mock):
@@ -78,8 +82,8 @@ def test_get_schedule_detail(activities_api: SyncActivitiesApi, mock_api_client:
     mock_api_client.return_value = expected
 
     result = activities_api.get_schedule_detail(
-        configuration_id=123,
-        date=datetime(2023, 1, 1),
+        config_id=123,
+        activity_date=datetime(2023, 1, 1),
     )
 
     assert result == expected
@@ -93,8 +97,8 @@ def test_enroll_member(activities_api: SyncActivitiesApi, mock_api_client: Mock)
     """Test enrolling a member in an activity."""
     mock_api_client.return_value = None
 
-    activities_api.enroll_in_activity(
-        configuration_id=123,
+    activities_api.enroll(
+        config_id=123,
         activity_date=datetime(2023, 1, 1),
         member_id=456,
     )
@@ -111,12 +115,9 @@ def test_get_schedule(activities_api: SyncActivitiesApi, mock_api_client: Mock):
     mock_api_client.return_value = expected
 
     result = activities_api.get_schedule(
-        start_date=datetime(2023, 1, 1),
-        end_date=datetime(2023, 1, 31),
         member_id=123,
-        employee_id=456,
-        activity_name="Yoga",
-        branch_id=1,
+        date=datetime(2023, 1, 1),
+        take=20,
     )
 
     assert result == expected
