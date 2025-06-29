@@ -1,10 +1,8 @@
 """Clean synchronous Workout API."""
 
-import json
 from datetime import datetime
-from typing import List, Optional, Any
+from typing import Any, Optional, cast
 
-from ...models.workout_models import WorkoutResponse, WorkoutUpdateResponse
 from .base import SyncBaseApi
 
 
@@ -27,7 +25,7 @@ class SyncWorkoutApi(SyncBaseApi):
         professor_id: Optional[int] = None,
         total_weeks: Optional[int] = None,
         weekly_frequency: Optional[int] = None,
-    ) -> WorkoutUpdateResponse:
+    ) -> Any:
         """
         Update a client's prescribed workout.
 
@@ -36,15 +34,15 @@ class SyncWorkoutApi(SyncBaseApi):
             workout_name: New name for the workout (empty to keep current)
             start_date: The workout's start date
             expiration_date: The workout's expiration date
-            observation: Workout observation/notes
-            categories: Workout categories
-            restrictions: Workout restrictions
+            observation: Additional observations
+            categories: Comma-separated categories (replaces existing)
+            restrictions: Comma-separated restrictions (replaces existing)
             professor_id: ID of the professor who created the workout
             total_weeks: Total number of weeks for the workout
             weekly_frequency: Weekly frequency for the client
 
         Returns:
-            Update result with success status and details
+            Update result
 
         Example:
             >>> with SyncWorkoutApi() as api:
@@ -55,13 +53,13 @@ class SyncWorkoutApi(SyncBaseApi):
             ...         total_weeks=12,
             ...         weekly_frequency=3
             ...     )
-            ...     print(f"Workout updated: {result.success}")
+            ...     print(f"Workout updated: {result}")
         """
         params = {
             "idWorkout": workout_id,
             "workoutName": workout_name,
-            "startDate": start_date.isoformat() if start_date else None,
-            "expirationDate": expiration_date.isoformat() if expiration_date else None,
+            "startDate": start_date,
+            "expirationDate": expiration_date,
             "observation": observation,
             "categories": categories,
             "restrictions": restrictions,
@@ -70,27 +68,13 @@ class SyncWorkoutApi(SyncBaseApi):
             "weeklyFrequency": weekly_frequency,
         }
 
-        try:
-            self.api_client.call_api(
-                resource_path=self.base_path,
-                method="PUT",
-                query_params={k: v for k, v in params.items() if v is not None},
-                auth_settings=["Basic"],
-            )
-
-            # Since the API doesn't return a specific schema, we create our own response
-            return WorkoutUpdateResponse(
-                success=True,
-                message="Workout updated successfully",
-                workout_id=workout_id,
-            )
-        except Exception as e:
-            return WorkoutUpdateResponse(
-                success=False,
-                message=f"Error updating workout: {str(e)}",
-                workout_id=workout_id,
-                errors=[str(e)],
-            )
+        result = self.api_client.call_api(
+            resource_path=self.base_path,
+            method="PUT",
+            query_params={k: v for k, v in params.items() if v is not None},
+            auth_settings=["Basic"],
+        )
+        return result
 
     def get_client_workouts(
         self,
@@ -100,7 +84,7 @@ class SyncWorkoutApi(SyncBaseApi):
         workout_id: Optional[int] = None,
         inactive: Optional[bool] = None,
         deleted: Optional[bool] = None,
-    ) -> List[WorkoutResponse]:
+    ) -> Any:
         """
         Get workouts for a client, prospect or employee.
 
@@ -113,7 +97,7 @@ class SyncWorkoutApi(SyncBaseApi):
             deleted: Include deleted workouts
 
         Returns:
-            List of workout data for the specified person
+            Workout data for the specified person
 
         Example:
             >>> with SyncWorkoutApi() as api:
@@ -122,7 +106,7 @@ class SyncWorkoutApi(SyncBaseApi):
             ...         inactive=False
             ...     )
             ...     for workout in workouts:
-            ...         print(f"Workout: {workout.nome_treino}")
+            ...         print(f"Workout: {workout.name}")
         """
         params = {
             "idClient": client_id,
@@ -133,20 +117,13 @@ class SyncWorkoutApi(SyncBaseApi):
             "deleted": deleted,
         }
 
-        result: Any = self.api_client.call_api(
+        result = self.api_client.call_api(
             resource_path=f"{self.base_path}/default-client-workout",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             auth_settings=["Basic"],
         )
-
-        # Parse the raw result into WorkoutResponse models
-        if isinstance(result, list):
-            return [WorkoutResponse.model_validate(workout) for workout in result]
-        elif result:
-            return [WorkoutResponse.model_validate(result)]
-        else:
-            return []
+        return result
 
     def get_workouts_by_month_year_professor(
         self,
@@ -155,7 +132,7 @@ class SyncWorkoutApi(SyncBaseApi):
         year: Optional[int] = None,
         skip: Optional[int] = None,
         take: Optional[int] = None,
-    ) -> List[WorkoutResponse]:
+    ) -> Any:
         """
         Get workouts filtered by month, year and/or professor.
 
@@ -167,7 +144,7 @@ class SyncWorkoutApi(SyncBaseApi):
             take: Number of records to return (max 50)
 
         Returns:
-            List of filtered workout data
+            Filtered workout data
 
         Example:
             >>> with SyncWorkoutApi() as api:
@@ -187,26 +164,19 @@ class SyncWorkoutApi(SyncBaseApi):
             "take": take,
         }
 
-        result: Any = self.api_client.call_api(
+        result = self.api_client.call_api(
             resource_path=f"{self.base_path}/workout-monthyear-professor",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             auth_settings=["Basic"],
         )
-
-        # Parse the raw result into WorkoutResponse models
-        if isinstance(result, list):
-            return [WorkoutResponse.model_validate(workout) for workout in result]
-        elif result:
-            return [WorkoutResponse.model_validate(result)]
-        else:
-            return []
+        return result
 
     def get_default_workouts(
         self,
         employee_id: Optional[int] = None,
         tag_id: Optional[int] = None,
-    ) -> List[WorkoutResponse]:
+    ) -> Any:
         """
         Get all default workouts with optional filtering.
 
@@ -230,27 +200,20 @@ class SyncWorkoutApi(SyncBaseApi):
             ...         tag_id=5
             ...     )
             ...     for workout in workouts:
-            ...         print(f"Default workout: {workout.nome_treino}")
+            ...         print(f"Default workout: {workout.name}")
         """
         params = {
             "idEmployee": employee_id,
             "idTag": tag_id,
         }
 
-        result: Any = self.api_client.call_api(
+        result = self.api_client.call_api(
             resource_path=f"{self.base_path}/default-workout",
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             auth_settings=["Basic"],
         )
-
-        # Parse the raw result into WorkoutResponse models
-        if isinstance(result, list):
-            return [WorkoutResponse.model_validate(workout) for workout in result]
-        elif result:
-            return [WorkoutResponse.model_validate(result)]
-        else:
-            return []
+        return result
 
     def link_workout_to_client(
         self,
@@ -299,53 +262,13 @@ class SyncWorkoutApi(SyncBaseApi):
             "idClient": client_id,
             "idProspect": prospect_id,
             "idEmployee": employee_id,
-            "prescriptionDate": (
-                prescription_date.isoformat() if prescription_date else None
-            ),
+            "prescriptionDate": prescription_date,
         }
 
-        self.api_client.call_api(
+        result = self.api_client.call_api(
             resource_path=f"{self.base_path}/link-workout-to-client",
             method="POST",
-            body=json.dumps({k: v for k, v in params.items() if v is not None}),
-            headers={"Content-Type": "application/json"},
+            query_params={k: v for k, v in params.items() if v is not None},
             auth_settings=["Basic"],
         )
-
-    def get_employee_default_workout(
-        self,
-        employee_id: int,
-        workout_id: int,
-    ) -> WorkoutResponse:
-        """
-        Get specific default workout for an employee.
-
-        Args:
-            employee_id: ID of the employee
-            workout_id: ID of the workout
-
-        Returns:
-            Workout details for the specified employee and workout
-
-        Example:
-            >>> with SyncWorkoutApi() as api:
-            ...     workout = api.get_employee_default_workout(
-            ...         employee_id=10,
-            ...         workout_id=25
-            ...     )
-            ...     print(f"Employee workout: {workout.nome_treino}")
-        """
-        params = {
-            "idEmployee": employee_id,
-            "idWorkout": workout_id,
-        }
-
-        result: Any = self.api_client.call_api(
-            resource_path=f"{self.base_path}/employee-default-workout",
-            method="GET",
-            query_params=params,
-            auth_settings=["Basic"],
-        )
-
-        # Parse the raw result into WorkoutResponse model
-        return WorkoutResponse.model_validate(result)
+        return cast(bool, result)

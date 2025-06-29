@@ -110,19 +110,27 @@ class SyncVoucherApi(SyncBaseApi):
 
     def create_voucher(
         self,
-        member_id: int,
-        value: float,
-        description: Optional[str] = None,
-        expiration_date: Optional[str] = None,
+        name: str,
+        discount_type: int,
+        discount_value: float,
+        valid_from: str,
+        valid_until: str,
+        branch_id: Optional[int] = None,
+        usage_limit: Optional[int] = None,
+        min_value: Optional[float] = None,
     ) -> VoucherCreateResponse:
         """
         Create a new voucher for a member.
 
         Args:
-            member_id: ID of the member to create voucher for
-            value: Voucher value amount
-            description: Optional voucher description
-            expiration_date: Optional expiration date (YYYY-MM-DD format)
+            name: Name/code of the voucher
+            discount_type: Type of discount (1=Percentage, 2=Fixed amount)
+            discount_value: Value of the discount
+            valid_from: Start date of validity (format: YYYY-MM-DD)
+            valid_until: End date of validity (format: YYYY-MM-DD)
+            branch_id: Branch ID for voucher (multilocation only)
+            usage_limit: Maximum number of times voucher can be used
+            min_value: Minimum purchase value required
 
         Returns:
             Created voucher details including ID and status
@@ -130,19 +138,27 @@ class SyncVoucherApi(SyncBaseApi):
         Example:
             >>> with SyncVoucherApi() as api:
             ...     response = api.create_voucher(
-            ...         member_id=123,
-            ...         value=50.0,
-            ...         description="Bonus voucher",
-            ...         expiration_date="2024-12-31"
+            ...         name="VOUCHER10",
+            ...         discount_type=1,
+            ...         discount_value=10.0,
+            ...         valid_from="2024-01-01",
+            ...         valid_until="2024-12-31",
+            ...         branch_id=1,
+            ...         usage_limit=100,
+            ...         min_value=100.0
             ...     )
             ...     if response.success:
             ...         print(f"Voucher created with ID: {response.voucher_id}")
         """
         request_data = {
-            "memberId": member_id,
-            "value": value,
-            "description": description,
-            "expirationDate": expiration_date,
+            "name": name,
+            "discountType": discount_type,
+            "discountValue": discount_value,
+            "validFrom": valid_from,
+            "validUntil": valid_until,
+            "branchId": branch_id,
+            "usageLimit": usage_limit,
+            "minValue": min_value,
         }
 
         # Remove None values
@@ -171,49 +187,3 @@ class SyncVoucherApi(SyncBaseApi):
                 message=f"Error creating voucher: {str(e)}",
                 errors=[str(e)],
             )
-
-    def calculate_voucher_value(
-        self,
-        base_value: float,
-        discount_percentage: Optional[float] = None,
-        additional_fees: Optional[float] = None,
-    ) -> VoucherCalculationResponse:
-        """
-        Calculate the final voucher value with discounts and fees.
-
-        Args:
-            base_value: Base voucher value
-            discount_percentage: Optional discount percentage (0-100)
-            additional_fees: Optional additional fees to add
-
-        Returns:
-            Calculation result with final value and breakdown
-
-        Example:
-            >>> with SyncVoucherApi() as api:
-            ...     calculation = api.calculate_voucher_value(
-            ...         base_value=100.0,
-            ...         discount_percentage=10.0,
-            ...         additional_fees=5.0
-            ...     )
-            ...     print(f"Final value: {calculation.final_value}")
-        """
-        request_data = {
-            "baseValue": base_value,
-            "discountPercentage": discount_percentage,
-            "additionalFees": additional_fees,
-        }
-
-        # Remove None values
-        request_data = {k: v for k, v in request_data.items() if v is not None}
-
-        result: Any = self.api_client.call_api(
-            resource_path=f"{self.base_path}/calculate-value",
-            method="POST",
-            body=json.dumps(request_data),
-            headers={"Content-Type": "application/json"},
-            auth_settings=["Basic"],
-        )
-
-        # Parse the raw result into VoucherCalculationResponse model
-        return VoucherCalculationResponse.model_validate(result)
