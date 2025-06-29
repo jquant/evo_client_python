@@ -4,8 +4,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncStatesApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncStatesApi
 from evo_client.exceptions.api_exceptions import ApiException
 
 

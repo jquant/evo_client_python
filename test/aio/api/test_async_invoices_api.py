@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncInvoicesApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncInvoicesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.enotas_retorno import EnotasRetorno
 
@@ -70,7 +70,9 @@ async def test_get_invoices_with_filters(
 
 
 @pytest.mark.asyncio
-async def test_get_invoices_no_params(invoices_api: AsyncInvoicesApi, mock_api_client: Mock):
+async def test_get_invoices_no_params(
+    invoices_api: AsyncInvoicesApi, mock_api_client: Mock
+):
     """Test getting invoices without parameters."""
     expected = EnotasRetorno()
     mock_api_client.return_value = expected

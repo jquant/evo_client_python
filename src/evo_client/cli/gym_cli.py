@@ -11,7 +11,6 @@ from rich.console import Console
 from rich.table import Table
 from rich.tree import Tree
 
-from ..sync.core.api_client import SyncApiClient
 from ..core.configuration import Configuration
 from ..models.gym_model import GymKnowledgeBase
 from ..models.webhook_model import WebhookEventType
@@ -25,6 +24,7 @@ from ..services.gym_knowledge_base.gym_kb_data_fetcher import GymKnowledgeBaseSe
 from ..services.member_files.member_files_data_fetcher import MemberFilesDataFetcher
 from ..services.operating_data.operating_data_fetcher import OperatingDataFetcher
 from ..services.webhook_management.webhook_management import WebhookManagementService
+from ..sync.core.api_client import SyncApiClient
 
 console = Console()
 

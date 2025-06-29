@@ -2,11 +2,11 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...sync.api.membership_api import SyncMembershipApi
 from ...models.contratos_resumo_api_view_model import ContratosResumoApiViewModel
 from ...models.w12_utils_category_membership_view_model import (
     W12UtilsCategoryMembershipViewModel,
 )
+from ...sync.api.membership_api import SyncMembershipApi
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 

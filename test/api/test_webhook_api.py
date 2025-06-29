@@ -4,10 +4,10 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncWebhookApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.common_models import WebhookResponse
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncWebhookApi
 
 
 @pytest.fixture

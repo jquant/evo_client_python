@@ -12,12 +12,12 @@ This test suite validates the comprehensive improvements made in Phase 4:
 Tests verify that all the new features work together seamlessly.
 """
 
-import pytest
 import asyncio
-import sys
 import os
-from unittest.mock import patch, MagicMock
-from typing import Dict, Any
+import sys
+from unittest.mock import patch
+
+import pytest
 
 # Add src to path for testing
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
@@ -29,15 +29,15 @@ class TestPhase4ImportPatterns:
     def test_clean_simple_imports(self):
         """Test the clean & simple import pattern (recommended)."""
         # Main clients - direct import from main package
-        from evo_client import SyncApiClient, AsyncApiClient, Configuration
+        from evo_client import AsyncApiClient, Configuration, SyncApiClient
 
         assert SyncApiClient is not None
         assert AsyncApiClient is not None
         assert Configuration is not None
 
         # Specific APIs - direct import from modules
-        from evo_client.sync import SyncMembersApi, SyncSalesApi
         from evo_client.aio import AsyncMembersApi, AsyncSalesApi
+        from evo_client.sync import SyncMembersApi, SyncSalesApi
 
         assert SyncMembersApi is not None
         assert SyncSalesApi is not None
@@ -47,10 +47,10 @@ class TestPhase4ImportPatterns:
     def test_module_based_imports(self):
         """Test the module-based import pattern."""
         # Import from specific modules
-        from evo_client.sync import SyncApiClient as SyncClient
         from evo_client.aio import AsyncApiClient as AsyncClient
-        from evo_client.sync.api import SyncMembersApi, SyncInvoicesApi
-        from evo_client.aio.api import AsyncMembersApi, AsyncInvoicesApi
+        from evo_client.aio.api import AsyncInvoicesApi, AsyncMembersApi
+        from evo_client.sync import SyncApiClient as SyncClient
+        from evo_client.sync.api import SyncInvoicesApi, SyncMembersApi
 
         assert SyncClient is not None
         assert AsyncClient is not None
@@ -62,10 +62,9 @@ class TestPhase4ImportPatterns:
     def test_backward_compatible_imports(self):
         """Test backward compatible import pattern."""
         # Old style imports - should still work
-        from evo_client import ApiClient
-        from evo_client.sync.api import SyncMembersApi, SyncSalesApi
+        from evo_client import ApiClient, SyncApiClient
         from evo_client.aio.api import AsyncMembersApi, AsyncSalesApi
-        from evo_client import SyncApiClient
+        from evo_client.sync.api import SyncMembersApi, SyncSalesApi
 
         assert ApiClient is not None
         assert SyncMembersApi is not None
@@ -95,51 +94,50 @@ class TestPhase4ImportPatterns:
     def test_all_20_apis_accessible(self):
         """Test that all 20 APIs are accessible through new import patterns."""
         # Test sync APIs
-        from evo_client.sync.api import (
-            SyncMembersApi,
-            SyncSalesApi,
-            SyncActivitiesApi,
-            SyncMembershipApi,
-            SyncReceivablesApi,
-            SyncPayablesApi,
-            SyncEntriesApi,
-            SyncProspectsApi,
-            SyncInvoicesApi,
-            SyncPixApi,
-            SyncBankAccountsApi,
-            SyncMemberMembershipApi,
-            SyncEmployeesApi,
-            SyncConfigurationApi,
-            SyncStatesApi,
-            SyncServiceApi,
-            SyncManagementApi,
-            SyncNotificationsApi,
-            SyncWebhookApi,
-            SyncPartnershipApi,
-        )
-
         # Test async APIs
         from evo_client.aio.api import (
-            AsyncMembersApi,
-            AsyncSalesApi,
             AsyncActivitiesApi,
-            AsyncMembershipApi,
-            AsyncReceivablesApi,
-            AsyncPayablesApi,
-            AsyncEntriesApi,
-            AsyncProspectsApi,
-            AsyncInvoicesApi,
-            AsyncPixApi,
             AsyncBankAccountsApi,
-            AsyncMemberMembershipApi,
-            AsyncEmployeesApi,
             AsyncConfigurationApi,
-            AsyncStatesApi,
-            AsyncServiceApi,
+            AsyncEmployeesApi,
+            AsyncEntriesApi,
+            AsyncInvoicesApi,
             AsyncManagementApi,
+            AsyncMemberMembershipApi,
+            AsyncMembersApi,
+            AsyncMembershipApi,
             AsyncNotificationsApi,
-            AsyncWebhookApi,
             AsyncPartnershipApi,
+            AsyncPayablesApi,
+            AsyncPixApi,
+            AsyncProspectsApi,
+            AsyncReceivablesApi,
+            AsyncSalesApi,
+            AsyncServiceApi,
+            AsyncStatesApi,
+            AsyncWebhookApi,
+        )
+        from evo_client.sync.api import (
+            SyncActivitiesApi,
+            SyncBankAccountsApi,
+            SyncConfigurationApi,
+            SyncEmployeesApi,
+            SyncEntriesApi,
+            SyncInvoicesApi,
+            SyncManagementApi,
+            SyncMemberMembershipApi,
+            SyncMembersApi,
+            SyncMembershipApi,
+            SyncNotificationsApi,
+            SyncPartnershipApi,
+            SyncPayablesApi,
+            SyncPixApi,
+            SyncProspectsApi,
+            SyncReceivablesApi,
+            SyncSalesApi,
+            SyncServiceApi,
+            SyncStatesApi,
+            SyncWebhookApi,
         )
 
         # Verify all APIs are not None (basic import test)
@@ -253,7 +251,7 @@ class TestPhase4ConfigurationHelpers:
 
     def test_config_validator(self):
         """Test configuration validation."""
-        from evo_client.config import ConfigValidator, ConfigBuilder
+        from evo_client.config import ConfigBuilder, ConfigValidator
 
         # Test good configuration
         good_config = ConfigBuilder.basic_auth(
@@ -352,9 +350,9 @@ class TestPhase4EndToEndWorkflows:
     @pytest.mark.asyncio
     async def test_async_workflow_with_config_helpers(self):
         """Test complete async workflow using configuration helpers."""
-        from evo_client.config import ConfigPresets
         from evo_client.aio import AsyncApiClient
         from evo_client.aio.api import AsyncMembersApi
+        from evo_client.config import ConfigPresets
 
         # Setup configuration using presets
         config = ConfigPresets.gym_development()
@@ -383,9 +381,9 @@ class TestPhase4EndToEndWorkflows:
 
     def test_configuration_integration_with_clients(self):
         """Test that configuration helpers integrate seamlessly with clients."""
+        from evo_client.aio import AsyncApiClient
         from evo_client.config import ConfigBuilder, ConfigValidator
         from evo_client.sync import SyncApiClient
-        from evo_client.aio import AsyncApiClient
 
         # Create configuration with validation
         config = ConfigBuilder.basic_auth(
@@ -420,11 +418,11 @@ class TestPhase4EndToEndWorkflows:
         from evo_client.config import ConfigPresets
         from evo_client.sync import SyncApiClient
         from evo_client.sync.api import (
-            SyncMembersApi,
-            SyncSalesApi,
             SyncActivitiesApi,
-            SyncReceivablesApi,
             SyncInvoicesApi,
+            SyncMembersApi,
+            SyncReceivablesApi,
+            SyncSalesApi,
         )
 
         # Use high-performance preset for multiple APIs
@@ -468,8 +466,8 @@ class TestPhase4BackwardCompatibility:
         """Test that old import patterns continue to work."""
         # Old style imports should still work
         from evo_client import ApiClient, Configuration
-        from evo_client.sync.api import SyncMembersApi, SyncSalesApi
         from evo_client.aio.api import AsyncMembersApi, AsyncSalesApi
+        from evo_client.sync.api import SyncMembersApi, SyncSalesApi
 
         assert ApiClient is not None
         assert Configuration is not None
@@ -480,7 +478,7 @@ class TestPhase4BackwardCompatibility:
 
     def test_legacy_configuration_patterns_work(self):
         """Test that old configuration patterns still work."""
-        from evo_client import Configuration, ApiClient
+        from evo_client import ApiClient, Configuration
 
         # Old manual configuration should still work
         config = Configuration()
@@ -501,7 +499,6 @@ class TestPhase4BackwardCompatibility:
     def test_legacy_api_usage_patterns(self):
         """Test that old API usage patterns still work."""
         from evo_client import ApiClient, Configuration  # Use aliased ApiClient
-        from evo_client.sync.api import SyncMembersApi
 
         config = Configuration()
         config.host = "https://test.evo.com"

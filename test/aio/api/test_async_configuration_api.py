@@ -1,12 +1,11 @@
 """Tests for the AsyncConfigurationApi class."""
 
-from typing import List
 from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncConfigurationApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncConfigurationApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.bandeiras_basico_view_model import BandeirasBasicoViewModel
 from evo_client.models.configuracao_api_view_model import ConfiguracaoApiViewModel
@@ -89,7 +88,9 @@ async def test_get_occupations(
 
 
 @pytest.mark.asyncio
-async def test_get_card_flags(configuration_api: AsyncConfigurationApi, mock_api_client: Mock):
+async def test_get_card_flags(
+    configuration_api: AsyncConfigurationApi, mock_api_client: Mock
+):
     """Test getting card flags."""
     expected = [BandeirasBasicoViewModel()]
     mock_api_client.return_value = expected
@@ -121,7 +122,9 @@ async def test_get_translations(
 
 
 @pytest.mark.asyncio
-async def test_error_handling(configuration_api: AsyncConfigurationApi, mock_api_client: Mock):
+async def test_error_handling(
+    configuration_api: AsyncConfigurationApi, mock_api_client: Mock
+):
     """Test API error handling."""
     mock_api_client.side_effect = ApiException(status=500, reason="Server Error")
 

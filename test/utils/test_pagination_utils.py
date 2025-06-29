@@ -1,20 +1,22 @@
 """Tests for pagination_utils module."""
 
-import pytest
 import time
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
+
+import pytest
+
+from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.utils.pagination_utils import (
-    RateLimiter,
-    RetryHandler,
     ApiCallExecutor,
     PaginatedApiCaller,
     PaginationConfig,
-    RetryConfig,
     PaginationResult,
+    RateLimiter,
+    RetryConfig,
+    RetryHandler,
     create_paginated_caller,
     paginated_api_call,
 )
-from evo_client.exceptions.api_exceptions import ApiException
 
 
 class TestPaginationConfig:
@@ -146,7 +148,6 @@ class TestRateLimiter:
         with patch("time.sleep") as mock_sleep, patch(
             "evo_client.utils.pagination_utils.logger"
         ) as mock_logger:
-
             # This should trigger rate limiting
             limiter.acquire()
 

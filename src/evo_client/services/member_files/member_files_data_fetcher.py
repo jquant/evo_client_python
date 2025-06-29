@@ -4,10 +4,6 @@ from typing import List, Optional, Tuple, Union
 
 from loguru import logger
 
-from ...sync.api.activities_api import SyncActivitiesApi
-from ...sync.api.entries_api import SyncEntriesApi
-from ...sync.api.members_api import SyncMembersApi
-from ...sync.api.receivables_api import SyncReceivablesApi
 from ...models.atividade_agenda_api_view_model import AtividadeAgendaApiViewModel
 from ...models.cliente_detalhes_basicos_api_view_model import (
     ClienteDetalhesBasicosApiViewModel,
@@ -24,6 +20,10 @@ from ...models.gym_model import (
     ReceivableStatus,
 )
 from ...models.receivables_api_view_model import ReceivablesApiViewModel
+from ...sync.api.activities_api import SyncActivitiesApi
+from ...sync.api.entries_api import SyncEntriesApi
+from ...sync.api.members_api import SyncMembersApi
+from ...sync.api.receivables_api import SyncReceivablesApi
 from ..data_fetchers import BaseDataFetcher
 
 

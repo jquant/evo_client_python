@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncEntriesApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncEntriesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.entradas_resumo_api_view_model import EntradasResumoApiViewModel
 
@@ -46,7 +46,9 @@ async def test_get_entries_basic(entries_api: AsyncEntriesApi, mock_api_client: 
 
 
 @pytest.mark.asyncio
-async def test_get_entries_with_filters(entries_api: AsyncEntriesApi, mock_api_client: Mock):
+async def test_get_entries_with_filters(
+    entries_api: AsyncEntriesApi, mock_api_client: Mock
+):
     """Test getting entries with various filters."""
     expected = [EntradasResumoApiViewModel()]
     mock_api_client.return_value = expected

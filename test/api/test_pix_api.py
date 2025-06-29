@@ -1,14 +1,13 @@
 """Tests for the SyncPixApi class."""
 
-from datetime import datetime
 from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncPixApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.pix_payment_details_view_model import PixPaymentDetailsViewModel
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncPixApi
 
 
 @pytest.fixture

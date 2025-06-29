@@ -1,6 +1,6 @@
 """Clean synchronous States API."""
 
-from typing import List, Any
+from typing import Any, List
 
 from ...models.common_models import StateResponse
 from .base import SyncBaseApi

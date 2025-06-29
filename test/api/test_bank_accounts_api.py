@@ -4,10 +4,10 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncBankAccountsApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.bank_accounts_view_model import BankAccountsViewModel
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncBankAccountsApi
 
 
 @pytest.fixture
