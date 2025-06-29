@@ -5,12 +5,15 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+from evo_client.services.data_fetchers.member_data_fetcher import MemberDataFetcher
+from evo_client.services.data_fetchers import (
+    BaseDataFetcher,
+    BranchApiClientManager,
+)
 from evo_client.models.cliente_detalhes_basicos_api_view_model import (
     ClienteDetalhesBasicosApiViewModel,
 )
 from evo_client.models.members_api_view_model import MembersApiViewModel
-from evo_client.services.data_fetchers import BaseDataFetcher, BranchApiClientManager
-from evo_client.services.data_fetchers.member_data_fetcher import MemberDataFetcher
 
 
 class TestMemberDataFetcher:

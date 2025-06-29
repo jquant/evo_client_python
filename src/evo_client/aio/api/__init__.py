@@ -3,6 +3,10 @@
 from .activities_api import AsyncActivitiesApi
 from .bank_accounts_api import AsyncBankAccountsApi
 from .base import AsyncBaseApi
+from .voucher_api import AsyncVoucherApi
+from .member_membership_api import AsyncMemberMembershipApi
+from .workout_api import AsyncWorkoutApi
+from .employees_api import AsyncEmployeesApi
 from .configuration_api import AsyncConfigurationApi
 from .employees_api import AsyncEmployeesApi
 from .entries_api import AsyncEntriesApi
@@ -35,7 +39,9 @@ __all__ = [
     "AsyncInvoicesApi",
     "AsyncPixApi",
     "AsyncBankAccountsApi",
+    "AsyncVoucherApi",
     "AsyncMemberMembershipApi",
+    "AsyncWorkoutApi",
     "AsyncEmployeesApi",
     "AsyncConfigurationApi",
     "AsyncStatesApi",
