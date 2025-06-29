@@ -1,22 +1,20 @@
 """Tests for async pagination utilities."""
 
-import pytest
 from typing import List
 from unittest.mock import AsyncMock, Mock, patch
 
+import pytest
+
+from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.utils.async_pagination_utils import (
-    AsyncRateLimiter,
-    AsyncRetryHandler,
     AsyncApiCallExecutor,
     AsyncPaginatedApiCaller,
+    AsyncRateLimiter,
+    AsyncRetryHandler,
     ConcurrentPaginationManager,
     create_async_paginated_caller,
 )
-from evo_client.utils.pagination_utils import (
-    PaginationConfig,
-    RetryConfig,
-)
-from evo_client.exceptions.api_exceptions import ApiException
+from evo_client.utils.pagination_utils import PaginationConfig, RetryConfig
 
 
 class TestAsyncRateLimiter:

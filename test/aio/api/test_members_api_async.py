@@ -4,11 +4,11 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncMembersApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncMembersApi
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.members_basic_api_view_model import MembersBasicApiViewModel
 from evo_client.models.member_authenticate_view_model import MemberAuthenticateViewModel
+from evo_client.models.members_basic_api_view_model import MembersBasicApiViewModel
 
 
 @pytest.fixture

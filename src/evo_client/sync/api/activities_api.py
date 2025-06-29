@@ -1,13 +1,13 @@
 """Clean synchronous Activities API."""
 
 from datetime import datetime
-from typing import List, Optional, cast, Any
+from typing import Any, List, Optional, cast
 
 from ...models.atividade_agenda_api_view_model import AtividadeAgendaApiViewModel
+from ...models.atividade_basico_api_view_model import AtividadeBasicoApiViewModel
 from ...models.atividade_list_api_view_model import AtividadeListApiViewModel
 from ...models.e_origem_agendamento import EOrigemAgendamento
 from ...models.e_status_atividade_sessao import EStatusAtividadeSessao
-from ...models.atividade_basico_api_view_model import AtividadeBasicoApiViewModel
 from .base import SyncBaseApi
 
 

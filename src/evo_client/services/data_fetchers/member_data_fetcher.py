@@ -3,11 +3,11 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...sync.api.members_api import SyncMembersApi
 from ...models.cliente_detalhes_basicos_api_view_model import (
     ClienteDetalhesBasicosApiViewModel,
 )
 from ...models.members_api_view_model import MembersApiViewModel
+from ...sync.api.members_api import SyncMembersApi
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 

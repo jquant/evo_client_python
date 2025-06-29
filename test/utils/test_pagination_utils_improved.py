@@ -1,20 +1,21 @@
 """Tests for improved pagination utilities."""
 
-import pytest
-from unittest.mock import Mock, patch, call
+from unittest.mock import Mock, call, patch
 
+import pytest
+
+from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.utils.pagination_utils import (
-    RateLimiter,
-    RetryHandler,
     ApiCallExecutor,
     PaginatedApiCaller,
     PaginationConfig,
-    RetryConfig,
     PaginationResult,
+    RateLimiter,
+    RetryConfig,
+    RetryHandler,
     create_paginated_caller,
     paginated_api_call,
 )
-from evo_client.exceptions.api_exceptions import ApiException
 
 
 class TestPaginationConfig:

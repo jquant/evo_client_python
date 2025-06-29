@@ -3,8 +3,8 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...sync.api.prospects_api import SyncProspectsApi
 from ...models.prospects_resumo_api_view_model import ProspectsResumoApiViewModel
+from ...sync.api.prospects_api import SyncProspectsApi
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 

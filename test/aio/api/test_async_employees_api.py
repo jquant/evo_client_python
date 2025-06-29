@@ -1,18 +1,17 @@
 """Tests for the AsyncEmployeesApi class."""
 
-from datetime import datetime
 from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncEmployeesApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncEmployeesApi
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.employee_api_integracao_view_model import (
-    EmployeeApiIntegracaoViewModel,
-)
 from evo_client.models.employee_api_integracao_atualizacao_view_model import (
     EmployeeApiIntegracaoAtualizacaoViewModel,
+)
+from evo_client.models.employee_api_integracao_view_model import (
+    EmployeeApiIntegracaoViewModel,
 )
 from evo_client.models.funcionarios_resumo_api_view_model import (
     FuncionariosResumoApiViewModel,
@@ -39,7 +38,9 @@ def mock_api_client():
 
 
 @pytest.mark.asyncio
-async def test_get_employees_basic(employees_api: AsyncEmployeesApi, mock_api_client: Mock):
+async def test_get_employees_basic(
+    employees_api: AsyncEmployeesApi, mock_api_client: Mock
+):
     """Test getting employees without filters."""
     expected = [FuncionariosResumoApiViewModel()]
     mock_api_client.return_value = expected

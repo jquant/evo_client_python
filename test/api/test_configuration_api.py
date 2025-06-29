@@ -1,12 +1,9 @@
 """Tests for the SyncConfigurationApi class."""
 
-from typing import List
 from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncConfigurationApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.bandeiras_basico_view_model import BandeirasBasicoViewModel
 from evo_client.models.configuracao_api_view_model import ConfiguracaoApiViewModel
@@ -16,6 +13,8 @@ from evo_client.models.empresas_filiais_gateway_view_model import (
 from evo_client.models.empresas_filiais_ocupacao_view_model import (
     EmpresasFiliaisOcupacaoViewModel,
 )
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncConfigurationApi
 
 
 @pytest.fixture

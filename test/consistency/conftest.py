@@ -2,12 +2,13 @@
 Pytest configuration and fixtures for API consistency testing.
 """
 
-import pytest
-import inspect
 import importlib
-from typing import Dict, List, Tuple, Any, Optional, Set
+import inspect
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import pytest
 
 
 @dataclass

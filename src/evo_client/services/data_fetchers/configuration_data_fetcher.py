@@ -3,9 +3,9 @@ from typing import List
 
 from loguru import logger
 
-from ...sync.api.configuration_api import SyncConfigurationApi
 from ...exceptions.api_exceptions import ApiException
 from ...models.configuracao_api_view_model import ConfiguracaoApiViewModel
+from ...sync.api.configuration_api import SyncConfigurationApi
 from . import BaseDataFetcher
 
 

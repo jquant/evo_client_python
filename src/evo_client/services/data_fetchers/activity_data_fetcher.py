@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from ...sync.api.activities_api import SyncActivitiesApi
 from ...models.atividade_list_api_view_model import AtividadeListApiViewModel
 from ...models.atividade_sessao_participante_api_view_model import (
     AtividadeSessaoParticipanteApiViewModel,
 )
+from ...sync.api.activities_api import SyncActivitiesApi
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
 

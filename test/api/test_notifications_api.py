@@ -4,11 +4,11 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.sync.api import SyncNotificationsApi
-from evo_client.sync import SyncApiClient
 from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.notification_api_view_model import NotificationApiViewModel
 from evo_client.models.common_models import NotificationCreateResponse
+from evo_client.models.notification_api_view_model import NotificationApiViewModel
+from evo_client.sync import SyncApiClient
+from evo_client.sync.api import SyncNotificationsApi
 
 
 @pytest.fixture

@@ -2,10 +2,10 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...sync.api.webhook_api import SyncWebhookApi
 from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ...models.webhook_model import Webhook, WebhookEventType
+from ...sync.api.webhook_api import SyncWebhookApi
 from . import BaseDataFetcher
 
 

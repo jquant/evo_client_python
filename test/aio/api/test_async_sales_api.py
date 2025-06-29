@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.aio.api import AsyncSalesApi
 from evo_client.aio import AsyncApiClient
+from evo_client.aio.api import AsyncSalesApi
 from evo_client.exceptions.api_exceptions import ApiException
 from evo_client.models.new_sale_view_model import NewSaleViewModel
 from evo_client.models.sales_items_view_model import SalesItemsViewModel
