@@ -25,6 +25,7 @@ class SyncEmployeesApi(SyncBaseApi):
         skip: Optional[int] = None,
         active: Optional[bool] = None,
         employee_id: Optional[int] = None,
+        email: Optional[str] = None,
     ) -> List[FuncionariosResumoApiViewModel]:
         """
         Get employees with filtering options.
@@ -35,6 +36,7 @@ class SyncEmployeesApi(SyncBaseApi):
             skip: Number of records to skip
             active: Filter by active status
             employee_id: Filter by specific employee ID
+            email: Filter by employee email
 
         Returns:
             List of employee objects
@@ -51,6 +53,7 @@ class SyncEmployeesApi(SyncBaseApi):
             "skip": skip,
             "active": active,
             "idEmployee": employee_id,
+            "email": email,
         }
 
         result: Any = self.api_client.call_api(

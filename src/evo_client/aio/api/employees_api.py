@@ -24,6 +24,7 @@ class AsyncEmployeesApi(AsyncBaseApi):
         email: Optional[str] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
+        active: Optional[bool] = None,
     ) -> List[FuncionariosResumoApiViewModel]:
         """
         Get employees with optional filtering.
@@ -34,6 +35,7 @@ class AsyncEmployeesApi(AsyncBaseApi):
             email: Filter by email
             take: Number of records to return
             skip: Number of records to skip
+            active: Filter by active status
 
         Returns:
             List of employees matching the criteria
@@ -53,6 +55,7 @@ class AsyncEmployeesApi(AsyncBaseApi):
             "email": email,
             "take": take,
             "skip": skip,
+            "active": active,
         }
 
         result = await self.api_client.call_api(

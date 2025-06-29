@@ -27,32 +27,34 @@ class SyncActivitiesApi(SyncBaseApi):
 
     def get_activities(
         self,
-        activity_name: Optional[str] = None,
-        is_visible: Optional[bool] = None,
+        search: Optional[str] = None,
         branch_id: Optional[int] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
     ) -> List[AtividadeListApiViewModel]:
         """
         Get activities list with optional filtering.
 
         Args:
-            activity_name: Filter by activity name
-            is_visible: Filter by visibility
-            branch_id: Filter by branch ID
+            search: Filter by activity name, group name or tags
+            branch_id: Filter by membership branch ID
+            take: Number of records to return
+            skip: Number of records to skip
 
         Returns:
-            List of activities
+            List of activities matching the criteria
 
         Example:
             >>> with SyncActivitiesApi() as api:
-            ...     activities = api.get_activities(is_visible=True)
+            ...     activities = api.get_activities(
+            ...         search="yoga",
+            ...         branch_id=1,
+            ...         take=10
+            ...     )
             ...     for activity in activities:
-            ...         print(f"Activity: {activity.name}")
+            ...         print(f"{activity.name} - {activity.description}")
         """
-        params = {
-            "activityName": activity_name,
-            "isVisible": is_visible,
-            "idBranch": branch_id,
-        }
+        params = {"search": search, "idBranch": branch_id, "take": take, "skip": skip}
 
         result = self.api_client.call_api(
             resource_path=self.base_path,
@@ -65,23 +67,29 @@ class SyncActivitiesApi(SyncBaseApi):
 
     def get_schedule(
         self,
-        start_date: datetime,
-        end_date: datetime,
         member_id: Optional[int] = None,
-        employee_id: Optional[int] = None,
-        activity_name: Optional[str] = None,
+        date: Optional[datetime] = None,
         branch_id: Optional[int] = None,
+        activity_ids: Optional[List[int]] = None,
+        audience_ids: Optional[List[int]] = None,
+        take: Optional[int] = None,
+        only_availables: bool = False,
+        show_full_week: bool = False,
+        branch_token: Optional[str] = None,
     ) -> List[AtividadeAgendaApiViewModel]:
         """
         Get activity schedule.
 
         Args:
-            start_date: Start date for schedule
-            end_date: End date for schedule
             member_id: Filter by member ID
-            employee_id: Filter by employee ID
-            activity_name: Filter by activity name
+            date: Filter by specific date
             branch_id: Filter by branch ID
+            activity_ids: Filter by activity IDs
+            audience_ids: Filter by audience IDs
+            take: Number of records to return
+            only_availables: Show only available slots
+            show_full_week: Show full week schedule
+            branch_token: Branch access token
 
         Returns:
             List of scheduled activities
@@ -89,19 +97,25 @@ class SyncActivitiesApi(SyncBaseApi):
         Example:
             >>> from datetime import datetime
             >>> with SyncActivitiesApi() as api:
-            ...     start = datetime(2024, 1, 1)
-            ...     end = datetime(2024, 1, 31)
-            ...     schedule = api.get_schedule(start, end, member_id=123)
-            ...     for item in schedule:
-            ...         print(f"Activity: {item.activity_name} at {item.start_time}")
+            ...     schedule = api.get_schedule(
+            ...         member_id=123,
+            ...         date=datetime(2024, 12, 20),
+            ...         only_availables=True,
+            ...         take=20
+            ...     )
+            ...     for activity in schedule:
+            ...         print(f"{activity.name} at {activity.start_time}")
         """
         params = {
-            "startDate": start_date.isoformat(),
-            "endDate": end_date.isoformat(),
             "idMember": member_id,
-            "idEmployee": employee_id,
-            "activityName": activity_name,
+            "date": date.isoformat() if date else None,
             "idBranch": branch_id,
+            "idActivities": ",".join(map(str, activity_ids)) if activity_ids else None,
+            "idAudiences": ",".join(map(str, audience_ids)) if audience_ids else None,
+            "take": take,
+            "onlyAvailables": only_availables,
+            "showFullWeek": show_full_week,
+            "branchToken": branch_token,
         }
 
         result = self.api_client.call_api(
@@ -114,123 +128,150 @@ class SyncActivitiesApi(SyncBaseApi):
         return cast(List[AtividadeAgendaApiViewModel], result)
 
     def get_schedule_detail(
-        self, configuration_id: int, date: datetime
-    ) -> List[AtividadeSessaoParticipanteApiViewModel]:
+        self,
+        config_id: Optional[int] = None,
+        activity_date: Optional[datetime] = None,
+        session_id: Optional[int] = None,
+    ) -> AtividadeBasicoApiViewModel:
         """
         Get activity schedule details.
 
         Args:
-            configuration_id: Activity configuration ID
-            date: Activity date
+            config_id: Activity configuration ID (required with activity_date)
+            activity_date: Activity date (required with config_id)
+            session_id: Activity session ID (alternative to config_id/activity_date)
 
         Returns:
-            List of activity session participants
+            Activity schedule details
+
+        Raises:
+            ValueError: If neither (config_id + activity_date) nor session_id provided
 
         Example:
             >>> from datetime import datetime
             >>> with SyncActivitiesApi() as api:
-            ...     date = datetime(2024, 1, 15)
-            ...     details = api.get_schedule_detail(123, date)
-            ...     for participant in details:
-            ...         print(f"Participant: {participant.member_name}")
+            ...     # Option 1: Using config_id and date
+            ...     detail = api.get_schedule_detail(
+            ...         config_id=123,
+            ...         activity_date=datetime(2024, 12, 20)
+            ...     )
+            ...     # Option 2: Using session_id
+            ...     detail = api.get_schedule_detail(session_id=456)
         """
+        if not ((config_id and activity_date) or session_id):
+            raise ValueError(
+                "Either provide both config_id and activity_date, or session_id"
+            )
+
         params = {
-            "idConfiguration": configuration_id,
-            "date": date.isoformat(),
+            "idConfiguration": config_id,
+            "activityDate": activity_date.isoformat() if activity_date else None,
+            "idActivitySession": session_id,
         }
 
         result = self.api_client.call_api(
             resource_path=f"{self.base_path}/schedule/detail",
             method="GET",
-            query_params=params,
-            response_type=List[AtividadeSessaoParticipanteApiViewModel],
+            query_params={k: v for k, v in params.items() if v is not None},
+            response_type=AtividadeBasicoApiViewModel,
             auth_settings=["Basic"],
         )
-        return cast(List[AtividadeSessaoParticipanteApiViewModel], result)
+        return cast(AtividadeBasicoApiViewModel, result)
 
-    def enroll_in_activity(
+    def enroll(
         self,
+        config_id: int,
+        activity_date: datetime,
         member_id: Optional[int] = None,
         prospect_id: Optional[int] = None,
-        configuration_id: Optional[int] = None,
-        activity_date: Optional[datetime] = None,
         slot_number: Optional[int] = None,
-        origin: Optional[int] = None,
-        enrollment_origin: Optional[EOrigemAgendamento] = None,
-        spot: Optional[str] = None,
-    ) -> bool:
+        origin: Optional[EOrigemAgendamento] = None,
+    ) -> Any:
         """
-        Enroll member/prospect in activity.
+        Enroll member in activity schedule.
 
         Args:
+            config_id: Activity configuration ID
+            activity_date: Activity schedule date
             member_id: Member ID (required if prospect_id is null)
             prospect_id: Prospect ID (required if member_id is null)
-            configuration_id: Activity configuration identifier
-            activity_date: Scheduled activity date
-            slot_number: Slot number for the activity (for individual slot reservations)
-            origin: Origin of the inscription/reservation
-            activity_session_id: [DEPRECATED] Activity session ID - use configuration_id instead
-            enrollment_origin: [DEPRECATED] Origin of enrollment - use origin instead
-            spot: [DEPRECATED] Spot reservation - use slot_number instead
+            slot_number: Slot number for reservation
+            origin: Origin of enrollment
 
         Returns:
-            True if enrollment was successful
+            Enrollment result
 
         Example:
             >>> from datetime import datetime
             >>> with SyncActivitiesApi() as api:
-            ...     date = datetime(2024, 1, 15, 10, 30)
-            ...     success = api.enroll_in_activity(
-            ...         member_id=123,
-            ...         configuration_id=456,
+            ...     date = datetime(2024, 12, 20, 10, 30)
+            ...     result = api.enroll(
+            ...         config_id=123,
             ...         activity_date=date,
-            ...         slot_number=1,
-            ...         origin=2
+            ...         member_id=456
             ...     )
-            ...     if success:
-            ...         print("Enrolled successfully")
         """
-        # Handle backward compatibility
-        if enrollment_origin is not None and origin is None:
-            origin = (
-                enrollment_origin.value
-                if hasattr(enrollment_origin, "value")
-                else enrollment_origin
-            )
-
-        if spot is not None and slot_number is None:
-            # Try to convert spot to slot_number if it's numeric
-            try:
-                slot_number = int(spot)
-            except (ValueError, TypeError):
-                pass
-
         params = {
-            "idConfiguration": configuration_id,
-            "activityDate": activity_date.isoformat() if activity_date else None,
-            "slotNumber": slot_number,
+            "idConfiguration": config_id,
+            "activityDate": activity_date.isoformat(),
             "idMember": member_id,
             "idProspect": prospect_id,
-            "origin": origin,
+            "slotNumber": slot_number,
+            "origin": origin.value if origin else None,
         }
 
-        result: Any = self.api_client.call_api(
+        result = self.api_client.call_api(
             resource_path=f"{self.base_path}/schedule/enroll",
             method="POST",
             query_params={k: v for k, v in params.items() if v is not None},
-            response_type=None,  # Returns boolean
+            response_type=None,
             auth_settings=["Basic"],
         )
-        return cast(bool, result)
+        return result
 
-    def change_activity_status(
+    def get_unavailable_spots(
+        self, config_id: int, date: datetime
+    ) -> List[AtividadeLugarReservaApiViewModel]:
+        """
+        Get list of unavailable spots for an activity session.
+
+        Args:
+            config_id: Activity configuration ID
+            date: Activity schedule date
+
+        Returns:
+            List of unavailable spot reservations
+
+        Example:
+            >>> from datetime import datetime
+            >>> with SyncActivitiesApi() as api:
+            ...     date = datetime(2024, 1, 15)
+            ...     spots = api.get_unavailable_spots(123, date)
+            ...     for spot in spots:
+            ...         print(f"Reserved spot: {spot.spot_number}")
+        """
+        params = {
+            "idConfiguration": config_id,
+            "date": date.isoformat(),
+        }
+
+        result = self.api_client.call_api(
+            resource_path=f"{self.base_path}/list-unavailable-spots",
+            method="GET",
+            query_params=params,
+            response_type=List[AtividadeLugarReservaApiViewModel],
+            auth_settings=["Basic"],
+        )
+        return cast(List[AtividadeLugarReservaApiViewModel], result)
+
+    def change_status(
         self,
         status: EStatusAtividadeSessao,
         member_id: Optional[int] = None,
         prospect_id: Optional[int] = None,
-        configuration_id: Optional[int] = None,
+        config_id: Optional[int] = None,
         activity_date: Optional[datetime] = None,
-        activity_session_id: Optional[int] = None,
+        session_id: Optional[int] = None,
     ) -> ActivityOperationResponse:
         """
         Change status of a member in activity schedule.
@@ -239,9 +280,9 @@ class SyncActivitiesApi(SyncBaseApi):
             status: New status (Attending=0, Absent=1, Justified absence=2)
             member_id: Member ID
             prospect_id: Prospect ID
-            configuration_id: Activity configuration ID (only used when activity_session_id is null)
-            activity_date: Activity schedule date (only used when activity_session_id is null)
-            activity_session_id: Activity session ID
+            config_id: Activity configuration ID (only used when session_id is null)
+            activity_date: Activity schedule date (only used when session_id is null)
+            session_id: Activity session ID
 
         Returns:
             Operation result with success status
@@ -250,10 +291,10 @@ class SyncActivitiesApi(SyncBaseApi):
             >>> from datetime import datetime
             >>> with SyncActivitiesApi() as api:
             ...     date = datetime(2024, 1, 15)
-            ...     result = api.change_activity_status(
+            ...     result = api.change_status(
             ...         status=EStatusAtividadeSessao.ATTENDING,
             ...         member_id=123,
-            ...         configuration_id=456,
+            ...         config_id=456,
             ...         activity_date=date
             ...     )
             ...     if result.success:
@@ -263,9 +304,9 @@ class SyncActivitiesApi(SyncBaseApi):
             "status": status.value,
             "idMember": member_id,
             "idProspect": prospect_id,
-            "idConfiguration": configuration_id,
+            "idConfiguration": config_id,
             "activityDate": activity_date.isoformat() if activity_date else None,
-            "idActivitySession": activity_session_id,
+            "idActivitySession": session_id,
         }
 
         try:
@@ -279,7 +320,7 @@ class SyncActivitiesApi(SyncBaseApi):
 
             return ActivityOperationResponse(
                 success=True,
-                activitySessionId=activity_session_id,
+                activitySessionId=session_id,
                 memberId=member_id,
                 prospectId=prospect_id,
                 status=status.name,
@@ -288,7 +329,7 @@ class SyncActivitiesApi(SyncBaseApi):
         except Exception as e:
             return ActivityOperationResponse(
                 success=False,
-                activitySessionId=activity_session_id,
+                activitySessionId=session_id,
                 memberId=member_id,
                 prospectId=prospect_id,
                 message=f"Error changing activity status: {str(e)}",
@@ -301,7 +342,7 @@ class SyncActivitiesApi(SyncBaseApi):
         activity_date: datetime,
         activity: str,
         service: str,
-        activity_exist: bool = False,
+        activity_exists: bool = False,
         branch_id: Optional[int] = None,
     ) -> bool:
         """
@@ -312,7 +353,7 @@ class SyncActivitiesApi(SyncBaseApi):
             activity_date: Activity schedule date and time
             activity: Activity name
             service: Service that will be sold to allow the trial class
-            activity_exist: Whether activity exists
+            activity_exists: Whether activity exists
             branch_id: Branch ID
 
         Returns:
@@ -336,7 +377,7 @@ class SyncActivitiesApi(SyncBaseApi):
             "activityDate": activity_date.isoformat(),
             "activity": activity,
             "service": service,
-            "activityExist": activity_exist,
+            "activityExists": activity_exists,
             "idBranch": branch_id,
         }
 
@@ -348,38 +389,3 @@ class SyncActivitiesApi(SyncBaseApi):
             auth_settings=["Basic"],
         )
         return cast(bool, result)
-
-    def get_unavailable_spots(
-        self, configuration_id: int, date: datetime
-    ) -> List[AtividadeLugarReservaApiViewModel]:
-        """
-        List spots that are already filled in the activity session.
-
-        Args:
-            configuration_id: Activity configuration ID
-            date: Activity schedule date
-
-        Returns:
-            List of unavailable spots
-
-        Example:
-            >>> from datetime import datetime
-            >>> with SyncActivitiesApi() as api:
-            ...     date = datetime(2024, 1, 15)
-            ...     spots = api.get_unavailable_spots(123, date)
-            ...     for spot in spots:
-            ...         print(f"Unavailable spot: {spot.spot}")
-        """
-        params = {
-            "idConfiguration": configuration_id,
-            "date": date.isoformat(),
-        }
-
-        result = self.api_client.call_api(
-            resource_path=f"{self.base_path}/list-unavailable-spots",
-            method="GET",
-            query_params=params,
-            response_type=List[AtividadeLugarReservaApiViewModel],
-            auth_settings=["Basic"],
-        )
-        return cast(List[AtividadeLugarReservaApiViewModel], result)
