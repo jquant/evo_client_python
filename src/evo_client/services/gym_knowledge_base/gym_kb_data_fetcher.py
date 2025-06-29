@@ -4,7 +4,7 @@ from typing import List
 
 from loguru import logger
 
-from ...api.configuration_api import ConfiguracaoApiViewModel
+from ...models.configuracao_api_view_model import ConfiguracaoApiViewModel
 from ...models.gym_model import (
     Address,
     BusinessHours,

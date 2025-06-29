@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...api.service_api import ServiceApi
+from ...sync.api.service_api import SyncServiceApi
 from ...models.servicos_resumo_api_view_model import ServicosResumoApiViewModel
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
@@ -21,7 +21,7 @@ class ServiceDataFetcher(BaseDataFetcher):
         try:
             services = []
             for branch_id in self.get_available_branch_ids():
-                branch_api = ServiceApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncServiceApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     services.extend(
                         paginated_api_call(

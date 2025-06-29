@@ -2,17 +2,29 @@ from typing import List, Dict, Optional
 import asyncio
 from loguru import logger
 
+from ..data_fetchers.webhook_data_fetcher import WebhookDataFetcher
+from ..data_fetchers import BranchApiClientManager
 from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
-from ...api.webhook_api import WebhookApi
-from ..data_fetchers import BaseDataFetcher
+from ...sync.api.webhook_api import SyncWebhookApi
 from ...utils.pagination_utils import paginated_api_call
 
 
-class WebhookManagement(BaseDataFetcher):
+class WebhookManagementService:
+    """Service for managing webhook subscriptions."""
+
+    def __init__(self, client_manager: BranchApiClientManager):
+        """Initialize the webhook management service.
+
+        Args:
+            client_manager: The client manager instance
+        """
+        self.client_manager = client_manager
+        self.webhook_fetcher = WebhookDataFetcher(client_manager)
+
     async def _delete_webhook_with_retry(
         self,
-        webhook_api: WebhookApi,
+        webhook_api: SyncWebhookApi,
         webhook_id: int,
         max_retries: int = 3,
         base_delay: float = 1.5,
@@ -20,7 +32,7 @@ class WebhookManagement(BaseDataFetcher):
         """Delete webhook with retry logic."""
         for attempt in range(max_retries):
             try:
-                response = webhook_api.delete_webhook(webhook_id, async_req=False)
+                response = webhook_api.delete_webhook(webhook_id)
                 # If response is boolean, use it directly
                 if isinstance(response, bool):
                     if response:
@@ -51,26 +63,7 @@ class WebhookManagement(BaseDataFetcher):
         # Wait between attempts
         return False
 
-
-from ..data_fetchers.webhook_data_fetcher import WebhookDataFetcher
-from ..data_fetchers import BranchApiClientManager
-from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
-from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
-
-
-class WebhookManagementService:
-    """Service for managing webhook subscriptions."""
-
-    def __init__(self, client_manager: BranchApiClientManager):
-        """Initialize the webhook management service.
-
-        Args:
-            client_manager: The client manager instance
-        """
-        self.client_manager = client_manager
-        self.webhook_fetcher = WebhookDataFetcher(client_manager)
-
-    def manage_webhooks(
+    async def manage_webhooks(
         self,
         url_callback: str,
         branch_ids: Optional[List[int]] = None,
@@ -136,23 +129,22 @@ class WebhookManagementService:
                 for branch_id in branch_ids:
                     if branch_id in self.webhook_fetcher.get_available_branch_ids():
                         logger.debug(f"Getting webhooks for branch {branch_id}")
-                        branch_webhook_api = WebhookApi(
+                        branch_webhook_api = SyncWebhookApi(
                             self.webhook_fetcher.get_branch_api(branch_id)
                         )
                         existing_webhooks = paginated_api_call(
                             api_func=branch_webhook_api.get_webhooks,
-                            branch_id=str(branch_id),
-                            async_req=False,
+                            branch_id_logging=str(branch_id),
                         )
                         logger.debug(
                             f"Found webhooks for branch {branch_id}: {existing_webhooks}"
                         )
 
                         for webhook in existing_webhooks:
-                            webhook_id = webhook.get("idWebhook")
-                            webhook_url = webhook.get("urlCallback")
-                            webhook_event = webhook.get("tipoEvento")
-                            webhook_branch = webhook.get("idFilial")
+                            webhook_id = webhook.id
+                            webhook_url = webhook.url_callback
+                            webhook_event = webhook.event_type
+                            webhook_branch = webhook.id_branch
 
                             logger.debug(
                                 f"Checking webhook: ID={webhook_id}, URL={webhook_url}, Event={webhook_event}, Branch={webhook_branch}"
@@ -186,7 +178,7 @@ class WebhookManagementService:
                     logger.debug(
                         f"Branch {branch_id} username: {client.configuration.username}"
                     )
-                    webhook_api = WebhookApi(client)
+                    webhook_api = SyncWebhookApi(client)
                 else:
                     logger.error(f"No configuration for branch {branch_id}")
                     raise ValueError(f"No configuration for branch {branch_id}")
@@ -196,16 +188,14 @@ class WebhookManagementService:
                         logger.debug(
                             f"Creating webhook for branch {branch_id}, event {event_type}"
                         )
-                        success = paginated_api_call(
-                            api_func=webhook_api.create_webhook,
-                            branch_id=str(branch_id),
+                        success = webhook_api.create_webhook(
                             event_type=event_type,
                             url_callback=url_callback,
+                            branch_id=branch_id,
                             headers=webhook_headers,
                             filters=(
                                 webhook_filters if event_type == "NewSale" else None
                             ),
-                            async_req=False,
                         )
                         if not success:
                             logger.error(

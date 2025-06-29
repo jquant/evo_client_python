@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from loguru import logger
 
-from ...api.receivables_api import ReceivablesApi
+from ...sync.api.receivables_api import SyncReceivablesApi
 from ...models.gym_model import OverdueMember
 from . import BaseDataFetcher
 
@@ -34,7 +34,7 @@ class OverdueMembersDataFetcher(BaseDataFetcher):
             api = self.get_branch_api(branch_id)
             if not api:
                 continue
-            rapi = ReceivablesApi(api)
+            rapi = SyncReceivablesApi(api)
             try:
                 # We'll fetch all receivables that are overdue
                 # Assume due_date_end as filter
@@ -45,7 +45,7 @@ class OverdueMembersDataFetcher(BaseDataFetcher):
                 # We assume member_id and member_name might be available in extended model
                 # If not directly available, we might need a members lookup - but we only have the given code.
                 # Let's assume `payer_name` and `id_member_payer` from receivables
-                members_seen = {}
+                members_seen: Dict[int, Dict[str, Any]] = {}
                 for rv in receivables:
                     if rv.id_member_payer and rv.id_member_payer > 0:
                         key = rv.id_member_payer

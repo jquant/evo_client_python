@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...api.members_api import MembersApi
+from ...sync.api.members_api import SyncMembersApi
 from ...models.cliente_detalhes_basicos_api_view_model import (
     ClienteDetalhesBasicosApiViewModel,
 )
@@ -28,7 +28,7 @@ class MemberDataFetcher(BaseDataFetcher):
         """
         try:
             if branch_id and branch_id in self.get_available_branch_ids():
-                branch_api = MembersApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncMembersApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     result = branch_api.get_member_profile(id_member=int(member_id))
                     if result:
@@ -36,7 +36,7 @@ class MemberDataFetcher(BaseDataFetcher):
 
             # If not found, try branch clients
             for branch_id in self.get_available_branch_ids():
-                branch_api = MembersApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncMembersApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     try:
                         result = branch_api.get_member_profile(id_member=int(member_id))
@@ -102,7 +102,7 @@ class MemberDataFetcher(BaseDataFetcher):
         try:
             members = []
             for branch_id in self.get_available_branch_ids():
-                branch_api = MembersApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncMembersApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     members.extend(
                         paginated_api_call(

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...api.membership_api import MembershipApi
+from ...sync.api.membership_api import SyncMembershipApi
 from ...models.contratos_resumo_api_view_model import ContratosResumoApiViewModel
 from ...models.w12_utils_category_membership_view_model import (
     W12UtilsCategoryMembershipViewModel,
@@ -31,9 +31,11 @@ class MembershipDataFetcher(BaseDataFetcher):
             List[ContratosResumoApiViewModel]: List of membership plans matching the filters
         """
         try:
-            memberships = []
+            memberships: List[ContratosResumoApiViewModel] = []
             for branch_id in self.get_available_branch_ids():
-                branch_api = MembershipApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncMembershipApi(
+                    api_client=self.get_branch_api(branch_id)
+                )
                 if branch_api:
                     result = paginated_api_call(
                         api_func=branch_api.list_memberships,
@@ -59,9 +61,11 @@ class MembershipDataFetcher(BaseDataFetcher):
             List[W12UtilsCategoryMembershipViewModel]: List of membership categories
         """
         try:
-            categories = []
+            categories: List[W12UtilsCategoryMembershipViewModel] = []
             for branch_id in self.get_available_branch_ids():
-                branch_api = MembershipApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncMembershipApi(
+                    api_client=self.get_branch_api(branch_id)
+                )
                 if branch_api:
                     try:
                         branch_result = branch_api.get_categories()
@@ -76,8 +80,8 @@ class MembershipDataFetcher(BaseDataFetcher):
             seen_categories = set()
             unique_categories = []
             for category in categories:
-                if category.id not in seen_categories:
-                    seen_categories.add(category.id)
+                if category.id_category_membership not in seen_categories:
+                    seen_categories.add(category.id_category_membership)
                     unique_categories.append(category)
 
             return unique_categories

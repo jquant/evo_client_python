@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from ...api.activities_api import ActivitiesApi
+from ...sync.api.activities_api import SyncActivitiesApi
 from ...models.atividade_list_api_view_model import AtividadeListApiViewModel
 from ...models.atividade_sessao_participante_api_view_model import (
     AtividadeSessaoParticipanteApiViewModel,
@@ -53,7 +53,7 @@ class ActivityDataFetcher(BaseDataFetcher):
         activities = []
         schedules = []
         for branch_id in branch_ids:
-            branch_api = ActivitiesApi(api_client=self.get_branch_api(branch_id))
+            branch_api = SyncActivitiesApi(api_client=self.get_branch_api(branch_id))
             if branch_api:
                 result = paginated_api_call(
                     api_func=branch_api.get_activities,

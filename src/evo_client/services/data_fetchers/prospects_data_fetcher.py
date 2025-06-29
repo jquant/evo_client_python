@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...api.prospects_api import ProspectsApi
+from ...sync.api.prospects_api import SyncProspectsApi
 from ...models.prospects_resumo_api_view_model import ProspectsResumoApiViewModel
 from ...utils.pagination_utils import paginated_api_call
 from . import BaseDataFetcher
@@ -45,7 +45,7 @@ class ProspectsDataFetcher(BaseDataFetcher):
         try:
             result = []
             for branch_id in self.get_available_branch_ids():
-                branch_api = ProspectsApi(api_client=self.get_branch_api(branch_id))
+                branch_api = SyncProspectsApi(api_client=self.get_branch_api(branch_id))
                 if branch_api:
                     result.extend(
                         paginated_api_call(

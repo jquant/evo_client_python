@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from loguru import logger
 
-from ...api.webhook_api import WebhookApi
+from ...sync.api.webhook_api import SyncWebhookApi
 from ...models.w12_utils_webhook_filter_view_model import W12UtilsWebhookFilterViewModel
 from ...models.w12_utils_webhook_header_view_model import W12UtilsWebhookHeaderViewModel
 from ...models.webhook_model import Webhook, WebhookEventType
@@ -23,7 +23,7 @@ class WebhookDataFetcher(BaseDataFetcher):
 
         result = []
         for branch_id in branch_ids:
-            branch_api = WebhookApi(api_client=self.get_branch_api(branch_id))
+            branch_api = SyncWebhookApi(api_client=self.get_branch_api(branch_id))
             if branch_api:
                 try:
                     webhooks = branch_api.get_webhooks()
@@ -66,7 +66,9 @@ class WebhookDataFetcher(BaseDataFetcher):
             branch_ids = [branch_id]
 
         for current_branch_id in branch_ids:
-            branch_api = WebhookApi(api_client=self.get_branch_api(current_branch_id))
+            branch_api = SyncWebhookApi(
+                api_client=self.get_branch_api(current_branch_id)
+            )
             if branch_api:
                 try:
                     success = branch_api.create_webhook(
@@ -105,7 +107,9 @@ class WebhookDataFetcher(BaseDataFetcher):
             branch_ids = [branch_id]
 
         for current_branch_id in branch_ids:
-            branch_api = WebhookApi(api_client=self.get_branch_api(current_branch_id))
+            branch_api = SyncWebhookApi(
+                api_client=self.get_branch_api(current_branch_id)
+            )
             if branch_api:
                 try:
                     # Convert webhook_id to int if it's an object with id_webhook property
