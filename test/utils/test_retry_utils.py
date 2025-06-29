@@ -3,8 +3,8 @@
 import pytest
 import time
 from unittest.mock import Mock, patch
-from src.evo_client.utils.retry_utils import with_retry, retry_operation
-from src.evo_client.exceptions.api_exceptions import ApiException
+from evo_client.utils.retry_utils import with_retry, retry_operation
+from evo_client.exceptions.api_exceptions import ApiException
 
 
 class TestWithRetryDecorator:
@@ -46,7 +46,7 @@ class TestWithRetryDecorator:
             raise Exception("Always fails")
 
         with patch("time.sleep"), patch(
-            "src.evo_client.utils.retry_utils.logger"
+            "evo_client.utils.retry_utils.logger"
         ) as mock_logger:
 
             with pytest.raises(ApiException) as exc_info:
@@ -68,7 +68,7 @@ class TestWithRetryDecorator:
             return "success"
 
         with patch("time.sleep") as mock_sleep, patch(
-            "src.evo_client.utils.retry_utils.logger"
+            "evo_client.utils.retry_utils.logger"
         ) as mock_logger:
 
             result = rate_limited_function()
@@ -87,7 +87,7 @@ class TestWithRetryDecorator:
         def not_found_function():
             raise Exception("HTTP 404: Not found")
 
-        with patch("src.evo_client.utils.retry_utils.logger") as mock_logger:
+        with patch("evo_client.utils.retry_utils.logger") as mock_logger:
             with pytest.raises(ApiException) as exc_info:
                 not_found_function()
 
@@ -104,7 +104,7 @@ class TestWithRetryDecorator:
             raise Exception("Test error")
 
         with patch("time.sleep"), patch(
-            "src.evo_client.utils.retry_utils.logger"
+            "evo_client.utils.retry_utils.logger"
         ) as mock_logger:
 
             with pytest.raises(ApiException) as exc_info:
@@ -120,7 +120,7 @@ class TestWithRetryDecorator:
             raise Exception("HTTP 429: Rate limit")
 
         with patch("time.sleep") as mock_sleep, patch(
-            "src.evo_client.utils.retry_utils.logger"
+            "evo_client.utils.retry_utils.logger"
         ):
 
             with pytest.raises(ApiException):
@@ -194,7 +194,7 @@ class TestRetryOperation:
             raise Exception("Always fails")
 
         with patch("time.sleep"), patch(
-            "src.evo_client.utils.retry_utils.logger"
+            "evo_client.utils.retry_utils.logger"
         ) as mock_logger:
 
             with pytest.raises(ApiException) as exc_info:
@@ -219,7 +219,7 @@ class TestRetryOperation:
             return "success"
 
         with patch("time.sleep") as mock_sleep, patch(
-            "src.evo_client.utils.retry_utils.logger"
+            "evo_client.utils.retry_utils.logger"
         ) as mock_logger:
 
             result = retry_operation(
@@ -236,7 +236,7 @@ class TestRetryOperation:
         def not_found_operation():
             raise Exception("HTTP 404: Not found")
 
-        with patch("src.evo_client.utils.retry_utils.logger") as mock_logger:
+        with patch("evo_client.utils.retry_utils.logger") as mock_logger:
             with pytest.raises(ApiException) as exc_info:
                 retry_operation(not_found_operation)
 
@@ -269,7 +269,7 @@ class TestRetryOperation:
             # This simulates the edge case where last_exception might be None
             raise Exception("Mystery error")
 
-        with patch("time.sleep"), patch("src.evo_client.utils.retry_utils.logger"):
+        with patch("time.sleep"), patch("evo_client.utils.retry_utils.logger"):
 
             with pytest.raises(ApiException) as exc_info:
                 retry_operation(mysterious_operation, max_retries=1)

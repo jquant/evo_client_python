@@ -4,8 +4,8 @@ import pytest
 from unittest.mock import Mock, patch
 from rich.console import Console
 
-from src.evo_client.utils.decorators import handle_api_errors
-from src.evo_client.exceptions.api_exceptions import ApiException
+from evo_client.utils.decorators import handle_api_errors
+from evo_client.exceptions.api_exceptions import ApiException
 
 
 class TestHandleApiErrors:
@@ -28,8 +28,8 @@ class TestHandleApiErrors:
         def function_with_api_error():
             raise ApiException("Test API error")
 
-        with patch("src.evo_client.utils.decorators.logger") as mock_logger, patch(
-            "src.evo_client.utils.decorators.console"
+        with patch("evo_client.utils.decorators.logger") as mock_logger, patch(
+            "evo_client.utils.decorators.console"
         ) as mock_console:
 
             result = function_with_api_error()
@@ -57,8 +57,8 @@ class TestHandleApiErrors:
         def function_with_generic_error():
             raise ValueError("Test generic error")
 
-        with patch("src.evo_client.utils.decorators.logger") as mock_logger, patch(
-            "src.evo_client.utils.decorators.console"
+        with patch("evo_client.utils.decorators.logger") as mock_logger, patch(
+            "evo_client.utils.decorators.console"
         ) as mock_console:
 
             result = function_with_generic_error()
@@ -131,8 +131,8 @@ class TestHandleApiErrors:
                 raise ApiException("Error occurred")
             return "success"
 
-        with patch("src.evo_client.utils.decorators.logger"), patch(
-            "src.evo_client.utils.decorators.console"
+        with patch("evo_client.utils.decorators.logger"), patch(
+            "evo_client.utils.decorators.console"
         ):
 
             result = function_that_should_return()

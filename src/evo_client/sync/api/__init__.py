@@ -12,9 +12,7 @@ from .prospects_api import SyncProspectsApi
 from .invoices_api import SyncInvoicesApi
 from .pix_api import SyncPixApi
 from .bank_accounts_api import SyncBankAccountsApi
-from .voucher_api import SyncVoucherApi
 from .member_membership_api import SyncMemberMembershipApi
-from .workout_api import SyncWorkoutApi
 from .employees_api import SyncEmployeesApi
 from .configuration_api import SyncConfigurationApi
 from .states_api import SyncStatesApi
@@ -37,9 +35,7 @@ __all__ = [
     "SyncInvoicesApi",
     "SyncPixApi",
     "SyncBankAccountsApi",
-    "SyncVoucherApi",
     "SyncMemberMembershipApi",
-    "SyncWorkoutApi",
     "SyncEmployeesApi",
     "SyncConfigurationApi",
     "SyncStatesApi",
