@@ -5,15 +5,8 @@ from typing import List, Optional, cast, Any
 
 from ...models.atividade_agenda_api_view_model import AtividadeAgendaApiViewModel
 from ...models.atividade_list_api_view_model import AtividadeListApiViewModel
-from ...models.atividade_lugar_reserva_api_view_model import (
-    AtividadeLugarReservaApiViewModel,
-)
-from ...models.atividade_sessao_participante_api_view_model import (
-    AtividadeSessaoParticipanteApiViewModel,
-)
 from ...models.e_origem_agendamento import EOrigemAgendamento
 from ...models.e_status_atividade_sessao import EStatusAtividadeSessao
-from ...models.common_models import ActivityOperationResponse
 from ...models.atividade_basico_api_view_model import AtividadeBasicoApiViewModel
 from .base import SyncBaseApi
 
