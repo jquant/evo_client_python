@@ -48,7 +48,7 @@ class SyncMembershipApi(SyncBaseApi):
         take: Optional[int] = None,
         skip: Optional[int] = None,
         active: Optional[bool] = None,
-    ) -> ContratosResumoContainerViewModel:
+    ) -> List[ContratosResumoContainerViewModel]:
         """
         Get memberships using v2 API (returns container with metadata).
 
@@ -90,4 +90,4 @@ class SyncMembershipApi(SyncBaseApi):
             response_type=ContratosResumoContainerViewModel,
             auth_settings=["Basic"],
         )
-        return cast(ContratosResumoContainerViewModel, result)
+        return result

@@ -287,6 +287,11 @@ class PaginatedApiCaller:
         total_retries = 0
 
         func_name = getattr(api_func, "__name__", "unknown_function")
+        if branch_id_logging == "NOT INFORMED":
+            logger.warning(
+                f"Branch ID not informed for {func_name}, using default branch ID"
+            )
+            branch_id_logging = str(kwargs.get("branch_id_logging", "NOT INFORMED"))
         logger.debug(
             f"Starting paginated fetch for {func_name} (branch: {branch_id_logging})"
         )

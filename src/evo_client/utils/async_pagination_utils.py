@@ -246,6 +246,12 @@ class AsyncPaginatedApiCaller:
 
         # Extract branch_id for logging, default to "unknown"
         func_name = getattr(api_func, "__name__", "unknown_function")
+        if branch_id_logging == "NOT INFORMED":
+            logger.warning(
+                f"Branch ID not informed for {func_name}, using default branch ID"
+            )
+            branch_id_logging = str(kwargs.get("branch_id_logging", "NOT INFORMED"))
+
         logger.debug(
             f"Starting async paginated fetch for {func_name} (branch: {branch_id_logging})"
         )

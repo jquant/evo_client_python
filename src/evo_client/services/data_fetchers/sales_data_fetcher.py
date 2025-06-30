@@ -58,7 +58,7 @@ class SalesDataFetcher(BaseDataFetcher):
                     result.extend(
                         paginated_api_call(
                             api_func=branch_api.get_sales,
-                            branch_id=str(branch_id),
+                            branch_id_logging=str(branch_id),
                             member_id=member_id,
                             date_sale_start=date_sale_start,
                             date_sale_end=date_sale_end,

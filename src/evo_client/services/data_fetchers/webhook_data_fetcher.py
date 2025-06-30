@@ -28,7 +28,9 @@ class WebhookDataFetcher(BaseDataFetcher):
                 try:
                     webhooks = branch_api.get_webhooks()
                     if webhooks:
-                        result.extend([Webhook(**webhook) for webhook in webhooks])
+                        result.extend(
+                            [Webhook.model_validate(webhook) for webhook in webhooks]
+                        )
                 except Exception as e:
                     logger.warning(
                         f"Failed to fetch webhooks for branch {branch_id}: {e}"

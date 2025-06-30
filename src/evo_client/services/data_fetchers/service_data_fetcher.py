@@ -26,7 +26,7 @@ class ServiceDataFetcher(BaseDataFetcher):
                     services.extend(
                         paginated_api_call(
                             api_func=branch_api.get_services,
-                            branch_id=str(branch_id),
+                            branch_id=branch_id,
                             service_id=id_service,
                             name=name,
                             active=active,
