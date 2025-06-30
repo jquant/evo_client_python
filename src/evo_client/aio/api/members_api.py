@@ -294,7 +294,7 @@ class AsyncMembersApi(AsyncBaseApi):
         }
 
         return await self.api_client.call_api(
-            resource_path=f"{self.base_path}/card",
+            resource_path=f"{self.base_path}/{id_member}/card",
             method="PUT",
             query_params=params,
             response_type=None,
@@ -434,7 +434,7 @@ class AsyncMembersApi(AsyncBaseApi):
             ...     result = await api.update_member_data(123, member_data)
         """
         return await self.api_client.call_api(
-            resource_path=f"{self.base_path}/{id_member}",
+            resource_path=f"{self.base_path}/update-member-data/{id_member}",
             method="PUT",
             body=body.model_dump(exclude_unset=True, by_alias=True),
             response_type=None,

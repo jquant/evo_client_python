@@ -49,7 +49,7 @@ def test_get_employees_basic(employees_api: SyncEmployeesApi, mock_api_client: M
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/employees"
+    assert args["resource_path"] == "/api/v2/employees"
 
 
 def test_get_employees_with_filters(
@@ -70,7 +70,7 @@ def test_get_employees_with_filters(
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/employees"
+    assert args["resource_path"] == "/api/v2/employees"
     query_params = args["query_params"]
     assert query_params["idEmployee"] == 123
     assert query_params["name"] == "John"

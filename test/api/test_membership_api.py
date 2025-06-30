@@ -38,7 +38,7 @@ def test_get_memberships_basic(
     expected = [ContratosResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    result = membership_api.get_memberships_v1()
+    result = membership_api.get_memberships()
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -54,7 +54,7 @@ def test_get_memberships_with_filters(
     expected = [ContratosResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    result = membership_api.get_memberships_v1(
+    result = membership_api.get_memberships(
         membership_id=123,
         name="Premium",
         branch_id=1,
@@ -82,9 +82,7 @@ def test_list_memberships(membership_api: SyncMembershipApi, mock_api_client: Mo
     expected = [ContratosResumoApiViewModel()]
     mock_api_client.return_value = expected
 
-    result = membership_api.list_memberships(
-        name="Gold", active=True, take=25, version="v1"
-    )
+    result = membership_api.get_memberships(name="Gold", active=True, take=25)
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -95,7 +93,7 @@ def test_error_handling(membership_api: SyncMembershipApi, mock_api_client: Mock
     mock_api_client.side_effect = ApiException(status=500, reason="Server Error")
 
     with pytest.raises(ApiException) as exc:
-        membership_api.get_memberships_v1()
+        membership_api.get_memberships()
 
     assert exc.value.status == 500
     assert exc.value.reason == "Server Error"

@@ -50,7 +50,7 @@ class AsyncActivitiesApi(AsyncBaseApi):
         params = {"search": search, "idBranch": branch_id, "take": take, "skip": skip}
 
         result = await self.api_client.call_api(
-            resource_path=f"{self.base_path}",
+            resource_path=self.base_path,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             response_type=List[AtividadeListApiViewModel],
@@ -273,7 +273,7 @@ class AsyncActivitiesApi(AsyncBaseApi):
         }
 
         return await self.api_client.call_api(
-            resource_path=f"{self.base_path}/experimental-class",
+            resource_path=f"{self.base_path}/schedule/experimental-class",
             method="POST",
             query_params={k: v for k, v in params.items() if v is not None},
             auth_settings=["Basic"],
@@ -320,8 +320,8 @@ class AsyncActivitiesApi(AsyncBaseApi):
         }
 
         return await self.api_client.call_api(
-            resource_path=f"{self.base_path}/change-status",
-            method="PUT",
+            resource_path=f"{self.base_path}/schedule/enroll/change-status",
+            method="POST",
             query_params={k: v for k, v in params.items() if v is not None},
             auth_settings=["Basic"],
         )
