@@ -87,7 +87,7 @@ class SyncMembershipApi(SyncBaseApi):
             resource_path=self.base_path_v2,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
-            response_type=ContratosResumoContainerViewModel,
+            response_type=List[ContratosResumoContainerViewModel],
             auth_settings=["Basic"],
         )
         return result

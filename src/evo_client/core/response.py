@@ -49,17 +49,15 @@ class RESTResponse(io.IOBase):
             raise e
 
     @overload
-    def deserialize(self, response_type: Type[T]) -> T:
-        ...
+    def deserialize(self, response_type: Type[T]) -> T: ...
 
     @overload
-    def deserialize(self, response_type: Type[Iterable[T]]) -> List[T]:
-        ...
+    def deserialize(self, response_type: Type[Iterable[T]]) -> List[T]: ...
 
     def deserialize(self, response_type: Type[T] | Type[Iterable[T]]) -> T | List[T]:
         """Deserialize response data into the specified type."""
         if isinstance(response_type, type) and issubclass(response_type, BaseModel):
-            return response_type.model_validate(self.json())
+            return response_type.model_validate(self.json())  # type: ignore
 
         # Handle generic types like List[SomeBaseModel]
         origin = get_origin(response_type)

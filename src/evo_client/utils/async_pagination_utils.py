@@ -414,6 +414,7 @@ class ConcurrentPaginationManager:
                 result = await caller.fetch_all_pages(
                     api_func,
                     config,
+                    branch_id_logging=branch_id,
                     **api_kwargs,
                 )
                 return branch_id, result
@@ -483,7 +484,7 @@ async def async_paginated_api_call(
         max_retries=max_retries, base_delay=base_delay
     )
     result = await caller.fetch_all_pages(
-        api_func, config, branch_id_logging=branch_id_logging, *args, **kwargs
+        api_func, config, branch_id_logging, *args, **kwargs
     )
 
     if not result.success and result.error_message:
