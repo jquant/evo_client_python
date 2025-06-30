@@ -2,8 +2,10 @@
 Pytest configuration and fixtures for API consistency testing.
 """
 
+import ast
 import importlib
 import inspect
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -20,6 +22,7 @@ class MethodSignature:
     return_annotation: Any
     is_async: bool
     docstring: Optional[str] = None
+    api_route: Optional[str] = None  # New field for API route extraction
 
 
 @dataclass
@@ -32,11 +35,146 @@ class APIClassInfo:
     is_async: bool
 
 
+class RouteExtractor:
+    """Extracts API routes from method source code."""
+
+    def extract_route_from_method(self, method_func) -> Optional[str]:
+        """
+        Extract the API route from a method's source code.
+
+        Args:
+            method_func: The method function to analyze
+
+        Returns:
+            The extracted API route or None if not found
+        """
+        try:
+            source = inspect.getsource(method_func)
+            return self._parse_resource_path(source)
+        except (OSError, TypeError):
+            # Can't get source (might be built-in or C extension)
+            return None
+
+    def _parse_resource_path(self, source_code: str) -> Optional[str]:
+        """
+        Parse source code to extract resource_path value.
+
+        Args:
+            source_code: The method's source code
+
+        Returns:
+            The resource path or None if not found
+        """
+        # Try to parse with AST first for more robust extraction
+        try:
+            tree = ast.parse(source_code)
+            route = self._extract_route_from_ast(tree)
+            if route:
+                return route
+        except SyntaxError:
+            pass
+
+        # Fallback to regex pattern matching
+        return self._extract_route_with_regex(source_code)
+
+    def _extract_route_from_ast(self, tree: ast.AST) -> Optional[str]:
+        """Extract route using AST parsing."""
+
+        class RouteVisitor(ast.NodeVisitor):
+            def __init__(self):
+                self.routes = []
+
+            def visit_Call(self, node):
+                # Look for call_api method calls
+                if (
+                    isinstance(node.func, ast.Attribute)
+                    and node.func.attr == "call_api"
+                ):
+
+                    # Find resource_path argument
+                    for keyword in node.keywords:
+                        if keyword.arg == "resource_path":
+                            route = self._extract_string_value(keyword.value)
+                            if route:
+                                self.routes.append(route)
+
+                self.generic_visit(node)
+
+            def _extract_string_value(self, node) -> Optional[str]:
+                """Extract string value from AST node."""
+                if isinstance(node, ast.Constant):
+                    return str(node.value)
+                elif isinstance(node, ast.JoinedStr):
+                    # Handle f-strings
+                    return self._reconstruct_fstring(node)
+                elif isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+                    # Handle string concatenation
+                    left = self._extract_string_value(node.left)
+                    right = self._extract_string_value(node.right)
+                    if left and right:
+                        return left + right
+                elif isinstance(node, ast.Attribute):
+                    # Handle self.base_path style references
+                    return self._extract_attribute_path(node)
+                return None
+
+            def _reconstruct_fstring(self, node: ast.JoinedStr) -> str:
+                """Reconstruct f-string pattern."""
+                parts = []
+                for value in node.values:
+                    if isinstance(value, ast.Constant):
+                        parts.append(str(value.value))
+                    elif isinstance(value, ast.FormattedValue):
+                        # For formatted values, create a placeholder
+                        if isinstance(value.value, ast.Attribute):
+                            attr_path = self._extract_attribute_path(value.value)
+                            parts.append(f"{{{attr_path}}}")
+                        else:
+                            parts.append("{param}")
+                return "".join(parts)
+
+            def _extract_attribute_path(self, node: ast.Attribute) -> str:
+                """Extract attribute path like self.base_path."""
+                if isinstance(node.value, ast.Name):
+                    return f"{node.value.id}.{node.attr}"
+                elif isinstance(node.value, ast.Attribute):
+                    parent = self._extract_attribute_path(node.value)
+                    return f"{parent}.{node.attr}"
+                return node.attr
+
+        visitor = RouteVisitor()
+        visitor.visit(tree)
+
+        # Return the first route found (most methods have only one)
+        return visitor.routes[0] if visitor.routes else None
+
+    def _extract_route_with_regex(self, source_code: str) -> Optional[str]:
+        """Extract route using regex patterns as fallback."""
+        patterns = [
+            # Direct string literals
+            r'resource_path\s*=\s*["\']([^"\']+)["\']',
+            # f-string patterns
+            r'resource_path\s*=\s*f["\']([^"\']+)["\']',
+            # String concatenation with self.base_path
+            r'resource_path\s*=\s*f?["\']?{([^}]+)}["\']?',
+            # self.base_path variations
+            r"resource_path\s*=\s*self\.([a-zA-Z_]+)",
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, source_code)
+            if match:
+                return match.group(1)
+
+        return None
+
+
 class APIDiscovery:
     """Discovers and analyzes API classes."""
 
     def __init__(self, base_path: str = "src/evo_client"):
         self.base_path = Path(base_path)
+        self.route_extractor = RouteExtractor()
 
     def discover_api_classes(self, module_type: str) -> Dict[str, APIClassInfo]:
         """
@@ -136,12 +274,16 @@ class APIDiscovery:
                         "kind": param.kind.name,
                     }
 
+                # Extract API route
+                api_route = self.route_extractor.extract_route_from_method(method)
+
                 method_sig = MethodSignature(
                     name=name,
                     parameters=parameters,
                     return_annotation=sig.return_annotation,
                     is_async=is_async,
                     docstring=inspect.getdoc(method),
+                    api_route=api_route,
                 )
 
                 methods[name] = method_sig
@@ -176,6 +318,7 @@ class APIConsistencyValidator:
             "missing_in_sync": [],
             "missing_in_async": [],
             "signature_mismatches": [],
+            "route_mismatches": [],  # New field for route mismatches
             "consistent_classes": [],
             "total_issues": 0,
         }
@@ -206,14 +349,24 @@ class APIConsistencyValidator:
 
             method_comparison = self._compare_class_methods(sync_class, async_class)
 
-            if method_comparison["issues"]:
-                results["signature_mismatches"].append(
-                    {
-                        "sync_class": sync_class.name,
-                        "async_class": async_class.name,
-                        "issues": method_comparison["issues"],
-                    }
-                )
+            if method_comparison["issues"] or method_comparison["route_issues"]:
+                mismatch_entry = {
+                    "sync_class": sync_class.name,
+                    "async_class": async_class.name,
+                    "issues": method_comparison["issues"],
+                }
+
+                if method_comparison["route_issues"]:
+                    results["route_mismatches"].append(
+                        {
+                            "sync_class": sync_class.name,
+                            "async_class": async_class.name,
+                            "route_issues": method_comparison["route_issues"],
+                        }
+                    )
+                    mismatch_entry["route_issues"] = method_comparison["route_issues"]
+
+                results["signature_mismatches"].append(mismatch_entry)
             else:
                 results["consistent_classes"].append(
                     {
@@ -245,6 +398,7 @@ class APIConsistencyValidator:
     ) -> Dict[str, Any]:
         """Compare methods between sync and async classes."""
         issues = []
+        route_issues = []
 
         sync_methods = set(sync_class.methods.keys())
         async_methods = set(async_class.methods.keys())
@@ -271,7 +425,12 @@ class APIConsistencyValidator:
                 [f"Method '{method_name}': {issue}" for issue in method_issues]
             )
 
-        return {"issues": issues}
+            # Compare API routes
+            route_issue = self._compare_method_routes(sync_method, async_method)
+            if route_issue:
+                route_issues.append(f"Method '{method_name}': {route_issue}")
+
+        return {"issues": issues, "route_issues": route_issues}
 
     def _compare_method_signatures(
         self, sync_method: MethodSignature, async_method: MethodSignature
@@ -314,6 +473,39 @@ class APIConsistencyValidator:
 
         return issues
 
+    def _compare_method_routes(
+        self, sync_method: MethodSignature, async_method: MethodSignature
+    ) -> Optional[str]:
+        """Compare API routes between sync and async methods."""
+        sync_route = sync_method.api_route
+        async_route = async_method.api_route
+
+        # Skip comparison if routes couldn't be extracted
+        if sync_route is None and async_route is None:
+            return None
+
+        if sync_route is None:
+            return f"Could not extract route from sync method (async: {async_route})"
+
+        if async_route is None:
+            return f"Could not extract route from async method (sync: {sync_route})"
+
+        # Normalize routes for comparison (handle different f-string patterns)
+        normalized_sync = self._normalize_route(sync_route)
+        normalized_async = self._normalize_route(async_route)
+
+        if normalized_sync != normalized_async:
+            return f"Route mismatch - sync: '{sync_route}' vs async: '{async_route}'"
+
+        return None
+
+    def _normalize_route(self, route: str) -> str:
+        """Normalize route for comparison."""
+        # Replace common base path patterns
+        route = re.sub(r"self\.base_path(?:_v\d+)?", "/api/v1/base", route)
+        route = re.sub(r"\{[^}]+\}", "{param}", route)  # Normalize path parameters
+        return route
+
 
 def generate_consistency_report(results: Dict[str, Any]) -> str:
     """Generate a human-readable consistency report."""
@@ -341,6 +533,15 @@ def generate_consistency_report(results: Dict[str, Any]) -> str:
         report.append("MISSING IN ASYNC:")
         for cls in results["missing_in_async"]:
             report.append(f"  - {cls}")
+        report.append("")
+
+    # Route mismatches (new section)
+    if results.get("route_mismatches"):
+        report.append("API ROUTE MISMATCHES:")
+        for mismatch in results["route_mismatches"]:
+            report.append(f"  {mismatch['sync_class']} <-> {mismatch['async_class']}:")
+            for issue in mismatch["route_issues"]:
+                report.append(f"    - {issue}")
         report.append("")
 
     # Signature mismatches
