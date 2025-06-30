@@ -2,7 +2,6 @@
 
 from typing import Any
 
-from ...models.notification_api_view_model import NotificationApiViewModel
 from .base import AsyncBaseApi
 
 

@@ -2,8 +2,6 @@
 
 from typing import Any
 
-from ...models.common_models import NotificationCreateResponse
-from ...models.notification_api_view_model import NotificationApiViewModel
 from .base import SyncBaseApi
 
 

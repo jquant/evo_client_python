@@ -1,9 +1,8 @@
 """Clean synchronous Membership API."""
 
-from typing import List, Literal, Optional, Union, cast
+from typing import List, Optional, cast
 
 from ...models.contratos_resumo_api_view_model import (
-    ContratosResumoApiViewModel,
     ContratosResumoContainerViewModel,
 )
 from ...models.w12_utils_category_membership_view_model import (
