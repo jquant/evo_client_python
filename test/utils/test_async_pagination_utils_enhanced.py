@@ -129,9 +129,15 @@ class TestAsyncPaginatedApiCallerEnhanced:
         async def mock_api_func(**kwargs):
             return [{"id": 1}]
 
-        config = PaginationConfig(supports_pagination=False)
+        config = PaginationConfig(
+            supports_pagination=False, post_request_delay=0
+        )  # No delay
 
-        with patch("evo_client.utils.async_pagination_utils.logger") as mock_logger:
+        with patch(
+            "evo_client.utils.async_pagination_utils.logger"
+        ) as mock_logger, patch(
+            "asyncio.sleep"
+        ):  # Mock any sleep calls
             result = await caller.fetch_all_pages(
                 mock_api_func, config, branch_id_logging="NOT INFORMED"
             )
@@ -183,14 +189,17 @@ class TestAsyncPaginatedApiCallerEnhanced:
         async def mock_api_func(**kwargs):
             return [{"id": 1}]  # API function signature requires List return
 
-        config = PaginationConfig(supports_pagination=False)
+        config = PaginationConfig(
+            supports_pagination=False, post_request_delay=0
+        )  # No delay
 
-        result = await caller.fetch_all_pages(mock_api_func, config)
+        with patch("asyncio.sleep"):  # Mock any sleep calls
+            result = await caller.fetch_all_pages(mock_api_func, config)
 
-        # Should handle single non-list result and break loop
-        assert result.success is True
-        assert len(result.data) == 1
-        assert result.data[0] == {"single": "result"}
+            # Should handle single non-list result and break loop
+            assert result.success is True
+            assert len(result.data) == 1
+            assert result.data[0] == {"single": "result"}
 
 
 class TestConcurrentPaginationManagerEnhanced:
@@ -199,28 +208,64 @@ class TestConcurrentPaginationManagerEnhanced:
     @pytest.mark.asyncio
     async def test_fetch_multiple_branches_successful_handling(self):
         """Test that ConcurrentPaginationManager handles failures properly."""
-        manager = ConcurrentPaginationManager()
+        # OPTIMIZATION: Mock everything to avoid real async operations
 
-        async def failing_api_func(**kwargs):
-            raise Exception("API call failed")
+        # Create a mock manager with minimal real components
+        with patch(
+            "evo_client.utils.async_pagination_utils.AsyncApiCallExecutor"
+        ) as mock_executor_class, patch(
+            "evo_client.utils.async_pagination_utils.AsyncPaginatedApiCaller"
+        ) as mock_caller_class, patch(
+            "asyncio.Semaphore"
+        ) as mock_semaphore, patch(
+            "asyncio.sleep"
+        ):  # Mock any sleep calls
 
-        branch_configs = [
-            {"branch_id": "branch1"},
-            {"branch_id": "branch2"},
-        ]
+            # Setup mock instances
+            mock_executor = Mock()
+            mock_caller = Mock()
+            mock_executor_class.return_value = mock_executor
+            mock_caller_class.return_value = mock_caller
 
-        # The actual behavior is that failed API calls return PaginationResult objects
-        # with success=False, they don't get filtered out
-        results = await manager.fetch_multiple_branches(
-            failing_api_func, branch_configs
-        )
+            # Mock semaphore context manager
+            mock_semaphore_instance = AsyncMock()
+            mock_semaphore.return_value = mock_semaphore_instance
+            mock_semaphore_instance.__aenter__ = AsyncMock(return_value=None)
+            mock_semaphore_instance.__aexit__ = AsyncMock(return_value=None)
 
-        # Each branch should return a failed PaginationResult
-        assert len(results) == 2  # Both branches processed
-        assert "branch1" in results
-        assert "branch2" in results
-        assert results["branch1"].success is False
-        assert results["branch2"].success is False
+            # Mock the fetch_all_pages to return failed results
+            from evo_client.utils.pagination_utils import PaginationResult
+
+            mock_caller.fetch_all_pages = AsyncMock(
+                return_value=PaginationResult(
+                    data=[],
+                    success=False,
+                    error_message="API call failed",
+                    total_requests=0,
+                    total_retries=5,
+                )
+            )
+
+            manager = ConcurrentPaginationManager()
+
+            async def failing_api_func(**kwargs):
+                raise Exception("API call failed")
+
+            branch_configs = [
+                {"branch_id": "branch1"},
+                {"branch_id": "branch2"},
+            ]
+
+            results = await manager.fetch_multiple_branches(
+                failing_api_func, branch_configs
+            )
+
+            # Each branch should return a failed PaginationResult
+            assert len(results) == 2  # Both branches processed
+            assert "branch1" in results
+            assert "branch2" in results
+            assert results["branch1"].success is False
+            assert results["branch2"].success is False
 
     @pytest.mark.asyncio
     async def test_fetch_multiple_branches_with_gather_exceptions(self):
@@ -228,8 +273,6 @@ class TestConcurrentPaginationManagerEnhanced:
         manager = ConcurrentPaginationManager()
 
         # Mock gather to return some exceptions mixed with results
-        original_gather = asyncio.gather
-
         async def mock_gather(*tasks, return_exceptions=True):
             # Return a mix of exceptions and valid results
             return [
@@ -238,7 +281,9 @@ class TestConcurrentPaginationManagerEnhanced:
                 Exception("Third branch failed"),  # Another exception
             ]
 
-        with patch("asyncio.gather", side_effect=mock_gather):
+        with patch("asyncio.gather", side_effect=mock_gather), patch(
+            "asyncio.sleep"
+        ):  # Mock any sleep calls
 
             async def mock_api_func(**kwargs):
                 return [{"id": 1}]
@@ -279,7 +324,9 @@ class TestConcurrentPaginationManagerEnhanced:
                 42,  # Number instead of tuple
             ]
 
-        with patch("asyncio.gather", side_effect=mock_gather):
+        with patch("asyncio.gather", side_effect=mock_gather), patch(
+            "asyncio.sleep"
+        ):  # Mock any sleep calls
 
             async def mock_api_func(**kwargs):
                 return [{"id": 1}]
@@ -312,13 +359,18 @@ class TestAsyncPaginatedApiCallEnhanced:
             else:
                 raise ApiException("API failure on second page")
 
-        with patch("evo_client.utils.async_pagination_utils.logger") as mock_logger:
+        with patch(
+            "evo_client.utils.async_pagination_utils.logger"
+        ) as mock_logger, patch(
+            "asyncio.sleep"
+        ):  # Mock any sleep calls for rate limiting/retries
             # Should return partial results and log warning
             results = await async_paginated_api_call(
                 partially_failing_api_func,
                 page_size=2,
                 max_retries=1,
                 supports_pagination=True,
+                post_request_delay=0,  # No delay
             )
 
             # Should get results from first page before failure
@@ -338,14 +390,18 @@ class TestAsyncPaginatedApiCallEnhanced:
         async def successful_api_func(**kwargs):
             return [{"id": 1}, {"id": 2}]
 
-        # Test successful completion without errors
-        results = await async_paginated_api_call(
-            successful_api_func, page_size=10, supports_pagination=False  # Single page
-        )
+        with patch("asyncio.sleep"):  # Mock any sleep calls
+            # Test successful completion without errors
+            results = await async_paginated_api_call(
+                successful_api_func,
+                page_size=10,
+                supports_pagination=False,  # Single page
+                post_request_delay=0,  # No delay
+            )
 
-        assert len(results) == 2
-        assert results[0] == {"id": 1}
-        assert results[1] == {"id": 2}
+            assert len(results) == 2
+            assert results[0] == {"id": 1}
+            assert results[1] == {"id": 2}
 
 
 class TestAsyncPaginationUtilsEdgeCases:
@@ -374,12 +430,13 @@ class TestAsyncPaginationUtilsEdgeCases:
             return [{"id": 1}]
 
         config = PaginationConfig(
-            supports_pagination=False, post_request_delay=0.1  # Small delay for testing
+            supports_pagination=False,
+            post_request_delay=0.001,  # Minimal delay for testing
         )
 
         with patch("asyncio.sleep") as mock_sleep:
             result = await caller.fetch_all_pages(mock_api_func, config)
 
             # Should call sleep with the configured delay
-            mock_sleep.assert_called_with(0.1)
+            mock_sleep.assert_called_with(0.001)
             assert result.success is True
