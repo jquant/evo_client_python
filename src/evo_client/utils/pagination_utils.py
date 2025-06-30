@@ -415,9 +415,10 @@ def paginated_api_call(
         base_delay: Base delay in seconds for retry backoff
         supports_pagination: Whether the API supports pagination
         pagination_type: Type of pagination ('skip_take' or 'page_page_size')
-        branch_id: Identifier for the branch/unit being processed
+        branch_id_logging: Identifier for the branch/unit being processed
         post_request_delay: Delay in seconds after each successful API call
-        **kwargs: Additional arguments to pass to the API function
+        *args: Additional positional arguments to pass to the API function
+        **kwargs: Additional keyword arguments to pass to the API function
 
     Returns:
         List of results from all pages
@@ -435,7 +436,7 @@ def paginated_api_call(
     result = caller.fetch_all_pages(
         api_func,
         config,
-        branch_id_logging=branch_id_logging,
+        branch_id_logging,
         *args,
         **kwargs,
     )

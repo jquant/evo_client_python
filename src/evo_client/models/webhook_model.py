@@ -42,7 +42,7 @@ class WebhookFilter(W12UtilsWebhookFilterViewModel):
         Returns:
             WebhookFilter: A filter configured for the sale item
         """
-        return cls(filterType="SaleItemDescription", value=branch_id)
+        return cls(filterType="SaleItemDescription", value=str(branch_id))
 
 
 class Webhook(W12UtilsWebhookViewModel):

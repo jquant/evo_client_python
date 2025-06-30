@@ -2,7 +2,19 @@
 
 import asyncio
 import json
-from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+    get_args,
+    get_origin,
+)
 
 import aiohttp
 from loguru import logger
@@ -278,16 +290,16 @@ class AsyncRESTResponse:
         self, response_type: Type[T] | Type[Iterable[T]]
     ) -> Union[T, List[T]]:
         """Deserialize response to the specified type."""
-        from typing import get_args, get_origin
-
         if isinstance(response_type, type) and issubclass(response_type, BaseModel):
-            return response_type.model_validate(self.json())  # type: ignore
+            return cast(T, response_type.model_validate(self.json()))
 
         # Handle generic types like List[SomeBaseModel]
         origin = get_origin(response_type)
         if origin is list:
             item_type = get_args(response_type)[0]
-            return [item_type.model_validate(item) for item in self.json()]
+            return cast(
+                List[T], [item_type.model_validate(item) for item in self.json()]
+            )
 
         # Direct construction for simple types
-        return response_type(**self.json())  # type: ignore
+        return cast(Union[T, List[T]], response_type(**self.json()))
