@@ -70,14 +70,10 @@ class AsyncManagementApi(AsyncBaseApi):
             ...         print(f"Branch: {client.filial}")
         """
         try:
-            logger.debug("Calling active clients API")
-            logger.debug(f"Using base path: {self.base_path}")
-
             # Add debug headers
             headers = {
                 "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"  # Accept Excel files only
             }
-            logger.debug(f"Request headers: {headers}")
 
             # Make API call and get response directly
             response = await self.api_client.call_api(

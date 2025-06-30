@@ -30,7 +30,7 @@ def mock_api_client():
 
 
 @pytest.mark.asyncio
-async def test_create_notification(
+async def test_insert_member_notification(
     notifications_api: AsyncNotificationsApi, mock_api_client: Mock
 ):
     """Test creating a notification."""
@@ -40,7 +40,9 @@ async def test_create_notification(
     notification_data.id_member = 123
     notification_data.notification_message = "Welcome to our gym!"
 
-    result = await notifications_api.create_notification(notification=notification_data)
+    result = await notifications_api.insert_member_notification(
+        member_id=123, message="Welcome to our gym!"
+    )
 
     assert result == expected
     mock_api_client.assert_called_once()
@@ -61,7 +63,9 @@ async def test_error_handling(
     notification_data = NotificationApiViewModel()
 
     with pytest.raises(ApiException) as exc:
-        await notifications_api.create_notification(notification=notification_data)
+        await notifications_api.insert_member_notification(
+            member_id=123, message="Welcome to our gym!"
+        )
 
     assert exc.value.status == 500
     assert exc.value.reason == "Server Error"

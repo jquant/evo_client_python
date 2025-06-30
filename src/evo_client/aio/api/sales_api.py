@@ -75,7 +75,7 @@ class AsyncSalesApi(AsyncBaseApi):
             ...     print(f"Sale created with ID: {response.sale_id}")
         """
         result = await self.api_client.call_api(
-            resource_path=self.base_path_v1,
+            resource_path=self.base_path_v2,
             method="POST",
             body=body.model_dump(exclude_unset=True, by_alias=True) if body else None,
             response_type=NewSaleResponse,

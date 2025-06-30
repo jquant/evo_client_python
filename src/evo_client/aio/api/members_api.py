@@ -352,7 +352,7 @@ class AsyncMembersApi(AsyncBaseApi):
         }
 
         result = await self.api_client.call_api(
-            resource_path=f"{self.base_path}/reset-password",
+            resource_path=f"{self.base_path}/resetPassword",
             method="POST",
             query_params=params,
             response_type=MemberAuthenticateViewModel,

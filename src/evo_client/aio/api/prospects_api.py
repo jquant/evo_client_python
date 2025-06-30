@@ -239,3 +239,33 @@ class AsyncProspectsApi(AsyncBaseApi):
             body=transfer.model_dump(exclude_unset=True, by_alias=True),
             auth_settings=["Basic"],
         )
+
+    async def get_prospects_latest_branch_transfer(self, prospect_id: int) -> Any:
+        """
+        Get the latest branch transfer for a prospect.
+
+        Args:
+            prospect_id: Prospect ID
+
+        Returns:
+            Latest branch transfer details
+
+        Response example:
+        {
+            "idProspect": 0,
+            "transferDate": "2025-06-30T06:12:27.418Z",
+            "idBranchFrom": 0,
+            "idBranchTo": 0,
+            "idEmployeeTransfer": 0
+        }
+        """
+        params = {
+            "idProspect": prospect_id,
+        }
+        return await self.api_client.call_api(
+            resource_path=f"{self.base_path}/latest-transfer",
+            method="GET",
+            query_params={k: v for k, v in params.items() if v is not None},
+            response_type=None,
+            auth_settings=["Basic"],
+        )
