@@ -79,6 +79,58 @@ def test_get_basic_info_error(members_api: SyncMembersApi, mock_api_client: Mock
         members_api.get_basic_info(take=51)
 
 
+def test_update_fitcoins_success(members_api: SyncMembersApi, mock_api_client: Mock):
+    """Test updating member fitcoins successfully."""
+    mock_api_client.return_value = {"result": "success"}
+
+    result = members_api.update_fitcoins(
+        id_member=123, fitcoin_type="add", fitcoin=100, reason="Bonus points"
+    )
+
+    assert result.success is True
+    assert result.message == "Fitcoins updated successfully"
+    assert result.data == {"result": "success"}
+
+    mock_api_client.assert_called_once()
+    args = mock_api_client.call_args[1]
+    assert args["method"] == "PUT"
+    assert args["resource_path"] == "/api/v1/members/fitcoins"
+    assert args["query_params"]["idMember"] == 123
+    assert args["query_params"]["fitcoinType"] == "add"
+    assert args["query_params"]["fitcoin"] == 100
+    assert args["query_params"]["reason"] == "Bonus points"
+
+
+def test_update_fitcoins_without_reason(
+    members_api: SyncMembersApi, mock_api_client: Mock
+):
+    """Test updating member fitcoins without reason."""
+    mock_api_client.return_value = None
+
+    result = members_api.update_fitcoins(
+        id_member=123, fitcoin_type="subtract", fitcoin=50
+    )
+
+    assert result.success is True
+    assert result.message == "Fitcoins updated successfully"
+    assert result.data is None
+
+    mock_api_client.assert_called_once()
+    args = mock_api_client.call_args[1]
+    assert "reason" not in args["query_params"]
+
+
+def test_update_fitcoins_error(members_api: SyncMembersApi, mock_api_client: Mock):
+    """Test updating member fitcoins with error."""
+    mock_api_client.side_effect = Exception("API Error")
+
+    result = members_api.update_fitcoins(id_member=123, fitcoin_type="add", fitcoin=100)
+
+    assert result.success is False
+    assert result.message == "Error updating fitcoins: API Error"
+    assert result.errors == ["API Error"]
+
+
 def test_get_members(members_api: SyncMembersApi, mock_api_client: Mock):
     """Test getting members list."""
     expected = MemberDataViewModel()
@@ -112,6 +164,17 @@ def test_update_member_card(members_api: SyncMembersApi, mock_api_client: Mock):
     assert args["method"] == "PUT"
     assert args["resource_path"] == "/api/v1/members/123/card"
     assert args["query_params"] == {"cardNumber": "987654321", "idMember": 123}
+
+
+def test_update_member_card_error(members_api: SyncMembersApi, mock_api_client: Mock):
+    """Test updating member card with error."""
+    mock_api_client.side_effect = Exception("Card update failed")
+
+    result = members_api.update_member_card(id_member=123, card_number="987654321")
+
+    assert result.success is False
+    assert result.message == "Error updating member card: Card update failed"
+    assert result.errors == ["Card update failed"]
 
 
 def test_get_member_profile(members_api: SyncMembersApi, mock_api_client: Mock):
@@ -175,6 +238,18 @@ def test_transfer_member(members_api: SyncMembersApi, mock_api_client: Mock):
     assert args["body"] == transfer_data.model_dump(exclude_unset=True, by_alias=True)
 
 
+def test_transfer_member_error(members_api: SyncMembersApi, mock_api_client: Mock):
+    """Test transferring member with error."""
+    mock_api_client.side_effect = Exception("Transfer failed")
+    transfer_data = MemberTransferViewModel()
+
+    result = members_api.transfer_member(transfer_data=transfer_data)
+
+    assert result.success is False
+    assert result.message == "Error transferring member: Transfer failed"
+    assert result.errors == ["Transfer failed"]
+
+
 def test_update_member_data(members_api: SyncMembersApi, mock_api_client: Mock):
     """Test updating member data."""
     mock_api_client.return_value = True
@@ -192,6 +267,18 @@ def test_update_member_data(members_api: SyncMembersApi, mock_api_client: Mock):
     assert args["method"] == "PATCH"
     assert args["resource_path"] == "/api/v1/members/update-member-data/123"
     assert args["body"] == {**member_data.model_dump(exclude_unset=True, by_alias=True)}
+
+
+def test_update_member_data_error(members_api: SyncMembersApi, mock_api_client: Mock):
+    """Test updating member data with error."""
+    mock_api_client.side_effect = Exception("Update failed")
+    member_data = MemberDataViewModel()
+
+    result = members_api.update_member_data(id_member=123, body=member_data)
+
+    assert result.success is False
+    assert result.message == "Error updating member data: Update failed"
+    assert result.errors == ["Update failed"]
 
 
 def test_error_handling(members_api: SyncMembersApi, mock_api_client: Mock):
