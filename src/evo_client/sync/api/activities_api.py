@@ -226,7 +226,7 @@ class SyncActivitiesApi(SyncBaseApi):
         )
         return result
 
-    def get_unavailable_spots(
+    def list_unavailable_spots(
         self, config_id: int, date: datetime
     ) -> List[AtividadeLugarReservaApiViewModel]:
         """

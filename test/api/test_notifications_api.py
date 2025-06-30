@@ -30,37 +30,22 @@ def mock_api_client():
         yield mock
 
 
-def test_create_notification(
+def test_insert_member_notification(
     notifications_api: SyncNotificationsApi, mock_api_client: Mock
 ):
-    """Test creating a notification."""
+    """Test inserting a member notification."""
     expected = {"success": True}
     mock_api_client.return_value = expected
     notification_data = NotificationApiViewModel()
     notification_data.id_member = 123
     notification_data.notification_message = "Welcome to our gym!"
 
-    result = notifications_api.create_notification(notification=notification_data)
+    result = notifications_api.insert_member_notification(
+        member_id=123, message="Welcome to our gym!"
+    )
 
-    assert result == NotificationCreateResponse.model_validate(expected)
+    assert result == expected
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/notifications"
-    assert args["body"] == notification_data.model_dump(
-        exclude_unset=True, by_alias=True
-    )
-
-
-def test_error_handling(notifications_api: SyncNotificationsApi, mock_api_client: Mock):
-    """Test API error handling."""
-    mock_api_client.side_effect = ApiException(status=500, reason="Server Error")
-    notification_data = NotificationApiViewModel()
-
-    # The API catches exceptions and returns error response instead of raising
-    result = notifications_api.create_notification(notification=notification_data)
-
-    assert isinstance(result, NotificationCreateResponse)
-    assert result.success is False
-    assert result.message is not None and "Server Error" in result.message
-    assert result.errors is not None

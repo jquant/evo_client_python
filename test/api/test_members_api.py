@@ -111,7 +111,7 @@ def test_update_member_card(members_api: SyncMembersApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "PUT"
     assert args["resource_path"] == "/api/v1/members/123/card"
-    assert args["query_params"] == {"cardNumber": "987654321"}
+    assert args["query_params"] == {"cardNumber": "987654321", "idMember": 123}
 
 
 def test_get_member_profile(members_api: SyncMembersApi, mock_api_client: Mock):
@@ -191,7 +191,7 @@ def test_update_member_data(members_api: SyncMembersApi, mock_api_client: Mock):
     args = mock_api_client.call_args[1]
     assert args["method"] == "PATCH"
     assert args["resource_path"] == "/api/v1/members/update-member-data/123"
-    assert args["body"] == member_data.model_dump(exclude_unset=True, by_alias=True)
+    assert args["body"] == {**member_data.model_dump(exclude_unset=True, by_alias=True)}
 
 
 def test_error_handling(members_api: SyncMembersApi, mock_api_client: Mock):

@@ -44,7 +44,7 @@ def test_get_memberships_basic(
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/membership"
+    assert args["resource_path"] == "/api/v2/membership"
 
 
 def test_get_memberships_with_filters(
@@ -67,7 +67,7 @@ def test_get_memberships_with_filters(
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/membership"
+    assert args["resource_path"] == "/api/v2/membership"
     query_params = args["query_params"]
     assert query_params["idMembership"] == 123
     assert query_params["name"] == "Premium"

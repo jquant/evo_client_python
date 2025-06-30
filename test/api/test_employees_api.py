@@ -84,7 +84,7 @@ def test_create_employee(employees_api: SyncEmployeesApi, mock_api_client: Mock)
     mock_api_client.return_value = expected
     employee_data = EmployeeApiIntegracaoAtualizacaoViewModel()
 
-    result = employees_api.create_employee(employee=employee_data)
+    result = employees_api.add_employee(employee=employee_data)
 
     # The API creates its own EmployeeOperationResponse, not validating the raw response
     assert isinstance(result, EmployeeOperationResponse)
