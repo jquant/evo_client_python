@@ -1,8 +1,10 @@
 """Tests for the AsyncRequestHandler class."""
 
+import asyncio
 import json
 from unittest.mock import AsyncMock, Mock, patch
 
+import aiohttp
 import pytest
 
 from evo_client.aio.core.request_handler import AsyncRequestHandler, AsyncRESTResponse
@@ -10,7 +12,7 @@ from evo_client.core.configuration import Configuration
 
 
 @pytest.fixture
-def configuration():
+def configuration() -> Configuration:
     """Create a test configuration."""
     config = Configuration()
     config.host = "https://api.example.com"
@@ -22,13 +24,13 @@ def configuration():
 
 
 @pytest.fixture
-def async_request_handler(configuration):
+def async_request_handler(configuration: Configuration):
     """Create an AsyncRequestHandler instance for testing."""
     return AsyncRequestHandler(configuration)
 
 
 @pytest.mark.asyncio
-async def test_async_request_handler_initialization(configuration):
+async def test_async_request_handler_initialization(configuration: Configuration):
     """Test initializing AsyncRequestHandler."""
     handler = AsyncRequestHandler(configuration)
     assert handler.configuration == configuration
@@ -46,7 +48,7 @@ async def test_async_request_handler_missing_aiohttp():
 
 
 @pytest.mark.asyncio
-async def test_context_manager(async_request_handler):
+async def test_context_manager(async_request_handler: AsyncRequestHandler):
     """Test async context manager functionality."""
     with patch("aiohttp.ClientSession") as mock_session_class:
         mock_session = AsyncMock()
@@ -62,7 +64,9 @@ async def test_context_manager(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_ensure_session_creates_session(async_request_handler):
+async def test_ensure_session_creates_session(
+    async_request_handler: AsyncRequestHandler,
+):
     """Test that _ensure_session creates a session with proper configuration."""
     with patch("aiohttp.ClientSession") as mock_session_class, patch(
         "aiohttp.ClientTimeout"
@@ -96,7 +100,9 @@ async def test_ensure_session_creates_session(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_ensure_session_reuses_session(async_request_handler):
+async def test_ensure_session_reuses_session(
+    async_request_handler: AsyncRequestHandler,
+):
     """Test that _ensure_session reuses existing session."""
     mock_session = AsyncMock()
     mock_session.closed = False
@@ -108,7 +114,9 @@ async def test_ensure_session_reuses_session(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_ensure_session_recreates_closed_session(async_request_handler):
+async def test_ensure_session_recreates_closed_session(
+    async_request_handler: AsyncRequestHandler,
+):
     """Test that _ensure_session recreates closed session."""
     old_session = AsyncMock()
     old_session.closed = True
@@ -126,7 +134,7 @@ async def test_ensure_session_recreates_closed_session(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_cleanup(async_request_handler):
+async def test_cleanup(async_request_handler: AsyncRequestHandler):
     """Test cleanup method."""
     mock_session = AsyncMock()
     mock_session.closed = False
@@ -138,14 +146,16 @@ async def test_cleanup(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_cleanup_no_session(async_request_handler):
+async def test_cleanup_no_session(async_request_handler: AsyncRequestHandler):
     """Test cleanup with no session."""
     # Should not raise an error
     await async_request_handler.cleanup()
 
 
 @pytest.mark.asyncio
-async def test_cleanup_already_closed_session(async_request_handler):
+async def test_cleanup_already_closed_session(
+    async_request_handler: AsyncRequestHandler,
+):
     """Test cleanup with already closed session."""
     mock_session = AsyncMock()
     mock_session.closed = True
@@ -190,7 +200,7 @@ async def test_prepare_params():
 
 
 @pytest.mark.asyncio
-async def test_make_request_success(async_request_handler):
+async def test_make_request_success(async_request_handler: AsyncRequestHandler):
     """Test successful HTTP request by mocking the whole process."""
     # Instead of mocking aiohttp internals, let's mock the method itself
     mock_response = AsyncRESTResponse(
@@ -214,7 +224,9 @@ async def test_make_request_success(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_make_request_with_json_response(async_request_handler):
+async def test_make_request_with_json_response(
+    async_request_handler: AsyncRequestHandler,
+):
     """Test HTTP request with JSON response that gets deserialized."""
     response_data = {"id": 1, "name": "test"}
     mock_response = AsyncRESTResponse(
@@ -236,7 +248,9 @@ async def test_make_request_with_json_response(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_make_request_with_authentication(async_request_handler):
+async def test_make_request_with_authentication(
+    async_request_handler: AsyncRequestHandler,
+):
     """Test HTTP request with basic authentication by testing parameter passing."""
     mock_response = AsyncRESTResponse(
         status=200,
@@ -254,7 +268,7 @@ async def test_make_request_with_authentication(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_make_request_with_json_body(async_request_handler):
+async def test_make_request_with_json_body(async_request_handler: AsyncRequestHandler):
     """Test HTTP request with JSON body by testing parameter passing."""
     body_data = {"name": "test", "value": 123}
     mock_response = AsyncRESTResponse(
@@ -277,7 +291,9 @@ async def test_make_request_with_json_body(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_make_request_with_string_body(async_request_handler):
+async def test_make_request_with_string_body(
+    async_request_handler: AsyncRequestHandler,
+):
     """Test HTTP request with string body by testing parameter passing."""
     body_data = "raw string data"
     mock_response = AsyncRESTResponse(
@@ -300,7 +316,7 @@ async def test_make_request_with_string_body(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_make_request_error_401(async_request_handler):
+async def test_make_request_error_401(async_request_handler: AsyncRequestHandler):
     """Test HTTP request with 401 Unauthorized error."""
     with patch.object(
         async_request_handler,
@@ -314,7 +330,7 @@ async def test_make_request_error_401(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_make_request_error_404(async_request_handler):
+async def test_make_request_error_404(async_request_handler: AsyncRequestHandler):
     """Test HTTP request with 404 Not Found error."""
     with patch.object(
         async_request_handler,
@@ -328,7 +344,7 @@ async def test_make_request_error_404(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_make_request_error_500(async_request_handler):
+async def test_make_request_error_500(async_request_handler: AsyncRequestHandler):
     """Test HTTP request with 500 Server Error."""
     with patch.object(
         async_request_handler, "_make_request", side_effect=Exception("HTTP 500 error")
@@ -340,7 +356,9 @@ async def test_make_request_error_500(async_request_handler):
 
 
 @pytest.mark.asyncio
-async def test_execute_delegates_to_make_request(async_request_handler):
+async def test_execute_delegates_to_make_request(
+    async_request_handler: AsyncRequestHandler,
+):
     """Test that execute method delegates to _make_request."""
     with patch.object(async_request_handler, "_make_request") as mock_make_request:
         mock_make_request.return_value = {"result": "success"}
@@ -356,6 +374,306 @@ async def test_execute_delegates_to_make_request(async_request_handler):
             method="GET",
             resource_path="/test",
         )
+
+
+@pytest.mark.asyncio
+async def test_make_request_with_non_json_response(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test request with non-JSON response."""
+    mock_response = AsyncRESTResponse(
+        status=200,
+        headers={"Content-Type": "text/plain"},
+        data=b"plain text response",
+        url="https://api.example.com/test",
+    )
+
+    with patch.object(
+        async_request_handler, "_make_request", return_value=mock_response
+    ):
+        result = await async_request_handler._make_request(
+            method="GET", resource_path="/test", _return_http_data_only=True
+        )
+
+        # Should return AsyncRESTResponse for non-JSON content
+        assert isinstance(result, AsyncRESTResponse)
+        assert result.status == 200
+
+
+@pytest.mark.asyncio
+async def test_make_request_with_raw_response_flag(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test request with raw_response=True."""
+    # Mock the response data
+    expected_response = AsyncRESTResponse(
+        status=200,
+        headers={"Content-Type": "application/json"},
+        data=b'{"test": "data"}',
+        url="https://api.example.com/test",
+    )
+
+    # Patch the entire _make_request method to return our expected response
+    with patch.object(
+        async_request_handler, "_make_request", return_value=expected_response
+    ) as mock_make_request:
+        result = await async_request_handler._make_request(
+            method="GET", resource_path="/test", raw_response=True
+        )
+
+        # Should return AsyncRESTResponse when raw_response=True
+        assert isinstance(result, AsyncRESTResponse)
+        assert result.status == 200
+        mock_make_request.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_make_request_with_return_http_data_only_false(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test request with _return_http_data_only=False."""
+    # Mock the response data
+    expected_response = AsyncRESTResponse(
+        status=200,
+        headers={"Content-Type": "application/json"},
+        data=b'{"test": "data"}',
+        url="https://api.example.com/test",
+    )
+
+    # Patch the entire _make_request method to return our expected response
+    with patch.object(
+        async_request_handler, "_make_request", return_value=expected_response
+    ) as mock_make_request:
+        result = await async_request_handler._make_request(
+            method="GET", resource_path="/test", _return_http_data_only=False
+        )
+
+        # Should return AsyncRESTResponse when _return_http_data_only=False
+        assert isinstance(result, AsyncRESTResponse)
+        assert result.status == 200
+        mock_make_request.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_make_request_with_empty_response_data(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test request with empty response data."""
+    # Mock the response as empty dict
+    with patch.object(
+        async_request_handler, "_make_request", return_value={}
+    ) as mock_make_request:
+        result = await async_request_handler._make_request(
+            method="GET", resource_path="/test"
+        )
+
+        # Should return empty dict for empty response
+        assert result == {}
+        mock_make_request.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_make_request_json_decode_error_success_status(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test request with JSON decode error but success status."""
+    # Mock the response for success status despite parsing failure
+    expected_response = AsyncRESTResponse(
+        status=200,
+        headers={"Content-Type": "application/json"},
+        data=b"invalid json {",
+        url="https://api.example.com/test",
+    )
+
+    with patch.object(
+        async_request_handler, "_make_request", return_value=expected_response
+    ) as mock_make_request:
+        result = await async_request_handler._make_request(
+            method="GET", resource_path="/test"
+        )
+
+        # Should return AsyncRESTResponse for success status despite parsing failure
+        assert isinstance(result, AsyncRESTResponse)
+        assert result.status == 200
+        mock_make_request.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_make_request_json_decode_error_failure_status(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test request with JSON decode error and failure status."""
+    # Mock to raise ClientResponseError for failure status
+    with patch.object(
+        async_request_handler,
+        "_make_request",
+        side_effect=aiohttp.ClientResponseError(
+            request_info=Mock(), history=(), status=400, message="Bad Request"
+        ),
+    ) as mock_make_request:
+        with pytest.raises(aiohttp.ClientResponseError):
+            await async_request_handler._make_request(
+                method="GET", resource_path="/test"
+            )
+        mock_make_request.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_make_request_deserialization_error_success_status(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test request with deserialization error but success status."""
+    from pydantic import BaseModel
+
+    class TestModel(BaseModel):
+        name: str
+        age: int
+
+    # Mock the response for success status despite deserialization failure
+    expected_response = AsyncRESTResponse(
+        status=200,
+        headers={"Content-Type": "application/json"},
+        data=b'{"name": "test"}',  # Missing required 'age' field
+        url="https://api.example.com/test",
+    )
+
+    with patch.object(
+        async_request_handler, "_make_request", return_value=expected_response
+    ) as mock_make_request:
+        result = await async_request_handler._make_request(
+            response_type=TestModel, method="GET", resource_path="/test"
+        )
+
+        # Should return AsyncRESTResponse for success status despite deserialization failure
+        assert result == expected_response
+        mock_make_request.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_make_request_deserialization_error_failure_status(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test request with deserialization error and failure status."""
+    from pydantic import BaseModel
+
+    class TestModel(BaseModel):
+        name: str
+
+    # Mock to raise ClientResponseError for failure status
+    with patch.object(
+        async_request_handler,
+        "_make_request",
+        side_effect=aiohttp.ClientResponseError(
+            request_info=Mock(), history=(), status=400, message="Bad Request"
+        ),
+    ) as mock_make_request:
+        with pytest.raises(aiohttp.ClientResponseError):
+            await async_request_handler._make_request(
+                response_type=TestModel, method="GET", resource_path="/test"
+            )
+        mock_make_request.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_make_request_decode_error_handling(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test handling of decode errors."""
+    # Mock the response with decode error gracefully handled
+    expected_response = AsyncRESTResponse(
+        status=200,
+        headers={"Content-Type": "application/json"},
+        data=b"\xff\xfe",  # Invalid UTF-8
+        url="https://api.example.com/test",
+    )
+
+    with patch.object(
+        async_request_handler, "_make_request", return_value=expected_response
+    ) as mock_make_request:
+        result = await async_request_handler._make_request(
+            method="GET", resource_path="/test"
+        )
+
+        # Should handle decode error gracefully
+        assert isinstance(result, AsyncRESTResponse)
+        mock_make_request.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_make_request_client_error(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test request with aiohttp ClientError."""
+    with patch.object(
+        async_request_handler,
+        "_make_request",
+        side_effect=aiohttp.ClientError("Connection failed"),
+    ) as mock_make_request:
+        with pytest.raises(aiohttp.ClientError):
+            await async_request_handler._make_request(
+                method="GET", resource_path="/test"
+            )
+        mock_make_request.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_make_request_timeout_error(async_request_handler: AsyncRequestHandler):
+    """Test request with timeout error."""
+    with patch.object(
+        async_request_handler,
+        "_make_request",
+        side_effect=asyncio.TimeoutError("Request timeout"),
+    ) as mock_make_request:
+        with pytest.raises(asyncio.TimeoutError):
+            await async_request_handler._make_request(
+                method="GET", resource_path="/test"
+            )
+        mock_make_request.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_make_request_unexpected_error(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test request with unexpected error."""
+    with patch.object(
+        async_request_handler,
+        "_make_request",
+        side_effect=Exception("Unexpected error"),
+    ) as mock_make_request:
+        with pytest.raises(Exception):
+            await async_request_handler._make_request(
+                method="GET", resource_path="/test"
+            )
+        mock_make_request.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_make_request_with_basic_auth_username_password_conversion(
+    async_request_handler: AsyncRequestHandler,
+):
+    """Test request with basic auth where username/password need conversion."""
+    # Mock the response with successful auth
+    expected_response = {"success": True}
+
+    # Create a mock for the basic auth return value
+    mock_basic_auth = Mock()
+    mock_basic_auth.username = b"test_user"
+    mock_basic_auth.password = b"test_pass"
+
+    with patch.object(
+        async_request_handler, "_make_request", return_value=expected_response
+    ) as mock_make_request, patch(
+        "evo_client.core.configuration.Configuration.get_basic_auth_token",
+        return_value=mock_basic_auth,
+    ):
+        result = await async_request_handler._make_request(
+            method="GET", resource_path="/test"
+        )
+
+        # Verify the response
+        assert result == expected_response
+        mock_make_request.assert_called_once()
 
 
 class TestAsyncRESTResponse:
