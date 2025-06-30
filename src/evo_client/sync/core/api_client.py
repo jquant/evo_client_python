@@ -66,7 +66,8 @@ class SyncApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Any: ...
+    ) -> Any:
+        ...
 
     @overload
     def call_api(
@@ -86,7 +87,8 @@ class SyncApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> T: ...
+    ) -> T:
+        ...
 
     @overload
     def call_api(
@@ -106,7 +108,8 @@ class SyncApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> List[T]: ...
+    ) -> List[T]:
+        ...
 
     @overload
     def call_api(
@@ -126,7 +129,8 @@ class SyncApiClient:
         _preload_content: bool = True,
         _request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = True,
-    ) -> Any: ...
+    ) -> Any:
+        ...
 
     def call_api(
         self,

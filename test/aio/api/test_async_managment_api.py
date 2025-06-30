@@ -336,9 +336,11 @@ async def test_get_non_renewed_clients_unexpected_error(
 
 def test_convert_value():
     """Test the convert_value utility function."""
-    from evo_client.aio.api.management_api import convert_value
     from datetime import datetime
+
     import pandas as pd
+
+    from evo_client.aio.api.management_api import convert_value
 
     # Test with None/NaN values
     assert convert_value(None, str) is None

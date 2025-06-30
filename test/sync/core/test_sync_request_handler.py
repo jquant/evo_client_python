@@ -1,6 +1,5 @@
 """Tests for the SyncRequestHandler class."""
 
-import json
 from unittest.mock import Mock, patch
 
 import pytest

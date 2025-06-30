@@ -1,7 +1,5 @@
 """Enhanced tests for async pagination utilities to cover missing coverage lines."""
 
-import asyncio
-from typing import Any, Dict, List
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
@@ -220,7 +218,6 @@ class TestConcurrentPaginationManagerEnhanced:
         ) as mock_semaphore, patch(
             "asyncio.sleep"
         ):  # Mock any sleep calls
-
             # Setup mock instances
             mock_executor = Mock()
             mock_caller = Mock()

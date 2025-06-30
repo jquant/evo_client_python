@@ -1,8 +1,6 @@
 """Tests for config builder functionality."""
 
-from unittest.mock import Mock, patch
-
-import pytest
+from unittest.mock import patch
 
 from evo_client.config.builder import ConfigBuilder, QuickConfig
 from evo_client.core.configuration import Configuration

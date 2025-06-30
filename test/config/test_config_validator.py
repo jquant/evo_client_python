@@ -1,6 +1,5 @@
 """Tests for config validator functionality."""
 
-import pytest
 
 from evo_client.config.validator import ConfigValidator
 from evo_client.core.configuration import Configuration

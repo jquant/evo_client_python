@@ -105,7 +105,7 @@ async def test_error_handling(
 ):
     """Test API error handling."""
     mock_api_client.side_effect = ApiException(status=500, reason="Server Error")
-    notification_data = NotificationApiViewModel()
+    NotificationApiViewModel()
 
     with pytest.raises(ApiException) as exc:
         await notifications_api.insert_member_notification(
