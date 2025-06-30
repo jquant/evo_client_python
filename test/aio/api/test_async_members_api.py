@@ -1,11 +1,19 @@
 """Tests for the AsyncMembersApi class."""
 
+from datetime import datetime
+from typing import List
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
 from evo_client.aio.api.members_api import AsyncMembersApi
+from evo_client.models.cliente_detalhes_basicos_api_view_model import (
+    ClienteDetalhesBasicosApiViewModel,
+)
 from evo_client.models.member_authenticate_view_model import MemberAuthenticateViewModel
+from evo_client.models.member_data_view_model import MemberDataViewModel
+from evo_client.models.member_transfer_view_model import MemberTransferViewModel
+from evo_client.models.members_api_view_model import MembersApiViewModel
 from evo_client.models.members_basic_api_view_model import MembersBasicApiViewModel
 
 
@@ -259,3 +267,297 @@ async def test_concurrent_requests(async_members_api):
 
     # API client should have been called 3 times
     assert async_members_api.api_client.call_api.call_count == 3
+
+
+@pytest.mark.asyncio
+async def test_get_basic_info_take_limit_validation(async_members_api):
+    """Test get_basic_info raises ValueError when take > 50."""
+    with pytest.raises(ValueError, match="Maximum number of records to return is 50"):
+        await async_members_api.get_basic_info(take=51)
+
+
+@pytest.mark.asyncio
+async def test_get_members_minimal(async_members_api):
+    """Test get_members with minimal parameters."""
+    expected_response = [Mock(spec=MembersApiViewModel)]
+    async_members_api.api_client.call_api.return_value = expected_response
+
+    result = await async_members_api.get_members(name="John")
+
+    assert result == expected_response
+    async_members_api.api_client.call_api.assert_called_once()
+    call_args = async_members_api.api_client.call_api.call_args[1]
+    assert call_args["resource_path"] == "/api/v2/members"
+    assert call_args["method"] == "GET"
+    assert call_args["query_params"] == {
+        "name": "John",
+        "onlyPersonal": False,
+        "showActivityData": False,
+    }
+    assert call_args["response_type"] == List[MembersApiViewModel]
+    assert call_args["auth_settings"] == ["Basic"]
+
+
+@pytest.mark.asyncio
+async def test_get_members_all_params(async_members_api):
+    """Test get_members with all parameters including datetime conversions."""
+    expected_response = [Mock(spec=MembersApiViewModel)]
+    async_members_api.api_client.call_api.return_value = expected_response
+
+    conversion_start = datetime(2024, 1, 1, 12, 0, 0)
+    conversion_end = datetime(2024, 1, 31, 12, 0, 0)
+    register_start = datetime(2024, 2, 1, 12, 0, 0)
+    register_end = datetime(2024, 2, 28, 12, 0, 0)
+    membership_start_start = datetime(2024, 3, 1, 12, 0, 0)
+    membership_start_end = datetime(2024, 3, 31, 12, 0, 0)
+    membership_cancel_start = datetime(2024, 4, 1, 12, 0, 0)
+    membership_cancel_end = datetime(2024, 4, 30, 12, 0, 0)
+
+    result = await async_members_api.get_members(
+        name="John",
+        email="john@example.com",
+        document="12345678900",
+        phone="1234567890",
+        conversion_date_start=conversion_start,
+        conversion_date_end=conversion_end,
+        register_date_start=register_start,
+        register_date_end=register_end,
+        membership_start_date_start=membership_start_start,
+        membership_start_date_end=membership_start_end,
+        membership_cancel_date_start=membership_cancel_start,
+        membership_cancel_date_end=membership_cancel_end,
+        status=1,
+        token_gympass="token123",
+        take=25,
+        skip=10,
+        ids_members="1,2,3",
+        only_personal=True,
+        personal_type=1,
+        show_activity_data=True,
+    )
+
+    assert result == expected_response
+    call_args = async_members_api.api_client.call_api.call_args[1]
+    expected_params = {
+        "name": "John",
+        "email": "john@example.com",
+        "document": "12345678900",
+        "phone": "1234567890",
+        "conversionDateStart": conversion_start.isoformat(),
+        "conversionDateEnd": conversion_end.isoformat(),
+        "registerDateStart": register_start.isoformat(),
+        "registerDateEnd": register_end.isoformat(),
+        "membershipStartDateStart": membership_start_start.isoformat(),
+        "membershipStartDateEnd": membership_start_end.isoformat(),
+        "membershipCancelDateStart": membership_cancel_start.isoformat(),
+        "membershipCancelDateEnd": membership_cancel_end.isoformat(),
+        "status": 1,
+        "tokenGympass": "token123",
+        "take": 25,
+        "skip": 10,
+        "idsMembers": "1,2,3",
+        "onlyPersonal": True,
+        "personalType": 1,
+        "showActivityData": True,
+    }
+    assert call_args["query_params"] == expected_params
+
+
+@pytest.mark.asyncio
+async def test_get_members_filter_none_params(async_members_api):
+    """Test get_members filters out None parameters."""
+    expected_response = [Mock(spec=MembersApiViewModel)]
+    async_members_api.api_client.call_api.return_value = expected_response
+
+    result = await async_members_api.get_members(
+        name="John",
+        email=None,
+        document=None,
+        conversion_date_start=None,
+        conversion_date_end=None,
+        status=None,
+    )
+
+    assert result == expected_response
+    call_args = async_members_api.api_client.call_api.call_args[1]
+    assert call_args["query_params"] == {
+        "name": "John",
+        "onlyPersonal": False,
+        "showActivityData": False,
+    }
+
+
+@pytest.mark.asyncio
+async def test_get_members_take_limit_validation(async_members_api):
+    """Test get_members raises ValueError when take > 50."""
+    with pytest.raises(ValueError, match="Maximum number of records to return is 50"):
+        await async_members_api.get_members(take=51)
+
+
+@pytest.mark.asyncio
+async def test_update_member_card(async_members_api):
+    """Test update_member_card method."""
+    async_members_api.api_client.call_api.return_value = {"success": True}
+
+    result = await async_members_api.update_member_card(123, "1234567890")
+
+    assert result == {"success": True}
+    async_members_api.api_client.call_api.assert_called_once()
+    call_args = async_members_api.api_client.call_api.call_args[1]
+    assert call_args["resource_path"] == "/api/v1/members/123/card"
+    assert call_args["method"] == "PUT"
+    expected_params = {"idMember": 123, "cardNumber": "1234567890"}
+    assert call_args["query_params"] == expected_params
+    assert call_args["response_type"] is None
+    assert call_args["auth_settings"] == ["Basic"]
+    assert call_args["headers"] == {"Accept": "application/json"}
+
+
+@pytest.mark.asyncio
+async def test_get_member_profile(async_members_api):
+    """Test get_member_profile method."""
+    expected_response = Mock(spec=ClienteDetalhesBasicosApiViewModel)
+    async_members_api.api_client.call_api.return_value = expected_response
+
+    result = await async_members_api.get_member_profile(123)
+
+    assert result == expected_response
+    async_members_api.api_client.call_api.assert_called_once()
+    call_args = async_members_api.api_client.call_api.call_args[1]
+    assert call_args["resource_path"] == "/api/v2/members/123"
+    assert call_args["method"] == "GET"
+    assert call_args["response_type"] == ClienteDetalhesBasicosApiViewModel
+    assert call_args["auth_settings"] == ["Basic"]
+    assert call_args["headers"] == {"Accept": "application/json"}
+
+
+@pytest.mark.asyncio
+async def test_reset_password_minimal(async_members_api):
+    """Test reset_password with minimal parameters."""
+    expected_response = Mock(spec=MemberAuthenticateViewModel)
+    async_members_api.api_client.call_api.return_value = expected_response
+
+    result = await async_members_api.reset_password("user@example.com")
+
+    assert result == expected_response
+    async_members_api.api_client.call_api.assert_called_once()
+    call_args = async_members_api.api_client.call_api.call_args[1]
+    assert call_args["resource_path"] == "/api/v1/members/resetPassword"
+    assert call_args["method"] == "POST"
+    expected_params = {"user": "user@example.com", "signIn": False}
+    assert call_args["query_params"] == expected_params
+    assert call_args["response_type"] == MemberAuthenticateViewModel
+    assert call_args["auth_settings"] == ["Basic"]
+    assert call_args["headers"] == {"Accept": "application/json"}
+
+
+@pytest.mark.asyncio
+async def test_reset_password_with_sign_in(async_members_api):
+    """Test reset_password with sign_in=True."""
+    expected_response = Mock(spec=MemberAuthenticateViewModel)
+    async_members_api.api_client.call_api.return_value = expected_response
+
+    result = await async_members_api.reset_password("user@example.com", sign_in=True)
+
+    assert result == expected_response
+    call_args = async_members_api.api_client.call_api.call_args[1]
+    expected_params = {"user": "user@example.com", "signIn": True}
+    assert call_args["query_params"] == expected_params
+
+
+@pytest.mark.asyncio
+async def test_get_member_services_with_member_id(async_members_api):
+    """Test get_member_services with member ID."""
+    expected_response = ["service1", "service2"]
+    async_members_api.api_client.call_api.return_value = expected_response
+
+    result = await async_members_api.get_member_services(123)
+
+    assert result == expected_response
+    async_members_api.api_client.call_api.assert_called_once()
+    call_args = async_members_api.api_client.call_api.call_args[1]
+    assert call_args["resource_path"] == "/api/v1/members/services"
+    assert call_args["method"] == "GET"
+    assert call_args["query_params"] == {"idMember": 123}
+    assert call_args["response_type"] == list
+    assert call_args["auth_settings"] == ["Basic"]
+    assert call_args["headers"] == {"Accept": "application/json"}
+
+
+@pytest.mark.asyncio
+async def test_get_member_services_without_member_id(async_members_api):
+    """Test get_member_services without member ID."""
+    expected_response = ["service1", "service2"]
+    async_members_api.api_client.call_api.return_value = expected_response
+
+    result = await async_members_api.get_member_services()
+
+    assert result == expected_response
+    call_args = async_members_api.api_client.call_api.call_args[1]
+    assert call_args["query_params"] is None
+
+
+@pytest.mark.asyncio
+async def test_transfer_member(async_members_api):
+    """Test transfer_member method."""
+    async_members_api.api_client.call_api.return_value = {"success": True}
+
+    # Create a mock transfer data
+    transfer_data = Mock(spec=MemberTransferViewModel)
+    transfer_data.model_dump.return_value = {
+        "memberId": 123,
+        "targetBranchId": 456,
+        "reason": "Member requested transfer",
+    }
+
+    result = await async_members_api.transfer_member(transfer_data)
+
+    assert result == {"success": True}
+    async_members_api.api_client.call_api.assert_called_once()
+    call_args = async_members_api.api_client.call_api.call_args[1]
+    assert call_args["resource_path"] == "/api/v1/members/transfer"
+    assert call_args["method"] == "POST"
+    assert call_args["body"] == {
+        "memberId": 123,
+        "targetBranchId": 456,
+        "reason": "Member requested transfer",
+    }
+    assert call_args["response_type"] is None
+    assert call_args["auth_settings"] == ["Basic"]
+    assert call_args["headers"] == {"Accept": "application/json"}
+
+    # Verify model_dump was called with correct parameters
+    transfer_data.model_dump.assert_called_once_with(exclude_unset=True, by_alias=True)
+
+
+@pytest.mark.asyncio
+async def test_update_member_data(async_members_api):
+    """Test update_member_data method."""
+    async_members_api.api_client.call_api.return_value = {"success": True}
+
+    # Create a mock member data
+    member_data = Mock(spec=MemberDataViewModel)
+    member_data.model_dump.return_value = {
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "phone": "1234567890",
+    }
+
+    result = await async_members_api.update_member_data(123, member_data)
+
+    assert result == {"success": True}
+    async_members_api.api_client.call_api.assert_called_once()
+    call_args = async_members_api.api_client.call_api.call_args[1]
+    assert call_args["resource_path"] == "/api/v1/members/update-member-data/123"
+    assert call_args["method"] == "PUT"
+    assert call_args["body"] == {
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "phone": "1234567890",
+    }
+    assert call_args["response_type"] is None
+    assert call_args["auth_settings"] == ["Basic"]
+    assert call_args["headers"] == {"Accept": "application/json"}
+
+    # Verify model_dump was called with correct parameters
+    member_data.model_dump.assert_called_once_with(exclude_unset=True, by_alias=True)
