@@ -40,11 +40,11 @@ class EntriesDataFetcher(BaseDataFetcher):
                     try:
                         branch_result = paginated_api_call(
                             api_func=branch_api.get_entries,
-                            branch_id=str(branch_id),
+                            branch_id_logging=str(branch_id),
                             register_date_start=register_date_start,
                             register_date_end=register_date_end,
-                            id_entry=id_entry,
-                            id_member=id_member,
+                            entry_id=id_entry,
+                            member_id=id_member,
                         )
                         if branch_result:
                             entries.extend(branch_result)
@@ -53,7 +53,7 @@ class EntriesDataFetcher(BaseDataFetcher):
                             f"Failed to fetch entries for branch {branch_id}: {e}"
                         )
 
-            return entries
+            return [GymEntry.model_validate(entry) for entry in entries]
 
         except Exception as e:
             logger.error(f"Error fetching entries: {str(e)}")

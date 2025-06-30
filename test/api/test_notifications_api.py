@@ -4,9 +4,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.exceptions.api_exceptions import ApiException
-from evo_client.models.common_models import NotificationCreateResponse
-from evo_client.models.notification_api_view_model import NotificationApiViewModel
 from evo_client.sync import SyncApiClient
 from evo_client.sync.api import SyncNotificationsApi
 
@@ -30,37 +27,67 @@ def mock_api_client():
         yield mock
 
 
-def test_create_notification(
+def test_insert_member_notification(
     notifications_api: SyncNotificationsApi, mock_api_client: Mock
 ):
-    """Test creating a notification."""
-    expected = {"success": True}
-    mock_api_client.return_value = expected
-    notification_data = NotificationApiViewModel()
-    notification_data.id_member = 123
-    notification_data.notification_message = "Welcome to our gym!"
+    """Test inserting a member notification."""
+    member_id = 123
+    message = "Welcome to our gym!"
+    expected_result = {"success": True, "notification_id": 456}
 
-    result = notifications_api.create_notification(notification=notification_data)
+    mock_api_client.return_value = expected_result
 
-    assert result == NotificationCreateResponse.model_validate(expected)
+    result = notifications_api.insert_member_notification(member_id, message)
+
+    assert result == expected_result
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
-    assert args["method"] == "POST"
     assert args["resource_path"] == "/api/v1/notifications"
-    assert args["body"] == notification_data.model_dump(
-        exclude_unset=True, by_alias=True
-    )
+    assert args["method"] == "POST"
+    assert args["body"] == {
+        "idMember": member_id,
+        "notificationMessage": message,
+    }
+    assert args["response_type"] is None
+    assert args["headers"] == {"Accept": "application/json"}
+    assert args["auth_settings"] == ["Basic"]
 
 
-def test_error_handling(notifications_api: SyncNotificationsApi, mock_api_client: Mock):
-    """Test API error handling."""
-    mock_api_client.side_effect = ApiException(status=500, reason="Server Error")
-    notification_data = NotificationApiViewModel()
+def test_insert_prospect_notification(
+    notifications_api: SyncNotificationsApi, mock_api_client: Mock
+):
+    """Test inserting a prospect notification."""
+    prospect_id = 789
+    message = "Thank you for your interest!"
+    expected_result = {"success": True, "notification_id": 101}
 
-    # The API catches exceptions and returns error response instead of raising
-    result = notifications_api.create_notification(notification=notification_data)
+    mock_api_client.return_value = expected_result
 
-    assert isinstance(result, NotificationCreateResponse)
-    assert result.success is False
-    assert result.message is not None and "Server Error" in result.message
-    assert result.errors is not None
+    result = notifications_api.insert_prospect_notification(prospect_id, message)
+
+    assert result == expected_result
+    mock_api_client.assert_called_once()
+    args = mock_api_client.call_args[1]
+    assert args["resource_path"] == "/api/v1/notifications"
+    assert args["method"] == "POST"
+    assert args["body"] == {
+        "idProspect": prospect_id,
+        "notificationMessage": message,
+    }
+    assert args["response_type"] is None
+    assert args["headers"] == {"Accept": "application/json"}
+    assert args["auth_settings"] == ["Basic"]
+
+
+def test_notifications_api_initialization():
+    """Test NotificationsApi initialization."""
+    api = SyncNotificationsApi()
+    assert api.api_client is not None
+    assert api.base_path == "/api/v1/notifications"
+
+
+def test_notifications_api_initialization_with_client(sync_client):
+    """Test NotificationsApi initialization with provided client."""
+    api = SyncNotificationsApi(sync_client)
+    assert api.api_client == sync_client
+    assert api.base_path == "/api/v1/notifications"

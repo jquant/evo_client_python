@@ -51,7 +51,7 @@ async def test_get_employees_basic(
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/employees"
+    assert args["resource_path"] == "/api/v2/employees"
 
 
 @pytest.mark.asyncio
@@ -74,7 +74,7 @@ async def test_get_employees_with_filters(
     mock_api_client.assert_called_once()
     args = mock_api_client.call_args[1]
     assert args["method"] == "GET"
-    assert args["resource_path"] == "/api/v1/employees"
+    assert args["resource_path"] == "/api/v2/employees"
     query_params = args["query_params"]
     assert query_params["idEmployee"] == 123
     assert query_params["name"] == "John"
@@ -84,13 +84,13 @@ async def test_get_employees_with_filters(
 
 
 @pytest.mark.asyncio
-async def test_create_employee(employees_api: AsyncEmployeesApi, mock_api_client: Mock):
-    """Test creating a new employee."""
+async def test_add_employee(employees_api: AsyncEmployeesApi, mock_api_client: Mock):
+    """Test adding a new employee."""
     expected = {"id": 123}
     mock_api_client.return_value = expected
     employee_data = EmployeeApiIntegracaoAtualizacaoViewModel()
 
-    result = await employees_api.create_employee(employee=employee_data)
+    result = await employees_api.add_employee(employee=employee_data)
 
     assert result == expected
     mock_api_client.assert_called_once()

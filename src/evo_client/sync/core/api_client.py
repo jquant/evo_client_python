@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union, overload
 
 from pydantic import BaseModel
 
@@ -27,7 +27,7 @@ class SyncApiClient:
         self.request_handler = SyncRequestHandler(self.configuration)
 
         # Initialize headers
-        self.default_headers = {}
+        self.default_headers: Dict[str, str | None] = {}
         if header_name:
             self.default_headers[header_name] = header_value
         self.cookie = cookie
@@ -41,11 +41,96 @@ class SyncApiClient:
 
     @property
     def user_agent(self) -> str:
-        return self.default_headers["User-Agent"]
+        return self.default_headers["User-Agent"] or ""
 
     @user_agent.setter
     def user_agent(self, value: str) -> None:
         self.default_headers["User-Agent"] = value
+
+    # Overloads for better typing support
+    @overload
+    def call_api(
+        self,
+        resource_path: str,
+        method: str,
+        *,
+        response_type: None = None,
+        path_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        body: Optional[Any] = None,
+        post_params: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, str]] = None,
+        auth_settings: Optional[List[str]] = None,
+        _return_http_data_only: bool = True,
+        _preload_content: bool = True,
+        _request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
+    ) -> Any:
+        ...
+
+    @overload
+    def call_api(
+        self,
+        resource_path: str,
+        method: str,
+        *,
+        response_type: Type[T],
+        path_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        body: Optional[Any] = None,
+        post_params: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, str]] = None,
+        auth_settings: Optional[List[str]] = None,
+        _return_http_data_only: bool = True,
+        _preload_content: bool = True,
+        _request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
+    ) -> T:
+        ...
+
+    @overload
+    def call_api(
+        self,
+        resource_path: str,
+        method: str,
+        *,
+        response_type: Type[List[T]],
+        path_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        body: Optional[Any] = None,
+        post_params: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, str]] = None,
+        auth_settings: Optional[List[str]] = None,
+        _return_http_data_only: bool = True,
+        _preload_content: bool = True,
+        _request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
+    ) -> List[T]:
+        ...
+
+    @overload
+    def call_api(
+        self,
+        resource_path: str,
+        method: str,
+        *,
+        response_type: Optional[Type[T] | Type[Iterable[T]]] = None,
+        path_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        body: Optional[Any] = None,
+        post_params: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, str]] = None,
+        auth_settings: Optional[List[str]] = None,
+        _return_http_data_only: bool = True,
+        _preload_content: bool = True,
+        _request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = True,
+    ) -> Any:
+        ...
 
     def call_api(
         self,
@@ -88,11 +173,22 @@ class SyncApiClient:
 
         Example:
             >>> client = SyncApiClient()
-            >>> result = client.call_api(
+            >>> # Type-safe: returns List[MemberViewModel]
+            >>> members = client.call_api(
             ...     resource_path="/api/v1/members",
             ...     method="GET",
-            ...     response_type=MembersList
+            ...     response_type=List[MemberViewModel]
             ... )
+            >>>
+            >>> # Type-safe: returns MemberViewModel
+            >>> member = client.call_api(
+            ...     resource_path="/api/v1/members/123",
+            ...     method="GET",
+            ...     response_type=MemberViewModel
+            ... )
+            >>>
+            >>> # Returns Any when no response_type specified
+            >>> result = client.call_api("/api/v1/status", "GET")
         """
         if raw_response:
             _return_http_data_only = False

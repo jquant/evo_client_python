@@ -50,8 +50,8 @@ class ProspectsDataFetcher(BaseDataFetcher):
                     result.extend(
                         paginated_api_call(
                             api_func=branch_api.get_prospects,
-                            branch_id=str(branch_id),
-                            id_prospect=id_prospect,
+                            branch_id_logging=str(branch_id),
+                            prospect_id=id_prospect,
                             name=name,
                             document=document,
                             email=email,

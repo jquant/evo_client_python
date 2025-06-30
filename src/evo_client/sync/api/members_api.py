@@ -293,7 +293,7 @@ class SyncMembersApi(SyncBaseApi):
             card_number: New card number
 
         Returns:
-            Update result with success status
+            Update result
 
         Example:
             >>> api = SyncMembersApi()
@@ -302,6 +302,7 @@ class SyncMembersApi(SyncBaseApi):
             ...     print("Card updated successfully")
         """
         params = {
+            "idMember": id_member,
             "cardNumber": card_number,
         }
 

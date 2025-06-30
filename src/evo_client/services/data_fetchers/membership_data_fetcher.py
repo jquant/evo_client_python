@@ -38,15 +38,20 @@ class MembershipDataFetcher(BaseDataFetcher):
                 )
                 if branch_api:
                     result = paginated_api_call(
-                        api_func=branch_api.list_memberships,
-                        branch_id=str(branch_id),
+                        api_func=branch_api.get_memberships,
+                        branch_id=branch_id,
                         membership_id=membership_id,
                         name=name,
                         active=active,
                         pagination_type="skip_take",
                     )
                     if result:
-                        memberships.extend(result)
+                        memberships.extend(
+                            [
+                                ContratosResumoApiViewModel.model_validate(membership)
+                                for membership in result
+                            ]
+                        )
 
             return memberships
 

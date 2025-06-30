@@ -1,6 +1,6 @@
 [project]
 name = "evo_client"
-version = "2.0.1"
+version = "2.0.2"
 description = "ABC Evo SDK"
 authors = [
     {email = "support@evo.com"}
@@ -33,3 +33,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.mypy]
+disable_error_code = ["import-untyped", "method-assign"]

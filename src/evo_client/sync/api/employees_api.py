@@ -17,6 +17,7 @@ class SyncEmployeesApi(SyncBaseApi):
     def __init__(self, api_client=None):
         super().__init__(api_client)
         self.base_path = "/api/v1/employees"
+        self.base_path_v2 = "/api/v2/employees"
 
     def get_employees(
         self,
@@ -57,7 +58,7 @@ class SyncEmployeesApi(SyncBaseApi):
         }
 
         result: Any = self.api_client.call_api(
-            resource_path=self.base_path,
+            resource_path=self.base_path_v2,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             response_type=List[FuncionariosResumoApiViewModel],
@@ -164,14 +165,14 @@ class SyncEmployeesApi(SyncBaseApi):
                 errors=[str(e)],
             )
 
-    def create_employee(
+    def add_employee(
         self, employee: EmployeeApiIntegracaoAtualizacaoViewModel
     ) -> EmployeeOperationResponse:
         """
-        Create a new employee.
+        Add a new employee.
 
         Args:
-            employee: Employee data to create
+            employee: Employee data to add
 
         Returns:
             Created employee result with success status
@@ -183,7 +184,7 @@ class SyncEmployeesApi(SyncBaseApi):
             ...         email="jane.doe@example.com",
             ...         department="HR"
             ...     )
-            ...     result = api.create_employee(employee_data)
+            ...     result = api.add_employee(employee_data)
             ...     if result.success:
             ...         print("Employee created successfully")
         """

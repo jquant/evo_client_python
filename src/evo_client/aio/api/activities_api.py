@@ -50,7 +50,7 @@ class AsyncActivitiesApi(AsyncBaseApi):
         params = {"search": search, "idBranch": branch_id, "take": take, "skip": skip}
 
         result = await self.api_client.call_api(
-            resource_path=f"{self.base_path}",
+            resource_path=self.base_path,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             response_type=List[AtividadeListApiViewModel],
@@ -273,7 +273,7 @@ class AsyncActivitiesApi(AsyncBaseApi):
         }
 
         return await self.api_client.call_api(
-            resource_path=f"{self.base_path}/experimental",
+            resource_path=f"{self.base_path}/schedule/experimental-class",
             method="POST",
             query_params={k: v for k, v in params.items() if v is not None},
             auth_settings=["Basic"],
@@ -320,13 +320,13 @@ class AsyncActivitiesApi(AsyncBaseApi):
         }
 
         return await self.api_client.call_api(
-            resource_path=f"{self.base_path}/status",
-            method="PUT",
+            resource_path=f"{self.base_path}/schedule/enroll/change-status",
+            method="POST",
             query_params={k: v for k, v in params.items() if v is not None},
             auth_settings=["Basic"],
         )
 
-    async def get_unavailable_spots(self, config_id: int, date: datetime) -> List[int]:
+    async def list_unavailable_spots(self, config_id: int, date: datetime) -> List[int]:
         """
         Get unavailable spots for activity configuration on specific date.
 
@@ -339,7 +339,7 @@ class AsyncActivitiesApi(AsyncBaseApi):
 
         Example:
             >>> async with AsyncActivitiesApi() as api:
-            ...     unavailable = await api.get_unavailable_spots(
+            ...     unavailable = await api.list_unavailable_spots(
             ...         config_id=123,
             ...         date=datetime(2024, 12, 20)
             ...     )
@@ -351,7 +351,7 @@ class AsyncActivitiesApi(AsyncBaseApi):
         }
 
         result = await self.api_client.call_api(
-            resource_path=f"{self.base_path}/unavailable-spots",
+            resource_path=f"{self.base_path}/list-unavailable-spots",
             method="GET",
             query_params=params,
             response_type=None,  # Returns list of integers directly

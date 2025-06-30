@@ -927,15 +927,19 @@ class GymOperatingData(BaseModel):
             trends["net_growth_by_month"][month_key] = new_members - churned_members
 
             # MRR for the month
-            month_mrr = sum(
-                Decimal(str(c.total_value))
-                / Decimal(str(c.plan.minimum_commitment_months))
+            valid_contracts = [
+                c
                 for c in self.active_contracts
                 if (
                     c.start_date
                     and c.start_date.strftime("%Y-%m") <= month_key
                     and (not c.end_date or c.end_date.strftime("%Y-%m") > month_key)
                 )
+            ]
+            month_mrr = sum(
+                Decimal(str(c.total_value))
+                / Decimal(str(c.plan.minimum_commitment_months))
+                for c in valid_contracts
             )
             trends["mrr_by_month"][month_key] = month_mrr
 

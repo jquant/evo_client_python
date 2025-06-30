@@ -246,6 +246,12 @@ class AsyncPaginatedApiCaller:
 
         # Extract branch_id for logging, default to "unknown"
         func_name = getattr(api_func, "__name__", "unknown_function")
+        if branch_id_logging == "NOT INFORMED":
+            logger.warning(
+                f"Branch ID not informed for {func_name}, using default branch ID"
+            )
+            branch_id_logging = str(kwargs.get("branch_id_logging", "NOT INFORMED"))
+
         logger.debug(
             f"Starting async paginated fetch for {func_name} (branch: {branch_id_logging})"
         )
@@ -408,6 +414,7 @@ class ConcurrentPaginationManager:
                 result = await caller.fetch_all_pages(
                     api_func,
                     config,
+                    branch_id_logging=branch_id,
                     **api_kwargs,
                 )
                 return branch_id, result
@@ -477,7 +484,7 @@ async def async_paginated_api_call(
         max_retries=max_retries, base_delay=base_delay
     )
     result = await caller.fetch_all_pages(
-        api_func, config, branch_id_logging=branch_id_logging, *args, **kwargs
+        api_func, config, branch_id_logging, *args, **kwargs
     )
 
     if not result.success and result.error_message:

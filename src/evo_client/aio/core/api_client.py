@@ -1,6 +1,6 @@
 """Async API client for EVO API."""
 
-from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union, overload
 
 from loguru import logger
 from pydantic import BaseModel
@@ -34,7 +34,7 @@ class AsyncApiClient:
         self.request_handler = AsyncRequestHandler(self.configuration)
 
         # Initialize headers
-        self.default_headers = {}
+        self.default_headers: Dict[str, str | None] = {}
         if header_name:
             self.default_headers[header_name] = header_value
         self.cookie = cookie
@@ -52,12 +52,97 @@ class AsyncApiClient:
     @property
     def user_agent(self) -> str:
         """Get the user agent string."""
-        return self.default_headers["User-Agent"]
+        return self.default_headers["User-Agent"] or ""
 
     @user_agent.setter
     def user_agent(self, value: str) -> None:
         """Set the user agent string."""
         self.default_headers["User-Agent"] = value
+
+    # Overloads for better typing support
+    @overload
+    async def call_api(
+        self,
+        resource_path: str,
+        method: str = "GET",
+        *,
+        response_type: None = None,
+        path_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        body: Optional[Any] = None,
+        post_params: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, str]] = None,
+        auth_settings: Optional[List[str]] = None,
+        return_http_data_only: bool = True,
+        preload_content: bool = True,
+        request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
+    ) -> Any:
+        ...
+
+    @overload
+    async def call_api(
+        self,
+        resource_path: str,
+        method: str = "GET",
+        *,
+        response_type: Type[T],
+        path_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        body: Optional[Any] = None,
+        post_params: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, str]] = None,
+        auth_settings: Optional[List[str]] = None,
+        return_http_data_only: bool = True,
+        preload_content: bool = True,
+        request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
+    ) -> T:
+        ...
+
+    @overload
+    async def call_api(
+        self,
+        resource_path: str,
+        method: str = "GET",
+        *,
+        response_type: Type[List[T]],
+        path_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        body: Optional[Any] = None,
+        post_params: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, str]] = None,
+        auth_settings: Optional[List[str]] = None,
+        return_http_data_only: bool = True,
+        preload_content: bool = True,
+        request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = False,
+    ) -> List[T]:
+        ...
+
+    @overload
+    async def call_api(
+        self,
+        resource_path: str,
+        method: str = "GET",
+        *,
+        response_type: Optional[Type[T] | Type[Iterable[T]]] = None,
+        path_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        body: Optional[Any] = None,
+        post_params: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, str]] = None,
+        auth_settings: Optional[List[str]] = None,
+        return_http_data_only: bool = True,
+        preload_content: bool = True,
+        request_timeout: Optional[Union[float, tuple]] = None,
+        raw_response: bool = True,
+    ) -> Any:
+        ...
 
     async def call_api(
         self,
@@ -100,12 +185,22 @@ class AsyncApiClient:
 
         Example:
             >>> async with AsyncApiClient(config) as client:
+            ...     # Type-safe: returns List[MemberViewModel]
             ...     members = await client.call_api(
             ...         "/api/v1/members",
             ...         method="GET",
             ...         response_type=List[MemberViewModel],
             ...         query_params={"take": 10}
             ...     )
+            ...
+            ...     # Type-safe: returns MemberViewModel
+            ...     member = await client.call_api(
+            ...         "/api/v1/members/123",
+            ...         response_type=MemberViewModel
+            ...     )
+            ...
+            ...     # Returns Any when no response_type specified
+            ...     result = await client.call_api("/api/v1/status")
         """
         logger.debug(f"Making async API call: {method} {resource_path}")
 

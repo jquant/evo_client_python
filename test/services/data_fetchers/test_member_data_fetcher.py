@@ -249,7 +249,7 @@ class TestMemberDataFetcher:
         # Verify all parameters were passed to paginated_api_call
         mock_paginated.assert_called_with(
             api_func=mock_members_api.get_members,
-            branch_id="1",
+            branch_id_logging="1",
             name="Test Name",
             email="test@example.com",
             document="123456789",

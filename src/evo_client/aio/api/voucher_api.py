@@ -73,33 +73,6 @@ class AsyncVoucherApi(AsyncBaseApi):
         )
         return cast(List[VouchersResumoApiViewModel], result)
 
-    async def get_voucher_details(self, voucher_id: int) -> Any:
-        """
-        Get detailed information about a specific voucher.
-
-        Args:
-            voucher_id: ID of the voucher to retrieve
-
-        Returns:
-            Detailed voucher information including:
-            - Basic voucher details
-            - Usage history
-            - Restrictions and conditions
-            - Related transactions
-
-        Example:
-            >>> async with AsyncVoucherApi() as api:
-            ...     details = await api.get_voucher_details(voucher_id=123)
-            ...     print(f"Voucher Details: {details}")
-        """
-        result = await self.api_client.call_api(
-            resource_path=f"{self.base_path}/{voucher_id}",
-            method="GET",
-            headers={"Accept": ["text/plain", "application/json", "text/json"]},
-            auth_settings=["Basic"],
-        )
-        return result
-
     async def create_voucher(
         self,
         name: str,

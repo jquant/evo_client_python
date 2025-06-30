@@ -17,6 +17,41 @@ class TestAPIConsistency:
             f"Found {len(sync_classes)} sync classes and {len(async_classes)} async classes"
         )
 
+    def test_route_extraction_works(self, sync_classes, async_classes):
+        """Test that route extraction is working for at least some methods."""
+        routes_extracted = 0
+        total_methods = 0
+
+        # Check sync classes
+        for class_name, class_info in sync_classes.items():
+            for method_name, method_info in class_info.methods.items():
+                total_methods += 1
+                if method_info.api_route is not None:
+                    routes_extracted += 1
+                    print(f"✅ {class_name}.{method_name}: {method_info.api_route}")
+
+        # Check async classes
+        for class_name, class_info in async_classes.items():
+            for method_name, method_info in class_info.methods.items():
+                total_methods += 1
+                if method_info.api_route is not None:
+                    routes_extracted += 1
+                    print(f"✅ {class_name}.{method_name}: {method_info.api_route}")
+
+        extraction_rate = (
+            (routes_extracted / total_methods) * 100 if total_methods > 0 else 0
+        )
+        print("\n📊 Route Extraction Stats:")
+        print(f"   - Total Methods: {total_methods}")
+        print(f"   - Routes Extracted: {routes_extracted}")
+        print(f"   - Success Rate: {extraction_rate:.1f}%")
+
+        # Assert that we're extracting routes from at least some methods
+        assert routes_extracted > 0, "No API routes were extracted from any methods"
+        assert (
+            extraction_rate > 10
+        ), f"Route extraction rate too low: {extraction_rate:.1f}%"
+
     def test_full_api_consistency(self, consistency_results, report_generator):
         """Test full API consistency between sync and async implementations."""
 
@@ -28,6 +63,25 @@ class TestAPIConsistency:
         assert (
             consistency_results["total_issues"] == 0
         ), f"Found {consistency_results['total_issues']} consistency issues:\n{report}"
+
+    def test_api_route_consistency(self, consistency_results):
+        """Test that sync and async methods call the same API routes."""
+        route_mismatches = consistency_results.get("route_mismatches", [])
+
+        if route_mismatches:
+            issues = []
+            for mismatch in route_mismatches:
+                for issue in mismatch["route_issues"]:
+                    issues.append(
+                        f"{mismatch['sync_class']} ↔ {mismatch['async_class']}: {issue}"
+                    )
+
+            pytest.fail(
+                f"Found {len(route_mismatches)} API route mismatches:\n"
+                + "\n".join(issues)
+            )
+
+        print("✅ All API routes are consistent between sync and async implementations")
 
     @pytest.mark.parametrize(
         "api_name",
@@ -59,6 +113,10 @@ class TestAPIConsistency:
             issues_str = "\n".join(method_comparison["issues"])
             pytest.fail(f"Method inconsistencies in {api_name}:\n{issues_str}")
 
+        if method_comparison["route_issues"]:
+            route_issues_str = "\n".join(method_comparison["route_issues"])
+            pytest.fail(f"Route inconsistencies in {api_name}:\n{route_issues_str}")
+
     def test_method_signature_consistency(self, consistency_results):
         """Test that method signatures are consistent between sync and async."""
 
@@ -68,7 +126,7 @@ class TestAPIConsistency:
                 if "annotation mismatch" in issue or "default value mismatch" in issue:
                     signature_issues.append(f"{mismatch['sync_class']}: {issue}")
 
-        assert len(signature_issues) == 0, f"Method signature issues:\n" + "\n".join(
+        assert len(signature_issues) == 0, "Method signature issues:\n" + "\n".join(
             signature_issues
         )
 
@@ -91,7 +149,7 @@ class TestAPIConsistency:
                 ]
             )
 
-        assert len(missing_issues) == 0, f"Missing classes:\n" + "\n".join(
+        assert len(missing_issues) == 0, "Missing classes:\n" + "\n".join(
             missing_issues
         )
 
@@ -106,7 +164,7 @@ class TestAPIConsistency:
 
         assert (
             len(non_async_methods) == 0
-        ), f"Async methods not marked as async:\n" + "\n".join(non_async_methods)
+        ), "Async methods not marked as async:\n" + "\n".join(non_async_methods)
 
     def test_sync_methods_are_not_async(self, sync_classes):
         """Test that sync API methods are not marked as async."""
@@ -117,7 +175,7 @@ class TestAPIConsistency:
                 if method_info.is_async:
                     async_methods.append(f"{class_name}.{method_name}")
 
-        assert len(async_methods) == 0, f"Sync methods marked as async:\n" + "\n".join(
+        assert len(async_methods) == 0, "Sync methods marked as async:\n" + "\n".join(
             async_methods
         )
 
@@ -178,13 +236,13 @@ class TestAPIConsistencyMarked:
 
         # This test is marked for easy running with: pytest -m consistency
         # It won't fail but will report current state
-        print(f"\n=== API Consistency Status ===")
+        print("\n=== API Consistency Status ===")
         print(f"Total Issues: {consistency_results['total_issues']}")
         print(f"Consistent Classes: {len(consistency_results['consistent_classes'])}")
         print(f"Total Classes: {len(consistency_results['sync_classes'])}")
 
         if consistency_results["total_issues"] > 0:
-            print(f"\n=== Issues to Address ===")
+            print("\n=== Issues to Address ===")
             for mismatch in consistency_results["signature_mismatches"]:
                 print(
                     f"- {mismatch['sync_class']} ↔ {mismatch['async_class']}: {len(mismatch['issues'])} issues"

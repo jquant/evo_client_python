@@ -7,6 +7,8 @@ from typing import (
     Optional,
     Type,
     TypeVar,
+    Union,
+    cast,
     get_args,
     get_origin,
     overload,
@@ -59,13 +61,15 @@ class RESTResponse(io.IOBase):
     def deserialize(self, response_type: Type[T] | Type[Iterable[T]]) -> T | List[T]:
         """Deserialize response data into the specified type."""
         if isinstance(response_type, type) and issubclass(response_type, BaseModel):
-            return response_type.model_validate(self.json())
+            return cast(T, response_type.model_validate(self.json()))
 
         # Handle generic types like List[SomeBaseModel]
         origin = get_origin(response_type)
         if origin is list:
             item_type = get_args(response_type)[0]
-            return list(item_type.model_validate(item) for item in self.json())
+            return cast(
+                List[T], [item_type.model_validate(item) for item in self.json()]
+            )
 
         # Direct construction for simple types
-        return response_type(**self.json())  # type: ignore
+        return cast(Union[T, List[T]], response_type(**self.json()))

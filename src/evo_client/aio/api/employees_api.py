@@ -16,6 +16,7 @@ class AsyncEmployeesApi(AsyncBaseApi):
     def __init__(self, api_client=None):
         super().__init__(api_client)
         self.base_path = "/api/v1/employees"
+        self.base_path_v2 = "/api/v2/employees"
 
     async def get_employees(
         self,
@@ -59,7 +60,7 @@ class AsyncEmployeesApi(AsyncBaseApi):
         }
 
         result = await self.api_client.call_api(
-            resource_path=self.base_path,
+            resource_path=self.base_path_v2,
             method="GET",
             query_params={k: v for k, v in params.items() if v is not None},
             response_type=List[FuncionariosResumoApiViewModel],
@@ -121,14 +122,14 @@ class AsyncEmployeesApi(AsyncBaseApi):
         )
         return result
 
-    async def create_employee(
+    async def add_employee(
         self, employee: EmployeeApiIntegracaoAtualizacaoViewModel
     ) -> Any:
         """
-        Create a new employee.
+        Add a new employee.
 
         Args:
-            employee: Employee data to create
+            employee: Employee data to add
 
         Returns:
             Created employee result
@@ -140,8 +141,8 @@ class AsyncEmployeesApi(AsyncBaseApi):
             ...         email="jane.doe@example.com",
             ...         department="HR"
             ...     )
-            ...     result = await api.create_employee(employee_data)
-            ...     print(f"Employee created: {result}")
+            ...     result = await api.add_employee(employee_data)
+            ...     print(f"Employee added: {result}")
         """
         result = await self.api_client.call_api(
             resource_path=self.base_path,
