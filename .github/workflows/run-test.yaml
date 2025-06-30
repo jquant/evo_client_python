@@ -72,8 +72,6 @@ jobs:
       - name: Type check with mypy
         run: |
           mypy ./src/evo_client/ --check-untyped-defs
-        continue-on-error: true  # Allow mypy to fail for now since it might have many issues
-
 
       - name: Test with pytest & Generate coverage report
         # https://github.com/pytest-dev/pytest-cov
