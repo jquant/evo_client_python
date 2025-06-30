@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import aiohttp
 import pytest
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from evo_client.aio.core.request_handler import AsyncRequestHandler, AsyncRESTResponse
 from evo_client.core.configuration import Configuration

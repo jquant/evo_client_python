@@ -78,7 +78,8 @@ class AsyncApiClient:
         preload_content: bool = True,
         request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> Any: ...
+    ) -> Any:
+        ...
 
     @overload
     async def call_api(
@@ -98,7 +99,8 @@ class AsyncApiClient:
         preload_content: bool = True,
         request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> T: ...
+    ) -> T:
+        ...
 
     @overload
     async def call_api(
@@ -118,7 +120,8 @@ class AsyncApiClient:
         preload_content: bool = True,
         request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = False,
-    ) -> List[T]: ...
+    ) -> List[T]:
+        ...
 
     @overload
     async def call_api(
@@ -138,7 +141,8 @@ class AsyncApiClient:
         preload_content: bool = True,
         request_timeout: Optional[Union[float, tuple]] = None,
         raw_response: bool = True,
-    ) -> Any: ...
+    ) -> Any:
+        ...
 
     async def call_api(
         self,

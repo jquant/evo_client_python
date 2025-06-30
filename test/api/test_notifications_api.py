@@ -4,7 +4,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from evo_client.models.notification_api_view_model import NotificationApiViewModel
 from evo_client.sync import SyncApiClient
 from evo_client.sync.api import SyncNotificationsApi
 

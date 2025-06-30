@@ -90,7 +90,6 @@ class RouteExtractor:
                     isinstance(node.func, ast.Attribute)
                     and node.func.attr == "call_api"
                 ):
-
                     # Find resource_path argument
                     for keyword in node.keywords:
                         if keyword.arg == "resource_path":

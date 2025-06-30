@@ -81,9 +81,7 @@ class TestAPIConsistency:
                 + "\n".join(issues)
             )
 
-        print(
-            "✅ All API routes are consistent between sync and async implementations"
-        )
+        print("✅ All API routes are consistent between sync and async implementations")
 
     @pytest.mark.parametrize(
         "api_name",

@@ -2,9 +2,7 @@
 
 from typing import List, Optional, cast
 
-from ...models.contratos_resumo_api_view_model import (
-    ContratosResumoContainerViewModel,
-)
+from ...models.contratos_resumo_api_view_model import ContratosResumoContainerViewModel
 from ...models.w12_utils_category_membership_view_model import (
     W12UtilsCategoryMembershipViewModel,
 )
