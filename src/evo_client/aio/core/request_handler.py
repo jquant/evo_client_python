@@ -85,7 +85,7 @@ class AsyncRequestHandler:
             headers.update(header_params)
         return headers
 
-    def _prepare_params(self, query_params: Optional[Dict] = None) -> Dict:
+    def _prepare_params(self, query_params: Optional[Dict] = None) -> Dict[str, Any]:
         """Prepare query parameters for aiohttp.
 
         The underlying ``aiohttp`` request builder only accepts ``str``, ``int``
