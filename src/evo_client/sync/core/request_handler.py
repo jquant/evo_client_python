@@ -35,7 +35,7 @@ class SyncRequestHandler:
             headers.update(header_params)
         return headers
 
-    def _prepare_params(self, query_params: Optional[Dict] = None) -> Dict:
+    def _prepare_params(self, query_params: Optional[Dict] = None) -> Dict[str, Any]:
         """Prepare query parameters.
 
         Boolean values are converted to lowercase strings so that sync and async
