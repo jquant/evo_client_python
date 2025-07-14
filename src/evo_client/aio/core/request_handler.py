@@ -86,8 +86,26 @@ class AsyncRequestHandler:
         return headers
 
     def _prepare_params(self, query_params: Optional[Dict] = None) -> Dict:
-        """Prepare query parameters."""
-        return query_params or {}
+        """Prepare query parameters for aiohttp.
+
+        The underlying ``aiohttp`` request builder only accepts ``str``, ``int``
+        or ``float`` types. Boolean values must be converted to strings or they
+        will raise a ``TypeError`` when building the request.
+        """
+
+        if not query_params:
+            return {}
+
+        prepared: Dict[str, Any] = {}
+        for key, value in query_params.items():
+            if value is None:
+                continue
+            if isinstance(value, bool):
+                prepared[key] = str(value).lower()
+            else:
+                prepared[key] = value
+
+        return prepared
 
     async def execute(
         self, response_type: Optional[Type[T] | Type[Iterable[T]]] = None, **kwargs

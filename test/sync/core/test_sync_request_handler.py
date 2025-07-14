@@ -60,10 +60,10 @@ def test_prepare_params(sync_request_handler):
     params = sync_request_handler._prepare_params()
     assert params == {}
 
-    # Test with query_params
-    query_params = {"filter": "active", "limit": 10}
+    # Test with query_params including bool and None
+    query_params = {"filter": "active", "limit": 10, "flag": True, "skip": None}
     params = sync_request_handler._prepare_params(query_params)
-    assert params == query_params
+    assert params == {"filter": "active", "limit": 10, "flag": "true"}
 
 
 def test_get_request_options(sync_request_handler):
@@ -77,7 +77,7 @@ def test_get_request_options(sync_request_handler):
     kwargs = {"timeout": 60, "verify": False}
     options = sync_request_handler._get_request_options(kwargs)
     assert options["request_timeout"] == 60
-    assert options["verify_ssl"] == False
+    assert not options["verify_ssl"]
 
 
 def test_make_request_success(sync_request_handler):

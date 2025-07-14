@@ -194,10 +194,10 @@ async def test_prepare_params():
     params = handler._prepare_params()
     assert params == {}
 
-    # Test with query_params
-    query_params = {"filter": "active", "limit": 10}
+    # Test with query_params including bool and None
+    query_params = {"filter": "active", "limit": 10, "flag": True, "skip": None}
     params = handler._prepare_params(query_params)
-    assert params == query_params
+    assert params == {"filter": "active", "limit": 10, "flag": "true"}
 
 
 @pytest.mark.asyncio

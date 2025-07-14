@@ -36,8 +36,25 @@ class SyncRequestHandler:
         return headers
 
     def _prepare_params(self, query_params: Optional[Dict] = None) -> Dict:
-        """Prepare query parameters."""
-        return query_params or {}
+        """Prepare query parameters.
+
+        Boolean values are converted to lowercase strings so that sync and async
+        implementations behave the same when sending query parameters.
+        """
+
+        if not query_params:
+            return {}
+
+        prepared: Dict[str, Any] = {}
+        for key, value in query_params.items():
+            if value is None:
+                continue
+            if isinstance(value, bool):
+                prepared[key] = str(value).lower()
+            else:
+                prepared[key] = value
+
+        return prepared
 
     def _get_request_options(self, kwargs: Dict) -> Dict:
         """Extract request options from kwargs."""
