@@ -68,18 +68,18 @@ class RESTResponse(io.IOBase):
         if origin is list:
             item_type = get_args(response_type)[0]
             json_data = self.json()
-            
+
             # If the response is a single dictionary and we expect a list,
             # wrap it in a list (this handles container responses)
             if isinstance(json_data, dict):
                 return cast(List[T], [item_type.model_validate(json_data)])
-            
+
             # If it's already a list, validate each item
             elif isinstance(json_data, list):
                 return cast(
                     List[T], [item_type.model_validate(item) for item in json_data]
                 )
-            
+
             # Fallback: try to iterate over the response
             else:
                 return cast(
